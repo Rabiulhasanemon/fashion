@@ -1,0 +1,145 @@
+<div class="featured-product-area section-padding banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 30px 0 !important; margin-top: 0; margin-bottom: 0;">
+  <div class="container" style="max-width: 100%; padding: 0 20px; box-sizing: border-box;">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="section-head" style="margin-bottom: 20px !important; padding-bottom: 15px !important;">
+          <h3 class="title" style="font-size: 28px !important; margin: 0;"><?php echo $name; ?></h3>
+          <a href="<?php echo $see_all; ?>" class="btn"
+          >View All Collection
+            <span class="material-icons">arrow_forward</span></a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="featured-product-wrapper resource-list resource-list--grid" style="--resource-list-column-gap-desktop: 8px; --resource-list-row-gap-desktop: 24px; --resource-list-columns: repeat(6, 1fr); --resource-list-columns-mobile: repeat(2, 1fr);">
+      <?php foreach ($products as $product) { ?>
+      <div class="product-item resource-list__item">
+
+        <?php if ($product['special']) { ?>
+        <?php
+          $price = floatval(str_replace(['৳', ','], '', $product['price']));
+          $special = floatval(str_replace(['৳', ','], '', $product['special']));
+          $discountAmount = $price - $special;
+          $mark = ($discountAmount / $price) * 100;
+        ?>
+        <div class="mark"><?php echo round($mark, 1); ?>% OFF </div>
+        <?php } ?>
+
+        <a href="<?php echo $product['href']; ?>">
+          <div class="product-img card-gallery" style="--gallery-aspect-ratio: 1.0; padding-top: 100% !important; aspect-ratio: 1.0 !important;">
+            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; image-rendering: high-quality;" />
+          </div>
+        </a>
+        <div class="product-info" style="padding-top: 12px !important; margin-top: 12px !important; gap: 4px !important;">
+          <a href="<?php echo $product['href']; ?>">
+            <h4 class="name" style="font-size: 16px !important; line-height: 22px !important;"><?php echo $product['name']; ?></h4>
+          </a>
+          <div class="product-price-wrap" style="gap: 4px !important;">
+            <?php if ($product['special']) { ?>
+            <span class="price"><?php echo $product['special']; ?></span>
+            <span class="price old"><?php echo $product['price']; ?></span>
+            <?php } else { ?>
+            <span class="price"><?php echo $product['price']; ?></span>
+            <?php } ?>
+
+          </div>
+        </div>
+      </div>
+      <?php } ?>
+    </div>
+  </div>
+</div>
+
+<style>
+.featured-product-wrapper.resource-list--grid {
+    display: grid;
+    gap: var(--resource-list-row-gap-desktop) var(--resource-list-column-gap-desktop);
+    grid-template-columns: var(--resource-list-columns-mobile);
+    width: 100%;
+}
+@media screen and (min-width: 750px) {
+    .featured-product-wrapper.resource-list--grid {
+        grid-template-columns: var(--resource-list-columns);
+    }
+}
+.featured-product-area .product-img {
+    --gallery-aspect-ratio: 1.0;
+    padding-top: 100% !important;
+    aspect-ratio: 1.0 !important;
+    background: #fff;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+.featured-product-area .product-item:hover .product-img {
+    transform: scale(1.03);
+    transition: transform 0.25s ease-out;
+}
+.featured-product-area .product-img img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    aspect-ratio: inherit;
+}
+.featured-product-area .product-info {
+    padding-top: 12px !important;
+    margin-top: 12px !important;
+    gap: 4px !important;
+}
+.featured-product-area .product-info .name {
+    font-size: 16px !important;
+    line-height: 22px !important;
+}
+.featured-product-area .section-head {
+    margin-bottom: 20px !important;
+    padding-bottom: 15px !important;
+}
+.featured-product-area .section-head .title {
+    font-size: 28px !important;
+}
+.resource-list__item {
+    height: 100%;
+    color: var(--color-foreground, #111827);
+    text-decoration: none;
+}
+@media (max-width: 749px) {
+    .featured-product-wrapper.resource-list--grid {
+        --resource-list-column-gap-desktop: 12px;
+        --resource-list-row-gap-desktop: 24px;
+    }
+    .featured-product-area {
+        padding: 25px 0 !important;
+    }
+    .featured-product-area .section-head {
+        margin-bottom: 15px !important;
+        padding-bottom: 12px !important;
+    }
+    .featured-product-area .section-head .title {
+        font-size: 22px !important;
+    }
+}
+@media (max-width: 576px) {
+    .featured-product-area {
+        padding: 20px 0 !important;
+    }
+    .featured-product-area .product-info {
+        padding-top: 10px !important;
+        margin-top: 10px !important;
+    }
+    .featured-product-area .product-info .name {
+        font-size: 14px !important;
+        line-height: 20px !important;
+    }
+    .featured-product-area .section-head .title {
+        font-size: 20px !important;
+    }
+}
+</style>

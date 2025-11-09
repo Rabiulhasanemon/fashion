@@ -1,0 +1,348 @@
+/*region checkout-page*/
+.checkout-content {
+    padding-bottom: 50px;
+}
+.page-section-head h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+#dis-gift-code ,
+.emi-option{
+    margin-top: 15px;
+}
+
+.page-section label {
+    display: block;
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: .5rem;
+}
+
+.payment-methods .page-section label{
+    font-size: 16px;
+}
+
+.page-section .terms-condition label{
+    line-height: 27px;
+    margin-bottom: 0px;
+}
+
+.page-section label input[type="radio"] {
+    float: left;
+    margin: 4px 10px 0 0;
+}
+
+.row-payment-delivery-order .input-group > * {
+    flex: 1 1 0;
+}
+
+.row-payment-delivery-order .input-group > button {
+    flex: 0 0 auto;
+    text-transform: uppercase;
+}
+.user-panel-bar label {
+    padding-top: 7px;
+    float: right;
+}
+
+.page-section .form-group {
+    margin-bottom: 15px;
+}
+
+.checkout-page .page-section {
+    padding: 20px;
+    background: #fff;
+}
+
+.checkout-page .page-section.delivery-info {
+    padding: 0 50px 0 0;
+}
+
+.delivery-info .page-section-head h3 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.row-payment-delivery-order {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 30px 15px;
+}
+
+.page-section .form-group textarea {
+    height: 100px;
+}
+
+.buy-product-table td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px 10px;
+}
+
+.buy-product-table thead td {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.buy-product-table .total td,
+.buy-product-table .total td strong {
+    font-weight: 500 !important;
+    font-size: 16px;
+}
+
+.buy-product-table {
+    width: 100%;
+}
+.buy-product-table  .reward-point {
+    font-size: 10px;
+}
+.pay-us-info.section-head {
+    margin-top: 34px;
+}
+.accept-system,
+.payment-way {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accept-system .system {
+    box-shadow: 0px 1px 13px rgba(68, 68, 68, 0.2);
+    padding: 16px 3px 3px 3px;
+    width: 24%;
+    font-size: 12px;
+    text-align: center;
+}
+
+.pay-with .payment-way {
+    box-shadow: 0px 1px 13px rgba(68, 68, 68, 0.3);
+    padding: 10px;
+}
+.pay-contact-info {
+    box-shadow: 0px 1px 13px rgba(68, 68, 68, 0.3);
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pay-contact-info i {
+    margin-right: 5px;
+}
+
+.pay-contact-info .single-item {
+    margin-top: 24px;
+}
+.all-pay-info .category-title h3 {
+    background: #00ADEF;
+    color: #fff;
+    margin: 0;
+    padding: 8px;
+    border-radius: 5px 5px 0 0;
+}
+.all-pay-info .pay-with,
+.order-info {
+    margin-top: 20px;
+}
+
+/*success-page*/
+.order-placed-info {
+    background: #fff;
+    box-shadow: 0 0 30px rgba(200,200,200, .6);
+    padding: 30px;
+    display: table;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.order-placed-info .listing {
+    float: left;
+    width: 33.3333%;
+    margin-top: 40px;
+}
+
+.order-info .terms-condition {
+    position: relative;
+    padding: 0 0 20px 25px;
+    margin-top: 20px;
+}
+.order-info .terms-condition b {
+    font-weight: 400 !important;
+}
+.order-info .terms-condition input {
+    position: absolute;
+    left: 0;
+    top: 5px;
+}
+.order-info #button-confirm {
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+.order-success-content .success-message {
+    text-align: center;
+}
+
+.order-success-content .success-message h4 {
+    color: #000;
+    font-weight: 400;
+}
+
+.order-success-content .track-order {
+    border: 1px solid var(--borderColor);
+    padding: 25px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.order-success-content .track-order a {
+    color: black;
+    font-weight: bold;
+}
+
+.order-success-content .track-order .view-order {
+    border: 1px solid var(--borderColor);
+    color: var(--borderColor);
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: 600;
+    background: #fff;
+}
+
+.order-success-content .track-order p {
+    color: grey;
+}
+.order-success-content .btn-buy {
+    display: inline-block;
+    padding: 5px 15px;
+}
+
+.order-success-content {
+    text-align: center;
+}
+
+
+.order-success-content
+.order-summary {
+    margin-top: 20px;
+}
+
+.order-success-content .order-summary th {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    text-align: left;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+.order-success-content .order-summary table {
+    width: 100%;
+}
+
+.order-success-content .order-summary td {
+    padding: 10px  0;
+    text-align: left;
+    color: #7a7a7a;
+}
+
+.order-success-content .order-summary td:nth-child(2) {
+    text-align: right;
+    color: black;
+}
+
+.order-success-content .order-summary tr:last-child td:last-child {
+    color: #000;
+    font-size: 16px;
+}
+
+.order-success-content .order-summary tr:last-child td:first-child {
+    color: black;
+}
+
+.order-success-content .btn {
+    text-transform: uppercase;
+}
+.order-success-content .success-message .material-icons {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+}
+
+/*endregion*/
+
+/*endregion*/
+@media (max-width: 1299px) {
+    .user-panel-bar label {
+        padding-top: 7px;
+        float: none;
+    }
+}
+@media (max-width: 991px) {
+    .all-pay-info {
+        margin-top: 30px;
+    }
+    #button-login {
+        margin-top: 29px;
+        margin-bottom: 0;
+    }
+    .delivery-methods {
+        margin-top: 20px;
+    }
+
+}
+
+@media (max-width: 767px) {
+    .payment-methods {
+        margin-top: 20px;
+    }
+    .order-placed-info .listing {
+        width: 100%;
+    }
+    .checkout-page .page-section.delivery-info {
+        padding-right: 0;
+    }
+    .row-payment-delivery-order {
+        padding: 0 0 15px;
+        margin: 0px;
+    }
+    .buy-product-table .total td, .buy-product-table .total td strong {
+        font-size: 14px;
+    }
+    .checkout-page .page-section {
+        padding: 10px;
+    }
+
+    .page-section-head h3 {
+        font-size: 18px !important;
+        margin-bottom: 10px;
+    }
+    .cart-page .page-section .input-group-btn {
+        padding: 0;
+        margin: 0;
+    }
+
+    .cart-page .subtotal-table td {
+        font-size: 14px;
+    }
+
+    .cart-page .buttons .btn.checkout-btn {
+        margin: 0;
+        margin-top: 10px;
+    }
+
+    .cart-page .title {
+        font-size: 24px !important;
+    }
+    .cart-page .input-group.btn-block input {
+        width: 70px;
+    }
+}
+@media (max-width: 450px) {
+    .buy-product-table tbody td.name {
+        padding: 4px;
+    }
+
+    .buy-product-table td {
+        padding: 2px;
+    }
+}

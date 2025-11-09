@@ -1,0 +1,753 @@
+/*region account-log-in*/
+.account-page .panel {
+    display: table;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    padding: 30px;
+    border: 1px solid #000;
+}
+
+.account-page .address-info .panel {
+    padding: 0;
+    max-width: 100%;
+    border: none;
+}
+
+.account-page form label {
+    display: block;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+.account-page form input[type=text],
+.info select {
+    width: 100%;
+    background: #fff;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    padding: 10px;
+    color: #000;
+}
+
+.account-page.return-page .radio input {
+    width: auto;
+}
+.account-page.return-page textarea {
+    height: 34px;
+    width: 100%;
+}
+
+.radio-inline input {
+    width: auto !important;
+}
+
+.input-group.date input {
+    float: left;
+    width: 20%;
+}
+
+.info select {
+    background: transparent;
+}
+
+.form-group label {
+    margin-top: 10px;
+}
+
+.account-page .form-group {
+    margin-bottom: 20px;
+    display: table;
+    width: 100%;
+}
+
+.account-page.login-page .panel .form-group {
+    font-size: 14px;
+}
+
+.account-page .button-wrap .btn {
+    display: inline-block;
+    width: 100%;
+    text-transform: uppercase;
+}
+.ifHaveAccount a {
+    color: var(--primaryColor);
+}
+.content .my-info h2{
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 40px;
+    margin-bottom: 15px;
+}
+
+a.btn.btn-primary.facebook {
+    background-color: #1877f2!important;
+    text-align: center;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+a.btn.btn-primary.google {
+    background-color: #db4a39!important;
+    text-align: center;
+    font-weight: 400;
+    font-size: 14px;
+}
+.contact-from-info p.text-center {
+    background-color: rgba(40, 210, 130, 0.05);
+    border: 1px solid #26D07F;
+    padding: 10px;
+}
+
+.account-page .buttons {
+    display: inline-block;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.account-page .buttons > div {
+    float: left;
+}
+
+.account-page .buttons > div.pull-right {
+    float: right;
+}
+
+button[disabled] {
+    background: #dfdfdf !important;
+    color: #898989 !important;
+    cursor: default;
+}
+
+#input-country, #input-zone {
+    width: 100%;
+    background: #fff;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+    padding: 0 10px;
+    color: #000;
+}
+/*endregion*/
+
+/*region account-register*/
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.form-control {
+    border-radius: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.main_content.contact-info {
+    padding-left: 50px;
+}
+
+.account-page .form-group.subscription .info label {
+    margin: 0;
+    display: inline-block;
+    width: auto;
+}
+
+.account-page .form-group.subscription .info label input,
+.account-page form input[type="checkbox"] {
+    width: auto;
+}
+.account-page.account-register fieldset {
+    padding: 0 0 10px;
+}
+
+.account-page.account-register .form-group.subscription {
+    padding: 0;
+    margin-bottom: -30px;
+}
+.account-page.account-register .form-group.subscription .info {
+    float: right;
+    position: relative;
+    top: -30px;
+}
+
+.account-page.account-register .form-group.subscription .info input {
+    margin: 0 5px 0 20px;
+    position: relative;
+    top: 2px;
+}
+
+.account-page.account-register .buttons input[type="checkbox"] {
+    float: left;
+    margin: 5px 10px 0 0;
+}
+
+.account-page.account-register .buttons .btn {
+    display: block;
+    margin-top: 25px;
+}
+
+/*endregion*/
+
+/*region shopping cart*/
+.cart-page {
+    margin-bottom: 40px;
+}
+.cart-page .img-thumbnail {
+    border: none;
+    border-radius: 0;
+}
+.cart-page .table-responsive > .table-bordered tbody td {
+    vertical-align: middle;
+}
+.cart-page .subtotal-table {
+    margin: -10px 0 30px;
+}
+.cart-page .subtotal-table td {
+    font-weight: 500;
+    font-size: 18px;
+    border-top: none;
+    border-bottom: 1px solid var(--borderColor);
+}
+.cart-page .page-section {
+    padding: 20px;
+    border-top: 1px solid var(--borderColor);
+    border-bottom: 1px solid var(--borderColor);
+    background: rgba(0, 0, 0, 0.02);
+    margin-bottom: 20px;
+}
+.text-center {
+    text-align: center;
+}
+.cart-page .cart-table .btn {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.02);
+    padding: 8px 10px;
+    height: 38px;
+    margin: 0 -3px 0 5px;
+    box-shadow: none;
+    border: none;
+    border-radius: 0px;
+    color: #000;
+}
+.cart-page .cart-table .btn:hover {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.05);
+}
+.cart-page .cart-table .btn .fa {
+    color: black;
+}
+
+.cart-page .input-group {
+}
+
+.cart-page .input-group-btn {
+    padding-right: 3px;
+}
+
+.cart-page .page-section .input-group-btn {
+    padding: 0 0 0 10px;
+}
+
+.cart-page .input-group.btn-block input {
+    padding: 12px 0;
+    text-align: center;
+    border-radius: 0;
+    display: inline-block;
+}
+
+.cart-page .page-section .input-group .btn {
+    margin-bottom: 0;
+}
+.cart-page .buttons .btn {
+}
+.cart-page .buttons .btn.checkout-btn{
+    margin-left: 10px;
+}
+.cart-page .title {
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 40px;
+    margin: 0 0 15px;
+}
+/*endregion*/
+
+
+
+/*region my-account page*/
+.account-page {
+    margin-bottom: 40px;
+    margin-top: 20px;
+    min-height: 500px;
+}
+
+.address-info h2,
+.account-address-edit h2,
+.account-page h1,
+.account-page.login-page h3 {
+    font-size: 25px;
+    font-weight: 300;
+}
+
+.account-page fieldset {
+    border: none;
+    max-width: 400px;
+}
+
+.account-page legend {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 15px;
+}
+
+.account-page #column-left {
+    margin-top: 0;
+    padding: 0;
+}
+
+.account-page #column-left .lc-close {
+    display: none;
+}
+
+.content .my-info,
+.information,
+.main_content {
+    display: table;
+    width: 100%;
+}
+
+.content.order-history-details .my-info {
+    display: table;
+    width: 100%;
+    border-left: 3px solid var(--primaryColor);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 15px;
+    font-size: 14px;
+}
+
+.my-info b {
+}
+.information {
+    margin-bottom: 40px;
+}
+
+.list-group.category_nav {
+    border-bottom: 1px solid #eee;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.list-group.category_nav a {
+    display: inline-block;
+    border: none;
+    color: #777;
+    line-height: 50px;
+    padding: 0 10px;
+    margin: 0 0 1px;
+    border-radius: 0;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: right;
+}
+
+.list-group.category_nav a:last-child {
+    float: right;
+}
+
+.my-account .list-group.category_nav a:first-child,
+.list-group.category_nav a:hover {
+    color: #000;
+    box-shadow: 0 1px 0 0 #000;
+}
+
+.list-group.category_nav a:last-child:hover {
+    text-decoration: underline;
+    box-shadow: none;
+}
+
+.account-page .list-unstyled {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.account-page .list-unstyled li {
+    float: left;
+    width: 20%;
+    text-align: center;
+    border-left: none;
+    margin: 0;
+}
+
+.account-page .list-unstyled li:hover {
+}
+
+.account-page .list-unstyled li a {
+    display: block;
+    padding: 15px 10px;
+    height: 133px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000;
+    margin-right: 10px;
+    border: 1px solid #eee;
+}
+
+.account-page .list-unstyled li:hover a {
+    background: #f5f7f9;
+    border-color: #f5f7f9;
+    text-decoration: none;
+}
+
+.account-page .list-unstyled li span {
+    display: block;
+    text-align: center;
+    padding: 10px 0 15px;
+}
+
+.account-page .list-unstyled li img {
+}
+/*endregion*/
+
+/*region address */
+.add-address-btn a {
+    text-align: center;
+    padding: 10px 15px;
+    font-size: 15px;
+    width: auto;
+    display: inline-block;
+    color: #000;
+    position: absolute;
+    right: 0;
+    top: -55px;
+    text-decoration: none;
+    border: 1px solid #000;
+}
+.add-address-btn a:hover {
+    background: #000;
+    color: #fff;
+}
+
+.add-address-btn {
+    position: relative;
+}
+
+.add-address-btn a i {
+    margin-right: 10px;
+    font-size: 18px;
+    transform: translateY(4px);
+}
+
+.addresses .add-name {
+    float: left;
+    width: 75%;
+}
+
+.addresses .editable-btn {
+    float: right;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.addresses .editable-btn .edit-btn {
+    margin-right: 20px;
+}
+
+.addresses {
+    background: #f1f5f8;
+    display: table;
+    width: 100%;
+    padding: 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.addresses .editable-btn i {
+    font-size: 20px;
+    width: 16px;
+    height: 16px;
+}
+/*endregion */
+
+
+
+/*region wishlist */
+.item-listing .item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.item-listing .item > * {
+    flex: 1 1 0;
+}
+
+.item-listing .item > .img-wrap {
+    flex: 0 0 100px;
+    text-align: center;
+}
+
+.item-listing .item .item-info {
+    display: flex;
+}
+
+.item-listing .item .item-info > * {
+    flex: 1 1 0;
+    padding-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    line-height: 30px;
+    margin-bottom: 20px;
+}
+
+.item-listing .item .item-info > .price-wrap {
+    flex: 0 0 120px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.item-listing .item .item-info > .actions {
+    flex: 0 0 120px;
+    text-align: right;
+    padding-top: 10px;
+
+}
+
+.item-listing .item .item-info a {
+    color: #333;
+    font-weight: 400;
+}
+.account-wishlist .item .actions button {
+    padding: 5px 15px;
+    margin-right: 20px;
+    border: 2px solid #000;
+    background: none;
+    color: #000;
+    font-size: 18px;
+    margin-top: 3px;
+}
+.account-wishlist .item .actions button:hover {
+    background: #000;
+    color: #fff;
+}
+.item-listing .item .actions a.btn-add {
+    background: #009688;
+    padding: 3px 24px;
+    display: inline-block;
+    color: #fff;
+    border-radius: 50px;
+    margin-top: 6px;
+}
+/*endregion*/
+
+
+
+/*region my-order-list*/
+.order-list .item span {
+    display: block;
+}
+.order-list .my-order-history {
+}
+.order-list .my-order-history .item {
+    font-weight: 500;
+    padding: 3px 0;
+}
+.order-list .my-order-history .item span {
+    display: inline-block;
+    width: 150px;
+    font-size: 14px;
+    font-weight: 400;
+}
+.order-list .my-order-history .view-order-btn {
+    display: inline-block;
+    float: right;
+    margin-top: 40px;
+}
+.order-list .buttons {
+    margin-top: 20px;
+}
+.my-info {
+    margin-bottom: 20px;
+}
+.my-info .pay-method b,
+.my-info .shipping-method b,
+.my-info span {
+    display: block;
+    clear: inherit;
+    padding-bottom: 5px;
+}
+
+.my-info span b {
+    text-align: right;
+    margin-right: 10px;
+}
+
+.contact-info .contact {
+    clear: both;
+    margin-bottom: 20px;
+}
+
+.contact-info .contact p {
+    line-height: 30px;
+}
+.contact-info .contact .icon {
+    height: 30px;
+    width: 30px;
+    background: #000;
+    text-align: center;
+    line-height: 30px;
+    color: #fff;
+    border-radius: 50px;
+    margin-right: 10px;
+    float: left;
+}
+
+.contact-info .contact .icon a {
+    color: #fff;
+}
+.col-pull-4 {
+    left: 66.66666667%;
+}
+
+.col-pull-8 {
+    right: 33.33333333%;
+    margin-bottom: 30px;
+}
+
+.table-bordered thead td {
+    border-color: #444;
+    background: #000;
+    color: #fff;
+    border-bottom: none;
+    border-top: none;
+}
+
+.table-bordered tbody td {
+    border-top: none;
+}
+.order-history-details h2 {
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 40px;
+    margin-bottom: 15px;
+}
+
+.order-history-details h4 {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 25px;
+    margin-bottom: 10px;
+}
+
+.order-history-details h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    line-height: 30px;
+    margin-bottom: 20px;
+}
+
+/*endregion*/
+
+@media (max-width: 1024px) {
+    .account-page .list-unstyled li {
+        width: 33%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 991px) {
+    .cart-page .page-section .input-group input {
+        margin-bottom: 15px;
+    }
+    .cart-page .page-section .input-group .btn {
+        margin-bottom: 15px !important;
+    }
+    .col-pull-4 {
+        left: 0;
+    }
+    .col-pull-8 {
+        right: 0;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .account-page .panel {
+        padding: 10px !important;
+    }
+    .input-group.btn-block input {
+        display: table;
+    }
+    .cart-page .page-section .input-group {
+        display: inherit;
+    }
+    .cart-page .page-section .input-group input {
+        margin-bottom: 5px !important;
+    }
+    .cart-page  #button-voucher {
+        margin: 0;
+    }
+    .cart-page .page-section .input-group,
+    .cart-page .buttons > div,
+    .cart-page .buttons .btn,
+    .cart-page .page-section input {
+        width: 100%;
+        margin-left: 0;
+    }
+    .item-listing .item {
+        padding: 10px;
+    }
+    .item-listing .item .item-info {
+        margin-left: 10px;
+    }
+    .order-list .my-order-history .view-order-btn .btn {
+        padding: 8px 15px;
+    }
+    .account-page .list-unstyled li {
+        width: 50%;
+        margin-bottom: 10px;
+    }
+    .footer-block ul li a {
+        font-size: 12px;
+    }
+    .main_content.contact-info {
+        padding-left: 0;
+    }
+
+    .account-page .list-unstyled li a {
+        height: 150px;
+    }
+    .account-page .list-unstyled {
+        margin-bottom: 20px;
+    }
+
+    .content .my-info h2 {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+    .add-address-btn a {
+        position: initial;
+        padding: 5px 7px;
+        margin-top: 7px;
+    }
+}
+
+@media (max-width: 480px) {
+
+}
+
+@media (max-width: 370px) {
+    .account-wishlist .item .actions button {
+        padding: 0 !important;
+        margin-top: 10px;
+    }
+}

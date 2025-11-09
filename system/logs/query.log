@@ -1,0 +1,1 @@
+2024-12-11 15:04:21 - UPDATE sr_product_special SET customer_group_id = '1', date_start = '2024-12-10 15:04', date_end = '2024-12-31 15:04' WHERE priority = -20

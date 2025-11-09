@@ -1,0 +1,144 @@
+/* =======================================================
+   PRODUCT IMAGE STANDARDIZATION
+   Ensures all product images display consistently
+   regardless of upload size - automatically resized to 500x500px
+   ======================================================= */
+
+/* Global Product Image Container - Square aspect ratio (1:1) */
+.product-img,
+.product-image,
+.product-image-wrapper,
+.product-thumb,
+.product-thumbnail,
+[class*="product-image"],
+[class*="product-thumb"] {
+    --gallery-aspect-ratio: 1.0;
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    aspect-ratio: 1.0;
+    overflow: hidden;
+    background: #fff;
+    display: block;
+    border-radius: 0;
+    transition: transform 0.25s ease-out;
+}
+
+/* Product Image - Fit within container, maintain aspect ratio */
+.product-img img,
+.product-image img,
+.product-image-wrapper img,
+.product-thumb img,
+.product-thumbnail img,
+[class*="product-image"] img,
+[class*="product-thumb"] img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    aspect-ratio: inherit;
+}
+
+/* Hover effect for product images */
+.product-item:hover .product-img,
+.product-item:hover .product-image,
+.product-card:hover .product-img,
+.product-card:hover .product-image {
+    transform: scale(1.03);
+}
+
+/* Product Listing Pages - Category, Search, Special, Manufacturer */
+.product-item .product-img {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    background: #fff;
+    margin-bottom: 15px;
+}
+
+.product-item .product-img img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Featured Product Module */
+.featured-product-area .product-img,
+.featured-product-area .product-image {
+    --gallery-aspect-ratio: 1.0;
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    aspect-ratio: 1.0;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 0;
+    transition: transform 0.25s ease-out;
+}
+
+.featured-product-area .product-img img,
+.featured-product-area .product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    aspect-ratio: inherit;
+}
+
+/* Responsive adjustments */
+@media (max-width: 749px) {
+    .product-img,
+    .product-image,
+    .product-image-wrapper {
+        padding-top: 100%;
+        aspect-ratio: 1.0;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-img,
+    .product-image,
+    .product-image-wrapper {
+        padding-top: 100%;
+        aspect-ratio: 1.0;
+    }
+    
+    .product-img img,
+    .product-image img {
+        object-fit: contain;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: high-quality;
+    }
+}
+
+/* Remove any fixed width/height attributes that might interfere */
+.product-img img[width],
+.product-img img[height],
+.product-image img[width],
+.product-image img[height] {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+}
+
+
+

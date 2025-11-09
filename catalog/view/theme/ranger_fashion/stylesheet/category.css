@@ -1,0 +1,334 @@
+.breadcrumb {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 16px 0;
+}.breadcrumb li {
+     display: inline;
+     color: #4B4B4B;
+ }
+
+.breadcrumb li:before {
+    content: "\e5cc";
+    margin: 0 8px;
+    position: relative;
+    top: 4px;
+    font-family: 'Material Icons';
+    font-size: 18px;
+}
+
+.breadcrumb li:first-child:before {
+    content: "";
+    display: none;
+}
+.category-intro {
+    padding: 64px 0;
+}
+
+.category-intro-txt h1 {
+    font-size: 48px;
+    line-height: 120%;
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+.top-bar-filter {
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+    align-items: center;
+}
+
+.top-bar-filter .form-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.top-bar-filter .form-group label {
+    margin: 0;
+}
+
+.product-categories .top-bar {
+    padding: 12px 16px;
+    border: 1px solid var(--borderColor);
+    margin-bottom: 30px;
+}
+
+.product-categories .top-bar .title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    margin: 0;
+}
+
+.product-categories {
+    margin-top: 15px;
+}
+
+#lc-toggle, #column-left .lc-close {
+    display: none;
+    background: var(--sectionBg);
+    padding: 1px 10px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+}
+.price-filter .label, .filter-group .label {
+    cursor: pointer;
+    border-bottom: 1px solid #C4C4C4;
+    position: relative;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 140%;
+    padding-bottom: 12px;
+}
+.filter-group.price-filter-panel.price-filter {
+    padding: 0 20px 20px;
+}
+.price-filter .noUi-handle {
+    background: #000;
+    box-shadow: none;
+    border: 0;
+    width: 12px;
+    height: 12px;
+    top: -5px;
+}
+.price-filter .label {
+    padding-left: 0;
+}
+#column-left .lc-close {
+    padding: 3px 7px;
+}
+#column-left .lc-close .material-icons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+.noUi-horizontal {
+    width: 100% !important;
+}
+
+
+.range-label.from {
+    margin-top: 20px;
+}
+
+.filter-group .toggler {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    font-size: 18px;
+}
+
+input#range-to {
+    margin-right: 7px;
+}
+
+.panel .range-label input {
+    float: left;
+    width: 48%;
+    outline: 0;
+    padding: 8px 16px;
+    margin-bottom: 16px;
+}
+
+.panel .filters .filter-group,
+.panel .filters .price-filter {
+    margin-bottom: 16px;
+    display: table;
+    width: 100%;
+    padding: 16px 24px 0px;
+    border: 1px solid var(--borderColor);
+}
+
+.panel .filters .price-filter .noUi-horizontal {
+    height: 4px;
+    margin: 40px 0;
+}
+
+.filters > div:not(:last-child) {
+    border-bottom: 1px solid #38383826;
+}
+
+
+.panel .filters .filter-group label.filter input {
+    float: left;
+    margin: 2px 10px 0 0;
+}
+
+
+.panel .filters .filter-group .items {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.filter-group .items label.filter {
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 20px;
+}
+.panel .filters .noUi-base {
+    border: none;
+    box-shadow: none;
+    background: var(--borderColor);
+}
+
+.panel .filters .noUi-connect {
+    background: black;
+    background: -moz-linear-gradient(left, black 0%, #000 100%);
+    background: -webkit-linear-gradient(left, black 0%, #000 100%);
+    background: linear-gradient(to right, black 0%, #000 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='black', endColorstr='#000',GradientType=1 );
+}
+.bottom-bar {
+    padding: 30px;
+    margin: 60px 0;
+    border: 1px solid var(--borderColor);
+    border-right: 0;
+    border-left: 0;
+}
+.pagination li {
+    display: inline-block;
+    padding: 3px 11px;
+    text-decoration: none;
+    transition: background-color .3s
+}
+
+.pagination li.active {
+    background-color: #000;
+    color: #fff
+}
+.product-btn-wrap {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.product-btn-wrap .btn.btn-outline.buy {
+    width: 100%;
+}
+@media only screen and (max-width: 991.98px) {
+
+    #lc-toggle, #column-left .lc-close {
+        display: flex !important;
+        align-items: center;
+        gap: 10px;
+        background: #f1f3f5;
+    }
+
+    #column-left {
+        right: -320px;
+        background: #fff;
+        display: block !important;
+        width: 300px;
+        position: fixed;
+        top: 55px;
+        height: calc(100vh - 55px);
+        -webkit-transition: all 300ms ease;
+        -moz-transition: all 300ms ease;
+        -o-transition: all 300ms ease;
+        transition: all 300ms ease;
+        margin-top: 0;
+    }
+
+    #column-left.open {
+        right: 0;
+        top: 55px;
+        z-index: 999;
+        height: calc(100vh - 55px);
+        box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+        overflow: auto;
+        max-width: initial;
+
+    }
+
+    button#lc-toggle {
+        padding: 5px 10px;
+    }
+
+    #column-left .lc-close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+
+    #column-left .filters {
+        margin-top: 20px;
+    }
+    .panel .filters .filter-group, .panel .filters .price-filter {
+        margin-bottom: 10px;
+        padding: 14px 16px 0px;
+    }
+
+    .price-filter .label, .filter-group .label {
+        font-size: 16px;
+        padding-bottom: 10px;
+    }
+
+    .panel .filters .price-filter .noUi-horizontal {
+        margin: 20px 0;
+    }
+    .panel .filters .filter-group, .panel .filters .price-filter {
+        margin-bottom: 10px;
+        padding: 14px 16px 0px;
+    }
+
+    .price-filter .label, .filter-group .label {
+        font-size: 16px;
+        padding-bottom: 10px;
+    }
+
+    .panel .filters .price-filter .noUi-horizontal {
+        margin: 20px 0;
+    }
+
+    .bottom-bar {
+        padding: 15px;
+        margin: 30px 0;
+    }
+
+    .collage .mb-6 {
+        margin-bottom: 30px;
+    }
+    .category-intro {
+        padding: 30px 0;
+    }
+
+    .category-intro-txt h1 {
+        font-size: 25px;
+        margin-bottom: 10px;
+    }
+
+    .product-categories {
+        margin: 0;
+    }
+    .top-bar-filter {
+        justify-content: space-between;
+    }
+
+    .title-toggle-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .top-bar-filter .form-group {
+        flex-direction: column;
+        align-items: start;
+    }
+    .top-bar-filter .form-group {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .product-btn-wrap .wishlist {
+        display: none;
+    }
+
+    .product-btn-wrap {
+        margin-top: 5px;
+    }
+}

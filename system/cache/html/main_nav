@@ -1,0 +1,116 @@
+<div class="main-nav">
+    <nav class="nav" id="main-nav">
+        <ul class="responsive-menu">
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//skin-care">Skin Care<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=228">Face Cleansers</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=229">Moisturizers</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=230">Serums & Toners</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=231">Sun Protection</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//product/category?category_id=219">Personal care<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=236">Face Care for Men</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=237">Shaving & Grooming</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=238">Mens Hair Care</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=239">Body Care for Men</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//product/category?category_id=221">Makeup<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=244">Face Makeup</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=245">Eye & Lip Makeup</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=246">Makeup Brushes</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=247">Nail Care</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//product/category?category_id=222">Men Care<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=248">Women's Perfumes</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=249">Men's Fragrances</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=250">Unisex Fragrances</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=251">Gift Sets</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//product/category?category_id=226">Hair Care<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=264">Organic Skincare</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=265">Natural Hair Care</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=266">Organic Makeup</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=267">Eco-Friendly Products</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                                    <li class="drop-open c-1 padding-right">
+                <a class="padding-right"  href="http://localhost/fashion//product/category?category_id=227">Specialty Products<i class="fa fa-arrow-down"></i></a>
+                <ul class="drop-down drop-menu-1">
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=268">Limited Edition</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=269">Seasonal Collections</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=270">Travel Size</a>
+                    </li>
+                                        <li>
+                        <a class="sub-parent" href="http://localhost/fashion//product/category?category_id=271">Professional Grade</a>
+                    </li>
+                                        
+                </ul>
+            </li>
+                        <li><a class="btn new-arrive" href="product-new-arrivals">New Arrivals</a></li>
+        </ul>
+        <div class="overlay"></div>
+    </nav>
+</div>

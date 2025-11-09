@@ -1,0 +1,158 @@
+/* 
+===========================================
+    STANDARD MODULE CONTAINER STYLES
+    All modules use this consistent width
+===========================================
+*/
+
+/* Standard Container Width - Full Screen with Max Width */
+.standard-module-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Full Width Option (if needed) */
+.standard-module-container.full-width {
+    max-width: 100%;
+    padding: 0;
+}
+
+/* Module Section Wrapper */
+.standard-module-section {
+    width: 100%;
+    padding: 60px 0;
+    background: #fff;
+}
+
+.standard-module-section.gray-bg {
+    background: #f8f9fa;
+}
+
+/* Responsive Padding */
+@media (max-width: 1200px) {
+    .standard-module-container {
+        max-width: 1140px;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .standard-module-container {
+        max-width: 960px;
+        padding: 0 15px;
+    }
+    
+    .standard-module-section {
+        padding: 40px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .standard-module-container {
+        padding: 0 15px;
+    }
+    
+    .standard-module-section {
+        padding: 30px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .standard-module-container {
+        padding: 0 10px;
+    }
+    
+    .standard-module-section {
+        padding: 20px 0;
+    }
+}
+
+
+===========================================
+    STANDARD MODULE CONTAINER STYLES
+    All modules use this consistent width
+===========================================
+*/
+
+/* Standard Container Width - Full Screen with Max Width */
+.standard-module-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Full Width Option (if needed) */
+.standard-module-container.full-width {
+    max-width: 100%;
+    padding: 0;
+}
+
+/* Module Section Wrapper */
+.standard-module-section {
+    width: 100%;
+    padding: 60px 0;
+    background: #fff;
+}
+
+.standard-module-section.gray-bg {
+    background: #f8f9fa;
+}
+
+/* Responsive Padding */
+@media (max-width: 1200px) {
+    .standard-module-container {
+        max-width: 1140px;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .standard-module-container {
+        max-width: 960px;
+        padding: 0 15px;
+    }
+    
+    .standard-module-section {
+        padding: 40px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .standard-module-container {
+        padding: 0 15px;
+    }
+    
+    .standard-module-section {
+        padding: 30px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .standard-module-container {
+        padding: 0 10px;
+    }
+    
+    .standard-module-section {
+        padding: 20px 0;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

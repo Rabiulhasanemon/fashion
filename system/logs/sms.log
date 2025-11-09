@@ -1,0 +1,57 @@
+2024-06-06 15:03:23 - Success 01610916343 'Dear Customer, your pin code for login is 5926' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-06 15:18:56 - Success 01610916343 'Dear Customer, your pin code for login is 1967' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-06 15:21:20 - Success 01610916343 'Dear Customer, your pin code for login is 8469' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-10 15:37:58 - Success 01610916343 'Dear Customer, your pin code for login is 4070' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-10 15:59:13 - Success 01610916343 'Dear Customer, your pin code for login is 9227' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-10 16:03:37 - Success 01610916343 'Dear Customer, your pin code for login is 8866' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-12 16:30:35 - Success 01610916343 'Dear Customer, your pin code for login is 1192' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-06-22 15:58:02 - Success 01610916343 'Dear Customer, your pin code for login is 1423' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-01 12:55:28 - Success 01610916343 'Dear Customer, your pin code for login is 7083' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-01 15:46:09 - Success 01610916343 'Dear Customer, your pin code for login is 6824' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-01 17:22:05 - Success 01610916343 'Dear Customer, your pin code for login is 8026' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-02 12:13:30 - Success 01610916343 'Dear Customer, your pin code for login is 4270' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-02 15:10:33 - Success 01610916343 'Dear Customer, your pin code for login is 6119' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-06 15:05:47 - Success 01610916343 'Dear Customer, your pin code for login is 4459' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-07-10 12:37:05 - Success 01610916343 'Dear Customer, your pin code for login is 2894' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-09-21 17:35:25 - Success 01610916343 'Your order# 5761 has been updated to the following status: Payment Paid
+ For any enquiries, call +8809678220099' '
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <title>One moment, please...</title>
+    <style>
+    body {
+        background: #F6F7F8;
+        color: #303131;
+        font-family: sans-serif;
+        margin-top: 45vh;
+        text-align: center;
+    }
+    </style>
+    </head>
+<body>
+    <h1>Please wait while your request is being verified...</h1>
+    <form id="wsidchk-form" style="display:none;" action="/z0f76a1d14fd21a8fb5fd0d03e0fdc3d3cedae52f" method="GET">
+    <input type="hidden" id="wsidchk" name="wsidchk"/>
+    </form>
+    <script>
+    (function(){
+        var west=+((+!+[])+(+!+[]+!![]+!![]+!![]+[])+(+!+[]+!![])+(+!+[]+!![]+!![]+!![]+[])+(+!+[]+!![])+(+!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(+!+[]+!![]+!![])+(+!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])),
+            east=+((+!+[])+(+!+[]+!![]+!![]+!![]+[])+(+!+[]+!![]+!![]+!![]+!![])+(+![]+[])+(+!+[])+(+!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(+!+[]+!![]+!![]+!![]+!![])),
+            x=function(){try{return !!window.addEventListener;}catch(e){return !!0;} },
+            y=function(y,z){x() ? document.addEventListener('DOMContentLoaded',y,z) : document.attachEvent('onreadystatechange',y);};
+        y(function(){
+            document.getElementById('wsidchk').value = west + east;
+            document.getElementById('wsidchk-form').submit();
+        }, false);
+    })();
+    </script>
+</body>
+</html>'
+2024-11-01 13:38:42 - Success 01610916342 'Your order# 164532 has been updated to the following status: Processing 
+ For any enquiries, call +8801888114060' '{"status":false,"error_code":111,"message":"SMS must be unicode (Bangla)."}'
+2024-12-18 18:03:32 - Success 01610916343 'Dear Customer, your pin code for login is 1216' '{"status":true,"error_code":0,"ids":[{"8801610916343":"28490340"}],"cost":0.75,"sms_count":1,"message":"Success"}'
+2024-12-18 18:03:45 - Success 01610916343 'Dear Customer, your pin code for login is 1786' '{"status":true,"error_code":0,"ids":[{"8801610916343":"28490341"}],"cost":0.75,"sms_count":1,"message":"Success"}'
+2024-12-18 18:04:01 - Success 01610916343 'Dear Customer, your pin code for login is 2278' '{"status":true,"error_code":0,"ids":[{"8801610916343":"28490343"}],"cost":0.75,"sms_count":1,"message":"Success"}'

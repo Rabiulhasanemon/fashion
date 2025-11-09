@@ -1,0 +1,179 @@
+[18-Dec-2024 12:53:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:18 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:18 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:19 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:19 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:19 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[18-Dec-2024 12:53:22 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_navigation' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query('SELECT COUNT(*)...')
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query('SELECT COUNT(*)...')
+#2 /home/rangerbd/public_html/admin/model/catalog/navigation.php(220): DB->query('SELECT COUNT(*)...')
+#3 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(189): ModelCatalogNavigation->getTotalNavigations()
+#4 /home/rangerbd/public_html/admin/controller/catalog/navigation.php(12): ControllerCatalogNavigation->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerCatalogNavigation->index(Array)
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute(Object(Registry))
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute(Object(Action))
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch(Object(Action), Object(Action))
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[24-Dec-2024 15:14:39 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_component' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/setting/component.php(129): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/setting/component.php(171): ModelSettingComponent->getTotalComponents()
+#4 /home/rangerbd/public_html/admin/controller/setting/component.php(12): ControllerSettingComponent->getList()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerSettingComponent->index()
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:54:36 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(54): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(23): ModelBlogCategory->addCategory()
+#4 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->add()
+#5 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#6 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#7 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#8 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:54:42 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(54): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(23): ModelBlogCategory->addCategory()
+#4 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->add()
+#5 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#6 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#7 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#8 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:55:54 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(54): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(23): ModelBlogCategory->addCategory()
+#4 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->add()
+#5 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#6 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#7 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#8 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:56:41 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(308): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(507): ModelBlogCategory->getCategoryLayouts()
+#4 /home/rangerbd/public_html/admin/controller/blog/category.php(76): ControllerBlogCategory->getForm()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->edit()
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:57:11 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(308): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(507): ModelBlogCategory->getCategoryLayouts()
+#4 /home/rangerbd/public_html/admin/controller/blog/category.php(76): ControllerBlogCategory->getForm()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->edit()
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19
+[30-Dec-2024 06:57:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'rangerbd_ecommerce.sr_blog_category_to_layout' doesn't exist in /home/rangerbd/public_html/system/library/db/mysqli.php:19
+Stack trace:
+#0 /home/rangerbd/public_html/system/library/db/mysqli.php(19): mysqli->query()
+#1 /home/rangerbd/public_html/system/library/db.php(16): DB\MySQLi->query()
+#2 /home/rangerbd/public_html/admin/model/blog/category.php(308): DB->query()
+#3 /home/rangerbd/public_html/admin/controller/blog/category.php(507): ModelBlogCategory->getCategoryLayouts()
+#4 /home/rangerbd/public_html/admin/controller/blog/category.php(76): ControllerBlogCategory->getForm()
+#5 /home/rangerbd/public_html/system/engine/action.php(65): ControllerBlogCategory->edit()
+#6 /home/rangerbd/public_html/system/engine/front.php(34): Action->execute()
+#7 /home/rangerbd/public_html/system/engine/front.php(29): Front->execute()
+#8 /home/rangerbd/public_html/admin/index.php(187): Front->dispatch()
+#9 {main}
+  thrown in /home/rangerbd/public_html/system/library/db/mysqli.php on line 19

@@ -1,0 +1,271 @@
+<?php
+class ControllerPaymentBkash extends Controller {
+	private $error = array();
+
+	public function index() {
+		$this->load->language('payment/bkash');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('setting/setting');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			$this->model_setting_setting->editSetting('bkash', $this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$this->response->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
+		}
+
+		$data['heading_title'] = $this->language->get('heading_title');
+
+		$data['text_edit'] = $this->language->get('text_edit');
+		$data['text_enabled'] = $this->language->get('text_enabled');
+		$data['text_disabled'] = $this->language->get('text_disabled');
+		$data['text_all_zones'] = $this->language->get('text_all_zones');
+
+		$data['entry_user'] = $this->language->get('entry_user');
+		$data['entry_pass'] = $this->language->get('entry_pass');
+		$data['entry_app_key'] = $this->language->get('entry_app_key');
+		$data['entry_app_secret'] = $this->language->get('entry_app_secret');
+		$data['entry_create_url'] = $this->language->get('entry_create_url');
+		$data['entry_execute_url'] = $this->language->get('entry_execute_url');
+		$data['entry_query_url'] = $this->language->get('entry_query_url');
+		$data['entry_token_url'] = $this->language->get('entry_token_url');
+		$data['entry_script_url'] = $this->language->get('entry_script_url');
+		$data['entry_order_status'] = $this->language->get('entry_order_status');
+		$data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
+		$data['entry_status'] = $this->language->get('entry_status');
+		$data['entry_sort_order'] = $this->language->get('entry_sort_order');
+
+		$data['help_total'] = $this->language->get('help_total');
+
+		$data['button_save'] = $this->language->get('button_save');
+		$data['button_cancel'] = $this->language->get('button_cancel');
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+
+        if (isset($this->error['bkash_user'])) {
+            $data['error_bkash_user'] = $this->error['bkash_user'];
+        } else {
+            $data['error_bkash_user'] = '';
+        } 
+        
+        if (isset($this->error['bkash_pass'])) {
+            $data['error_bkash_pass'] = $this->error['bkash_pass'];
+        } else {
+            $data['error_bkash_pass'] = '';
+        }
+
+        if (isset($this->error['bkash_app_key'])) {
+            $data['error_bkash_app_key'] = $this->error['bkash_app_key'];
+        } else {
+            $data['error_bkash_app_key'] = '';
+        }
+        
+        if (isset($this->error['bkash_app_secret'])) {
+            $data['error_bkash_app_secret'] = $this->error['bkash_app_secret'];
+        } else {
+            $data['error_bkash_app_secret'] = '';
+        }
+        
+        if (isset($this->error['bkash_token_url'])) {
+            $data['error_bkash_token_url'] = $this->error['bkash_token_url'];
+        } else {
+            $data['error_bkash_token_url'] = '';
+        }
+        
+        if (isset($this->error['bkash_create_url'])) {
+            $data['error_bkash_create_url'] = $this->error['bkash_create_url'];
+        } else {
+            $data['error_bkash_create_url'] = '';
+        }
+        
+        if (isset($this->error['bkash_execute_url'])) {
+            $data['error_bkash_execute_url'] = $this->error['bkash_execute_url'];
+        } else {
+            $data['error_bkash_execute_url'] = '';
+        }
+        
+        if (isset($this->error['bkash_query_url'])) {
+            $data['error_bkash_query_url'] = $this->error['bkash_query_url'];
+        } else {
+            $data['error_bkash_query_url'] = '';
+        }
+        
+        if (isset($this->error['bkash_script_url'])) {
+            $data['error_bkash_script_url'] = $this->error['bkash_script_url'];
+        } else {
+            $data['error_bkash_script_url'] = '';
+        }
+        
+		$data['breadcrumbs'] = array();
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL')
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_payment'),
+			'href' => $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL')
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('heading_title'),
+			'href' => $this->url->link('payment/bkash', 'token=' . $this->session->data['token'], 'SSL')
+		);
+
+		$data['action'] = $this->url->link('payment/bkash', 'token=' . $this->session->data['token'], 'SSL');
+
+		$data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
+
+		if (isset($this->request->post['bkash_total'])) {
+			$data['bkash_total'] = $this->request->post['bkash_total'];
+		} else {
+			$data['bkash_total'] = $this->config->get('bkash_total');
+		}
+
+		if (isset($this->request->post['bkash_order_status_id'])) {
+			$data['bkash_order_status_id'] = $this->request->post['bkash_order_status_id'];
+		} else {
+			$data['bkash_order_status_id'] = $this->config->get('bkash_order_status_id');
+		}
+
+		$this->load->model('localisation/order_status');
+
+		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+
+		if (isset($this->request->post['bkash_geo_zone_id'])) {
+			$data['bkash_geo_zone_id'] = $this->request->post['bkash_geo_zone_id'];
+		} else {
+			$data['bkash_geo_zone_id'] = $this->config->get('bkash_geo_zone_id');
+		}
+
+		$this->load->model('localisation/geo_zone');
+
+		$data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
+
+		if (isset($this->request->post['bkash_user'])) {
+			$data['bkash_user'] = $this->request->post['bkash_user'];
+		} else {
+			$data['bkash_user'] = $this->config->get('bkash_user');
+		}
+		
+		if (isset($this->request->post['bkash_pass'])) {
+			$data['bkash_pass'] = $this->request->post['bkash_pass'];
+		} else {
+			$data['bkash_pass'] = $this->config->get('bkash_pass');
+		}
+		
+		if (isset($this->request->post['bkash_app_key'])) {
+			$data['bkash_app_key'] = $this->request->post['bkash_app_key'];
+		} else {
+			$data['bkash_app_key'] = $this->config->get('bkash_app_key');
+		}
+		
+		if (isset($this->request->post['bkash_app_secret'])) {
+			$data['bkash_app_secret'] = $this->request->post['bkash_app_secret'];
+		} else {
+			$data['bkash_app_secret'] = $this->config->get('bkash_app_secret');
+		}
+		
+		if (isset($this->request->post['bkash_token_url'])) {
+			$data['bkash_token_url'] = $this->request->post['bkash_token_url'];
+		} else {
+			$data['bkash_token_url'] = $this->config->get('bkash_token_url');
+		}
+		
+		if (isset($this->request->post['bkash_create_url'])) {
+			$data['bkash_create_url'] = $this->request->post['bkash_create_url'];
+		} else {
+			$data['bkash_create_url'] = $this->config->get('bkash_create_url');
+		}
+		
+		if (isset($this->request->post['bkash_execute_url'])) {
+			$data['bkash_execute_url'] = $this->request->post['bkash_execute_url'];
+		} else {
+			$data['bkash_execute_url'] = $this->config->get('bkash_execute_url');
+		}
+		
+		
+		if (isset($this->request->post['bkash_query_url'])) {
+			$data['bkash_query_url'] = $this->request->post['bkash_query_url'];
+		} else {
+			$data['bkash_query_url'] = $this->config->get('bkash_query_url');
+		}
+		
+		if (isset($this->request->post['bkash_script_url'])) {
+			$data['bkash_script_url'] = $this->request->post['bkash_script_url'];
+		} else {
+			$data['bkash_script_url'] = $this->config->get('bkash_script_url');
+		}
+		
+		if (isset($this->request->post['bkash_status'])) {
+			$data['bkash_status'] = $this->request->post['bkash_status'];
+		} else {
+			$data['bkash_status'] = $this->config->get('bkash_status');
+		}
+
+		if (isset($this->request->post['bkash_sort_order'])) {
+			$data['bkash_sort_order'] = $this->request->post['bkash_sort_order'];
+		} else {
+			$data['bkash_sort_order'] = $this->config->get('bkash_sort_order');
+		}
+
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->response->setOutput($this->load->view('payment/bkash.tpl', $data));
+	}
+
+	protected function validate() {
+		if (!$this->user->hasPermission('modify', 'payment/bkash')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
+
+        if (empty($this->request->post['bkash_user'])) {
+            $this->error['bkash_user'] = $this->language->get('error_user');
+        }
+        
+        if (empty($this->request->post['bkash_pass'])) {
+            $this->error['bkash_pass'] = $this->language->get('error_pass');
+        }
+        
+        if (empty($this->request->post['bkash_app_key'])) {
+            $this->error['bkash_app_key'] = $this->language->get('error_app_key');
+        }
+        
+        if (empty($this->request->post['bkash_app_secret'])) {
+            $this->error['bkash_app_secret'] = $this->language->get('error_app_secret');
+        }
+        
+        if (empty($this->request->post['bkash_token_url'])) {
+            $this->error['bkash_token_url'] = $this->language->get('error_token_url');
+        }
+        
+        if (empty($this->request->post['bkash_create_url'])) {
+            $this->error['bkash_create_url'] = $this->language->get('error_create_url');
+        }
+        
+        if (empty($this->request->post['bkash_execute_url'])) {
+            $this->error['bkash_execute_url'] = $this->language->get('error_execute_url');
+        }
+        
+        if (empty($this->request->post['bkash_query_url'])) {
+            $this->error['bkash_query_url'] = $this->language->get('error_query_url');
+        }
+        
+        if (empty($this->request->post['bkash_script_url'])) {
+            $this->error['bkash_script_url'] = $this->language->get('error_script_url');
+        }
+        
+		return !$this->error;
+	}
+}

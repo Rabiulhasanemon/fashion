@@ -1,0 +1,165 @@
+2024-09-04 17:13:19 - Array
+(
+    [subject] => Digital &amp;amp; DSLR Camera Service
+    [enquiry] => sdfsdfadfadfad
+    [name] => Sajeeb Debnath
+    [phone] => 01610916342
+    [email] => sajeebdebanth336@gmail.com
+    [enquiry_id] => 756
+    [typeId] => 11
+    [title] => Digital &amp;amp; DSLR Camera Service
+    [description] => sdfsdfadfadfad
+)
+
+2024-09-04 17:13:19 - Array
+(
+    [status] => success
+    [message] => Task has been saved successfully
+)
+
+2024-09-05 16:09:46 - Array
+(
+    [subject] => Computer Repair Home Service
+    [enquiry] => Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 757
+    [typeId] => 11
+    [title] => Computer Repair Home Service
+    [description] => Get Help from Experts
+
+)
+
+2024-09-05 16:09:46 - 
+2024-09-05 16:10:47 - Array
+(
+    [subject] => Computer Repair Home Service
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 758
+    [typeId] => 33
+    [title] => Computer Repair Home Service
+    [description] => Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:10:47 - 
+2024-09-05 16:12:52 - Array
+(
+    [subject] => Computer Repair Home Service
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 759
+    [typeId] => 33
+    [title] => Computer Repair Home Service
+    [description] => Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:12:52 - 
+2024-09-05 16:17:42 - Array
+(
+    [subject] => Computer Repair Home Service
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 760
+    [typeId] => 33
+    [title] => Computer Repair Home Service
+    [description] => Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:17:42 - Array
+(
+    [type] => error
+    [message] => Unexpected error occurred
+)
+
+2024-09-05 16:18:12 - Array
+(
+    [subject] => Desktop Services
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 761
+    [typeId] => 12
+    [title] => Desktop Services
+    [description] => Get Help from Experts
+Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:18:12 - Array
+(
+    [type] => error
+    [message] => Unexpected error occurred
+)
+
+2024-09-05 16:24:36 - Array
+(
+    [subject] => Desktop Services
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 763
+    [typeId] => 12
+    [title] => Desktop Services
+    [description] => Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:24:36 - Array
+(
+    [type] => error
+    [message] => Unexpected error occurred
+)
+
+2024-09-05 16:29:07 - Array
+(
+    [subject] => Desktop Services
+    [enquiry] => Get Help from Experts
+Get Help from Experts
+
+    [name] => Udoy Debnath
+    [phone] => 01610916343
+    [email] => sajeebdebnath.cse@gmail.com
+    [enquiry_id] => 764
+    [typeId] => 12
+    [title] => Desktop Services
+    [description] => Get Help from Experts
+Get Help from Experts
+
+)
+
+2024-09-05 16:29:07 - Array
+(
+    [type] => error
+    [message] => Unexpected error occurred
+)
+
