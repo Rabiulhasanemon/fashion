@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════
+  QUICK SETUP CHECKLIST - Auto Deploy
+═══════════════════════════════════════════════════════════
+
+□ Step 1: Make website folder a Git repository
+  - Go to cPanel → Git Version Control
+  - Create repository pointing to: /cosmetics.master.com.bd/
+  - OR initialize Git in that folder via SSH
+
+□ Step 2: Upload deploy.php
+  - Upload to: /cosmetics.master.com.bd/deploy.php
+  - Edit and update DEPLOY_PATH (line 20) to your exact path
+  - Change WEBHOOK_SECRET (line 17) to a random string
+  - Save file
+
+□ Step 3: Set up GitHub webhook
+  - Go to: https://github.com/Rabiulhasanemon/fashion/settings/hooks
+  - Add webhook
+  - URL: https://cosmetics.master.com.bd/deploy.php
+  - Secret: (same as in deploy.php)
+  - Events: Just the push event
+
+□ Step 4: Test
+  - Make a small change
+  - git push origin main
+  - Wait 10-30 seconds
+  - Check website - should be updated!
+
+═══════════════════════════════════════════════════════════
+
+YOUR PATHS:
+───────────────────────────────────────────────────────────
+
+Website folder: /cosmetics.master.com.bd/
+  (Check exact path in File Manager)
+
+GitHub repo: https://github.com/Rabiulhasanemon/fashion.git
+
+Webhook URL: https://cosmetics.master.com.bd/deploy.php
+
+═══════════════════════════════════════════════════════════
+

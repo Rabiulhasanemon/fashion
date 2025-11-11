@@ -1,0 +1,62 @@
+═══════════════════════════════════════════════════════════════
+  QUICK REFERENCE: cPanel Git Setup
+═══════════════════════════════════════════════════════════════
+
+WHERE TO ENTER THE PATH:
+───────────────────────────────────────────────────────────────
+
+1. Login to cPanel
+   URL: https://cosmetics.master.com.bd:2083
+
+2. Find "Git Version Control"
+   (Search for "git" in cPanel)
+
+3. Click "Create" button
+
+4. Fill in the form:
+   
+   ┌─────────────────────────────────────────────────────┐
+   │ Repository URL:                                     │
+   │ https://github.com/Rabiulhasanemon/fashion.git     │
+   │                                                     │
+   │ Repository Path:                                    │
+   │ /home/masterco/cosmetics.master.com.bd  ← HERE!   │
+   │                                                     │
+   │ Repository Name: (optional)                        │
+   │ fashion                                            │
+   │                                                     │
+   │ Branch: (optional)                                 │
+   │ main                                               │
+   │                                                     │
+   │ [Cancel]  [Create]                                 │
+   └─────────────────────────────────────────────────────┘
+
+5. Click "Create"
+
+═══════════════════════════════════════════════════════════════
+
+VALUES TO USE:
+───────────────────────────────────────────────────────────────
+
+Repository URL:
+  https://github.com/Rabiulhasanemon/fashion.git
+
+Repository Path:
+  /home/masterco/cosmetics.master.com.bd
+
+Branch:
+  main
+
+═══════════════════════════════════════════════════════════════
+
+AFTER CREATION:
+───────────────────────────────────────────────────────────────
+
+1. Click on your repository name
+2. Click "Pull or Deploy"
+3. Select branch: main
+4. Click "Update from Remote"
+5. Done! Your site is updated.
+
+═══════════════════════════════════════════════════════════════
+
