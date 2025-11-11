@@ -3,26 +3,25 @@
 // Copy this to config.php and update with your hosting details
 
 // HTTP - Replace with your actual domain
-define('HTTP_SERVER', 'http://ruplexa1.master.com.bd');
+define('HTTP_SERVER', 'https://yourdomain.com/');
 
 // HTTPS - Replace with your actual domain
-define('HTTPS_SERVER', 'https://ruplexa1.master.com.bd');
+define('HTTPS_SERVER', 'https://yourdomain.com/');
 
 // DIR - FRONTEND/CATALOG CONFIGURATION
-// Replace /home/masterco/ruplexa1.master.com.bd/ with your actual cPanel path
+// Replace /home/yourusername/public_html/ with your actual cPanel path
 // You can find this in cPanel → File Manager → Current Path
-define('DIR_APPLICATION', '/home/masterco/ruplexa1.master.com.bd/catalog/');
-define('DIR_SYSTEM', '/home/masterco/ruplexa1.master.com.bd/system/');
-define('DIR_STORAGE', '/home/masterco/ruplexa1.master.com.bd/system/storage/');
-define('DIR_LANGUAGE', '/home/masterco/ruplexa1.master.com.bd/catalog/language/');
-define('DIR_TEMPLATE', '/home/masterco/ruplexa1.master.com.bd/catalog/view/theme/');
-define('DIR_CONFIG', '/home/masterco/ruplexa1.master.com.bd/system/config/');
-define('DIR_IMAGE', '/home/masterco/ruplexa1.master.com.bd/image/');
-define('DIR_CACHE', '/home/masterco/ruplexa1.master.com.bd/system/cache/');
-define('DIR_DOWNLOAD', '/home/masterco/ruplexa1.master.com.bd/system/download/');
-define('DIR_UPLOAD', '/home/masterco/ruplexa1.master.com.bd/system/upload/');
-define('DIR_MODIFICATION', '/home/masterco/ruplexa1.master.com.bd/system/modification/');
-define('DIR_LOGS', '/home/masterco/ruplexa1.master.com.bd/system/logs/');
+define('DIR_APPLICATION', '/home/yourusername/public_html/catalog/');
+define('DIR_SYSTEM', '/home/yourusername/public_html/system/');
+define('DIR_LANGUAGE', '/home/yourusername/public_html/catalog/language/');
+define('DIR_TEMPLATE', '/home/yourusername/public_html/catalog/view/theme/');
+define('DIR_CONFIG', '/home/yourusername/public_html/system/config/');
+define('DIR_IMAGE', '/home/yourusername/public_html/image/');
+define('DIR_CACHE', '/home/yourusername/public_html/system/cache/');
+define('DIR_DOWNLOAD', '/home/yourusername/public_html/system/download/');
+define('DIR_UPLOAD', '/home/yourusername/public_html/system/upload/');
+define('DIR_MODIFICATION', '/home/yourusername/public_html/system/modification/');
+define('DIR_LOGS', '/home/yourusername/public_html/system/logs/');
 
 // DB - Get these from cPanel → MySQL Databases
 define('DB_DRIVER', 'mysqli');
@@ -34,8 +33,8 @@ define('DB_PORT', '3306');
 define('DB_PREFIX', 'sr_');
 
 // OTHERS
-define('DEV_MODE', true);
-define("SMS_DRIVER", "shiram"); // or "robi" based on your SMS provider
+define('DEV_MODE', false); // Set to false in production
+define("SMS_DRIVER", "robi"); // or "shiram" based on your SMS provider
 define("SOCIAL_LOGIN", false);
 define("FB_APP_ID", ''); // If using Facebook login
 define("FB_APP_SECRET", ''); // If using Facebook login
@@ -43,5 +42,5 @@ define("FB_APP_SECRET", ''); // If using Facebook login
 define("GOOGLE_CLIENT_ID", ''); // If using Google login
 define("GOOGLE_CLIENT_SECRET", ''); // If using Google login
 
-define("COMMON_PASS", 'admin'); // Change this to a secure password
+define("COMMON_PASS", 'your_secure_password'); // Change this to a secure password
 
