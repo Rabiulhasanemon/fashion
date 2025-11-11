@@ -1,37 +1,61 @@
 <?php
 class ModelCatalogManufacturer extends Model {
 	public function addManufacturer($data) {
+		// Validate required data
+		if (!isset($data['name']) || empty(trim($data['name']))) {
+			throw new Exception('Manufacturer name is required');
+		}
+
 		$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
 
 		$manufacturer_id = $this->db->getLastId();
 
-		if (isset($data['manufacturer_description'])) {
+		if (!$manufacturer_id || $manufacturer_id <= 0) {
+			throw new Exception('Failed to insert manufacturer - manufacturer_id was not returned');
+		}
+
+		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
 			foreach ($data['manufacturer_description'] as $language_id => $value) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				$language_id = (int)$language_id;
+				if ($language_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . $language_id . "', description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				}
 			}
 		} else {
 			// Insert default description if none provided
 			$default_language_id = $this->config->get('config_language_id');
-			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
+			if ($default_language_id) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
+			}
 		}
 
-		if (isset($data['manufacturer_store'])) {
+		if (isset($data['manufacturer_store']) && is_array($data['manufacturer_store']) && !empty($data['manufacturer_store'])) {
 			foreach ($data['manufacturer_store'] as $store_id) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
+				$store_id = (int)$store_id;
+				if ($store_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "'");
+				}
 			}
 		} else {
 			// Default to store 0 if none specified
-			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '0'");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '0'");
 		}
 
-		if (isset($data['keyword'])) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+			$keyword = trim($data['keyword']);
+			// Check if keyword already exists
+			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
+			if (!$existing->num_rows) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . $manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}
 		}
 
-		if (isset($data['manufacturer_layout'])) {
+		if (isset($data['manufacturer_layout']) && is_array($data['manufacturer_layout'])) {
 			foreach ($data['manufacturer_layout'] as $store_id => $layout_id) {
-				if ($layout_id) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_layout SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout_id . "'");
+				$layout_id = (int)$layout_id;
+				if ($layout_id > 0) {
+					$store_id = (int)$store_id;
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_layout SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
 				}
 			}
 		}
@@ -42,38 +66,68 @@ class ModelCatalogManufacturer extends Model {
 	}
 
 	public function editManufacturer($manufacturer_id, $data) {
-		$this->db->query("UPDATE " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "' WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+		// Validate manufacturer_id
+		$manufacturer_id = (int)$manufacturer_id;
+		if ($manufacturer_id <= 0) {
+			throw new Exception('Invalid manufacturer ID: ' . $manufacturer_id);
+		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+		// Verify manufacturer exists before updating
+		$check_query = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . $manufacturer_id . "' LIMIT 1");
+		if (!$check_query->num_rows) {
+			throw new Exception('Manufacturer with ID ' . $manufacturer_id . ' does not exist');
+		}
 
-		if (isset($data['manufacturer_description'])) {
+		// Validate required data
+		if (!isset($data['name']) || empty(trim($data['name']))) {
+			throw new Exception('Manufacturer name is required');
+		}
+
+		$this->db->query("UPDATE " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "' WHERE manufacturer_id = '" . $manufacturer_id . "'");
+
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . $manufacturer_id . "'");
+
+		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
 			foreach ($data['manufacturer_description'] as $language_id => $value) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . (int)$manufacturer_id . "', language_id = '" . (int)$language_id . "', description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				$language_id = (int)$language_id;
+				if ($language_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . $language_id . "', description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				}
 			}
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . $manufacturer_id . "'");
 
-		if (isset($data['manufacturer_store'])) {
+		if (isset($data['manufacturer_store']) && is_array($data['manufacturer_store']) && !empty($data['manufacturer_store'])) {
 			foreach ($data['manufacturer_store'] as $store_id) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "'");
+				$store_id = (int)$store_id;
+				if ($store_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "'");
+				}
 			}
 		} else {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '0'");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '0'");
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . $manufacturer_id . "'");
 
-		if (isset($data['keyword']) && $data['keyword']) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+			$keyword = trim($data['keyword']);
+			// Check if keyword already exists for a different manufacturer
+			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'manufacturer_id=" . $manufacturer_id . "' LIMIT 1");
+			if (!$existing->num_rows) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . $manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = '" . $manufacturer_id . "'");
 
-		if (isset($data['manufacturer_layout'])) {
+		if (isset($data['manufacturer_layout']) && is_array($data['manufacturer_layout'])) {
 			foreach ($data['manufacturer_layout'] as $store_id => $layout_id) {
-				if ($layout_id) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_layout SET manufacturer_id = '" . (int)$manufacturer_id . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout_id . "'");
+				$layout_id = (int)$layout_id;
+				if ($layout_id > 0) {
+					$store_id = (int)$store_id;
+					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_layout SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
 				}
 			}
 		}

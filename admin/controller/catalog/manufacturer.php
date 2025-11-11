@@ -20,45 +20,35 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
+			try {
+				$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
 
-			if ($manufacturer_id > 0) {
-				$this->session->data['success'] = $this->language->get('text_success');
+				if ($manufacturer_id > 0) {
+					$this->session->data['success'] = $this->language->get('text_success');
 
-				$url = '';
-
-				if (isset($this->request->get['sort'])) {
-					$url .= '&sort=' . $this->request->get['sort'];
+					// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
+					try {
+						$this->load->model('user/user');
+						if (isset($this->user) && method_exists($this->user, 'getId')) {
+							$activity_data = array(
+								'%user_id' => $this->user->getId(),
+								'%manufacturer_id' => $manufacturer_id,
+								'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+							);
+							$this->model_user_user->addActivity($this->user->getId(), 'add_manufacturer', $activity_data, $manufacturer_id);
+						}
+					} catch (Exception $e) {
+						// Activity log failed, but manufacturer was saved - continue with redirect
+						error_log('Activity log error: ' . $e->getMessage());
+					}
+				} else {
+					throw new Exception('Failed to add manufacturer - manufacturer_id was not returned');
 				}
-
-				if (isset($this->request->get['order'])) {
-					$url .= '&order=' . $this->request->get['order'];
-				}
-
-				if (isset($this->request->get['page'])) {
-					$url .= '&page=' . $this->request->get['page'];
-				}
-
-				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-			} else {
-				$this->error['warning'] = $this->language->get('error_insert_failed');
+			} catch (Exception $e) {
+				// Manufacturer add failed
+				$this->session->data['error_warning'] = 'Error adding manufacturer: ' . $e->getMessage();
+				error_log('Manufacturer add error: ' . $e->getMessage());
 			}
-		}
-
-		$this->getForm();
-	}
-
-	public function edit() {
-		$this->load->language('catalog/manufacturer');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/manufacturer');
-
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_manufacturer->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
-
-			$this->session->data['success'] = $this->language->get('text_success');
 
 			$url = '';
 
@@ -74,7 +64,82 @@ class ControllerCatalogManufacturer extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
+			// Always redirect back to manufacturer list, even if there was an error
 			$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			return;
+		}
+
+		$this->getForm();
+	}
+
+	public function edit() {
+		$this->load->language('catalog/manufacturer');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('catalog/manufacturer');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Validate manufacturer_id
+			if (!isset($this->request->get['manufacturer_id']) || empty($this->request->get['manufacturer_id']) || (int)$this->request->get['manufacturer_id'] <= 0) {
+				$this->session->data['error_warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
+
+			$manufacturer_id = (int)$this->request->get['manufacturer_id'];
+
+			// Verify manufacturer exists
+			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+			if (!$manufacturer_info) {
+				$this->session->data['error_warning'] = 'Manufacturer not found. Cannot update manufacturer.';
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
+
+			try {
+				$this->model_catalog_manufacturer->editManufacturer($manufacturer_id, $this->request->post);
+
+				$this->session->data['success'] = $this->language->get('text_success');
+
+				// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
+				try {
+					$this->load->model('user/user');
+					if (isset($this->user) && method_exists($this->user, 'getId')) {
+						$activity_data = array(
+							'%user_id' => $this->user->getId(),
+							'%manufacturer_id' => $manufacturer_id,
+							'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+						);
+						$this->model_user_user->addActivity($this->user->getId(), 'edit_manufacturer', $activity_data, $manufacturer_id);
+					}
+				} catch (Exception $e) {
+					// Activity log failed, but manufacturer was saved - continue with redirect
+					error_log('Activity log error: ' . $e->getMessage());
+				}
+			} catch (Exception $e) {
+				// Manufacturer update failed
+				$this->session->data['error_warning'] = 'Error updating manufacturer: ' . $e->getMessage();
+				error_log('Manufacturer update error: ' . $e->getMessage());
+			}
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			// Always redirect back to manufacturer list, even if there was an error
+			$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			return;
 		}
 
 		$this->getForm();
