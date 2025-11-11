@@ -92,20 +92,31 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/product');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
+			try {
+				$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
 
-			$this->session->data['success'] = $this->language->get('text_success');
+				$this->session->data['success'] = $this->language->get('text_success');
 
-            // Add to activity log
-            $this->load->model('user/user');
-
-            $activity_data = array(
-                '%user_id' => $this->user->getId(),
-                '%product_id' => $this->request->get['product_id'],
-                '%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-            );
-
-            $this->model_user_user->addActivity($this->user->getId(), 'edit_product', $activity_data, $this->request->get['product_id']);
+				// Add to activity log (non-blocking - if it fails, product is still saved)
+				try {
+					$this->load->model('user/user');
+					if (isset($this->user) && method_exists($this->user, 'getId')) {
+						$activity_data = array(
+							'%user_id' => $this->user->getId(),
+							'%product_id' => $this->request->get['product_id'],
+							'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+						);
+						$this->model_user_user->addActivity($this->user->getId(), 'edit_product', $activity_data, $this->request->get['product_id']);
+					}
+				} catch (Exception $e) {
+					// Activity log failed, but product was saved - continue with redirect
+					error_log('Activity log error: ' . $e->getMessage());
+				}
+			} catch (Exception $e) {
+				// Product update failed
+				$this->session->data['error_warning'] = 'Error updating product: ' . $e->getMessage();
+				error_log('Product update error: ' . $e->getMessage());
+			}
 
 			$url = '';
 
@@ -149,7 +160,9 @@ class ControllerCatalogProduct extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
+			// Always redirect back to product list, even if there was an error
 			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			return;
 		}
 
 		$this->getForm();
