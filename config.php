@@ -1,29 +1,30 @@
 <?php
 // HTTP
-define('HTTP_SERVER', 'http://localhost/fashion/');
+define('HTTP_SERVER', 'http://ruplexa1.master.com.bd');
 
 // HTTPS
-define('HTTPS_SERVER', 'http://localhost/fashion/');
+define('HTTPS_SERVER', 'https://ruplexa1.master.com.bd');
 
 // DIR - FRONTEND/CATALOG CONFIGURATION
-define('DIR_APPLICATION', 'E:/xampp/htdocs/fashion/catalog/');
-define('DIR_SYSTEM', 'E:/xampp/htdocs/fashion/system/');
-define('DIR_LANGUAGE', 'E:/xampp/htdocs/fashion/catalog/language/');
-define('DIR_TEMPLATE', 'E:/xampp/htdocs/fashion/catalog/view/theme/');
-define('DIR_CONFIG', 'E:/xampp/htdocs/fashion/system/config/');
-define('DIR_IMAGE', 'E:/xampp/htdocs/fashion/image/');
-define('DIR_CACHE', 'E:/xampp/htdocs/fashion/system/cache/');
-define('DIR_DOWNLOAD', 'E:/xampp/htdocs/fashion/system/download/');
-define('DIR_UPLOAD', 'E:/xampp/htdocs/fashion/system/upload/');
-define('DIR_MODIFICATION', 'E:/xampp/htdocs/fashion/system/modification/');
-define('DIR_LOGS', 'E:/xampp/htdocs/fashion/system/logs/');
+define('DIR_APPLICATION', '/home/masterco/ruplexa1.master.com.bd/catalog/');
+define('DIR_SYSTEM', '/home/masterco/ruplexa1.master.com.bd/system/');
+define('DIR_STORAGE', '/home/masterco/ruplexa1.master.com.bd/system/storage/');
+define('DIR_LANGUAGE', '/home/masterco/ruplexa1.master.com.bd/catalog/language/');
+define('DIR_TEMPLATE', '/home/masterco/ruplexa1.master.com.bd/catalog/view/theme/');
+define('DIR_CONFIG', '/home/masterco/ruplexa1.master.com.bd/system/config/');
+define('DIR_IMAGE', '/home/masterco/ruplexa1.master.com.bd/image/');
+define('DIR_CACHE', '/home/masterco/ruplexa1.master.com.bd/system/cache/');
+define('DIR_DOWNLOAD', '/home/masterco/ruplexa1.master.com.bd/system/download/');
+define('DIR_UPLOAD', '/home/masterco/ruplexa1.master.com.bd/system/upload/');
+define('DIR_MODIFICATION', '/home/masterco/ruplexa1.master.com.bd/system/modification/');
+define('DIR_LOGS', '/home/masterco/ruplexa1.master.com.bd/system/logs/');
 
 // DB
 define('DB_DRIVER', 'mysqli');
 define('DB_HOSTNAME', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_DATABASE', 'fashion');
+define('DB_USERNAME', 'masterco_rup');
+define('DB_PASSWORD', 'masterco_new1');
+define('DB_DATABASE', 'masterco_rup');
 define('DB_PORT', '3306');
 define('DB_PREFIX', 'sr_');
 

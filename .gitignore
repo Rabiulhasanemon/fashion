@@ -1,6 +1,8 @@
 # Configuration files with sensitive data
-config.php
-admin/config.php
+# NOTE: config.php and admin/config.php are now tracked in Git
+# Be aware that production credentials will be visible in the repository
+# config.php
+# admin/config.php
 
 # Environment files
 .env
