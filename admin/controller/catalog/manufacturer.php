@@ -85,12 +85,20 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+			// Get manufacturer_id from GET or POST (form might submit it as hidden field)
+			$manufacturer_id = 0;
+			if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
+				$manufacturer_id = (int)$this->request->get['manufacturer_id'];
+			} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
+				$manufacturer_id = (int)$this->request->post['manufacturer_id'];
+				// Set it in GET so getForm() can access it
+				$this->request->get['manufacturer_id'] = $manufacturer_id;
+			}
+
 			// Validate manufacturer_id
-			if (!isset($this->request->get['manufacturer_id']) || empty($this->request->get['manufacturer_id']) || (int)$this->request->get['manufacturer_id'] <= 0) {
+			if ($manufacturer_id <= 0) {
 				$this->error['warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
 			} else {
-				$manufacturer_id = (int)$this->request->get['manufacturer_id'];
-
 				// Verify manufacturer exists
 				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
 				if (!$manufacturer_info) {
@@ -415,17 +423,32 @@ class ControllerCatalogManufacturer extends Controller {
 			'href' => $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL')
 		);
 
-		if (!isset($this->request->get['manufacturer_id'])) {
+		// Get manufacturer_id from GET or POST for form
+		$manufacturer_id_for_form = 0;
+		if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
+			$manufacturer_id_for_form = (int)$this->request->get['manufacturer_id'];
+		} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
+			$manufacturer_id_for_form = (int)$this->request->post['manufacturer_id'];
+		}
+		$data['manufacturer_id'] = $manufacturer_id_for_form;
+
+		if ($manufacturer_id_for_form <= 0) {
 			$data['action'] = $this->url->link('catalog/manufacturer/add', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		} else {
-			$data['action'] = $this->url->link('catalog/manufacturer/edit', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $this->request->get['manufacturer_id'] . $url, 'SSL');
+			$data['action'] = $this->url->link('catalog/manufacturer/edit', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $manufacturer_id_for_form . $url, 'SSL');
 		}
 
 		$data['cancel'] = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
 		$manufacturer_info = array();
-		if (isset($this->request->get['manufacturer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($this->request->get['manufacturer_id']);
+		if ($manufacturer_id_for_form > 0 && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
+			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id_for_form);
+			if (!$manufacturer_info) {
+				$manufacturer_info = array();
+			}
+		} elseif ($manufacturer_id_for_form > 0 && ($this->request->server['REQUEST_METHOD'] == 'POST')) {
+			// On POST, still load manufacturer info for form display
+			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id_for_form);
 			if (!$manufacturer_info) {
 				$manufacturer_info = array();
 			}
@@ -575,13 +598,21 @@ class ControllerCatalogManufacturer extends Controller {
 		if (isset($this->request->post['keyword']) && !empty(trim($this->request->post['keyword']))) {
 			$this->load->model('catalog/url_alias');
 
+			// Get manufacturer_id from GET or POST for keyword validation
+			$manufacturer_id_for_validation = 0;
+			if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
+				$manufacturer_id_for_validation = (int)$this->request->get['manufacturer_id'];
+			} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
+				$manufacturer_id_for_validation = (int)$this->request->post['manufacturer_id'];
+			}
+
 			$url_alias_info = $this->model_catalog_url_alias->getUrlAlias($this->request->post['keyword']);
 
-			if ($url_alias_info && isset($this->request->get['manufacturer_id']) && $url_alias_info['query'] != 'manufacturer_id=' . $this->request->get['manufacturer_id']) {
+			if ($url_alias_info && $manufacturer_id_for_validation > 0 && $url_alias_info['query'] != 'manufacturer_id=' . $manufacturer_id_for_validation) {
 				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
 			}
 
-			if ($url_alias_info && !isset($this->request->get['manufacturer_id'])) {
+			if ($url_alias_info && $manufacturer_id_for_validation <= 0) {
 				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
 			}
 		}
