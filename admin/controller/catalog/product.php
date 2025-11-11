@@ -92,8 +92,25 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/product');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Validate product_id
+			if (!isset($this->request->get['product_id']) || empty($this->request->get['product_id']) || (int)$this->request->get['product_id'] <= 0) {
+				$this->session->data['error_warning'] = 'Invalid product ID. Cannot update product.';
+				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
+
+			$product_id = (int)$this->request->get['product_id'];
+
+			// Verify product exists
+			$product_info = $this->model_catalog_product->getProduct($product_id);
+			if (!$product_info) {
+				$this->session->data['error_warning'] = 'Product not found. Cannot update product.';
+				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
+
 			try {
-				$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
+				$this->model_catalog_product->editProduct($product_id, $this->request->post);
 
 				$this->session->data['success'] = $this->language->get('text_success');
 
@@ -103,10 +120,10 @@ class ControllerCatalogProduct extends Controller {
 					if (isset($this->user) && method_exists($this->user, 'getId')) {
 						$activity_data = array(
 							'%user_id' => $this->user->getId(),
-							'%product_id' => $this->request->get['product_id'],
+							'%product_id' => $product_id,
 							'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
 						);
-						$this->model_user_user->addActivity($this->user->getId(), 'edit_product', $activity_data, $this->request->get['product_id']);
+						$this->model_user_user->addActivity($this->user->getId(), 'edit_product', $activity_data, $product_id);
 					}
 				} catch (Exception $e) {
 					// Activity log failed, but product was saved - continue with redirect

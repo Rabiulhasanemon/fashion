@@ -606,6 +606,18 @@ class ModelCatalogProduct extends Model {
 	}
 
 	public function editProduct($product_id, $data) {
+		// Validate product_id
+		$product_id = (int)$product_id;
+		if ($product_id <= 0) {
+			throw new Exception('Invalid product ID: ' . $product_id);
+		}
+
+		// Verify product exists before updating
+		$check_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . $product_id . "' LIMIT 1");
+		if (!$check_query->num_rows) {
+			throw new Exception('Product with ID ' . $product_id . ' does not exist');
+		}
+
 		// Update main product record
 		$sql = "UPDATE " . DB_PREFIX . "product SET ";
 		$sql .= "model = '" . $this->db->escape(isset($data['model']) ? $data['model'] : '') . "', ";
@@ -646,58 +658,73 @@ class ModelCatalogProduct extends Model {
 		$this->db->query($sql);
 
 		// Update product descriptions
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . $product_id . "'");
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
 			foreach ($data['product_description'] as $language_id => $value) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
-					product_id = '" . (int)$product_id . "', 
-					language_id = '" . (int)$language_id . "', 
-					name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
-					sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
-					description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
-					short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
-					tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
-					meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
-					meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
-					meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				$language_id = (int)$language_id;
+				if ($language_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+						product_id = '" . $product_id . "', 
+						language_id = '" . $language_id . "', 
+						name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
+						sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
+						description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
+						short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
+						tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
+						meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
+						meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
+						meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				}
 			}
 		}
 
 		// Update product to store
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "'");
-		if (isset($data['product_store']) && is_array($data['product_store'])) {
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . $product_id . "'");
+		if (isset($data['product_store']) && is_array($data['product_store']) && !empty($data['product_store'])) {
 			foreach ($data['product_store'] as $store_id) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '" . (int)$store_id . "'");
+				$store_id = (int)$store_id;
+				if ($store_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . $product_id . "', store_id = '" . $store_id . "'");
+				}
 			}
 		} else {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '0'");
+			// Default to store 0 if no stores specified
+			$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . $product_id . "', store_id = '0'");
 		}
 
 		// Update product categories
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
-		if (isset($data['product_category']) && is_array($data['product_category'])) {
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . $product_id . "'");
+		if (isset($data['product_category']) && is_array($data['product_category']) && !empty($data['product_category'])) {
 			foreach ($data['product_category'] as $category_id) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_category SET product_id = '" . (int)$product_id . "', category_id = '" . (int)$category_id . "'");
+				$category_id = (int)$category_id;
+				if ($category_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_category SET product_id = '" . $product_id . "', category_id = '" . $category_id . "'");
+				}
 			}
 		}
 
 		// Update product images
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
 		if (isset($data['product_image']) && is_array($data['product_image'])) {
 			foreach ($data['product_image'] as $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
 				// Only insert if image path is not empty
 				if ($image_path && $image_path !== '') {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'");
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . $product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'");
 				}
 			}
 		}
 
 		// Update keyword
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
-		if (isset($data['keyword']) && $data['keyword']) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . $product_id . "'");
+		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+			$keyword = trim($data['keyword']);
+			// Check if keyword already exists for a different product
+			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . $product_id . "' LIMIT 1");
+			if (!$existing->num_rows) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . $product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}
 		}
 	}
 
