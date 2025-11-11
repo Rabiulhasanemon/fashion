@@ -19,58 +19,67 @@ class ControllerCatalogManufacturer extends Controller {
 
 		$this->load->model('catalog/manufacturer');
 
-		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
-			if ($this->validateForm()) {
-				try {
-					$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			try {
+				$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
 
-					if ($manufacturer_id > 0) {
-						$this->session->data['success'] = $this->language->get('text_success');
+				if ($manufacturer_id > 0) {
+					$this->session->data['success'] = $this->language->get('text_success');
 
-						// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
-						try {
-							$this->load->model('user/user');
-							if (isset($this->user) && method_exists($this->user, 'getId')) {
-								$activity_data = array(
-									'%user_id' => $this->user->getId(),
-									'%manufacturer_id' => $manufacturer_id,
-									'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-								);
-								$this->model_user_user->addActivity($this->user->getId(), 'add_manufacturer', $activity_data, $manufacturer_id);
-							}
-						} catch (Exception $e) {
-							// Activity log failed, but manufacturer was saved - continue with redirect
-							error_log('Activity log error: ' . $e->getMessage());
+					// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
+					try {
+						$this->load->model('user/user');
+						if (isset($this->user) && method_exists($this->user, 'getId')) {
+							$activity_data = array(
+								'%user_id' => $this->user->getId(),
+								'%manufacturer_id' => $manufacturer_id,
+								'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+							);
+							$this->model_user_user->addActivity($this->user->getId(), 'add_manufacturer', $activity_data, $manufacturer_id);
 						}
-
-						$url = '';
-
-						if (isset($this->request->get['sort'])) {
-							$url .= '&sort=' . $this->request->get['sort'];
-						}
-
-						if (isset($this->request->get['order'])) {
-							$url .= '&order=' . $this->request->get['order'];
-						}
-
-						if (isset($this->request->get['page'])) {
-							$url .= '&page=' . $this->request->get['page'];
-						}
-
-						// Redirect back to manufacturer list on success
-						$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-						return;
-					} else {
-						throw new Exception('Failed to add manufacturer - manufacturer_id was not returned');
+					} catch (Exception $e) {
+						// Activity log failed, but manufacturer was saved - continue with redirect
+						error_log('Activity log error: ' . $e->getMessage());
 					}
-				} catch (Exception $e) {
-					// Manufacturer add failed
-					$this->error['warning'] = 'Error adding manufacturer: ' . $e->getMessage();
-					error_log('Manufacturer add error: ' . $e->getMessage());
+
+					$url = '';
+
+					if (isset($this->request->get['sort'])) {
+						$url .= '&sort=' . $this->request->get['sort'];
+					}
+
+					if (isset($this->request->get['order'])) {
+						$url .= '&order=' . $this->request->get['order'];
+					}
+
+					if (isset($this->request->get['page'])) {
+						$url .= '&page=' . $this->request->get['page'];
+					}
+
+					// Always redirect back to manufacturer list after successful save
+					$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+					return;
+				} else {
+					$this->error['warning'] = $this->language->get('error_insert_failed');
 				}
-			} else {
-				// Validation failed - show form with errors
-				$this->error['warning'] = $this->language->get('error_warning');
+			} catch (Exception $e) {
+				// Manufacturer insert failed
+				$this->session->data['error_warning'] = 'Error adding manufacturer: ' . $e->getMessage();
+				error_log('Manufacturer add error: ' . $e->getMessage());
+				
+				// Still redirect to prevent white page
+				$url = '';
+				if (isset($this->request->get['sort'])) {
+					$url .= '&sort=' . $this->request->get['sort'];
+				}
+				if (isset($this->request->get['order'])) {
+					$url .= '&order=' . $this->request->get['order'];
+				}
+				if (isset($this->request->get['page'])) {
+					$url .= '&page=' . $this->request->get['page'];
+				}
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+				return;
 			}
 		}
 
@@ -84,74 +93,79 @@ class ControllerCatalogManufacturer extends Controller {
 
 		$this->load->model('catalog/manufacturer');
 
-		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
-			// Get manufacturer_id from GET or POST (form might submit it as hidden field)
-			$manufacturer_id = 0;
-			if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
-				$manufacturer_id = (int)$this->request->get['manufacturer_id'];
-			} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
-				$manufacturer_id = (int)$this->request->post['manufacturer_id'];
-				// Set it in GET so getForm() can access it
-				$this->request->get['manufacturer_id'] = $manufacturer_id;
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Validate manufacturer_id
+			if (!isset($this->request->get['manufacturer_id']) || empty($this->request->get['manufacturer_id']) || (int)$this->request->get['manufacturer_id'] <= 0) {
+				$this->session->data['error_warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
 			}
 
-			// Validate manufacturer_id
-			if ($manufacturer_id <= 0) {
-				$this->error['warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
-			} else {
-				// Verify manufacturer exists
-				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
-				if (!$manufacturer_info) {
-					$this->error['warning'] = 'Manufacturer not found. Cannot update manufacturer.';
-				} elseif ($this->validateForm()) {
-					// Validation passed, proceed with update
-					try {
-						$this->model_catalog_manufacturer->editManufacturer($manufacturer_id, $this->request->post);
+			$manufacturer_id = (int)$this->request->get['manufacturer_id'];
 
-						$this->session->data['success'] = $this->language->get('text_success');
+			// Verify manufacturer exists
+			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+			if (!$manufacturer_info) {
+				$this->session->data['error_warning'] = 'Manufacturer not found. Cannot update manufacturer.';
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
 
-						// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
-						try {
-							$this->load->model('user/user');
-							if (isset($this->user) && method_exists($this->user, 'getId')) {
-								$activity_data = array(
-									'%user_id' => $this->user->getId(),
-									'%manufacturer_id' => $manufacturer_id,
-									'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-								);
-								$this->model_user_user->addActivity($this->user->getId(), 'edit_manufacturer', $activity_data, $manufacturer_id);
-							}
-						} catch (Exception $e) {
-							// Activity log failed, but manufacturer was saved - continue with redirect
-							error_log('Activity log error: ' . $e->getMessage());
-						}
+			try {
+				$this->model_catalog_manufacturer->editManufacturer($manufacturer_id, $this->request->post);
 
-						$url = '';
+				$this->session->data['success'] = $this->language->get('text_success');
 
-						if (isset($this->request->get['sort'])) {
-							$url .= '&sort=' . $this->request->get['sort'];
-						}
-
-						if (isset($this->request->get['order'])) {
-							$url .= '&order=' . $this->request->get['order'];
-						}
-
-						if (isset($this->request->get['page'])) {
-							$url .= '&page=' . $this->request->get['page'];
-						}
-
-						// Redirect back to manufacturer list on success
-						$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-						return;
-					} catch (Exception $e) {
-						// Manufacturer update failed
-						$this->error['warning'] = 'Error updating manufacturer: ' . $e->getMessage();
-						error_log('Manufacturer update error: ' . $e->getMessage());
+				// Add to activity log (non-blocking - if it fails, manufacturer is still saved)
+				try {
+					$this->load->model('user/user');
+					if (isset($this->user) && method_exists($this->user, 'getId')) {
+						$activity_data = array(
+							'%user_id' => $this->user->getId(),
+							'%manufacturer_id' => $manufacturer_id,
+							'%name' => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+						);
+						$this->model_user_user->addActivity($this->user->getId(), 'edit_manufacturer', $activity_data, $manufacturer_id);
 					}
-				} else {
-					// Validation failed - show form with errors
-					$this->error['warning'] = $this->language->get('error_warning');
+				} catch (Exception $e) {
+					// Activity log failed, but manufacturer was saved - continue with redirect
+					error_log('Activity log error: ' . $e->getMessage());
 				}
+
+				$url = '';
+
+				if (isset($this->request->get['sort'])) {
+					$url .= '&sort=' . $this->request->get['sort'];
+				}
+
+				if (isset($this->request->get['order'])) {
+					$url .= '&order=' . $this->request->get['order'];
+				}
+
+				if (isset($this->request->get['page'])) {
+					$url .= '&page=' . $this->request->get['page'];
+				}
+
+				// Always redirect back to manufacturer list, even if there was an error
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+				return;
+			} catch (Exception $e) {
+				// Manufacturer update failed
+				$this->session->data['error_warning'] = 'Error updating manufacturer: ' . $e->getMessage();
+				error_log('Manufacturer update error: ' . $e->getMessage());
+
+				$url = '';
+				if (isset($this->request->get['sort'])) {
+					$url .= '&sort=' . $this->request->get['sort'];
+				}
+				if (isset($this->request->get['order'])) {
+					$url .= '&order=' . $this->request->get['order'];
+				}
+				if (isset($this->request->get['page'])) {
+					$url .= '&page=' . $this->request->get['page'];
+				}
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+				return;
 			}
 		}
 
@@ -397,6 +411,12 @@ class ControllerCatalogManufacturer extends Controller {
             $data['error_keyword'] = '';
         }
 
+		if (isset($this->error['keyword'])) {
+			$data['error_keyword'] = $this->error['keyword'];
+		} else {
+			$data['error_keyword'] = '';
+		}
+
 		$url = '';
 
 		if (isset($this->request->get['sort'])) {
@@ -423,35 +443,16 @@ class ControllerCatalogManufacturer extends Controller {
 			'href' => $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL')
 		);
 
-		// Get manufacturer_id from GET or POST for form
-		$manufacturer_id_for_form = 0;
-		if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
-			$manufacturer_id_for_form = (int)$this->request->get['manufacturer_id'];
-		} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
-			$manufacturer_id_for_form = (int)$this->request->post['manufacturer_id'];
-		}
-		$data['manufacturer_id'] = $manufacturer_id_for_form;
-
-		if ($manufacturer_id_for_form <= 0) {
+		if (!isset($this->request->get['manufacturer_id'])) {
 			$data['action'] = $this->url->link('catalog/manufacturer/add', 'token=' . $this->session->data['token'] . $url, 'SSL');
 		} else {
-			$data['action'] = $this->url->link('catalog/manufacturer/edit', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $manufacturer_id_for_form . $url, 'SSL');
+			$data['action'] = $this->url->link('catalog/manufacturer/edit', 'token=' . $this->session->data['token'] . '&manufacturer_id=' . $this->request->get['manufacturer_id'] . $url, 'SSL');
 		}
 
 		$data['cancel'] = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
-		$manufacturer_info = array();
-		if ($manufacturer_id_for_form > 0 && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
-			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id_for_form);
-			if (!$manufacturer_info) {
-				$manufacturer_info = array();
-			}
-		} elseif ($manufacturer_id_for_form > 0 && ($this->request->server['REQUEST_METHOD'] == 'POST')) {
-			// On POST, still load manufacturer info for form display
-			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id_for_form);
-			if (!$manufacturer_info) {
-				$manufacturer_info = array();
-			}
+		if (isset($this->request->get['manufacturer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
+			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($this->request->get['manufacturer_id']);
 		}
 
 		$data['token'] = $this->session->data['token'];
@@ -470,7 +471,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['name'])) {
 			$data['name'] = $this->request->post['name'];
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['name'])) {
+		} elseif (!empty($manufacturer_info)) {
 			$data['name'] = $manufacturer_info['name'];
 		} else {
 			$data['name'] = '';
@@ -490,7 +491,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['keyword'])) {
 			$data['keyword'] = $this->request->post['keyword'];
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['keyword'])) {
+		} elseif (!empty($manufacturer_info)) {
 			$data['keyword'] = $manufacturer_info['keyword'];
 		} else {
 			$data['keyword'] = '';
@@ -498,7 +499,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['image'])) {
 			$data['image'] = $this->request->post['image'];
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['image'])) {
+		} elseif (!empty($manufacturer_info)) {
 			$data['image'] = $manufacturer_info['image'];
 		} else {
 			$data['image'] = '';
@@ -506,7 +507,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['thumb'])) {
 			$data['thumb'] = $this->request->post['thumb'];
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['thumb'])) {
+		} elseif (!empty($manufacturer_info)) {
 			$data['thumb'] = $manufacturer_info['thumb'];
 		} else {
 			$data['thumb'] = '';
@@ -528,7 +529,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
 			$data['image_thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['image']) && $manufacturer_info['image'] && is_file(DIR_IMAGE . $manufacturer_info['image'])) {
+		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['image'])) {
 			$data['image_thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], 100, 100);
 		} else {
 			$data['image_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
@@ -536,7 +537,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['thumb']) && is_file(DIR_IMAGE . $this->request->post['thumb'])) {
 			$data['thumb_thumb'] = $this->model_tool_image->resize($this->request->post['thumb'], 100, 100);
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['thumb']) && $manufacturer_info['thumb'] && is_file(DIR_IMAGE . $manufacturer_info['thumb'])) {
+		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['thumb'])) {
 			$data['thumb_thumb'] = $this->model_tool_image->resize($manufacturer_info['thumb'], 100, 100);
 		} else {
 			$data['thumb_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
@@ -546,7 +547,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['sort_order'])) {
 			$data['sort_order'] = $this->request->post['sort_order'];
-		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['sort_order'])) {
+		} elseif (!empty($manufacturer_info)) {
 			$data['sort_order'] = $manufacturer_info['sort_order'];
 		} else {
 			$data['sort_order'] = '';
@@ -564,55 +565,27 @@ class ControllerCatalogManufacturer extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		// Check if name exists in POST, if not try to get from manufacturer_description
-		$manufacturer_name = '';
-		if (isset($this->request->post['name']) && !empty(trim($this->request->post['name']))) {
-			$manufacturer_name = trim($this->request->post['name']);
-		} elseif (isset($this->request->post['manufacturer_description']) && is_array($this->request->post['manufacturer_description'])) {
-			// Try to get name from first language's meta_title
-			foreach ($this->request->post['manufacturer_description'] as $lang_data) {
-				if (isset($lang_data['meta_title']) && !empty(trim($lang_data['meta_title']))) {
-					$manufacturer_name = trim($lang_data['meta_title']);
-					break;
-				}
-			}
-		}
-
-		if (empty($manufacturer_name)) {
+		if ((utf8_strlen($this->request->post['name']) < 2) || (utf8_strlen($this->request->post['name']) > 64)) {
 			$this->error['name'] = $this->language->get('error_name');
-		} elseif ((utf8_strlen($manufacturer_name) < 2) || (utf8_strlen($manufacturer_name) > 64)) {
-			$this->error['name'] = $this->language->get('error_name');
-		} else {
-			// Ensure name is set in POST data for model
-			$this->request->post['name'] = $manufacturer_name;
 		}
 
         if (isset($this->request->post['manufacturer_description']) && is_array($this->request->post['manufacturer_description'])) {
             foreach ($this->request->post['manufacturer_description'] as $language_id => $value) {
-                if (isset($value['meta_title']) && !empty($value['meta_title']) && ((utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255))) {
+                if (isset($value['meta_title']) && (utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255)) {
                     $this->error['meta_title'][$language_id] = $this->language->get('error_meta_title');
                 }
             }
         }
-		
-		if (isset($this->request->post['keyword']) && !empty(trim($this->request->post['keyword']))) {
+		if (utf8_strlen($this->request->post['keyword']) > 0) {
 			$this->load->model('catalog/url_alias');
-
-			// Get manufacturer_id from GET or POST for keyword validation
-			$manufacturer_id_for_validation = 0;
-			if (isset($this->request->get['manufacturer_id']) && !empty($this->request->get['manufacturer_id'])) {
-				$manufacturer_id_for_validation = (int)$this->request->get['manufacturer_id'];
-			} elseif (isset($this->request->post['manufacturer_id']) && !empty($this->request->post['manufacturer_id'])) {
-				$manufacturer_id_for_validation = (int)$this->request->post['manufacturer_id'];
-			}
 
 			$url_alias_info = $this->model_catalog_url_alias->getUrlAlias($this->request->post['keyword']);
 
-			if ($url_alias_info && $manufacturer_id_for_validation > 0 && $url_alias_info['query'] != 'manufacturer_id=' . $manufacturer_id_for_validation) {
+			if ($url_alias_info && isset($this->request->get['manufacturer_id']) && $url_alias_info['query'] != 'manufacturer_id=' . $this->request->get['manufacturer_id']) {
 				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
 			}
 
-			if ($url_alias_info && $manufacturer_id_for_validation <= 0) {
+			if ($url_alias_info && !isset($this->request->get['manufacturer_id'])) {
 				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
 			}
 		}
