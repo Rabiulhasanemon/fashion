@@ -2,7 +2,6 @@
 <div class="flash-deal-section banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
   <div class="flash-deal-header">
     <h2 class="flash-deal-title"><?php echo $heading_title; ?></h2>
-    <div class="title-underline"></div>
   </div>
 
   <div class="flash-deal-container" style="max-width: 100%; padding: 0 20px;">
