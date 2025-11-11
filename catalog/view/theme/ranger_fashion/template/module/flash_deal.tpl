@@ -115,16 +115,18 @@
   margin-bottom: 0;
 }
 
-.flash-deal-title {
- 
-    margin: 0;
-    padding: 24px 0 24px 0;
+.flash-deal-title,
+.flash-deal-title.unified-module-heading {
+  margin: 0;
+  padding: 24px 0;
   font-size: 24px;
-  font-weight: 500;
-  color: var(--textColor, #333);
+  font-weight: 600;
+  color: #333;
   line-height: 1.4;
+  text-align: center;
   text-transform: none;
   letter-spacing: 0;
+  position: relative;
 }
 
 .title-underline {

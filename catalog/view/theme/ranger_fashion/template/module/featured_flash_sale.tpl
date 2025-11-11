@@ -1,6 +1,8 @@
 <div class="flashdeal-section">
 	<div class="flashdeal-container">
-		<h2 class="flashdeal-title"><?php echo $heading_title; ?></h2>
+		<div class="module-heading-wrapper">
+			<h2 class="flashdeal-title unified-module-heading"><?php echo $heading_title; ?></h2>
+		</div>
 		<div class="flashdeal-grid">
 			<?php foreach ($products as $p) { ?>
 			<div class="flashdeal-card">
@@ -45,7 +47,7 @@
 <style>
 .flashdeal-section{padding:60px 0;background:#f6f8fa;width:100%;margin:0}
 .flashdeal-container{margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box}
-.flashdeal-title{font-size:24px;font-weight:700;color:#111;margin:0 0 12px 0;display:flex;align-items:center;gap:12px}
+.flashdeal-title.unified-module-heading{font-size:24px;font-weight:600;color:#333;margin:0;padding:24px 0;text-align:center;display:block}
 .flashdeal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .flashdeal-card{display:flex;gap:18px;border:1px solid #ebedf0;border-radius:12px;background:#fff;padding:16px}
 .flashdeal-media{position:relative;flex:0 0 38%}

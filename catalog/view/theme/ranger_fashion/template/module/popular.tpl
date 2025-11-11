@@ -1,7 +1,29 @@
+<style>
+.unified-module-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+  text-align: center;
+  margin: 0;
+  padding: 24px 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+@media (max-width: 992px) {
+  .unified-module-heading { font-size: 22px; padding: 20px 0; }
+}
+@media (max-width: 749px) {
+  .unified-module-heading { font-size: 20px; padding: 18px 0; }
+}
+@media (max-width: 576px) {
+  .unified-module-heading { font-size: 18px; padding: 15px 0; }
+}
+</style>
 <div class="product-module">
   <div class="row heading">
     <div class="col-md-10 col-sm-10 col-xs-9">
-      <div class="left"><h3><?php echo $heading_title; ?></h3></div>
+      <div class="left"><h2 class="unified-module-heading"><?php echo $heading_title; ?></h2></div>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
       <div class="right pull-right"><a href="<?php echo $see_all; ?>" class="see-all">See All</a></div>

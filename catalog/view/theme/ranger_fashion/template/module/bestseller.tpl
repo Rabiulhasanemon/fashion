@@ -2,7 +2,26 @@
   <div class="popular-products__top container">
     <div class="popular-products__top-main">
       <div class="popular-products__top-text">
-        <h2 class="popular-products__title section-title h3"><?php echo $heading_title; ?></h2>
+        <h2 class="popular-products__title section-title h3 unified-module-heading"><?php echo $heading_title; ?></h2>
+<style>
+.popular-products__title.unified-module-heading,
+.section-title.unified-module-heading {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  text-align: center !important;
+  padding: 24px 0 !important;
+}
+@media (max-width: 992px) {
+  .popular-products__title.unified-module-heading { font-size: 22px !important; padding: 20px 0 !important; }
+}
+@media (max-width: 749px) {
+  .popular-products__title.unified-module-heading { font-size: 20px !important; padding: 18px 0 !important; }
+}
+@media (max-width: 576px) {
+  .popular-products__title.unified-module-heading { font-size: 18px !important; padding: 15px 0 !important; }
+}
+</style>
       </div>
       <div class="popular-products__top-right">
         <a href="<?php echo $shop_all_url; ?>" class="popular-products__button link--underline_arrow">
