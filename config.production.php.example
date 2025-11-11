@@ -1,0 +1,46 @@
+<?php
+// PRODUCTION CONFIGURATION TEMPLATE
+// Copy this to config.php and update with your hosting details
+
+// HTTP - Replace with your actual domain
+define('HTTP_SERVER', 'https://yourdomain.com/');
+
+// HTTPS - Replace with your actual domain
+define('HTTPS_SERVER', 'https://yourdomain.com/');
+
+// DIR - FRONTEND/CATALOG CONFIGURATION
+// Replace /home/yourusername/public_html/ with your actual cPanel path
+// You can find this in cPanel → File Manager → Current Path
+define('DIR_APPLICATION', '/home/yourusername/public_html/catalog/');
+define('DIR_SYSTEM', '/home/yourusername/public_html/system/');
+define('DIR_LANGUAGE', '/home/yourusername/public_html/catalog/language/');
+define('DIR_TEMPLATE', '/home/yourusername/public_html/catalog/view/theme/');
+define('DIR_CONFIG', '/home/yourusername/public_html/system/config/');
+define('DIR_IMAGE', '/home/yourusername/public_html/image/');
+define('DIR_CACHE', '/home/yourusername/public_html/system/cache/');
+define('DIR_DOWNLOAD', '/home/yourusername/public_html/system/download/');
+define('DIR_UPLOAD', '/home/yourusername/public_html/system/upload/');
+define('DIR_MODIFICATION', '/home/yourusername/public_html/system/modification/');
+define('DIR_LOGS', '/home/yourusername/public_html/system/logs/');
+
+// DB - Get these from cPanel → MySQL Databases
+define('DB_DRIVER', 'mysqli');
+define('DB_HOSTNAME', 'localhost'); // Usually 'localhost', but check with your hosting
+define('DB_USERNAME', 'your_db_username'); // From cPanel MySQL Databases
+define('DB_PASSWORD', 'your_db_password'); // From cPanel MySQL Databases
+define('DB_DATABASE', 'your_db_name'); // From cPanel MySQL Databases
+define('DB_PORT', '3306');
+define('DB_PREFIX', 'sr_');
+
+// OTHERS
+define('DEV_MODE', false); // Set to false in production
+define("SMS_DRIVER", "robi"); // or "shiram" based on your SMS provider
+define("SOCIAL_LOGIN", false);
+define("FB_APP_ID", ''); // If using Facebook login
+define("FB_APP_SECRET", ''); // If using Facebook login
+
+define("GOOGLE_CLIENT_ID", ''); // If using Google login
+define("GOOGLE_CLIENT_SECRET", ''); // If using Google login
+
+define("COMMON_PASS", 'your_secure_password'); // Change this to a secure password
+

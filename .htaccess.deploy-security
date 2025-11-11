@@ -1,0 +1,20 @@
+# Optional Security Rules for deploy.php
+# Add these rules to your .htaccess file if you want to restrict access to deploy.php
+# Only allow GitHub webhook IPs to access deploy.php
+
+<Files "deploy.php">
+    # Uncomment the lines below to restrict by IP (GitHub webhook IPs)
+    # Order Deny,Allow
+    # Deny from all
+    # Allow from 192.30.252.0/22
+    # Allow from 185.199.108.0/22
+    # Allow from 140.82.112.0/20
+    
+    # Or use mod_rewrite to only allow POST requests
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteCond %{REQUEST_METHOD} !^POST$
+        RewriteRule ^deploy\.php$ - [F,L]
+    </IfModule>
+</Files>
+

@@ -1,0 +1,46 @@
+# Configuration files with sensitive data
+config.php
+admin/config.php
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+system/logs/*.log
+error_log
+*.log
+deploy.log
+
+# Cache
+system/cache/*
+!system/cache/.htaccess
+!system/cache/index.html
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Uploads (optional - uncomment if you don't want to track uploads)
+# system/upload/*
+# image/*
+

@@ -26,7 +26,7 @@ Options -Indexes
 RewriteEngine On
 # If your opencart installation does not run on the main web folder make sure you folder it does run in ie. / becomes /shop/ 
 
-RewriteBase /fashion/
+RewriteBase /
 #RewriteCond %{HTTP_HOST} ^startech.com.bd [NC]
 #RewriteRule ^(.*)$ https://www.startech.com.bd/$1 [L,R=301,NC]
 #RewriteCond %{HTTPS} !=on
