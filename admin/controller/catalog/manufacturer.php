@@ -418,8 +418,12 @@ class ControllerCatalogManufacturer extends Controller {
 
 		$data['cancel'] = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL');
 
+		$manufacturer_info = array();
 		if (isset($this->request->get['manufacturer_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
 			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($this->request->get['manufacturer_id']);
+			if (!$manufacturer_info) {
+				$manufacturer_info = array();
+			}
 		}
 
 		$data['token'] = $this->session->data['token'];
@@ -438,7 +442,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['name'])) {
 			$data['name'] = $this->request->post['name'];
-		} elseif (!empty($manufacturer_info)) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['name'])) {
 			$data['name'] = $manufacturer_info['name'];
 		} else {
 			$data['name'] = '';
@@ -458,7 +462,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['keyword'])) {
 			$data['keyword'] = $this->request->post['keyword'];
-		} elseif (!empty($manufacturer_info)) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['keyword'])) {
 			$data['keyword'] = $manufacturer_info['keyword'];
 		} else {
 			$data['keyword'] = '';
@@ -466,7 +470,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['image'])) {
 			$data['image'] = $this->request->post['image'];
-		} elseif (!empty($manufacturer_info)) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['image'])) {
 			$data['image'] = $manufacturer_info['image'];
 		} else {
 			$data['image'] = '';
@@ -474,7 +478,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['thumb'])) {
 			$data['thumb'] = $this->request->post['thumb'];
-		} elseif (!empty($manufacturer_info)) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['thumb'])) {
 			$data['thumb'] = $manufacturer_info['thumb'];
 		} else {
 			$data['thumb'] = '';
@@ -496,7 +500,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
 			$data['image_thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
-		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['image'])) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['image']) && $manufacturer_info['image'] && is_file(DIR_IMAGE . $manufacturer_info['image'])) {
 			$data['image_thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], 100, 100);
 		} else {
 			$data['image_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
@@ -504,7 +508,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['thumb']) && is_file(DIR_IMAGE . $this->request->post['thumb'])) {
 			$data['thumb_thumb'] = $this->model_tool_image->resize($this->request->post['thumb'], 100, 100);
-		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['thumb'])) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['thumb']) && $manufacturer_info['thumb'] && is_file(DIR_IMAGE . $manufacturer_info['thumb'])) {
 			$data['thumb_thumb'] = $this->model_tool_image->resize($manufacturer_info['thumb'], 100, 100);
 		} else {
 			$data['thumb_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
@@ -514,7 +518,7 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->request->post['sort_order'])) {
 			$data['sort_order'] = $this->request->post['sort_order'];
-		} elseif (!empty($manufacturer_info)) {
+		} elseif (!empty($manufacturer_info) && isset($manufacturer_info['sort_order'])) {
 			$data['sort_order'] = $manufacturer_info['sort_order'];
 		} else {
 			$data['sort_order'] = '';
@@ -532,9 +536,7 @@ class ControllerCatalogManufacturer extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if (!isset($this->request->post['name']) || empty(trim($this->request->post['name']))) {
-			$this->error['name'] = $this->language->get('error_name');
-		} elseif ((utf8_strlen($this->request->post['name']) < 2) || (utf8_strlen($this->request->post['name']) > 64)) {
+		if (!isset($this->request->post['name']) || (utf8_strlen($this->request->post['name']) < 2) || (utf8_strlen($this->request->post['name']) > 64)) {
 			$this->error['name'] = $this->language->get('error_name');
 		}
 

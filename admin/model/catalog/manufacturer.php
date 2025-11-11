@@ -1,26 +1,10 @@
 <?php
 class ModelCatalogManufacturer extends Model {
 	public function addManufacturer($data) {
-		// Validate required data - use 'name' from post or try to get from manufacturer_description
-		$manufacturer_name = '';
-		if (isset($data['name']) && !empty(trim($data['name']))) {
-			$manufacturer_name = trim($data['name']);
-		} elseif (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
-			// Try to get name from first language description
-			foreach ($data['manufacturer_description'] as $lang_data) {
-				if (isset($lang_data['meta_title']) && !empty(trim($lang_data['meta_title']))) {
-					$manufacturer_name = trim($lang_data['meta_title']);
-					break;
-				}
-			}
-		}
-		
-		if (empty($manufacturer_name)) {
+		// Validate required data
+		if (!isset($data['name']) || empty(trim($data['name']))) {
 			throw new Exception('Manufacturer name is required');
 		}
-		
-		// Ensure name is set in data array
-		$data['name'] = $manufacturer_name;
 
 		$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
 
@@ -94,26 +78,10 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception('Manufacturer with ID ' . $manufacturer_id . ' does not exist');
 		}
 
-		// Validate required data - use 'name' from post or try to get from manufacturer_description
-		$manufacturer_name = '';
-		if (isset($data['name']) && !empty(trim($data['name']))) {
-			$manufacturer_name = trim($data['name']);
-		} elseif (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
-			// Try to get name from first language description
-			foreach ($data['manufacturer_description'] as $lang_data) {
-				if (isset($lang_data['meta_title']) && !empty(trim($lang_data['meta_title']))) {
-					$manufacturer_name = trim($lang_data['meta_title']);
-					break;
-				}
-			}
-		}
-		
-		if (empty($manufacturer_name)) {
+		// Validate required data
+		if (!isset($data['name']) || empty(trim($data['name']))) {
 			throw new Exception('Manufacturer name is required');
 		}
-		
-		// Ensure name is set in data array
-		$data['name'] = $manufacturer_name;
 
 		$this->db->query("UPDATE " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "' WHERE manufacturer_id = '" . $manufacturer_id . "'");
 
@@ -178,7 +146,7 @@ class ModelCatalogManufacturer extends Model {
 	}
 
 	public function getManufacturer($manufacturer_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+		$query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "' LIMIT 1) AS keyword FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 
 		return $query->row;
 	}
