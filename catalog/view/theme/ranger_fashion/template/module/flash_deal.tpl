@@ -111,22 +111,35 @@
 }
 
 .flash-deal-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 0;
+  padding: 0 20px;
 }
 
 .flash-deal-title,
-.flash-deal-title.unified-module-heading {
+.flash-deal-title.unified-module-heading,
+.flash-deal-title.cosmetics-module-heading {
   margin: 0;
-  padding: 24px 0;
-  font-size: 24px;
+  padding: 20px 0 16px 0;
+  font-size: 28px;
   font-weight: 600;
-  color: #333;
-  line-height: 1.4;
-  text-align: center;
+  color: #1a1a1a;
+  line-height: 1.3;
+  text-align: left;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.flash-deal-title::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+  border-radius: 2px;
 }
 
 .title-underline {

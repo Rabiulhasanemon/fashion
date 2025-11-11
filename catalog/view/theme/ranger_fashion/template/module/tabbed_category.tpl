@@ -80,15 +80,29 @@ if (empty($tabs)) {
 
 <style>
 .tcp2-module-title {
-    text-align: center;
+    text-align: left;
     margin-bottom: 20px;
-    padding: 0 15px;
+    padding: 0 20px;
 }
 .tcp2-module-title h2 {
     font-size: 28px;
-    font-weight: 700;
-    color: #111827;
+    font-weight: 600;
+    color: #1a1a1a;
     margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    position: relative;
+    padding: 20px 0 16px 0;
+}
+.tcp2-module-title h2::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+    border-radius: 2px;
 }
 .tcp2-module-blurb {
     font-size: 14px;

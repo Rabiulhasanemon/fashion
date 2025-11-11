@@ -18,9 +18,37 @@
         <?php if ($title || $description) { ?>
         <div class="offer-header text-center" style="margin: 30px 0;">
             <?php if ($title) { ?>
-            <h2 class="offer-title" style="font-size: 36px; font-weight: bold; margin-bottom: 15px; color: #333;">
+            <h2 class="offer-title cosmetics-module-heading" style="font-size: 28px; font-weight: 600; margin-bottom: 15px; color: #1a1a1a; text-align: left; padding: 20px 0 16px 0; letter-spacing: -0.02em; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; position: relative;">
                 <?php echo html_entity_decode($title, ENT_QUOTES, 'UTF-8'); ?>
             </h2>
+<style>
+.big-offer-module .cosmetics-module-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+  border-radius: 2px;
+}
+.big-offer-module .offer-header {
+  text-align: left !important;
+  padding: 0 20px;
+}
+@media (max-width: 992px) {
+  .big-offer-module .cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
+  .big-offer-module .cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
+}
+@media (max-width: 749px) {
+  .big-offer-module .cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
+  .big-offer-module .cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
+}
+@media (max-width: 576px) {
+  .big-offer-module .cosmetics-module-heading { font-size: 20px !important; padding: 14px 0 10px 0 !important; }
+  .big-offer-module .cosmetics-module-heading::after { width: 40px !important; height: 2px !important; bottom: 4px !important; }
+}
+</style>
             <?php } ?>
             
             <?php if ($description) { ?>
@@ -52,7 +80,19 @@
             
             <?php if (!empty($products)) { ?>
             <div class="offer-products" style="margin-top: 40px;">
-                <h3 class="text-center" style="margin-bottom: 30px; font-size: 28px; color: #333;">Featured Products</h3>
+                <h3 class="cosmetics-module-heading" style="margin-bottom: 30px; font-size: 28px; color: #1a1a1a; text-align: left; padding: 20px 0 16px 0; letter-spacing: -0.02em; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; position: relative; font-weight: 600;">Featured Products</h3>
+<style>
+.big-offer-module .offer-products .cosmetics-module-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+  border-radius: 2px;
+}
+</style>
                 <div class="row">
                     <?php foreach ($products as $product) { ?>
                     <div class="col-sm-6 col-md-3" style="margin-bottom: 30px;">

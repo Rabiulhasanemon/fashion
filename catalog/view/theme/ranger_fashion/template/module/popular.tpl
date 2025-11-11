@@ -1,29 +1,44 @@
 <style>
-.unified-module-heading {
-  font-size: 24px;
+.unified-module-heading.cosmetics-module-heading {
+  font-size: 28px;
   font-weight: 600;
-  color: #333;
-  line-height: 1.4;
-  text-align: center;
+  color: #1a1a1a;
+  line-height: 1.3;
+  text-align: left;
   margin: 0;
-  padding: 24px 0;
+  padding: 20px 0 16px 0;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+}
+.unified-module-heading.cosmetics-module-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+  border-radius: 2px;
 }
 @media (max-width: 992px) {
-  .unified-module-heading { font-size: 22px; padding: 20px 0; }
+  .unified-module-heading.cosmetics-module-heading { font-size: 24px; padding: 18px 0 14px 0; }
+  .unified-module-heading.cosmetics-module-heading::after { width: 50px; height: 2.5px; bottom: 6px; }
 }
 @media (max-width: 749px) {
-  .unified-module-heading { font-size: 20px; padding: 18px 0; }
+  .unified-module-heading.cosmetics-module-heading { font-size: 22px; padding: 16px 0 12px 0; }
+  .unified-module-heading.cosmetics-module-heading::after { width: 45px; height: 2px; bottom: 5px; }
 }
 @media (max-width: 576px) {
-  .unified-module-heading { font-size: 18px; padding: 15px 0; }
+  .unified-module-heading.cosmetics-module-heading { font-size: 20px; padding: 14px 0 10px 0; }
+  .unified-module-heading.cosmetics-module-heading::after { width: 40px; height: 2px; bottom: 4px; }
 }
 </style>
 <div class="product-module">
   <div class="row heading">
     <div class="col-md-10 col-sm-10 col-xs-9">
-      <div class="left"><h2 class="unified-module-heading"><?php echo $heading_title; ?></h2></div>
+      <div class="left"><h2 class="unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2></div>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
       <div class="right pull-right"><a href="<?php echo $see_all; ?>" class="see-all">See All</a></div>

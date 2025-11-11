@@ -1,7 +1,7 @@
 <div class="flashdeal-section">
 	<div class="flashdeal-container">
 		<div class="module-heading-wrapper">
-			<h2 class="flashdeal-title unified-module-heading"><?php echo $heading_title; ?></h2>
+			<h2 class="flashdeal-title unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
 		</div>
 		<div class="flashdeal-grid">
 			<?php foreach ($products as $p) { ?>
@@ -47,7 +47,12 @@
 <style>
 .flashdeal-section{padding:60px 0;background:#f6f8fa;width:100%;margin:0}
 .flashdeal-container{margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box}
-.flashdeal-title.unified-module-heading{font-size:24px;font-weight:600;color:#333;margin:0;padding:24px 0;text-align:center;display:block}
+.flashdeal-title.unified-module-heading.cosmetics-module-heading{font-size:28px;font-weight:600;color:#1a1a1a;margin:0;padding:20px 0 16px 0;text-align:left;display:block;letter-spacing:-0.02em;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;position:relative}
+.flashdeal-title.unified-module-heading.cosmetics-module-heading::after{content:'';position:absolute;bottom:8px;left:0;width:60px;height:3px;background:linear-gradient(90deg,#ff6b9d,#ff8c9f);border-radius:2px}
+.module-heading-wrapper{text-align:left;margin-bottom:24px;padding:0 20px;width:100%}
+@media (max-width:992px){.flashdeal-title.unified-module-heading.cosmetics-module-heading{font-size:24px;padding:18px 0 14px 0}.flashdeal-title.unified-module-heading.cosmetics-module-heading::after{width:50px;height:2.5px;bottom:6px}}
+@media (max-width:749px){.flashdeal-title.unified-module-heading.cosmetics-module-heading{font-size:22px;padding:16px 0 12px 0}.flashdeal-title.unified-module-heading.cosmetics-module-heading::after{width:45px;height:2px;bottom:5px}.module-heading-wrapper{padding:0 15px}}
+@media (max-width:576px){.flashdeal-title.unified-module-heading.cosmetics-module-heading{font-size:20px;padding:14px 0 10px 0}.flashdeal-title.unified-module-heading.cosmetics-module-heading::after{width:40px;height:2px;bottom:4px}.module-heading-wrapper{padding:0 10px}}
 .flashdeal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .flashdeal-card{display:flex;gap:18px;border:1px solid #ebedf0;border-radius:12px;background:#fff;padding:16px}
 .flashdeal-media{position:relative;flex:0 0 38%}

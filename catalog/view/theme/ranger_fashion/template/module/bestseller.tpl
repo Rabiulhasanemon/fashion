@@ -2,24 +2,41 @@
   <div class="popular-products__top container">
     <div class="popular-products__top-main">
       <div class="popular-products__top-text">
-        <h2 class="popular-products__title section-title h3 unified-module-heading"><?php echo $heading_title; ?></h2>
+        <h2 class="popular-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
 <style>
-.popular-products__title.unified-module-heading,
-.section-title.unified-module-heading {
-  font-size: 24px !important;
+.popular-products__title.unified-module-heading.cosmetics-module-heading,
+.section-title.unified-module-heading.cosmetics-module-heading {
+  font-size: 28px !important;
   font-weight: 600 !important;
-  color: #333 !important;
-  text-align: center !important;
-  padding: 24px 0 !important;
+  color: #1a1a1a !important;
+  text-align: left !important;
+  padding: 20px 0 16px 0 !important;
+  letter-spacing: -0.02em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  position: relative !important;
+}
+.popular-products__title.unified-module-heading.cosmetics-module-heading::after,
+.section-title.unified-module-heading.cosmetics-module-heading::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 0 !important;
+  width: 60px !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+  border-radius: 2px !important;
 }
 @media (max-width: 992px) {
-  .popular-products__title.unified-module-heading { font-size: 22px !important; padding: 20px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
 }
 @media (max-width: 749px) {
-  .popular-products__title.unified-module-heading { font-size: 20px !important; padding: 18px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
 }
 @media (max-width: 576px) {
-  .popular-products__title.unified-module-heading { font-size: 18px !important; padding: 15px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 20px !important; padding: 14px 0 10px 0 !important; }
+  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 40px !important; height: 2px !important; bottom: 4px !important; }
 }
 </style>
       </div>

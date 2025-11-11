@@ -3,7 +3,42 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="section-head" style="margin-bottom: 20px !important; padding-bottom: 15px !important;">
-          <h3 class="title" style="font-size: 28px !important; margin: 0;"><?php echo $name; ?></h3>
+          <h3 class="title cosmetics-module-heading" style="font-size: 28px !important; margin: 0; text-align: left !important; padding: 20px 0 16px 0 !important; position: relative !important;"><?php echo $name; ?></h3>
+<style>
+.featured-product-area .cosmetics-module-heading {
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  text-align: left !important;
+  margin: 0 !important;
+  padding: 20px 0 16px 0 !important;
+  letter-spacing: -0.02em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  position: relative !important;
+}
+.featured-product-area .cosmetics-module-heading::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 0 !important;
+  width: 60px !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+  border-radius: 2px !important;
+}
+@media (max-width: 992px) {
+  .featured-product-area .cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
+  .featured-product-area .cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
+}
+@media (max-width: 749px) {
+  .featured-product-area .cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
+  .featured-product-area .cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
+}
+@media (max-width: 576px) {
+  .featured-product-area .cosmetics-module-heading { font-size: 20px !important; padding: 14px 0 10px 0 !important; }
+  .featured-product-area .cosmetics-module-heading::after { width: 40px !important; height: 2px !important; bottom: 4px !important; }
+}
+</style>
           <a href="<?php echo $see_all; ?>" class="btn"
           >View All Collection
             <span class="material-icons">arrow_forward</span></a
