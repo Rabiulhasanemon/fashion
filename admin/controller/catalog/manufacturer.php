@@ -64,20 +64,26 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Validate manufacturer_id
-			if (!isset($this->request->get['manufacturer_id']) || empty($this->request->get['manufacturer_id']) || (int)$this->request->get['manufacturer_id'] <= 0) {
-				$this->session->data['error_warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
-				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
-				return;
+			// Get manufacturer_id from GET or POST (GET is preferred for edit operations)
+			$manufacturer_id = 0;
+			if (isset($this->request->get['manufacturer_id']) && is_numeric($this->request->get['manufacturer_id'])) {
+				$manufacturer_id = (int)$this->request->get['manufacturer_id'];
+			} elseif (isset($this->request->post['manufacturer_id']) && is_numeric($this->request->post['manufacturer_id'])) {
+				$manufacturer_id = (int)$this->request->post['manufacturer_id'];
 			}
 
-			$manufacturer_id = (int)$this->request->get['manufacturer_id'];
+			// Validate manufacturer_id
+			if ($manufacturer_id <= 0) {
+				$this->error['warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
+				$this->getForm();
+				return;
+			}
 
 			// Verify manufacturer exists
 			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
 			if (!$manufacturer_info) {
-				$this->session->data['error_warning'] = 'Manufacturer not found. Cannot update manufacturer.';
-				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], 'SSL'));
+				$this->error['warning'] = 'Manufacturer not found. Cannot update manufacturer.';
+				$this->getForm();
 				return;
 			}
 
