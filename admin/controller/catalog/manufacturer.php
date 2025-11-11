@@ -72,7 +72,7 @@ class ControllerCatalogManufacturer extends Controller {
 				$manufacturer_id = (int)$this->request->post['manufacturer_id'];
 			}
 
-			// Validate manufacturer_id
+			// Validate manufacturer_id - only required for edit, not for add
 			if ($manufacturer_id <= 0) {
 				$this->error['warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
 				$this->getForm();
@@ -111,7 +111,7 @@ class ControllerCatalogManufacturer extends Controller {
 				return;
 			} catch (Exception $e) {
 				// Manufacturer update failed
-				$this->session->data['error_warning'] = 'Error updating manufacturer: ' . $e->getMessage();
+				$this->error['warning'] = 'Error updating manufacturer: ' . $e->getMessage();
 				error_log('Manufacturer update error: ' . $e->getMessage());
 			}
 		}
