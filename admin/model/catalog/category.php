@@ -406,6 +406,7 @@ class ModelCatalogCategory extends Model {
 				foreach ($modules as $module) {
 					// Skip empty modules (no code selected)
 					if (!isset($module['code']) || empty(trim($module['code']))) {
+						error_log('Skipping module - no code: ' . print_r($module, true));
 						continue;
 					}
 					

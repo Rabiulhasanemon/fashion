@@ -297,7 +297,7 @@
                         <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" class="module-id-input" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
                       </td>
                       <td class="text-left">
-                        <textarea name="category_module[<?php echo $module_row; ?>][description]" rows="3" class="form-control" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? htmlspecialchars($category_module['description']) : ''; ?></textarea>
+                        <textarea name="category_module[<?php echo $module_row; ?>][description]" id="module-description-<?php echo $module_row; ?>" rows="3" class="form-control summernote" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? htmlspecialchars($category_module['description']) : ''; ?></textarea>
                       </td>
                       <td class="text-left">
                         <input type="text" name="category_module[<?php echo $module_row; ?>][sort_order]" value="<?php echo isset($category_module['sort_order']) ? $category_module['sort_order'] : 0; ?>" placeholder="0" class="form-control" />
@@ -420,7 +420,7 @@ function addModule() {
 	html += '    <input type="hidden" name="category_module[' + module_row + '][module_id]" class="module-id-input" value="0" />';
 	html += '  </td>';
 	html += '  <td class="text-left">';
-	html += '    <textarea name="category_module[' + module_row + '][description]" rows="3" class="form-control" placeholder="Enter module description..."></textarea>';
+	html += '    <textarea name="category_module[' + module_row + '][description]" id="module-description-' + module_row + '" rows="3" class="form-control summernote" placeholder="Enter module description..."></textarea>';
 	html += '  </td>';
 	html += '  <td class="text-left">';
 	html += '    <input type="text" name="category_module[' + module_row + '][sort_order]" value="0" placeholder="0" class="form-control" />';
@@ -438,6 +438,11 @@ function addModule() {
 
 	$('#category-modules tbody').append(html);
 
+	// Initialize Summernote for the newly added description field
+	$('#module-description-' + (module_row - 1)).summernote({
+		height: 150
+	});
+
 	module_row++;
 }
 
@@ -447,6 +452,26 @@ $(document).on('change', '.module-select', function() {
 	var selectedOption = $(this).find('option:selected');
 	var moduleId = selectedOption.data('module-id') || 0;
 	$('input[name="category_module[' + row + '][module_id]"]').val(moduleId);
+});
+
+// Initialize Summernote for existing module description fields
+$(document).ready(function() {
+	$('textarea.summernote').each(function() {
+		if (!$(this).next('.note-editor').length) {
+			$(this).summernote({
+				height: 150
+			});
+		}
+	});
+});
+
+// Sync Summernote content before form submission
+$('#form-category').on('submit', function() {
+	$('textarea.summernote').each(function() {
+		if ($(this).next('.note-editor').length) {
+			$(this).val($(this).summernote('code'));
+		}
+	});
 });
 //--></script></div>
 <?php echo $footer; ?>
