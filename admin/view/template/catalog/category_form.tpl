@@ -29,6 +29,7 @@
             <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $tab_general; ?></a></li>
             <li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>
             <li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>
+            <li><a href="#tab-modules" data-toggle="tab">Modules</a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active in" id="tab-general">
@@ -259,6 +260,90 @@
                 </div>
               </div>
             </div>
+            <div class="tab-pane fade" id="tab-modules">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Category Modules</label>
+                <div class="col-sm-10">
+                  <div id="category-modules">
+                    <div class="table-responsive">
+                      <table id="module-list" class="table table-striped table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <td class="text-left">Module</td>
+                            <td class="text-left">Settings (JSON)</td>
+                            <td class="text-right">Sort Order</td>
+                            <td class="text-center">Status</td>
+                            <td></td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php $module_row = 0; ?>
+                          <?php if (isset($category_modules) && is_array($category_modules) && !empty($category_modules)) { ?>
+                          <?php foreach ($category_modules as $category_module) { ?>
+                          <tr id="module-row<?php echo $module_row; ?>">
+                            <td class="text-left">
+                              <select name="category_modules[<?php echo $module_row; ?>][code]" class="form-control">
+                                <option value="">-- Select Module --</option>
+                                <?php if (isset($modules) && is_array($modules)) { ?>
+                                <?php foreach ($modules as $module) { ?>
+                                <?php if (isset($category_module['code']) && $module['code'] == $category_module['code']) { ?>
+                                <option value="<?php echo $module['code']; ?>" selected="selected"><?php echo $module['name']; ?></option>
+                                <?php } else { ?>
+                                <option value="<?php echo $module['code']; ?>"><?php echo $module['name']; ?></option>
+                                <?php } ?>
+                                <?php } ?>
+                                <?php } ?>
+                              </select>
+                              <input type="hidden" name="category_modules[<?php echo $module_row; ?>][module_id]" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
+                            </td>
+                            <td class="text-left">
+                              <textarea name="category_modules[<?php echo $module_row; ?>][setting]" class="form-control" rows="3" placeholder='{"name":"Module Name","limit":8}'><?php 
+                                if (isset($category_module['setting'])) {
+                                  if (is_array($category_module['setting'])) {
+                                    echo htmlspecialchars(json_encode($category_module['setting'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                                  } else {
+                                    echo htmlspecialchars($category_module['setting']);
+                                  }
+                                }
+                              ?></textarea>
+                              <small class="help-block">JSON format: {"name":"Title","limit":8}</small>
+                            </td>
+                            <td class="text-right">
+                              <input type="text" name="category_modules[<?php echo $module_row; ?>][sort_order]" value="<?php echo isset($category_module['sort_order']) ? $category_module['sort_order'] : 0; ?>" placeholder="0" class="form-control" style="width: 80px;" />
+                            </td>
+                            <td class="text-center">
+                              <select name="category_modules[<?php echo $module_row; ?>][status]" class="form-control">
+                                <?php if (isset($category_module['status']) && $category_module['status']) { ?>
+                                <option value="1" selected="selected">Enabled</option>
+                                <option value="0">Disabled</option>
+                                <?php } else { ?>
+                                <option value="1">Enabled</option>
+                                <option value="0" selected="selected">Disabled</option>
+                                <?php } ?>
+                              </select>
+                            </td>
+                            <td class="text-left">
+                              <button type="button" onclick="$('#module-row<?php echo $module_row; ?>').remove();" data-toggle="tooltip" title="Remove" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
+                            </td>
+                          </tr>
+                          <?php $module_row++; ?>
+                          <?php } ?>
+                          <?php } ?>
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <td colspan="4"></td>
+                            <td class="text-left">
+                              <button type="button" onclick="addModule();" data-toggle="tooltip" title="Add Module" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button>
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -330,5 +415,41 @@ $('input[name=\'path\']').autocomplete({
 //--></script> 
   <script type="text/javascript"><!--
 $('#language a:first').tab('show');
+
+var module_row = <?php echo isset($module_row) ? $module_row : 0; ?>;
+
+function addModule() {
+  html  = '<tr id="module-row' + module_row + '">';
+  html += '  <td class="text-left">';
+  html += '    <select name="category_modules[' + module_row + '][code]" class="form-control">';
+  html += '      <option value="">-- Select Module --</option>';
+  <?php if (isset($modules) && is_array($modules)) { foreach ($modules as $module) { ?>
+  html += '      <option value="<?php echo $module['code']; ?>"><?php echo addslashes($module['name']); ?></option>';
+  <?php } } ?>
+  html += '    </select>';
+  html += '    <input type="hidden" name="category_modules[' + module_row + '][module_id]" value="0" />';
+  html += '  </td>';
+  html += '  <td class="text-left">';
+  html += '    <textarea name="category_modules[' + module_row + '][setting]" class="form-control" rows="3" placeholder=\'{"name":"Module Name","limit":8}\'></textarea>';
+  html += '    <small class="help-block">JSON format: {"name":"Title","limit":8}</small>';
+  html += '  </td>';
+  html += '  <td class="text-right">';
+  html += '    <input type="text" name="category_modules[' + module_row + '][sort_order]" value="0" placeholder="0" class="form-control" style="width: 80px;" />';
+  html += '  </td>';
+  html += '  <td class="text-center">';
+  html += '    <select name="category_modules[' + module_row + '][status]" class="form-control">';
+  html += '      <option value="1" selected="selected">Enabled</option>';
+  html += '      <option value="0">Disabled</option>';
+  html += '    </select>';
+  html += '  </td>';
+  html += '  <td class="text-left">';
+  html += '    <button type="button" onclick="$(\'#module-row' + module_row + '\').remove();" data-toggle="tooltip" title="Remove" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>';
+  html += '  </td>';
+  html += '</tr>';
+
+  $('#module-list tbody').append(html);
+
+  module_row++;
+}
 //--></script></div>
 <?php echo $footer; ?>

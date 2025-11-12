@@ -593,6 +593,39 @@ class ControllerCatalogCategory extends Controller {
 
 		$data['layouts'] = $this->model_design_layout->getLayouts();
 
+		// Load modules for category
+		$this->load->model('extension/extension');
+		$installed_modules = $this->model_extension_extension->getInstalled('module');
+		
+		$data['modules'] = array();
+		if (is_array($installed_modules)) {
+			foreach ($installed_modules as $module_code) {
+				$module_name = ucwords(str_replace('_', ' ', $module_code));
+				try {
+					$this->load->language('extension/module/' . $module_code);
+					$lang_name = $this->language->get('heading_title');
+					if (!empty($lang_name) && $lang_name != 'heading_title') {
+						$module_name = $lang_name;
+					}
+				} catch (Exception $e) {
+					// Use default name if language file doesn't exist
+				}
+				$data['modules'][] = array(
+					'code' => $module_code,
+					'name' => $module_name
+				);
+			}
+		}
+
+		// Load category modules
+		if (isset($this->request->post['category_modules'])) {
+			$data['category_modules'] = $this->request->post['category_modules'];
+		} elseif (isset($this->request->get['category_id'])) {
+			$data['category_modules'] = $this->model_catalog_category->getCategoryModules($this->request->get['category_id']);
+		} else {
+			$data['category_modules'] = array();
+		}
+
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
