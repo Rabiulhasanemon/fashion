@@ -52,6 +52,19 @@
                         </div>
                     </div>
                 </div>
+                
+                <?php if (isset($category_modules) && !empty($category_modules)) { ?>
+                <div class="category-modules" style="margin-bottom: 30px;">
+                    <?php foreach ($category_modules as $module) { ?>
+                    <?php if (isset($module['output']) && !empty($module['output'])) { ?>
+                    <div class="category-module-item" style="margin-bottom: 20px;">
+                        <?php echo $module['output']; ?>
+                    </div>
+                    <?php } ?>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+                
                 <div class="row main-content">
                     <?php foreach ($products as $product) { ?>
 
@@ -133,18 +146,6 @@
                     </div>
                 </div>
                 <?php echo $content_bottom; ?>
-                
-                <?php if (isset($category_modules) && !empty($category_modules)) { ?>
-                <div class="category-modules">
-                    <?php foreach ($category_modules as $module) { ?>
-                    <?php if (isset($module['output']) && !empty($module['output'])) { ?>
-                    <div class="category-module-item">
-                        <?php echo $module['output']; ?>
-                    </div>
-                    <?php } ?>
-                    <?php } ?>
-                </div>
-                <?php } ?>
             </div>
             <?php echo $column_right; ?>
         </div>
