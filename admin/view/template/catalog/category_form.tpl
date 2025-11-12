@@ -470,17 +470,7 @@ $(document).ready(function() {
 	console.log('Document ready - attaching form submit handler');
 	
 	$('#form-category').on('submit', function(e) {
-		// Force alert to confirm handler is running
-		var moduleRows = $('#category-modules tbody tr').length;
-		var moduleRowsWithCode = 0;
-		$('#category-modules tbody tr').each(function() {
-			var code = $(this).find('select[name*="[code]"]').val();
-			if (code && code !== '') {
-				moduleRowsWithCode++;
-			}
-		});
-		
-		alert('Form Submit Handler Running!\nTotal module rows: ' + moduleRows + '\nRows with code selected: ' + moduleRowsWithCode);
+		console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
 		
 		// Sync all Summernote editors
 		$('textarea.summernote').each(function() {
@@ -500,13 +490,43 @@ $(document).ready(function() {
 			}
 		});
 		
-		// Final check - count remaining module rows
+		// Final check - count remaining module rows and log all module data
 		var remainingRows = $('#category-modules tbody tr').length;
+		console.log('Remaining module rows after cleanup: ' + remainingRows);
+		
+		// Log all module form fields that will be submitted
+		var allModuleFields = [];
+		$('#category-modules tbody tr').each(function(index) {
+			var row = $(this);
+			var code = row.find('select[name*="[code]"]').val();
+			var moduleId = row.find('input[name*="[module_id]"]').val();
+			var description = row.find('textarea[name*="[description]"]').val();
+			var sortOrder = row.find('input[name*="[sort_order]"]').val();
+			var status = row.find('select[name*="[status]"]').val();
+			
+			allModuleFields.push({
+				row: index,
+				code: code,
+				moduleId: moduleId,
+				hasDescription: description ? 'YES' : 'NO',
+				sortOrder: sortOrder,
+				status: status
+			});
+			
+			// Log the actual form field names
+			console.log('Module row ' + index + ' fields:');
+			console.log('  - code field name: ' + row.find('select[name*="[code]"]').attr('name'));
+			console.log('  - code value: ' + code);
+			console.log('  - module_id field name: ' + row.find('input[name*="[module_id]"]').attr('name'));
+			console.log('  - module_id value: ' + moduleId);
+		});
+		
+		console.log('All module fields to be submitted:', JSON.stringify(allModuleFields, null, 2));
 		
 		if (remainingRows === 0) {
-			alert('WARNING: No module rows will be submitted! All rows were empty.');
+			console.warn('WARNING: No module rows will be submitted! All rows were empty.');
 		} else {
-			console.log('Submitting form with ' + remainingRows + ' module rows');
+			console.log('Form will submit with ' + remainingRows + ' module row(s)');
 		}
 	});
 });

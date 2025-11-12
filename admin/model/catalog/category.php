@@ -182,8 +182,25 @@ class ModelCatalogCategory extends Model {
 		$log_file = DIR_LOGS . 'category_module_debug.log';
 		$log_msg = date('Y-m-d H:i:s') . " - editCategory - Checking for category_module in data\n";
 		$log_msg .= "Data keys: " . implode(', ', array_keys($data)) . "\n";
+		$log_msg .= "Full data structure (first 2000 chars): " . substr(print_r($data, true), 0, 2000) . "\n";
+		
+		// Check for category_module in various possible formats
+		$has_category_module = false;
 		if (isset($data['category_module'])) {
-			$log_msg .= "category_module found, calling saveCategoryModules\n";
+			$has_category_module = true;
+			$log_msg .= "category_module found in data['category_module']\n";
+		}
+		
+		// Also check if it's nested differently
+		foreach ($data as $key => $value) {
+			if (strpos($key, 'category_module') !== false) {
+				$log_msg .= "Found key containing 'category_module': " . $key . "\n";
+			}
+		}
+		
+		if ($has_category_module) {
+			$log_msg .= "category_module data structure: " . print_r($data['category_module'], true) . "\n";
+			$log_msg .= "Calling saveCategoryModules\n";
 			file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('editCategory - category_module found, calling saveCategoryModules');
 			$this->saveCategoryModules($category_id, $data['category_module']);
