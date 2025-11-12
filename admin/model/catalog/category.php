@@ -345,49 +345,86 @@ class ModelCatalogCategory extends Model {
 	public function getCategoryModules($category_id) {
 		$category_module_data = array();
 
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' ORDER BY sort_order ASC");
+		// Check if table exists first
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "category_module'");
+		if (!$table_check->num_rows) {
+			return $category_module_data; // Return empty array if table doesn't exist
+		}
 
-		foreach ($query->rows as $result) {
-			$setting = json_decode($result['setting'], true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				$setting = array();
+		try {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' ORDER BY sort_order ASC");
+
+			foreach ($query->rows as $result) {
+				$setting = json_decode($result['setting'], true);
+				if (json_last_error() !== JSON_ERROR_NONE) {
+					$setting = array();
+				}
+
+				$category_module_data[] = array(
+					'category_module_id' => $result['category_module_id'],
+					'module_id' => isset($result['module_id']) ? $result['module_id'] : 0,
+					'code' => $result['code'],
+					'setting' => $setting,
+					'sort_order' => isset($result['sort_order']) ? $result['sort_order'] : 0,
+					'status' => isset($result['status']) ? $result['status'] : 1
+				);
 			}
-
-			$category_module_data[] = array(
-				'category_module_id' => $result['category_module_id'],
-				'module_id' => $result['module_id'],
-				'code' => $result['code'],
-				'setting' => $setting,
-				'sort_order' => $result['sort_order'],
-				'status' => $result['status']
-			);
+		} catch (Exception $e) {
+			// Return empty array on error
+			error_log('Error loading category modules: ' . $e->getMessage());
+			return $category_module_data;
 		}
 
 		return $category_module_data;
 	}
 
 	public function saveCategoryModules($category_id, $modules) {
-		// Delete existing modules for this category
-		$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
+		// Check if table exists first
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "category_module'");
+		if (!$table_check->num_rows) {
+			return; // Exit if table doesn't exist
+		}
 
-		if (isset($modules) && is_array($modules)) {
-			foreach ($modules as $module) {
-				if (isset($module['code']) && !empty($module['code'])) {
-					$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
-					$code = $this->db->escape($module['code']);
-					$setting = isset($module['setting']) ? $this->db->escape(json_encode($module['setting'])) : '{}';
-					$sort_order = isset($module['sort_order']) ? (int)$module['sort_order'] : 0;
-					$status = isset($module['status']) ? (int)$module['status'] : 1;
+		try {
+			// Delete existing modules for this category
+			$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
 
-					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET 
-						category_id = '" . (int)$category_id . "', 
-						module_id = '" . $module_id . "', 
-						code = '" . $code . "', 
-						setting = '" . $setting . "', 
-						sort_order = '" . $sort_order . "', 
-						status = '" . $status . "'");
+			if (isset($modules) && is_array($modules)) {
+				foreach ($modules as $module) {
+					if (isset($module['code']) && !empty($module['code'])) {
+						$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
+						$code = $this->db->escape($module['code']);
+						
+						// Handle settings - can be array or JSON string
+						$setting_data = array();
+						if (isset($module['setting'])) {
+							if (is_array($module['setting'])) {
+								$setting_data = $module['setting'];
+							} elseif (is_string($module['setting']) && !empty(trim($module['setting']))) {
+								$decoded = json_decode($module['setting'], true);
+								if (json_last_error() === JSON_ERROR_NONE) {
+									$setting_data = $decoded;
+								}
+							}
+						}
+						$setting = $this->db->escape(json_encode($setting_data));
+						
+						$sort_order = isset($module['sort_order']) ? (int)$module['sort_order'] : 0;
+						$status = isset($module['status']) ? (int)$module['status'] : 1;
+
+						$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET 
+							category_id = '" . (int)$category_id . "', 
+							module_id = '" . $module_id . "', 
+							code = '" . $code . "', 
+							setting = '" . $setting . "', 
+							sort_order = '" . $sort_order . "', 
+							status = '" . $status . "'");
+					}
 				}
 			}
+		} catch (Exception $e) {
+			error_log('Error saving category modules: ' . $e->getMessage());
+			// Don't throw exception - allow category to save even if modules fail
 		}
 	}
 }

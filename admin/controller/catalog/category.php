@@ -607,9 +607,13 @@ class ControllerCatalogCategory extends Controller {
 			foreach ($files as $file) {
 				$module_code = basename($file, '.php');
 				// Get module name from language file if available
-				$this->load->language('module/' . $module_code);
-				$module_name = $this->language->get('heading_title');
-				if ($module_name == 'heading_title') {
+				try {
+					$this->load->language('module/' . $module_code);
+					$module_name = $this->language->get('heading_title');
+					if ($module_name == 'heading_title' || empty($module_name)) {
+						$module_name = ucwords(str_replace('_', ' ', $module_code));
+					}
+				} catch (Exception $e) {
 					$module_name = ucwords(str_replace('_', ' ', $module_code));
 				}
 				$data['available_modules'][] = array(
@@ -632,11 +636,27 @@ class ControllerCatalogCategory extends Controller {
 			$data['category_modules'] = array();
 		}
 
+		// Load module-related language variables with fallbacks
 		$data['tab_modules'] = $this->language->get('tab_modules');
+		if ($data['tab_modules'] == 'tab_modules') {
+			$data['tab_modules'] = 'Modules';
+		}
 		$data['entry_module'] = $this->language->get('entry_module');
+		if ($data['entry_module'] == 'entry_module') {
+			$data['entry_module'] = 'Module';
+		}
 		$data['entry_module_setting'] = $this->language->get('entry_module_setting');
+		if ($data['entry_module_setting'] == 'entry_module_setting') {
+			$data['entry_module_setting'] = 'Settings (JSON)';
+		}
 		$data['button_add_module'] = $this->language->get('button_add_module');
+		if ($data['button_add_module'] == 'button_add_module') {
+			$data['button_add_module'] = 'Add Module';
+		}
 		$data['button_remove'] = $this->language->get('button_remove');
+		if ($data['button_remove'] == 'button_remove') {
+			$data['button_remove'] = 'Remove';
+		}
 
 		$this->load->model('design/layout');
 
