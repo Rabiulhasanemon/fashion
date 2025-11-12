@@ -278,19 +278,23 @@
                     <?php foreach ($category_modules as $category_module) { ?>
                     <tr id="module-row<?php echo $module_row; ?>">
                       <td class="text-left">
-                        <select name="category_module[<?php echo $module_row; ?>][code]" class="form-control">
+                        <select name="category_module[<?php echo $module_row; ?>][code]" class="form-control module-select" data-row="<?php echo $module_row; ?>">
                           <option value=""><?php echo $text_none; ?></option>
                           <?php if (isset($available_modules)) { ?>
                           <?php foreach ($available_modules as $module) { ?>
-                          <?php if ($module['code'] == $category_module['code']) { ?>
-                          <option value="<?php echo $module['code']; ?>" selected="selected"><?php echo $module['name']; ?></option>
-                          <?php } else { ?>
-                          <option value="<?php echo $module['code']; ?>"><?php echo $module['name']; ?></option>
-                          <?php } ?>
+                          <?php 
+                            $selected = false;
+                            if (isset($category_module['module_id']) && $category_module['module_id'] > 0) {
+                              $selected = ($module['module_id'] == $category_module['module_id']);
+                            } else {
+                              $selected = ($module['code'] == $category_module['code']);
+                            }
+                          ?>
+                          <option value="<?php echo $module['code']; ?>" data-module-id="<?php echo $module['module_id']; ?>" <?php echo $selected ? 'selected="selected"' : ''; ?>><?php echo $module['name']; ?></option>
                           <?php } ?>
                           <?php } ?>
                         </select>
-                        <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
+                        <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" class="module-id-input" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
                       </td>
                       <td class="text-left">
                         <textarea name="category_module[<?php echo $module_row; ?>][setting]" rows="3" class="form-control" placeholder='{"name":"Module Name","limit":8}'><?php echo isset($category_module['setting']) ? htmlspecialchars(json_encode($category_module['setting'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) : ''; ?></textarea>
@@ -405,15 +409,15 @@ var module_row = <?php echo isset($module_row) ? $module_row : 0; ?>;
 function addModule() {
 	html  = '<tr id="module-row' + module_row + '">';
 	html += '  <td class="text-left">';
-	html += '    <select name="category_module[' + module_row + '][code]" class="form-control">';
+	html += '    <select name="category_module[' + module_row + '][code]" class="form-control module-select" data-row="' + module_row + '">';
 	html += '      <option value=""><?php echo $text_none; ?></option>';
 	<?php if (isset($available_modules)) { ?>
 	<?php foreach ($available_modules as $module) { ?>
-	html += '      <option value="<?php echo $module['code']; ?>"><?php echo addslashes($module['name']); ?></option>';
+	html += '      <option value="<?php echo $module['code']; ?>" data-module-id="<?php echo $module['module_id']; ?>"><?php echo addslashes($module['name']); ?></option>';
 	<?php } ?>
 	<?php } ?>
 	html += '    </select>';
-	html += '    <input type="hidden" name="category_module[' + module_row + '][module_id]" value="0" />';
+	html += '    <input type="hidden" name="category_module[' + module_row + '][module_id]" class="module-id-input" value="0" />';
 	html += '  </td>';
 	html += '  <td class="text-left">';
 	html += '    <textarea name="category_module[' + module_row + '][setting]" rows="3" class="form-control" placeholder=\'{"name":"Module Name","limit":8}\'></textarea>';
@@ -436,5 +440,13 @@ function addModule() {
 
 	module_row++;
 }
+
+// Update module_id when module selection changes
+$(document).on('change', '.module-select', function() {
+	var row = $(this).data('row');
+	var selectedOption = $(this).find('option:selected');
+	var moduleId = selectedOption.data('module-id') || 0;
+	$('input[name="category_module[' + row + '][module_id]"]').val(moduleId);
+});
 //--></script></div>
 <?php echo $footer; ?>

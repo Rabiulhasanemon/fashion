@@ -474,9 +474,20 @@ class ControllerProductCategory extends Controller {
 								// Try to load module controller
 								$module_output = '';
 								$module_code = isset($module['code']) ? $module['code'] : '';
+								$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
 								$module_setting = isset($module['setting']) ? $module['setting'] : array();
 								
 								if (!empty($module_code)) {
+									// If module_id is provided, load the module instance from database
+									if ($module_id > 0) {
+										$this->load->model('extension/module');
+										$module_data = $this->model_extension_module->getModule($module_id);
+										if ($module_data && !empty($module_data)) {
+											// Use settings from database module instance
+											$module_setting = $module_data;
+										}
+									}
+									
 									// Try extension/module path first
 									if (file_exists(DIR_APPLICATION . 'controller/extension/module/' . $module_code . '.php')) {
 										$module_output = $this->load->controller('extension/module/' . $module_code, $module_setting);
