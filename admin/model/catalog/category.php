@@ -406,21 +406,37 @@ class ModelCatalogCategory extends Model {
 	}
 
 	public function saveCategoryModules($category_id, $modules) {
+		$log_file = DIR_LOGS . 'category_module_debug.log';
+		$log_msg = date('Y-m-d H:i:s') . " - saveCategoryModules called for category_id: " . $category_id . "\n";
+		$log_msg .= "Modules parameter type: " . gettype($modules) . "\n";
+		$log_msg .= "Modules is array: " . (is_array($modules) ? 'YES' : 'NO') . "\n";
+		$log_msg .= "Modules is empty: " . (empty($modules) ? 'YES' : 'NO') . "\n";
+		if (is_array($modules)) {
+			$log_msg .= "Modules count: " . count($modules) . "\n";
+			$log_msg .= "Modules data: " . print_r($modules, true) . "\n";
+		}
+		
 		// Check if table exists first
 		$table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "category_module'");
 		if (!$table_check->num_rows) {
+			$log_msg .= "ERROR: Category module table does not exist\n";
+			$log_msg .= "---\n";
+			file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('Category module table does not exist');
 			return; // Exit if table doesn't exist
 		}
+		$log_msg .= "Table exists: YES\n";
 
 		try {
 			// Delete existing modules for this category
 			$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
+			$log_msg .= "Deleted existing modules for category\n";
 
 			error_log('saveCategoryModules called for category_id: ' . $category_id);
 			error_log('Modules data received: ' . print_r($modules, true));
 
 			if (isset($modules) && is_array($modules) && !empty($modules)) {
+				$log_msg .= "Modules array is valid, processing...\n";
 				$saved_count = 0;
 				foreach ($modules as $index => $module) {
 					// Skip empty modules (no code selected)
@@ -460,12 +476,22 @@ class ModelCatalogCategory extends Model {
 					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', description = '" . $description . "', sort_order = '" . $sort_order . "', status = '" . $status . "'");
 					
 					$saved_count++;
+					$log_msg .= "Saved module " . $saved_count . ": code=" . $code . ", module_id=" . $module_id . "\n";
 				}
+				$log_msg .= "Total saved: " . $saved_count . " category modules for category_id: " . $category_id . "\n";
+				file_put_contents($log_file, $log_msg, FILE_APPEND);
 				error_log('Saved ' . $saved_count . ' category modules for category_id: ' . $category_id);
 			} else {
+				$log_msg .= "ERROR: No modules array provided or modules is not an array\n";
+				$log_msg .= "---\n";
+				file_put_contents($log_file, $log_msg, FILE_APPEND);
 				error_log('No modules array provided or modules is not an array');
 			}
 		} catch (Exception $e) {
+			$log_msg .= "EXCEPTION: " . $e->getMessage() . "\n";
+			$log_msg .= "Stack trace: " . $e->getTraceAsString() . "\n";
+			$log_msg .= "---\n";
+			file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('Error saving category modules: ' . $e->getMessage());
 			error_log('Stack trace: ' . $e->getTraceAsString());
 			// Don't throw exception - allow category to save even if modules fail
