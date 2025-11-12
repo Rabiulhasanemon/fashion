@@ -401,7 +401,10 @@ class ModelCatalogCategory extends Model {
 			// Delete existing modules for this category
 			$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
 
-			if (isset($modules) && is_array($modules)) {
+			error_log('saveCategoryModules called for category_id: ' . $category_id);
+			error_log('Modules data received: ' . print_r($modules, true));
+
+			if (isset($modules) && is_array($modules) && !empty($modules)) {
 				$saved_count = 0;
 				foreach ($modules as $module) {
 					// Skip empty modules (no code selected)
