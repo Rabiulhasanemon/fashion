@@ -179,12 +179,18 @@ class ModelCatalogCategory extends Model {
 		}
 
 		// Save category modules
-		error_log('editCategory - Checking for category_module in data');
-		error_log('editCategory - Data keys: ' . implode(', ', array_keys($data)));
+		$log_file = DIR_LOGS . 'category_module_debug.log';
+		$log_msg = date('Y-m-d H:i:s') . " - editCategory - Checking for category_module in data\n";
+		$log_msg .= "Data keys: " . implode(', ', array_keys($data)) . "\n";
 		if (isset($data['category_module'])) {
+			$log_msg .= "category_module found, calling saveCategoryModules\n";
+			file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('editCategory - category_module found, calling saveCategoryModules');
 			$this->saveCategoryModules($category_id, $data['category_module']);
 		} else {
+			$log_msg .= "category_module NOT found in data\n";
+			$log_msg .= "---\n";
+			file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('editCategory - category_module NOT found in data');
 		}
 

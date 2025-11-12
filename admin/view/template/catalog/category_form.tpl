@@ -466,62 +466,72 @@ $(document).ready(function() {
 });
 
 // Sync Summernote content before form submission
-$('#form-category').on('submit', function(e) {
-	// Sync all Summernote editors
-	$('textarea.summernote').each(function() {
-		if ($(this).next('.note-editor').length) {
-			var content = $(this).summernote('code');
-			$(this).val(content);
-		}
-	});
-	
-	// Debug: Log form data before submission
-	console.log('Form submitting...');
-	var formData = new FormData(this);
-	var moduleData = [];
-	for (var pair of formData.entries()) {
-		if (pair[0].indexOf('category_module') === 0) {
-			moduleData.push(pair[0] + '=' + pair[1]);
-		}
-	}
-	console.log('Module data in form:', moduleData);
-	
-	// Remove empty module rows (rows with no code selected) before submission
-	var removedCount = 0;
-	$('#category-modules tbody tr').each(function() {
-		var codeSelect = $(this).find('select[name*="[code]"]');
-		if (codeSelect.length && (!codeSelect.val() || codeSelect.val() === '')) {
-			console.log('Removing empty module row');
-			$(this).remove();
-			removedCount++;
-		}
-	});
-	
-	console.log('Removed ' + removedCount + ' empty module rows');
-	
-	// Final check - count remaining module rows
-	var remainingRows = $('#category-modules tbody tr').length;
-	console.log('Remaining module rows: ' + remainingRows);
-	
-	// Log all module form fields that will be submitted
-	var allModuleFields = [];
-	$('#category-modules tbody tr').each(function(index) {
-		var row = $(this);
-		var code = row.find('select[name*="[code]"]').val();
-		var moduleId = row.find('input[name*="[module_id]"]').val();
-		var description = row.find('textarea[name*="[description]"]').val();
-		var sortOrder = row.find('input[name*="[sort_order]"]').val();
-		var status = row.find('select[name*="[status]"]').val();
-		allModuleFields.push({
-			row: index,
-			code: code,
-			moduleId: moduleId,
-			hasDescription: description ? 'YES' : 'NO',
-			sortOrder: sortOrder,
-			status: status
+$(document).ready(function() {
+	$('#form-category').on('submit', function(e) {
+		// Alert to confirm handler is running
+		console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
+		
+		// Sync all Summernote editors
+		$('textarea.summernote').each(function() {
+			if ($(this).next('.note-editor').length) {
+				var content = $(this).summernote('code');
+				$(this).val(content);
+			}
 		});
+		
+		// Debug: Log form data before submission
+		console.log('Form submitting...');
+		var formData = new FormData(this);
+		var moduleData = [];
+		for (var pair of formData.entries()) {
+			if (pair[0].indexOf('category_module') === 0) {
+				moduleData.push(pair[0] + '=' + pair[1]);
+			}
+		}
+		console.log('Module data in form:', moduleData);
+		
+		// Remove empty module rows (rows with no code selected) before submission
+		var removedCount = 0;
+		$('#category-modules tbody tr').each(function() {
+			var codeSelect = $(this).find('select[name*="[code]"]');
+			if (codeSelect.length && (!codeSelect.val() || codeSelect.val() === '')) {
+				console.log('Removing empty module row');
+				$(this).remove();
+				removedCount++;
+			}
+		});
+		
+		console.log('Removed ' + removedCount + ' empty module rows');
+		
+		// Final check - count remaining module rows
+		var remainingRows = $('#category-modules tbody tr').length;
+		console.log('Remaining module rows: ' + remainingRows);
+		
+		// Log all module form fields that will be submitted
+		var allModuleFields = [];
+		$('#category-modules tbody tr').each(function(index) {
+			var row = $(this);
+			var code = row.find('select[name*="[code]"]').val();
+			var moduleId = row.find('input[name*="[module_id]"]').val();
+			var description = row.find('textarea[name*="[description]"]').val();
+			var sortOrder = row.find('input[name*="[sort_order]"]').val();
+			var status = row.find('select[name*="[status]"]').val();
+			allModuleFields.push({
+				row: index,
+				code: code,
+				moduleId: moduleId,
+				hasDescription: description ? 'YES' : 'NO',
+				sortOrder: sortOrder,
+				status: status
+			});
+		});
+		console.log('Module fields to be submitted:', JSON.stringify(allModuleFields, null, 2));
+		
+		// If no modules, show alert
+		if (remainingRows === 0) {
+			console.warn('WARNING: No module rows will be submitted!');
+		}
 	});
-	console.log('Module fields to be submitted:', JSON.stringify(allModuleFields, null, 2));
 });
 //--></script></div>
 <?php echo $footer; ?>

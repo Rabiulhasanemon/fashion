@@ -76,6 +76,21 @@ class ControllerCatalogCategory extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			// Debug: Log what we're receiving
+			$log_file = DIR_LOGS . 'category_module_debug.log';
+			$log_msg = date('Y-m-d H:i:s') . " - Category Edit - POST data received for category_id: " . $this->request->get['category_id'] . "\n";
+			$log_msg .= "Raw \$_POST keys: " . implode(', ', array_keys($_POST)) . "\n";
+			$log_msg .= "\$this->request->post keys: " . implode(', ', array_keys($this->request->post)) . "\n";
+			$log_msg .= "category_module in \$_POST: " . (isset($_POST['category_module']) ? 'YES' : 'NO') . "\n";
+			$log_msg .= "category_module in \$this->request->post: " . (isset($this->request->post['category_module']) ? 'YES' : 'NO') . "\n";
+			if (isset($this->request->post['category_module'])) {
+				$log_msg .= "category_module data: " . print_r($this->request->post['category_module'], true) . "\n";
+			} elseif (isset($_POST['category_module'])) {
+				$log_msg .= "category_module in raw \$_POST: " . print_r($_POST['category_module'], true) . "\n";
+			}
+			$log_msg .= "---\n";
+			file_put_contents($log_file, $log_msg, FILE_APPEND);
+			
+			// Also use error_log
 			error_log('Category Edit - POST data received for category_id: ' . $this->request->get['category_id']);
 			error_log('Raw $_POST keys: ' . implode(', ', array_keys($_POST)));
 			error_log('$this->request->post keys: ' . implode(', ', array_keys($this->request->post)));
