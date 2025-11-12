@@ -375,6 +375,7 @@ class ModelCatalogCategory extends Model {
 					'module_id' => isset($result['module_id']) ? $result['module_id'] : 0,
 					'code' => $result['code'],
 					'setting' => $setting,
+					'description' => isset($result['description']) ? $result['description'] : '',
 					'sort_order' => isset($result['sort_order']) ? $result['sort_order'] : 0,
 					'status' => isset($result['status']) ? $result['status'] : 1
 				);
@@ -411,7 +412,7 @@ class ModelCatalogCategory extends Model {
 					$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
 					$code = $this->db->escape(trim($module['code']));
 					
-					// Handle settings - can be array or JSON string
+					// Handle settings - can be array or JSON string (keep for backward compatibility)
 					$setting_data = array();
 					if (isset($module['setting'])) {
 						if (is_array($module['setting'])) {
@@ -428,10 +429,13 @@ class ModelCatalogCategory extends Model {
 					}
 					$setting = $this->db->escape(json_encode($setting_data));
 					
+					// Handle description
+					$description = isset($module['description']) ? $this->db->escape(trim($module['description'])) : '';
+					
 					$sort_order = isset($module['sort_order']) ? (int)$module['sort_order'] : 0;
 					$status = isset($module['status']) ? (int)$module['status'] : 1;
 
-					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', sort_order = '" . $sort_order . "', status = '" . $status . "'");
+					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', description = '" . $description . "', sort_order = '" . $sort_order . "', status = '" . $status . "'");
 					
 					$saved_count++;
 				}

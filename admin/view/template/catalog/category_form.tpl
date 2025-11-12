@@ -266,7 +266,7 @@
                   <thead>
                     <tr>
                       <td class="text-left"><?php echo isset($entry_module) ? $entry_module : 'Module'; ?></td>
-                      <td class="text-left"><?php echo isset($entry_module_setting) ? $entry_module_setting : 'Settings (JSON)'; ?></td>
+                      <td class="text-left"><?php echo isset($entry_module_description) ? $entry_module_description : 'Description'; ?></td>
                       <td class="text-left"><?php echo $entry_sort_order; ?></td>
                       <td class="text-left"><?php echo $entry_status; ?></td>
                       <td class="text-right"><?php echo isset($button_remove) ? $button_remove : 'Remove'; ?></td>
@@ -297,7 +297,7 @@
                         <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" class="module-id-input" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
                       </td>
                       <td class="text-left">
-                        <textarea name="category_module[<?php echo $module_row; ?>][setting]" rows="3" class="form-control" placeholder='{"name":"Module Name","limit":8}'><?php echo isset($category_module['setting']) ? htmlspecialchars(json_encode($category_module['setting'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) : ''; ?></textarea>
+                        <textarea name="category_module[<?php echo $module_row; ?>][description]" rows="3" class="form-control" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? htmlspecialchars($category_module['description']) : ''; ?></textarea>
                       </td>
                       <td class="text-left">
                         <input type="text" name="category_module[<?php echo $module_row; ?>][sort_order]" value="<?php echo isset($category_module['sort_order']) ? $category_module['sort_order'] : 0; ?>" placeholder="0" class="form-control" />
@@ -420,7 +420,7 @@ function addModule() {
 	html += '    <input type="hidden" name="category_module[' + module_row + '][module_id]" class="module-id-input" value="0" />';
 	html += '  </td>';
 	html += '  <td class="text-left">';
-	html += '    <textarea name="category_module[' + module_row + '][setting]" rows="3" class="form-control" placeholder=\'{"name":"Module Name","limit":8}\'></textarea>';
+	html += '    <textarea name="category_module[' + module_row + '][description]" rows="3" class="form-control" placeholder="Enter module description..."></textarea>';
 	html += '  </td>';
 	html += '  <td class="text-left">';
 	html += '    <input type="text" name="category_module[' + module_row + '][sort_order]" value="0" placeholder="0" class="form-control" />';
