@@ -133,14 +133,6 @@
                     </span>
                     <span class="icon-text">Cart</span>
                 </a>
-                <a href="#" class="header-icon-item more-icon">
-                    <span class="icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
-                    <span class="icon-text">More</span>
-                </a>
             </div>
         </div>
     </div>
