@@ -62,8 +62,13 @@ class ModelCatalogCategory extends Model {
 		}
 
 		// Save category modules
+		error_log('addCategory - Checking for category_module in data');
+		error_log('addCategory - Data keys: ' . implode(', ', array_keys($data)));
 		if (isset($data['category_module'])) {
+			error_log('addCategory - category_module found, calling saveCategoryModules');
 			$this->saveCategoryModules($category_id, $data['category_module']);
+		} else {
+			error_log('addCategory - category_module NOT found in data');
 		}
 
 		$this->cache->delete('category');
@@ -174,8 +179,13 @@ class ModelCatalogCategory extends Model {
 		}
 
 		// Save category modules
+		error_log('editCategory - Checking for category_module in data');
+		error_log('editCategory - Data keys: ' . implode(', ', array_keys($data)));
 		if (isset($data['category_module'])) {
+			error_log('editCategory - category_module found, calling saveCategoryModules');
 			$this->saveCategoryModules($category_id, $data['category_module']);
+		} else {
+			error_log('editCategory - category_module NOT found in data');
 		}
 
 		$this->cache->delete('category');

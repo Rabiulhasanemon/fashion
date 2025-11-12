@@ -22,9 +22,14 @@ class ControllerCatalogCategory extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			// Debug: Log what we're receiving
 			error_log('Category Add - POST data received');
-			error_log('category_module in POST: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
+			error_log('Raw $_POST keys: ' . implode(', ', array_keys($_POST)));
+			error_log('$this->request->post keys: ' . implode(', ', array_keys($this->request->post)));
+			error_log('category_module in $_POST: ' . (isset($_POST['category_module']) ? 'YES' : 'NO'));
+			error_log('category_module in $this->request->post: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
 			if (isset($this->request->post['category_module'])) {
 				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
+			} elseif (isset($_POST['category_module'])) {
+				error_log('category_module in raw $_POST: ' . print_r($_POST['category_module'], true));
 			}
 			
             $category_id = $this->model_catalog_category->addCategory($this->request->post);
@@ -72,9 +77,14 @@ class ControllerCatalogCategory extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			// Debug: Log what we're receiving
 			error_log('Category Edit - POST data received for category_id: ' . $this->request->get['category_id']);
-			error_log('category_module in POST: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
+			error_log('Raw $_POST keys: ' . implode(', ', array_keys($_POST)));
+			error_log('$this->request->post keys: ' . implode(', ', array_keys($this->request->post)));
+			error_log('category_module in $_POST: ' . (isset($_POST['category_module']) ? 'YES' : 'NO'));
+			error_log('category_module in $this->request->post: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
 			if (isset($this->request->post['category_module'])) {
 				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
+			} elseif (isset($_POST['category_module'])) {
+				error_log('category_module in raw $_POST: ' . print_r($_POST['category_module'], true));
 			}
 			
 			$this->model_catalog_category->editCategory($this->request->get['category_id'], $this->request->post);
