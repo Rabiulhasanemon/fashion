@@ -487,13 +487,41 @@ $('#form-category').on('submit', function(e) {
 	console.log('Module data in form:', moduleData);
 	
 	// Remove empty module rows (rows with no code selected) before submission
+	var removedCount = 0;
 	$('#category-modules tbody tr').each(function() {
 		var codeSelect = $(this).find('select[name*="[code]"]');
 		if (codeSelect.length && (!codeSelect.val() || codeSelect.val() === '')) {
 			console.log('Removing empty module row');
 			$(this).remove();
+			removedCount++;
 		}
 	});
+	
+	console.log('Removed ' + removedCount + ' empty module rows');
+	
+	// Final check - count remaining module rows
+	var remainingRows = $('#category-modules tbody tr').length;
+	console.log('Remaining module rows: ' + remainingRows);
+	
+	// Log all module form fields that will be submitted
+	var allModuleFields = [];
+	$('#category-modules tbody tr').each(function(index) {
+		var row = $(this);
+		var code = row.find('select[name*="[code]"]').val();
+		var moduleId = row.find('input[name*="[module_id]"]').val();
+		var description = row.find('textarea[name*="[description]"]').val();
+		var sortOrder = row.find('input[name*="[sort_order]"]').val();
+		var status = row.find('select[name*="[status]"]').val();
+		allModuleFields.push({
+			row: index,
+			code: code,
+			moduleId: moduleId,
+			hasDescription: description ? 'YES' : 'NO',
+			sortOrder: sortOrder,
+			status: status
+		});
+	});
+	console.log('Module fields to be submitted:', JSON.stringify(allModuleFields, null, 2));
 });
 //--></script></div>
 <?php echo $footer; ?>
