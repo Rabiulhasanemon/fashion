@@ -589,6 +589,44 @@ class ControllerCatalogCategory extends Controller {
             $data['view'] = '';
         }
 
+		// Load available modules for category modules tab
+		$this->load->model('extension/extension');
+		$this->load->model('extension/module');
+		
+		$data['available_modules'] = array();
+		$extensions = $this->model_extension_extension->getInstalled('module');
+		
+		foreach ($extensions as $code) {
+			$this->load->language('module/' . $code);
+			$modules = $this->model_extension_module->getModulesByCode($code);
+			
+			foreach ($modules as $module) {
+				$data['available_modules'][] = array(
+					'module_id' => $module['module_id'],
+					'code' => $code,
+					'name' => $this->language->get('heading_title') . ' - ' . $module['name']
+				);
+			}
+			
+			// Also add the module code itself if no instances exist
+			if (empty($modules)) {
+				$data['available_modules'][] = array(
+					'module_id' => 0,
+					'code' => $code,
+					'name' => $this->language->get('heading_title')
+				);
+			}
+		}
+		
+		// Load category modules if editing
+		if (isset($this->request->get['category_id'])) {
+			$data['category_modules'] = $this->model_catalog_category->getCategoryModules($this->request->get['category_id']);
+		} elseif (isset($this->request->post['category_module'])) {
+			$data['category_modules'] = $this->request->post['category_module'];
+		} else {
+			$data['category_modules'] = array();
+		}
+
 		$this->load->model('design/layout');
 
 		$data['layouts'] = $this->model_design_layout->getLayouts();
