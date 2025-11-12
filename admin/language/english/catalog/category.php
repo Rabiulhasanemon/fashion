@@ -35,10 +35,6 @@ $_['entry_sort_order']       = 'Sort Order';
 $_['entry_status']           = 'Status';
 $_['entry_view']             = 'View';
 $_['entry_layout']           = 'Layout Override';
-$_['tab_modules']             = 'Modules';
-$_['entry_module']            = 'Module';
-$_['entry_module_setting']    = 'Settings (JSON)';
-$_['button_add_module']       = 'Add Module';
 
 // Help
 $_['help_filter']            = '(Autocomplete)';

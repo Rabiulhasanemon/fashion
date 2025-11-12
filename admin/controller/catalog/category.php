@@ -22,11 +22,6 @@ class ControllerCatalogCategory extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
             $category_id = $this->model_catalog_category->addCategory($this->request->post);
 
-			// Save category modules
-			if (isset($this->request->post['category_module'])) {
-				$this->model_catalog_category->saveCategoryModules($category_id, $this->request->post['category_module']);
-			}
-
             // Add to activity log
             $this->load->model('user/user');
 
@@ -69,11 +64,6 @@ class ControllerCatalogCategory extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_category->editCategory($this->request->get['category_id'], $this->request->post);
-
-			// Save category modules
-			if (isset($this->request->post['category_module'])) {
-				$this->model_catalog_category->saveCategoryModules($this->request->get['category_id'], $this->request->post['category_module']);
-			}
 
             // Add to activity log
             $this->load->model('user/user');
@@ -598,113 +588,6 @@ class ControllerCatalogCategory extends Controller {
         } else {
             $data['view'] = '';
         }
-
-		// Load available modules - show all installed module instances from database
-		$data['available_modules'] = array();
-		
-		// Load installed module instances from database
-		$this->load->model('extension/module');
-		$installed_modules = $this->model_extension_module->getModules();
-		
-		// Group modules by code and get module type names
-		$module_type_names = array();
-		$module_dir = DIR_APPLICATION . 'controller/module/';
-		if (is_dir($module_dir)) {
-			$files = glob($module_dir . '*.php');
-			foreach ($files as $file) {
-				$module_code = basename($file, '.php');
-				// Get module name from language file if available
-				try {
-					$this->load->language('module/' . $module_code);
-					$module_name = $this->language->get('heading_title');
-					if ($module_name == 'heading_title' || empty($module_name)) {
-						$module_name = ucwords(str_replace('_', ' ', $module_code));
-					}
-				} catch (Exception $e) {
-					$module_name = ucwords(str_replace('_', ' ', $module_code));
-				}
-				$module_type_names[$module_code] = $module_name;
-			}
-		}
-		
-		// Also check extension/module directory
-		$extension_module_dir = DIR_APPLICATION . 'controller/extension/module/';
-		if (is_dir($extension_module_dir)) {
-			$files = glob($extension_module_dir . '*.php');
-			foreach ($files as $file) {
-				$module_code = basename($file, '.php');
-				if (!isset($module_type_names[$module_code])) {
-					// Get module name from language file if available
-					try {
-						$this->load->language('extension/module/' . $module_code);
-						$module_name = $this->language->get('heading_title');
-						if ($module_name == 'heading_title' || empty($module_name)) {
-							$module_name = ucwords(str_replace('_', ' ', $module_code));
-						}
-					} catch (Exception $e) {
-						$module_name = ucwords(str_replace('_', ' ', $module_code));
-					}
-					$module_type_names[$module_code] = $module_name;
-				}
-			}
-		}
-		
-		// Add all installed module instances
-		foreach ($installed_modules as $module) {
-			$module_code = $module['code'];
-			$module_id = $module['module_id'];
-			$module_setting = unserialize($module['setting']);
-			$instance_name = isset($module_setting['name']) ? $module_setting['name'] : $module['name'];
-			
-			// Get module type name
-			$type_name = isset($module_type_names[$module_code]) ? $module_type_names[$module_code] : ucwords(str_replace('_', ' ', $module_code));
-			
-			// Format: "Module Type > Instance Name"
-			$display_name = $type_name . ' > ' . $instance_name;
-			
-			$data['available_modules'][] = array(
-				'module_id' => $module_id,
-				'code' => $module_code,
-				'name' => $display_name,
-				'instance_name' => $instance_name
-			);
-		}
-		
-		// Sort modules by display name
-		usort($data['available_modules'], function($a, $b) {
-			return strcmp($a['name'], $b['name']);
-		});
-
-		// Load category modules
-		if (isset($this->request->post['category_module'])) {
-			$data['category_modules'] = $this->request->post['category_module'];
-		} elseif (isset($this->request->get['category_id'])) {
-			$data['category_modules'] = $this->model_catalog_category->getCategoryModules($this->request->get['category_id']);
-		} else {
-			$data['category_modules'] = array();
-		}
-
-		// Load module-related language variables with fallbacks
-		$data['tab_modules'] = $this->language->get('tab_modules');
-		if ($data['tab_modules'] == 'tab_modules') {
-			$data['tab_modules'] = 'Modules';
-		}
-		$data['entry_module'] = $this->language->get('entry_module');
-		if ($data['entry_module'] == 'entry_module') {
-			$data['entry_module'] = 'Module';
-		}
-		$data['entry_module_setting'] = $this->language->get('entry_module_setting');
-		if ($data['entry_module_setting'] == 'entry_module_setting') {
-			$data['entry_module_setting'] = 'Settings (JSON)';
-		}
-		$data['button_add_module'] = $this->language->get('button_add_module');
-		if ($data['button_add_module'] == 'button_add_module') {
-			$data['button_add_module'] = 'Add Module';
-		}
-		$data['button_remove'] = $this->language->get('button_remove');
-		if ($data['button_remove'] == 'button_remove') {
-			$data['button_remove'] = 'Remove';
-		}
 
 		$this->load->model('design/layout');
 
