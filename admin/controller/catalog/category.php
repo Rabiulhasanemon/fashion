@@ -20,6 +20,13 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Debug: Log what we're receiving
+			error_log('Category Add - POST data received');
+			error_log('category_module in POST: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
+			if (isset($this->request->post['category_module'])) {
+				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
+			}
+			
             $category_id = $this->model_catalog_category->addCategory($this->request->post);
 
             // Add to activity log
@@ -63,6 +70,13 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Debug: Log what we're receiving
+			error_log('Category Edit - POST data received for category_id: ' . $this->request->get['category_id']);
+			error_log('category_module in POST: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
+			if (isset($this->request->post['category_module'])) {
+				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
+			}
+			
 			$this->model_catalog_category->editCategory($this->request->get['category_id'], $this->request->post);
 
             // Add to activity log

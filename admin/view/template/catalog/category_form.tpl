@@ -466,10 +466,32 @@ $(document).ready(function() {
 });
 
 // Sync Summernote content before form submission
-$('#form-category').on('submit', function() {
+$('#form-category').on('submit', function(e) {
+	// Sync all Summernote editors
 	$('textarea.summernote').each(function() {
 		if ($(this).next('.note-editor').length) {
-			$(this).val($(this).summernote('code'));
+			var content = $(this).summernote('code');
+			$(this).val(content);
+		}
+	});
+	
+	// Debug: Log form data before submission
+	console.log('Form submitting...');
+	var formData = new FormData(this);
+	var moduleData = [];
+	for (var pair of formData.entries()) {
+		if (pair[0].indexOf('category_module') === 0) {
+			moduleData.push(pair[0] + '=' + pair[1]);
+		}
+	}
+	console.log('Module data in form:', moduleData);
+	
+	// Remove empty module rows (rows with no code selected) before submission
+	$('#category-modules tbody tr').each(function() {
+		var codeSelect = $(this).find('select[name*="[code]"]');
+		if (codeSelect.length && (!codeSelect.val() || codeSelect.val() === '')) {
+			console.log('Removing empty module row');
+			$(this).remove();
 		}
 	});
 });

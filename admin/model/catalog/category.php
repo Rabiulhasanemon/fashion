@@ -406,12 +406,14 @@ class ModelCatalogCategory extends Model {
 
 			if (isset($modules) && is_array($modules) && !empty($modules)) {
 				$saved_count = 0;
-				foreach ($modules as $module) {
+				foreach ($modules as $index => $module) {
 					// Skip empty modules (no code selected)
 					if (!isset($module['code']) || empty(trim($module['code']))) {
-						error_log('Skipping module - no code: ' . print_r($module, true));
+						error_log('Skipping module at index ' . $index . ' - no code: ' . print_r($module, true));
 						continue;
 					}
+					
+					error_log('Processing module at index ' . $index . ': code=' . $module['code']);
 					
 					$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
 					$code = $this->db->escape(trim($module['code']));
