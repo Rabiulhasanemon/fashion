@@ -22,6 +22,11 @@ class ControllerCatalogCategory extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
             $category_id = $this->model_catalog_category->addCategory($this->request->post);
 
+			// Save category modules
+			if (isset($this->request->post['category_module'])) {
+				$this->model_catalog_category->saveCategoryModules($category_id, $this->request->post['category_module']);
+			}
+
             // Add to activity log
             $this->load->model('user/user');
 
@@ -64,6 +69,11 @@ class ControllerCatalogCategory extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_catalog_category->editCategory($this->request->get['category_id'], $this->request->post);
+
+			// Save category modules
+			if (isset($this->request->post['category_module'])) {
+				$this->model_catalog_category->saveCategoryModules($this->request->get['category_id'], $this->request->post['category_module']);
+			}
 
             // Add to activity log
             $this->load->model('user/user');
@@ -589,42 +599,48 @@ class ControllerCatalogCategory extends Controller {
             $data['view'] = '';
         }
 
-		$this->load->model('design/layout');
-
-		$data['layouts'] = $this->model_design_layout->getLayouts();
-
-		// Load modules for category
-		$this->load->model('extension/extension');
-		$installed_modules = $this->model_extension_extension->getInstalled('module');
-		
-		$data['modules'] = array();
-		if (is_array($installed_modules)) {
-			foreach ($installed_modules as $module_code) {
-				$module_name = ucwords(str_replace('_', ' ', $module_code));
-				try {
-					$this->load->language('extension/module/' . $module_code);
-					$lang_name = $this->language->get('heading_title');
-					if (!empty($lang_name) && $lang_name != 'heading_title') {
-						$module_name = $lang_name;
-					}
-				} catch (Exception $e) {
-					// Use default name if language file doesn't exist
+		// Load available modules
+		$data['available_modules'] = array();
+		$module_dir = DIR_APPLICATION . 'controller/module/';
+		if (is_dir($module_dir)) {
+			$files = glob($module_dir . '*.php');
+			foreach ($files as $file) {
+				$module_code = basename($file, '.php');
+				// Get module name from language file if available
+				$this->load->language('module/' . $module_code);
+				$module_name = $this->language->get('heading_title');
+				if ($module_name == 'heading_title') {
+					$module_name = ucwords(str_replace('_', ' ', $module_code));
 				}
-				$data['modules'][] = array(
+				$data['available_modules'][] = array(
 					'code' => $module_code,
 					'name' => $module_name
 				);
 			}
 		}
+		// Sort modules by name
+		usort($data['available_modules'], function($a, $b) {
+			return strcmp($a['name'], $b['name']);
+		});
 
 		// Load category modules
-		if (isset($this->request->post['category_modules'])) {
-			$data['category_modules'] = $this->request->post['category_modules'];
+		if (isset($this->request->post['category_module'])) {
+			$data['category_modules'] = $this->request->post['category_module'];
 		} elseif (isset($this->request->get['category_id'])) {
 			$data['category_modules'] = $this->model_catalog_category->getCategoryModules($this->request->get['category_id']);
 		} else {
 			$data['category_modules'] = array();
 		}
+
+		$data['tab_modules'] = $this->language->get('tab_modules');
+		$data['entry_module'] = $this->language->get('entry_module');
+		$data['entry_module_setting'] = $this->language->get('entry_module_setting');
+		$data['button_add_module'] = $this->language->get('button_add_module');
+		$data['button_remove'] = $this->language->get('button_remove');
+
+		$this->load->model('design/layout');
+
+		$data['layouts'] = $this->model_design_layout->getLayouts();
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');

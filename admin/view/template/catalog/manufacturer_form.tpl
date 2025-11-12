@@ -25,9 +25,6 @@
       </div>
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-manufacturer" class="form-horizontal">
-          <?php if (isset($manufacturer_id)) { ?>
-          <input type="hidden" name="manufacturer_id" value="<?php echo $manufacturer_id; ?>" />
-          <?php } ?>
           <ul class="nav nav-tabs">
             <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $tab_general; ?></a></li>
             <li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>

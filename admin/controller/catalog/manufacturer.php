@@ -20,76 +20,9 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			try {
-				$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
+			$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
 
-				if ($manufacturer_id > 0) {
-					$this->session->data['success'] = $this->language->get('text_success');
-
-					$url = '';
-
-					if (isset($this->request->get['sort'])) {
-						$url .= '&sort=' . $this->request->get['sort'];
-					}
-
-					if (isset($this->request->get['order'])) {
-						$url .= '&order=' . $this->request->get['order'];
-					}
-
-					if (isset($this->request->get['page'])) {
-						$url .= '&page=' . $this->request->get['page'];
-					}
-
-					// Always redirect back to manufacturer list after successful save
-					$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-					return;
-				} else {
-					$this->error['warning'] = $this->language->get('error_insert_failed');
-				}
-			} catch (Exception $e) {
-				// Manufacturer add failed
-				$this->error['warning'] = 'Error adding manufacturer: ' . $e->getMessage();
-				error_log('Manufacturer add error: ' . $e->getMessage());
-			}
-		}
-
-		$this->getForm();
-	}
-
-	public function edit() {
-		$this->load->language('catalog/manufacturer');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/manufacturer');
-
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Get manufacturer_id from GET or POST (GET is preferred for edit operations)
-			$manufacturer_id = 0;
-			if (isset($this->request->get['manufacturer_id']) && is_numeric($this->request->get['manufacturer_id'])) {
-				$manufacturer_id = (int)$this->request->get['manufacturer_id'];
-			} elseif (isset($this->request->post['manufacturer_id']) && is_numeric($this->request->post['manufacturer_id'])) {
-				$manufacturer_id = (int)$this->request->post['manufacturer_id'];
-			}
-
-			// Validate manufacturer_id - only required for edit, not for add
-			if ($manufacturer_id <= 0) {
-				$this->error['warning'] = 'Invalid manufacturer ID. Cannot update manufacturer.';
-				$this->getForm();
-				return;
-			}
-
-			// Verify manufacturer exists
-			$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
-			if (!$manufacturer_info) {
-				$this->error['warning'] = 'Manufacturer not found. Cannot update manufacturer.';
-				$this->getForm();
-				return;
-			}
-
-			try {
-				$this->model_catalog_manufacturer->editManufacturer($manufacturer_id, $this->request->post);
-
+			if ($manufacturer_id > 0) {
 				$this->session->data['success'] = $this->language->get('text_success');
 
 				$url = '';
@@ -106,14 +39,42 @@ class ControllerCatalogManufacturer extends Controller {
 					$url .= '&page=' . $this->request->get['page'];
 				}
 
-				// Always redirect back to manufacturer list after successful save
 				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-				return;
-			} catch (Exception $e) {
-				// Manufacturer update failed
-				$this->error['warning'] = 'Error updating manufacturer: ' . $e->getMessage();
-				error_log('Manufacturer update error: ' . $e->getMessage());
+			} else {
+				$this->error['warning'] = $this->language->get('error_insert_failed');
 			}
+		}
+
+		$this->getForm();
+	}
+
+	public function edit() {
+		$this->load->language('catalog/manufacturer');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('catalog/manufacturer');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_catalog_manufacturer->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		}
 
 		$this->getForm();
@@ -336,9 +297,6 @@ class ControllerCatalogManufacturer extends Controller {
 
 		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
-		} elseif (isset($this->session->data['error_warning'])) {
-			$data['error_warning'] = $this->session->data['error_warning'];
-			unset($this->session->data['error_warning']);
 		} else {
 			$data['error_warning'] = '';
 		}

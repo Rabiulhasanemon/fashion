@@ -122,4 +122,28 @@ class ModelCatalogCategory extends Model {
             return array();
         }
     }
+
+	// Category Modules Methods (for frontend)
+	public function getCategoryModules($category_id) {
+		$category_module_data = array();
+
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' AND status = '1' ORDER BY sort_order ASC");
+
+		foreach ($query->rows as $result) {
+			$setting = json_decode($result['setting'], true);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				$setting = array();
+			}
+
+			$category_module_data[] = array(
+				'module_id' => $result['module_id'],
+				'code' => $result['code'],
+				'setting' => $setting,
+				'sort_order' => $result['sort_order'],
+				'status' => $result['status']
+			);
+		}
+
+		return $category_module_data;
+	}
 }

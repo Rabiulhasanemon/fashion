@@ -463,6 +463,41 @@ class ControllerProductCategory extends Controller {
 
 			$data['continue'] = $this->url->link('common/home');
 
+			// Load category modules
+			$data['category_modules'] = array();
+			if ($category_id) {
+				$category_modules = $this->model_catalog_category->getCategoryModules($category_id);
+				foreach ($category_modules as $module) {
+					if ($module['status']) {
+						// Try to load module controller
+						$module_output = '';
+						$module_code = $module['code'];
+						$module_setting = $module['setting'];
+						
+						// Try extension/module path first
+						if (file_exists(DIR_APPLICATION . 'controller/extension/module/' . $module_code . '.php')) {
+							$module_output = $this->load->controller('extension/module/' . $module_code, $module_setting);
+						} 
+						// Try module path
+						elseif (file_exists(DIR_APPLICATION . 'controller/module/' . $module_code . '.php')) {
+							$module_output = $this->load->controller('module/' . $module_code, $module_setting);
+						}
+						
+						if ($module_output) {
+							$data['category_modules'][] = array(
+								'output' => $module_output,
+								'sort_order' => $module['sort_order']
+							);
+						}
+					}
+				}
+				
+				// Sort modules by sort_order
+				usort($data['category_modules'], function($a, $b) {
+					return $a['sort_order'] - $b['sort_order'];
+				});
+			}
+
 			$data['after_header'] = $this->load->controller('common/after_header');
 			$data['column_left'] = $this->load->controller('common/column_left');
 			$data['column_right'] = $this->load->controller('common/column_right');

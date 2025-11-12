@@ -192,6 +192,7 @@ class ModelCatalogCategory extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE category_id = '" . (int)$category_id . "'");
         $this->db->query("DELETE FROM " . DB_PREFIX . "category_manufacturer_description WHERE category_manufacturer_id in (select category_manufacturer_id from " . DB_PREFIX."category_manufacturer cm where cm.category_id = '" . (int)$category_id. "')");
         $this->db->query("DELETE FROM " . DB_PREFIX . "category_manufacturer WHERE category_id = '" . (int)$category_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'category_id=" . (int)$category_id . "'");
 
 		$this->cache->delete('category');
@@ -338,5 +339,55 @@ class ModelCatalogCategory extends Model {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "category_to_layout WHERE layout_id = '" . (int)$layout_id . "'");
 
 		return $query->row['total'];
-	}	
+	}
+
+	// Category Modules Methods (for admin)
+	public function getCategoryModules($category_id) {
+		$category_module_data = array();
+
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' ORDER BY sort_order ASC");
+
+		foreach ($query->rows as $result) {
+			$setting = json_decode($result['setting'], true);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				$setting = array();
+			}
+
+			$category_module_data[] = array(
+				'category_module_id' => $result['category_module_id'],
+				'module_id' => $result['module_id'],
+				'code' => $result['code'],
+				'setting' => $setting,
+				'sort_order' => $result['sort_order'],
+				'status' => $result['status']
+			);
+		}
+
+		return $category_module_data;
+	}
+
+	public function saveCategoryModules($category_id, $modules) {
+		// Delete existing modules for this category
+		$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
+
+		if (isset($modules) && is_array($modules)) {
+			foreach ($modules as $module) {
+				if (isset($module['code']) && !empty($module['code'])) {
+					$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
+					$code = $this->db->escape($module['code']);
+					$setting = isset($module['setting']) ? $this->db->escape(json_encode($module['setting'])) : '{}';
+					$sort_order = isset($module['sort_order']) ? (int)$module['sort_order'] : 0;
+					$status = isset($module['status']) ? (int)$module['status'] : 1;
+
+					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET 
+						category_id = '" . (int)$category_id . "', 
+						module_id = '" . $module_id . "', 
+						code = '" . $code . "', 
+						setting = '" . $setting . "', 
+						sort_order = '" . $sort_order . "', 
+						status = '" . $status . "'");
+				}
+			}
+		}
+	}
 }
