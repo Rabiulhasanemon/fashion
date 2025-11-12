@@ -127,21 +127,33 @@ class ModelCatalogCategory extends Model {
 	public function getCategoryModules($category_id) {
 		$category_module_data = array();
 
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' AND status = '1' ORDER BY sort_order ASC");
+		// Check if table exists first
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "category_module'");
+		if (!$table_check->num_rows) {
+			return $category_module_data; // Return empty array if table doesn't exist
+		}
 
-		foreach ($query->rows as $result) {
-			$setting = json_decode($result['setting'], true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				$setting = array();
+		try {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' AND status = '1' ORDER BY sort_order ASC");
+
+			foreach ($query->rows as $result) {
+				$setting = json_decode($result['setting'], true);
+				if (json_last_error() !== JSON_ERROR_NONE) {
+					$setting = array();
+				}
+
+				$category_module_data[] = array(
+					'module_id' => isset($result['module_id']) ? $result['module_id'] : 0,
+					'code' => $result['code'],
+					'setting' => $setting,
+					'sort_order' => isset($result['sort_order']) ? $result['sort_order'] : 0,
+					'status' => isset($result['status']) ? $result['status'] : 1
+				);
 			}
-
-			$category_module_data[] = array(
-				'module_id' => $result['module_id'],
-				'code' => $result['code'],
-				'setting' => $setting,
-				'sort_order' => $result['sort_order'],
-				'status' => $result['status']
-			);
+		} catch (Exception $e) {
+			// Return empty array on error - don't break the page
+			error_log('Error loading category modules: ' . $e->getMessage());
+			return $category_module_data;
 		}
 
 		return $category_module_data;
