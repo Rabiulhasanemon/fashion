@@ -1,43 +1,45 @@
 <?php if (isset($categories) && $categories) { ?>
-<div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
-    <div class="container">
-        <div class="inner-wrap">
-            <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
-            <div class="header-left">
-                <nav class="main-nav ml-0">
-                    <ul class="menu">
-                        <?php foreach ($categories as $category) { ?>
-                        <?php if (isset($category['children']) && !empty($category['children'])) { ?>
-                        <li class="has-submenu">
-                            <a href="<?php echo $category['href']; ?>">
-                                <?php echo htmlspecialchars($category['name']); ?>
-                            </a>
-                            <ul class="submenu">
-                                <?php foreach ($category['children'] as $child) { ?>
-                                <li>
-                                    <a href="<?php echo $child['href']; ?>">
-                                        <?php echo htmlspecialchars($child['name']); ?>
-                                    </a>
-                                </li>
-                                <?php } ?>
-                            </ul>
-                        </li>
-                        <?php } else { ?>
-                        <li class="">
-                            <a href="<?php echo $category['href']; ?>">
-                                <?php echo htmlspecialchars($category['name']); ?>
-                            </a>
-                        </li>
-                        <?php } ?>
-                        <?php } ?>
-                    </ul>
-                </nav>
+<div class="sticky-content-wrapper">
+    <div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
+        <div class="container">
+            <div class="inner-wrap">
+                <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
+                <div class="header-left">
+                    <nav class="main-nav ml-0">
+                        <ul class="menu">
+                            <?php foreach ($categories as $category) { ?>
+                            <?php if (isset($category['children']) && !empty($category['children'])) { ?>
+                            <li class="has-submenu">
+                                <a href="<?php echo $category['href']; ?>">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </a>
+                                <ul class="submenu">
+                                    <?php foreach ($category['children'] as $child) { ?>
+                                    <li>
+                                        <a href="<?php echo $child['href']; ?>">
+                                            <?php echo htmlspecialchars($child['name']); ?>
+                                        </a>
+                                    </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                            <?php } else { ?>
+                            <li class="">
+                                <a href="<?php echo $category['href']; ?>">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </a>
+                            </li>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                    </nav>
+                </div>
+                <?php if (isset($flash_sale_url) && $flash_sale_url) { ?>
+                <a href="<?php echo $flash_sale_url; ?>" class="h-flash-btn">
+                    <i class="fi-rs-sparkles"></i><span>Flash Sale</span>
+                </a>
+                <?php } ?>
             </div>
-            <?php if (isset($flash_sale_url) && $flash_sale_url) { ?>
-            <a href="<?php echo $flash_sale_url; ?>" class="h-flash-btn">
-                <i class="fi-rs-sparkles"></i><span>Flash Sale</span>
-            </a>
-            <?php } ?>
         </div>
     </div>
 </div>
@@ -45,9 +47,13 @@
 
 <style>
 /* Header Bottom Navigation Styles */
+.sticky-content-wrapper {
+    position: relative;
+}
+
 .header-bottom {
     padding: 0;
-    background: var(--primary-color, #FF6A00);
+    background: var(--secondary-color, #041f1e);
     position: relative;
     z-index: 1000;
 }
@@ -92,7 +98,7 @@
 .header-bottom .main-nav .menu > li {
     position: relative;
     display: inline-block;
-    margin-right: 24px;
+    margin-right: 3rem;
 }
 
 .header-bottom .main-nav .menu > li:last-child {
@@ -101,52 +107,60 @@
 
 .header-bottom .main-nav .menu > li > a {
     display: block;
-    padding: 13px 0;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 150%;
+    padding: 1.8rem 0 1.7rem 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.009em;
+    line-height: 1.1;
+    text-transform: capitalize;
     color: var(--white-color, #fff);
     text-decoration: none;
     transition: all 0.3s ease;
     position: relative;
 }
 
-.header-bottom .main-nav .menu > li > a:hover,
-.header-bottom .main-nav .menu > li.active > a {
-    color: var(--white-color, #fff) !important;
+.header-bottom .main-nav .menu > li.active > a:not(.menu-title),
+.header-bottom .main-nav .menu > li:hover > a:not(.menu-title) {
+    color: var(--primary-color, #FF6A00) !important;
 }
 
 .header-bottom .main-nav .menu > li.has-submenu > a::after {
     content: "\f107";
     display: inline-block;
-    margin-left: 6px;
+    margin-left: 0.6rem;
+    margin-top: 1px;
+    right: -16px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     font-family: "Font Awesome 5 Free";
-    font-size: 10px;
+    font-size: 0.8rem;
     font-weight: 900;
     vertical-align: middle;
+    color: inherit;
 }
 
 .header-bottom .main-nav .menu .submenu {
     position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 215px;
-    padding: 1rem 0;
+    top: -9999px;
+    left: -1.5rem;
+    min-width: 21.5rem;
+    padding: 2rem 0;
     background: #fff;
     box-shadow: 0 2px 35px rgba(0, 0, 0, 0.1);
     z-index: 1001;
     visibility: hidden;
-    opacity: 0;
+    opacity: 1;
     transform: translate3d(0, -10px, 0);
-    transition: all 0.3s ease-out;
+    transition: transform 0.3s ease-out;
     list-style: none;
     margin: 0;
 }
 
-.header-bottom .main-nav .menu > li:hover > .submenu,
-.header-bottom .main-nav .menu > li.show > .submenu {
+.header-bottom .main-nav .menu > li.show > .submenu,
+.header-bottom .main-nav .menu > li:hover > .submenu {
     visibility: visible;
-    opacity: 1;
+    top: 100%;
     transform: translate3d(0, 0, 0);
 }
 
@@ -158,14 +172,16 @@
 .header-bottom .main-nav .menu .submenu li a {
     display: block;
     padding: 0.7rem 0 0.8rem 0;
-    color: var(--primary-color, #FF6A00);
+    color: var(--title-color, #232323);
     font-weight: 500;
-    font-size: 15px;
+    font-size: 1.4rem;
+    line-height: 1;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.header-bottom .main-nav .menu .submenu li a:hover {
+.header-bottom .main-nav .menu .submenu li.active > a,
+.header-bottom .main-nav .menu .submenu li:hover > a {
     color: var(--secondary-color, #ff8c42);
 }
 
@@ -200,7 +216,6 @@
 /* Sticky Header */
 .header-bottom.sticky-content.fixed {
     position: fixed;
-    top: 0;
     left: 0;
     right: 0;
     opacity: 1;
@@ -210,12 +225,28 @@
     background: var(--white-color, #fff);
 }
 
+.header-bottom.sticky-content.fixed.fix-top {
+    top: 0;
+    animation: fixedTopContent 0.4s;
+}
+
+@keyframes fixedTopContent {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .header-bottom.sticky-content.fixed .main-nav .menu > li > a {
     color: var(--title-color, #232323);
 }
 
-.header-bottom.sticky-content.fixed .main-nav .menu > li > a:hover,
-.header-bottom.sticky-content.fixed .main-nav .menu > li.active > a {
+.header-bottom.sticky-content.fixed .main-nav .menu > li.active > a:not(.menu-title),
+.header-bottom.sticky-content.fixed .main-nav .menu > li:hover > a:not(.menu-title) {
     color: var(--primary-color, #FF6A00) !important;
 }
 
