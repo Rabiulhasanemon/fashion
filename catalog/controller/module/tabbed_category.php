@@ -34,6 +34,7 @@ class ControllerModuleTabbedCategory extends Controller {
         }
         
         $data['tabs'] = array();
+        $data['see_all_url'] = $this->url->link('product/category');
 
         $tabs = isset($setting['tabs']) ? $setting['tabs'] : array();
         

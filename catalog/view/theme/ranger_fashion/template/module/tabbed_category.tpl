@@ -8,534 +8,625 @@ if (empty($tabs)) {
     return;
 }
 ?>
-<div class="tcp2-section banner-fullscreen <?php echo !empty($class) ? htmlspecialchars($class) : ''; ?>" id="<?php echo $module_uid; ?>" style="width: 95vw !important; margin-left: calc(-47.5vw + 50%) !important; margin-right: calc(-47.5vw + 50%) !important; padding: 30px 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; position: relative !important; box-sizing: border-box !important;">
-  <?php if (!empty($name)) { ?>
-    <div class="tcp2-module-title">
-      <h2><?php echo htmlspecialchars($name); ?></h2>
-      <?php if (!empty($blurb)) { ?>
-        <p class="tcp2-module-blurb"><?php echo htmlspecialchars($blurb); ?></p>
-      <?php } ?>
-    </div>
-  <?php } ?>
-  <div class="tcp2-container" style="max-width: 80% !important; width: 100% !important; padding: 0 20px !important; box-sizing: border-box !important; margin: 0 auto !important;">
-<style>
-@media (max-width: 767px) {
-  .tcp2-container {
-    max-width: 100% !important;
-    padding: 0 15px !important;
-  }
-}
-</style>
-    <div class="tcp2-header">
-      <ul class="tcp2-tablist" role="tablist">
-        <?php $i=0; foreach ($tabs as $tab) { ?>
-          <?php if (!empty($tab['title'])) { ?>
-          <li class="tcp2-tab <?php echo $i==0 ? 'active' : ''; ?>" role="tab" data-tab-id="<?php echo $i; ?>"><?php echo htmlspecialchars($tab['title']); ?></li>
-          <?php } ?>
-        <?php $i++; } ?>
-      </ul>
-      <div class="tcp2-nav">
-        <button type="button" class="tcp2-nav-btn prev">&lt;</button>
-        <button type="button" class="tcp2-nav-btn next">&gt;</button>
-      </div>
-    </div>
-
-    <div class="tcp2-tabpanes">
-        <?php $i=0; foreach ($tabs as $tab) { ?>
-      <div class="tcp2-tabpane <?php echo $i==0 ? 'active' : ''; ?>" data-pane-id="<?php echo $i; ?>">
-        <div class="tcp2-products">
-          <?php if (!empty($tab['products']) && is_array($tab['products'])) { ?>
-              <?php foreach ($tab['products'] as $product) { ?>
-            <div class="tcp2-card">
-              <div class="tcp2-thumb">
-                <a href="<?php echo $product['href']; ?>">
-                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" />
-                  </a>
-                <?php if ($product['discount']) { ?>
-                <span class="tcp2-badge">-<?php echo $product['discount']; ?>%</span>
-                <?php } ?>
-              </div>
-              <div class="tcp2-info">
-                <?php if ($product['manufacturer']) { ?>
-                <span class="tcp2-category"><?php echo $product['manufacturer']; ?></span>
-                <?php } ?>
-                <a href="<?php echo $product['href']; ?>" class="tcp2-name"><?php echo $product['name']; ?></a>
-                <div class="tcp2-rating">
-                  <?php for ($s = 1; $s <= 5; $s++) { ?>
-                  <span class="star<?php echo ($s <= $product['rating']) ? ' filled' : ''; ?>"></span>
-                  <?php } ?>
-                </div>
-                <div class="tcp2-price">
-                      <?php if ($product['special']) { ?>
-                  <span class="tcp2-price-new"><?php echo $product['special']; ?></span>
-                  <span class="tcp2-price-old"><?php echo $product['price']; ?></span>
-                      <?php } else { ?>
-                  <span class="tcp2-price-current"><?php echo $product['price']; ?></span>
-                      <?php } ?>
+<div class="deal-of-day-section mt-20" id="<?php echo $module_uid; ?>">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
+                    <div class="right-area">
+                        <div class="countdown countdown-alt" data-date-time="10/10/2022">
+                            <span>00<small>Days</small></span> 
+                            <span>00<small>Hrs</small></span> 
+                            <span>00<small>Min</small></span> 
+                            <span>00<small>Sec</small></span>
+                        </div>
+                        <a class="right_link" href="<?php echo isset($see_all_url) ? $see_all_url : 'index.php?route=product/category'; ?>">
+                            View All <i class="icon-chevron-right"></i>
+                        </a>
                     </div>
-                  </div>
                 </div>
-            <?php } ?>
-          <?php } else { ?>
-            <p style="padding: 20px; text-align: center; width: 100%;">No products found in this category.</p>
-              <?php } ?>
             </div>
-          </div>
-        <?php $i++; } ?>
-      </div>
-  </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-12">
+                <?php $i=0; foreach ($tabs as $tab) { ?>
+                <div class="tabbed-category-slider-wrapper <?php echo $i==0 ? 'active' : ''; ?>" data-tab-id="<?php echo $i; ?>" style="<?php echo $i==0 ? '' : 'display: none;'; ?>">
+                    <div class="popular-category-slider owl-carousel">
+                        <?php if (!empty($tab['products']) && is_array($tab['products'])) { ?>
+                            <?php foreach ($tab['products'] as $product) { ?>
+                            <div class="slider-item">
+                                <div class="product-card">
+                                    <div class="product-thumb">
+                                        <?php if ($product['discount']) { ?>
+                                        <div class="product-badge product-badge2 bg-info">-<?php echo $product['discount']; ?>%</div>
+                                        <?php } ?>
+                                        <img class="lazy" alt="<?php echo htmlspecialchars($product['name']); ?>" src="<?php echo $product['thumb']; ?>">
+                                        <div class="product-button-group">
+                                            <a class="product-button wishlist_store" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
+                                            <a data-target="javascript:;" class="product-button product_compare" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>
+                                            <a class="product-button add_to_single_cart" data-target="<?php echo $product['product_id']; ?>" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="product-card-body">
+                                        <?php if ($product['category_name']) { ?>
+                                        <div class="product-category"><a href="javascript:;"><?php echo htmlspecialchars($product['category_name']); ?></a></div>
+                                        <?php } ?>
+                                        <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a></h3>
+                                        <div class="rating-stars">
+                                            <?php for ($s = 1; $s <= 5; $s++) { ?>
+                                            <i class="fas fa-star<?php echo ($s <= $product['rating']) ? ' filled' : ''; ?>"></i>
+                                            <?php } ?>
+                                        </div>
+                                        <h4 class="product-price">
+                                            <?php if ($product['special']) { ?>
+                                            <del><?php echo $product['price']; ?></del>
+                                            <?php echo $product['special']; ?>
+                                            <?php } else { ?>
+                                            <?php echo $product['price']; ?>
+                                            <?php } ?>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <div class="text-center p-4">No products found in this category.</div>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php $i++; } ?>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
-.tcp2-module-title {
-    text-align: left;
-    margin-bottom: 20px;
+/* Deal of Day Section */
+.deal-of-day-section {
+    padding: 30px 0;
+    background-color: #f3f5f6;
+}
+
+.deal-of-day-section .container {
+    max-width: 80%;
+    margin: 0 auto;
     padding: 0 20px;
     width: 100%;
-    max-width: 80%;
-    margin-left: auto;
-    margin-right: auto;
     box-sizing: border-box;
 }
 
 /* Mobile: Full width */
 @media (max-width: 767px) {
-  .tcp2-module-title {
-    max-width: 100%;
-    padding: 0 15px;
-  }
+    .deal-of-day-section .container {
+        max-width: 100% !important;
+        padding: 0 15px !important;
+    }
 }
-.tcp2-module-title h2 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 8px 0;
-    letter-spacing: -0.02em;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    position: relative;
-    padding: 20px 0 16px 0;
+
+.mt-20 {
+    margin-top: 20px !important;
 }
-.tcp2-module-title h2::after {
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
-    border-radius: 2px;
-}
-.tcp2-module-blurb {
-    font-size: 14px;
-    color: #6b7280;
-    margin: 0;
-}
-.tcp2-section.banner-fullscreen {
-    width: 95vw !important;
-    margin-left: calc(-47.5vw + 50%) !important;
-    margin-right: calc(-47.5vw + 50%) !important;
-    padding: 30px 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    background: #fff;
-    position: relative;
-    box-sizing: border-box;
-}
-.tcp2-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 20px !important;
-    box-sizing: border-box !important;
-    margin: 0 auto !important;
-}
-.tcp2-header {
+
+/* Section Title */
+.section-title {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 0;
+    margin-bottom: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #e5e7eb;
 }
-.tcp2-tablist {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    overflow-x: auto;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-.tcp2-tablist::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-}
-.tcp2-tab {
-    padding: 12px 0;
-    cursor: pointer;
-    color: #6b7280;
+
+.section-title h2 {
+    padding-bottom: 12px;
+    margin-bottom: 0;
     font-weight: 600;
-    border-bottom: 3px solid transparent;
-    transition: color .2s ease, border-color .2s ease;
-    white-space: nowrap;
-}
-.tcp2-tab:hover {
-    color: #111827;
-}
-.tcp2-tab.active {
-    color: #ef6c00;
-    border-color: #ef6c00;
-}
-.tcp2-nav {
-    display: flex;
-    gap: 8px;
-}
-.tcp2-nav-btn {
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background .2s ease, border-color .2s ease;
-    font-size: 18px;
-    line-height: 30px;
-    text-align: center;
-    color: #333;
-}
-.tcp2-nav-btn:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
-}
-.tcp2-tabpane {
-    display: none;
-}
-.tcp2-tabpane.active {
-    display: block;
-}
-.tcp2-tabpane.active .tcp2-card {
-    animation: tcp2-fade-in 0.4s ease-in-out forwards;
-}
-@keyframes tcp2-fade-in {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.tcp2-products {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-}
-.tcp2-products::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
-}
-.tcp2-card {
-    background: #fff;
-    border: none;
-    border-radius: 0;
-    overflow: hidden;
-    box-shadow: none;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    opacity: 1;
-    width: calc(16.666% - 6.67px); /* 6 items: 100% / 6 = 16.666%. Gap: 8px * 5 gaps / 6 = 6.67px */
-    transition: transform 0.25s ease-out;
-}
-.tcp2-card:hover {
-    transform: scale(1.03);
-}
-.tcp2-thumb {
-    --gallery-aspect-ratio: 1.0;
-    display: block;
-    background: #fff;
+    font-size: 24px;
     position: relative;
-    padding-top: 100%;
-    aspect-ratio: 1.0;
-    overflow: hidden;
-    border-radius: 0;
-    width: 100%;
-    transition: transform 0.25s ease-out;
 }
-.tcp2-card:hover .tcp2-thumb {
-    transform: scale(1.03);
-}
-.tcp2-thumb img {
+
+.section-title h2::before {
     position: absolute;
-    top: 0;
+    content: "";
+    height: 2px;
+    width: 100%;
+    bottom: -2px;
     left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    image-rendering: high-quality;
-    aspect-ratio: inherit;
+    background: #377dff;
 }
-.tcp2-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ffc107;
-    color: #111;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 6px;
-}
-.tcp2-info {
-    padding: 10px;
-}
-.tcp2-category {
-    font-size: 11px;
-    color: #6b7280;
-    display: block;
-    margin-bottom: 3px;
-    text-transform: capitalize;
-}
-.tcp2-name {
-    display: block;
-    color: #111827;
-    text-decoration: none;
-    font-weight: 600;
-    height: 36px;
-    overflow: hidden;
-    margin-bottom: 6px;
-    font-size: 14px;
-    line-height: 18px;
-}
-.tcp2-name:hover {
-    text-decoration: underline;
-}
-.tcp2-rating {
-    margin-bottom: 6px;
-    font-size: 12px;
-}
-.tcp2-rating .star {
-    display: inline-block;
-    font-style: normal;
-}
-.tcp2-rating .star::before {
-    content: '☆';
-    color: #d1d5db;
-}
-.tcp2-rating .star.filled::before {
-    content: '★';
-    color: #f59e0b;
-}
-.tcp2-price {
+
+.section-title .right-area {
     display: flex;
-    gap: 8px;
     align-items: center;
-    font-weight: 700;
+    gap: 20px;
 }
-.tcp2-price-old {
-    text-decoration: line-through;
-    color: #9ca3af;
+
+.section-title .countdown {
+    display: inline-block;
+    margin-top: 0;
+    margin-left: 20px;
+    background: red;
+    padding: 3px 20px 6px;
+    border-radius: 50px;
+}
+
+.section-title .countdown span {
+    display: inline-block;
+    text-align: center;
+    color: #fff;
+    min-width: auto;
+    padding: 0;
+    border-radius: 0;
+    margin-right: 7px;
+    font-size: 14px;
+}
+
+.section-title .countdown span small {
+    display: inline-block;
+    background: 0 0;
+    color: #fff;
+    margin-top: 0;
+    padding: 0;
+    margin-left: 3px;
+}
+
+.section-title .right_link {
+    color: #555;
+    margin-left: 20px;
+    transition: 0.3s linear;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.section-title .right_link:hover {
+    color: #FF6A00;
+}
+
+.section-title .right_link i {
+    position: relative;
+    top: 2px;
+    margin-left: 5px;
+}
+
+/* Product Card Styles */
+.product-card {
+    display: block;
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow: hidden;
+    border: 1px solid #fff;
+    transition: 0.3s linear;
+}
+
+.product-card:hover {
+    border-color: #FF6A00;
+}
+
+.product-card .product-thumb {
+    display: block;
+    width: 100%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-card .product-thumb > img {
+    display: block;
+    width: 100%;
+    padding-top: 0;
+    transform: scale(1);
+    transition: 0.3s linear;
+}
+
+.product-card:hover .product-thumb > img {
+    transform: scale(1.1);
+}
+
+.product-card .product-badge {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    border-radius: 0 9px 30px 0;
+    padding: 0 12px 0 10px;
+    height: 24px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 24px;
+    z-index: 9;
+}
+
+.product-card .product-badge.product-badge2 {
+    left: auto;
+    right: 0;
+    border-radius: 9px 0 0 30px;
+    padding: 0 10px 0 12px;
+    background: #daa520 !important;
+}
+
+.product-card .product-badge.bg-info {
+    background: #0dcaf0 !important;
+}
+
+.product-card .product-button-group {
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 2;
+    transition: 0.3s linear;
+}
+
+.product-card:hover .product-button-group {
+    bottom: 10px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.product-card .product-button-group .product-button {
+    height: 35px;
+    width: 35px;
+    line-height: 36px;
+    color: #fff;
+    padding: 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.1);
+    margin: 0 4px;
+    background: #FF6A00 !important;
+}
+
+.product-card .product-button-group .product-button:hover {
+    background: #ff8c00 !important;
+}
+
+.product-card .product-card-body {
+    padding: 15px 15px 10px;
+}
+
+.product-card .product-category {
+    width: 100%;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.product-card .product-category > a {
+    transition: color 0.2s;
+    color: #999;
+    text-decoration: none;
+}
+
+.product-card .product-category > a:hover {
+    color: #FF6A00;
+}
+
+.product-card .product-title {
+    margin-bottom: 5px;
+    font-size: 16px;
     font-weight: 400;
 }
-.tcp2-price-new {
-    color: #ef6c00;
-}
-.tcp2-price-current {
-    color: #111827;
+
+.product-card .product-title > a {
+    transition: color 0.3s;
+    color: #232323;
+    text-decoration: none;
+    font-size: 14px;
+    height: 37px;
+    display: block;
+    font-weight: 500;
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
-@media (max-width: 1400px) {
-    .tcp2-section.banner-fullscreen .tcp2-container {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 0 20px !important;
-    }
+.product-card .product-title > a:hover {
+    color: #FF6A00;
 }
 
-@media (max-width: 1200px) {
-    .tcp2-section.banner-fullscreen .tcp2-container {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 0 20px !important;
-    }
-    .tcp2-card { width: calc(25% - 6px); /* 4 items */ }
-    .tcp2-products { gap: 8px; }
+.product-card .rating-stars {
+    display: block;
+    margin-bottom: 5px;
 }
+
+.product-card .rating-stars > i {
+    display: inline-block;
+    margin-right: 2px;
+    color: #c7c7c7;
+    font-size: 12px;
+}
+
+.product-card .rating-stars > i.filled {
+    color: #ffa500;
+}
+
+.product-card .product-price {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    color: #FF6A00;
+}
+
+.product-card .product-price > del {
+    margin-right: 5px;
+    color: #999;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+/* Slider Item */
+.slider-item {
+    padding: 10px 6px;
+}
+
+/* Owl Carousel Navigation */
+.popular-category-slider.owl-carousel .owl-nav div {
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    border: 0;
+    border-radius: 50px;
+    box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
+    background: #FF6A00 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 0.3s linear;
+}
+
+.popular-category-slider.owl-carousel .owl-prev {
+    right: 33px;
+    left: auto;
+}
+
+.popular-category-slider.owl-carousel .owl-next {
+    right: -10px;
+}
+
+.popular-category-slider.owl-carousel .owl-nav div:hover {
+    background: #ff8c00 !important;
+}
+
+.popular-category-slider.owl-carousel .owl-nav div.disabled {
+    background: #f5f6f9 !important;
+    opacity: 0.5;
+}
+
+/* Tab Navigation */
+.tabbed-category-tabs {
+    display: flex;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+}
+
+.tabbed-category-tabs li {
+    padding: 12px 0;
+    margin-left: 20px;
+    cursor: pointer;
+    color: #444;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+}
+
+.tabbed-category-tabs li::before {
+    position: absolute;
+    content: "";
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #FF6A00;
+    opacity: 0;
+    transition: 0.3s linear;
+}
+
+.tabbed-category-tabs li:hover,
+.tabbed-category-tabs li.active {
+    color: #FF6A00;
+}
+
+.tabbed-category-tabs li:hover::before,
+.tabbed-category-tabs li.active::before {
+    opacity: 1;
+}
+
+/* Responsive Design */
 @media (max-width: 992px) {
-    .tcp2-section.banner-fullscreen .tcp2-container {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 0 15px !important;
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .tcp2-card { width: calc(33.333% - 5.33px); /* 3 items */ }
-    .tcp2-products { gap: 8px; }
-}
-@media (max-width: 749px) {
-    .tcp2-section.banner-fullscreen {
-        width: 95vw !important;
-        margin-left: calc(-47.5vw + 50%) !important;
-        margin-right: calc(-47.5vw + 50%) !important;
-        padding: 25px 0 !important;
+    
+    .section-title .right-area {
+        margin-top: 15px;
+        width: 100%;
+        flex-wrap: wrap;
     }
-    .tcp2-section.banner-fullscreen .tcp2-container {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 0 15px !important;
-    }
-    .tcp2-module-title {
-        margin-bottom: 15px;
-    }
-    .tcp2-module-title h2 {
-        font-size: 24px;
-    }
-    .tcp2-header {
-        margin-bottom: 12px;
-    }
-    .tcp2-nav { display: none; } /* Hide nav on smaller screens */
-    .tcp2-card { width: calc(50% - 4px); /* 2 items */ }
-    .tcp2-products { gap: 8px; }
-    .tcp2-thumb {
-        padding-top: 100%;
-        aspect-ratio: 1.0;
-    }
-}
-@media (max-width: 576px) {
-    .tcp2-section.banner-fullscreen {
-        width: 95vw !important;
-        margin-left: calc(-47.5vw + 50%) !important;
-        margin-right: calc(-47.5vw + 50%) !important;
-        padding: 20px 0 !important;
-    }
-    .tcp2-section.banner-fullscreen .tcp2-container {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 0 10px !important;
-    }
-    .tcp2-module-title h2 {
+    
+    .section-title h2 {
         font-size: 20px;
     }
-    .tcp2-card { width: calc(50% - 4px); }
-    .tcp2-products { gap: 8px; }
-    .tcp2-thumb {
-        padding-top: 100%;
-        aspect-ratio: 1.0;
+    
+    .section-title .countdown {
+        margin-left: 0;
     }
-    .tcp2-info {
-        padding: 8px;
+}
+
+@media (max-width: 767px) {
+    .deal-of-day-section {
+        padding: 20px 0;
     }
-    .tcp2-name {
-        height: 32px;
+    
+    .section-title h2 {
+        font-size: 18px;
+    }
+    
+    .section-title .right-area {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .section-title .countdown {
+        font-size: 12px;
+        padding: 2px 15px 4px;
+    }
+    
+    .section-title .countdown span {
+        font-size: 12px;
+        margin-right: 5px;
+    }
+    
+    .section-title .right_link {
+        font-size: 14px;
+    }
+    
+    .product-card .product-title > a {
         font-size: 13px;
-        line-height: 16px;
+        height: 34px;
+    }
+    
+    .product-card .product-price {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .deal-of-day-section {
+        padding: 15px 0;
+    }
+    
+    .section-title {
+        margin-bottom: 20px;
+    }
+    
+    .section-title h2 {
+        font-size: 16px;
+    }
+    
+    .section-title .countdown {
+        font-size: 11px;
+        padding: 2px 12px 3px;
+    }
+    
+    .section-title .countdown span {
+        font-size: 11px;
+        margin-right: 4px;
     }
 }
 </style>
 
 <script>
 (function() {
-    // Ensure this script doesn't run again for the same module
     var root = document.getElementById('<?php echo $module_uid; ?>');
     if (!root || root.dataset.tcp2Initialized) {
         return;
     }
     root.dataset.tcp2Initialized = 'true';
 
-    var tabs = Array.from(root.querySelectorAll('.tcp2-tab'));
-    var panes = Array.from(root.querySelectorAll('.tcp2-tabpane'));
-    var navPrev = root.querySelector('.tcp2-nav-btn.prev');
-    var navNext = root.querySelector('.tcp2-nav-btn.next');
-    var autoScrollInterval = null;
+    var sliders = root.querySelectorAll('.popular-category-slider');
+    var owlCarousels = [];
 
-    function switchTab(tabIndex) {
-        if (tabs[tabIndex]) {
-            tabs.forEach(function(t) { t.classList.remove('active'); });
-            panes.forEach(function(p) { p.classList.remove('active'); });
+    // Initialize owl carousel for each tab
+    sliders.forEach(function(slider) {
+        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
+            var owl = jQuery(slider).owlCarousel({
+                loop: true,
+                margin: 15,
+                nav: true,
+                dots: false,
+                autoplay: true,
+                autoplayTimeout: 3000,
+                autoplayHoverPause: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    576: {
+                        items: 2
+                    },
+                    768: {
+                        items: 3
+                    },
+                    992: {
+                        items: 4
+                    },
+                    1200: {
+                        items: 5
+                    }
+                }
+            });
+            owlCarousels.push(owl);
+        }
+    });
 
-            tabs[tabIndex].classList.add('active');
-            if (panes[tabIndex]) {
-                panes[tabIndex].classList.add('active');
-                // Restart auto-scroll when tab changes
-                startAutoScroll();
+    // Tab switching functionality
+    var tabWrappers = root.querySelectorAll('.tabbed-category-slider-wrapper');
+    var currentTab = 0;
+
+    // Create tab navigation if multiple tabs exist
+    if (tabWrappers.length > 1) {
+        var sectionTitle = root.querySelector('.section-title');
+        if (sectionTitle) {
+            var tabsNav = document.createElement('div');
+            tabsNav.className = 'tabbed-category-tabs';
+            tabsNav.innerHTML = '<ul>';
+            <?php $i=0; foreach ($tabs as $tab) { ?>
+            tabsNav.querySelector('ul').innerHTML += '<li class="<?php echo $i==0 ? 'active' : ''; ?>" data-tab="<?php echo $i; ?>"><?php echo htmlspecialchars($tab['title']); ?></li>';
+            <?php $i++; } ?>
+            tabsNav.innerHTML += '</ul>';
+            
+            var h2 = sectionTitle.querySelector('h2');
+            if (h2) {
+                sectionTitle.insertBefore(tabsNav, h2.nextSibling);
             }
         }
-    }
 
-    tabs.forEach(function(tab, index) {
-        tab.addEventListener('click', function() {
-            switchTab(index);
-        });
-    });
-
-    function getActivePaneProducts() {
-        var activePane = root.querySelector('.tcp2-tabpane.active');
-        return activePane ? activePane.querySelector('.tcp2-products') : null;
-    }
-
-    function scrollProducts(direction) {
-        var productContainer = getActivePaneProducts();
-        if (productContainer) {
-            var scrollAmount = productContainer.clientWidth * 0.5;
-            var targetScroll = direction === 'next' 
-                ? productContainer.scrollLeft + scrollAmount 
-                : productContainer.scrollLeft - scrollAmount;
-            
-            productContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
-            
-            // Check if we've reached the end, then reset to beginning
-            setTimeout(function() {
-                if (direction === 'next' && 
-                    productContainer.scrollLeft + productContainer.clientWidth >= productContainer.scrollWidth - 10) {
-                    setTimeout(function() {
-                        productContainer.scrollTo({ left: 0, behavior: 'smooth' });
-                    }, 500);
-                }
-            }, 600);
-        }
-    }
-
-    function startAutoScroll() {
-        // Clear any existing interval
-        if (autoScrollInterval) {
-            clearInterval(autoScrollInterval);
-        }
-        
-        // Auto-scroll every 3 seconds
-        autoScrollInterval = setInterval(function() {
-            scrollProducts('next');
-        }, 3000);
-    }
-
-    function stopAutoScroll() {
-        if (autoScrollInterval) {
-            clearInterval(autoScrollInterval);
-            autoScrollInterval = null;
-        }
-    }
-
-    if (navPrev && navNext) {
-        navPrev.addEventListener('click', function() {
-            stopAutoScroll();
-            scrollProducts('prev');
-            // Restart auto-scroll after 5 seconds of inactivity
-            setTimeout(startAutoScroll, 5000);
-        });
-
-        navNext.addEventListener('click', function() {
-            stopAutoScroll();
-            scrollProducts('next');
-            // Restart auto-scroll after 5 seconds of inactivity
-            setTimeout(startAutoScroll, 5000);
+        // Tab click handlers
+        var tabItems = root.querySelectorAll('.tabbed-category-tabs li');
+        tabItems.forEach(function(tab, index) {
+            tab.addEventListener('click', function() {
+                // Update active tab
+                tabItems.forEach(function(t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                
+                // Show/hide sliders
+                tabWrappers.forEach(function(wrapper, idx) {
+                    if (idx === index) {
+                        wrapper.style.display = 'block';
+                        wrapper.classList.add('active');
+                        // Refresh owl carousel
+                        var slider = wrapper.querySelector('.popular-category-slider');
+                        if (slider && typeof jQuery !== 'undefined' && jQuery(slider).data('owl.carousel')) {
+                            jQuery(slider).trigger('refresh.owl.carousel');
+                        }
+                    } else {
+                        wrapper.style.display = 'none';
+                        wrapper.classList.remove('active');
+                    }
+                });
+                
+                currentTab = index;
+            });
         });
     }
-
-    // Pause auto-scroll on hover
-    root.addEventListener('mouseenter', function() {
-        stopAutoScroll();
-    });
-
-    // Resume auto-scroll when mouse leaves
-    root.addEventListener('mouseleave', function() {
-        startAutoScroll();
-    });
-
-    // Start auto-scrolling on page load
-    startAutoScroll();
 })();
 </script>
