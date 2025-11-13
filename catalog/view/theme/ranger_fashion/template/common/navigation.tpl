@@ -171,11 +171,13 @@
 
 .header-bottom .main-nav .menu .submenu li a {
     display: block;
-    padding: 0.7rem 0 0.8rem 0;
+    padding: 0;
     color: var(--title-color, #232323);
-    font-weight: 500;
-    font-size: 1.4rem;
-    line-height: 1;
+    font-weight: 400;
+    font-size: 0.9rem;
+    letter-spacing: -0.009em;
+    line-height: 1.1;
+    text-transform: capitalize;
     text-decoration: none;
     transition: color 0.3s ease;
 }
