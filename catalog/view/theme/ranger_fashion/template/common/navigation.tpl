@@ -2,7 +2,7 @@
 <div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
     <div class="container">
         <div class="inner-wrap">
-            <div id="nav-toggler" class="nav-toggler"><span></span></div>
+            <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
             <div class="header-left">
                 <nav class="main-nav ml-0">
                     <ul class="menu">
