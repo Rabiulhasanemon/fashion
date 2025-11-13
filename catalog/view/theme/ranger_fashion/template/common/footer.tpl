@@ -16,17 +16,17 @@
                         </p>
                         <!-- Footer Contact -->
                         <ul class="footer-contact">
-                            <?php if ($address) { ?>
+                            <?php if (isset($address) && $address) { ?>
                             <li>
                                 <i class="w-icon-map-marker"></i><?php echo strip_tags($address); ?>
                             </li>
                             <?php } ?>
-                            <?php if ($telephone) { ?>
+                            <?php if (isset($telephone) && $telephone) { ?>
                             <li>
                                 <a href="tel:<?php echo $telephone; ?>"><i class="w-icon-phone"></i><?php echo $telephone; ?></a>
                             </li>
                             <?php } ?>
-                            <?php if ($email) { ?>
+                            <?php if (isset($email) && $email) { ?>
                             <li>
                                 <a href="mailto:<?php echo $email; ?>">
                                     <i class="w-icon-envelop-closed"></i>
@@ -64,8 +64,8 @@
                             <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
                             <?php } ?>
                             <?php } ?>
-                            <?php if ($contact) { ?>
-                            <li><a href="<?php echo $contact; ?>"><?php echo $text_contact; ?></a></li>
+                            <?php if (isset($contact) && $contact) { ?>
+                            <li><a href="<?php echo $contact; ?>"><?php echo isset($text_contact) ? $text_contact : 'Contact Us'; ?></a></li>
                             <?php } ?>
                         </ul>
                     </div>
@@ -90,17 +90,17 @@
                     <div class="footer-widget pages">
                         <p class="footer-widget-title">Support</p>
                         <ul class="footer-widget-list">
-                            <?php if ($account) { ?>
-                            <li><a href="<?php echo $account; ?>"><?php echo $text_account; ?></a></li>
+                            <?php if (isset($account) && $account) { ?>
+                            <li><a href="<?php echo $account; ?>"><?php echo isset($text_account) ? $text_account : 'My Account'; ?></a></li>
                             <?php } ?>
-                            <?php if ($order) { ?>
-                            <li><a href="<?php echo $order; ?>"><?php echo $text_order; ?></a></li>
+                            <?php if (isset($order) && $order) { ?>
+                            <li><a href="<?php echo $order; ?>"><?php echo isset($text_order) ? $text_order : 'Order History'; ?></a></li>
                             <?php } ?>
                             <?php if (isset($wishlist) && $wishlist) { ?>
-                            <li><a href="<?php echo $wishlist; ?>"><?php echo $text_wishlist; ?></a></li>
+                            <li><a href="<?php echo $wishlist; ?>"><?php echo isset($text_wishlist) ? $text_wishlist : 'Wish List'; ?></a></li>
                             <?php } ?>
                             <?php if (isset($special) && $special) { ?>
-                            <li><a href="<?php echo $special; ?>"><?php echo $text_special; ?></a></li>
+                            <li><a href="<?php echo $special; ?>"><?php echo isset($text_special) ? $text_special : 'Specials'; ?></a></li>
                             <?php } ?>
                         </ul>
                     </div>
