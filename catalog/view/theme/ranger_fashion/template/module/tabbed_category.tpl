@@ -17,7 +17,7 @@ if (empty($tabs)) {
       <?php } ?>
     </div>
   <?php } ?>
-  <div class="tcp2-container" style="max-width: 100% !important; width: 100% !important; padding: 0 20px !important; box-sizing: border-box !important; margin: 0 auto !important;">
+  <div class="tcp2-container" style="max-width: 80% !important; width: 100% !important; padding: 0 20px !important; box-sizing: border-box !important; margin: 0 auto !important;">
     <div class="tcp2-header">
       <ul class="tcp2-tablist" role="tablist">
         <?php $i=0; foreach ($tabs as $tab) { ?>

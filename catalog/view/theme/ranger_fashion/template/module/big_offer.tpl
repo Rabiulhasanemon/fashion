@@ -3,7 +3,7 @@
     <div class="container">
         <?php if (!empty($banner_images)) { ?>
         <div class="offer-banner-area banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 20px;">
-            <div class="container" style="padding: 0; max-width: 100%;">
+            <div class="container" style="padding: 0; max-width: 80%;">
                 <div class="offer-banner" style="margin-bottom: 0;">
                     <?php foreach ($banner_images as $bi) { ?>
                         <?php if (!empty($bi['link'])) { ?><a href="<?php echo $bi['link']; ?>" style="display: block; margin: 0; padding: 0;"><?php } ?>

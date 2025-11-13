@@ -4,7 +4,7 @@
     <h2 class="flash-deal-title"><?php echo $heading_title; ?></h2>
   </div>
 
-  <div class="flash-deal-container" style="max-width: 100%; padding: 0 20px;">
+  <div class="flash-deal-container" style="max-width: 80%; padding: 0 20px;">
     <div class="flash-deal-slider-wrapper">
       <div class="flash-deal-slider">
         <div class="flash-deal-track">

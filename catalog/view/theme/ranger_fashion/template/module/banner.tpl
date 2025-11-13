@@ -1,6 +1,6 @@
 <?php if ($banners) { ?>
   <div class="customer-banner-area banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
-    <div class="container" style="padding: 0; max-width: 100%;">
+    <div class="container" style="padding: 0; max-width: 80%;">
       <?php foreach ($banners as $banner) { ?>
         <?php if (isset($banner['group_class'])) { ?>
           <div class="<?php echo $banner['group_class'] ?>">

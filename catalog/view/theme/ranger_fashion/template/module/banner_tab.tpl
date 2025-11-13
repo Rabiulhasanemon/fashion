@@ -1,6 +1,6 @@
 <?php if (!empty($banners)) { ?>
 <div class="banner-tab-section banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
-  <div class="container" style="padding: 0; max-width: 100%;">
+  <div class="container" style="padding: 0; max-width: 80%;">
     <?php if (isset($name) && $name) { ?>
     <div class="section-head" style="padding: 20px 15px 0;">
       <h3 class="title"><?php echo $name; ?></h3>

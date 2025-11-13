@@ -46,7 +46,7 @@
 
 <style>
 .flashdeal-section{padding:60px 0;background:#f6f8fa;width:100%;margin:0}
-.flashdeal-container{margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box}
+.flashdeal-container{margin:0 auto;padding:0 20px;width:100%;max-width:80%;box-sizing:border-box}
 .flashdeal-title.unified-module-heading.cosmetics-module-heading{font-size:28px;font-weight:600;color:#1a1a1a;margin:0;padding:20px 0 16px 0;text-align:left;display:block;letter-spacing:-0.02em;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;position:relative}
 .flashdeal-title.unified-module-heading.cosmetics-module-heading::after{content:'';position:absolute;bottom:8px;left:0;width:60px;height:3px;background:linear-gradient(90deg,#ff6b9d,#ff8c9f);border-radius:2px}
 .module-heading-wrapper{text-align:left;margin-bottom:24px;padding:0 20px;width:100%}
@@ -90,8 +90,8 @@
 .cd-item .lbl{display:block;font-size:12px;color:#6b7280}
 .flashdeal-seeall{text-align:right;margin-top:10px}
 .flashdeal-seeall a{color:#ff6a00;text-decoration:none}
-@media (max-width:1400px){.flashdeal-container{max-width:1200px;padding:0 15px}}
-@media (max-width:1200px){.flashdeal-container{max-width:960px;padding:0 15px}}
+@media (max-width:1400px){.flashdeal-container{max-width:80%;padding:0 15px}}
+@media (max-width:1200px){.flashdeal-container{max-width:80%;padding:0 15px}}
 @media (max-width:992px){
   .flashdeal-section{padding:40px 0}
   .flashdeal-container{padding:0 15px}
