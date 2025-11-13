@@ -386,19 +386,23 @@ select option {
 
 .container {
   width: 100%;
-  max-width: 80%;
+  max-width: 100%;
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
 
-@media (min-width: 576px) {
+/* Mobile: Full width */
+@media (max-width: 767px) {
   .container {
-    max-width: 80%;
+    max-width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
   }
 }
 
+/* Tablet and above: 80% width */
 @media (min-width: 768px) {
   .container {
     max-width: 80%;

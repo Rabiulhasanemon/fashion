@@ -1,5 +1,13 @@
 <div class="featured-product-area section-padding banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 30px 0 !important; margin-top: 0; margin-bottom: 0;">
   <div class="container" style="max-width: 80%; padding: 0 20px; box-sizing: border-box;">
+<style>
+@media (max-width: 767px) {
+  .featured-product-area .container {
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+}
+</style>
     <div class="row">
       <div class="col-lg-12">
         <div class="section-head" style="margin-bottom: 20px !important; padding-bottom: 15px !important;">

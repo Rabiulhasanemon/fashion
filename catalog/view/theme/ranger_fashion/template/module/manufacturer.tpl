@@ -1,5 +1,12 @@
 <div class="manufacturer-module-section banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
   <div class="manufacturer-module-container" style="max-width: 80%;">
+<style>
+@media (max-width: 767px) {
+  .manufacturer-module-container {
+    max-width: 100% !important;
+  }
+}
+</style>
     <div class="brands">
       <?php foreach ($manufacturers as $manufacturer) { ?>
       <a href="<?php echo $manufacturer['href']; ?>"><img src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" ></a>

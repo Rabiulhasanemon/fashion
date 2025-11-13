@@ -54,6 +54,14 @@
   box-sizing: border-box;
 }
 
+/* Mobile: Full width */
+@media (max-width: 767px) {
+  .pst-container {
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+}
+
 /* Tab Navigation */
 .pst-tab-nav {
   margin-bottom: 20px;

@@ -2,4 +2,12 @@
   <div class="container" style="max-width: 80%; padding: 0 20px; box-sizing: border-box;">
     <?php echo $html; ?>
   </div>
+<style>
+@media (max-width: 767px) {
+  .html-module-area .container {
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+}
+</style>
 </div>

@@ -5,6 +5,14 @@
   </div>
 
   <div class="flash-deal-container" style="max-width: 80%; padding: 0 20px;">
+<style>
+@media (max-width: 767px) {
+  .flash-deal-container {
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+}
+</style>
     <div class="flash-deal-slider-wrapper">
       <div class="flash-deal-slider">
         <div class="flash-deal-track">

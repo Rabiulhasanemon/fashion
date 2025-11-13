@@ -92,6 +92,7 @@
 .flashdeal-seeall a{color:#ff6a00;text-decoration:none}
 @media (max-width:1400px){.flashdeal-container{max-width:80%;padding:0 15px}}
 @media (max-width:1200px){.flashdeal-container{max-width:80%;padding:0 15px}}
+@media (max-width:767px){.flashdeal-container{max-width:100%!important;padding:0 15px}}
 @media (max-width:992px){
   .flashdeal-section{padding:40px 0}
   .flashdeal-container{padding:0 15px}
