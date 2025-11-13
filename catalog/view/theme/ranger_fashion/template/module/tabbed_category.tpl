@@ -13,7 +13,18 @@ if (empty($tabs)) {
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
+                    <div>
+                        <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
+                        <?php if (count($tabs) > 1) { ?>
+                        <div class="links">
+                            <?php $i=0; foreach ($tabs as $tab) { ?>
+                            <a class="category_get tabbed-category-tab <?php echo $i==0 ? 'active' : ''; ?>" 
+                               data-tab-id="<?php echo $i; ?>"
+                               href="javascript:;"><?php echo htmlspecialchars($tab['title']); ?></a>
+                            <?php $i++; } ?>
+                        </div>
+                        <?php } ?>
+                    </div>
                     <div class="right-area">
                         <div class="countdown countdown-alt" data-date-time="10/10/2022">
                             <span>00<small>Days</small></span> 
@@ -187,6 +198,51 @@ if (empty($tabs)) {
     position: relative;
     top: 2px;
     margin-left: 5px;
+}
+
+.section-title > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-title .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 10px;
+}
+
+.section-title .links a {
+    color: #444;
+    margin-left: 20px;
+    position: relative;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    padding-bottom: 12px;
+}
+
+.section-title .links a::before {
+    position: absolute;
+    content: "";
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #FF6A00;
+    opacity: 0;
+    transition: 0.3s linear;
+}
+
+.section-title .links a:hover,
+.section-title .links a.active {
+    color: #FF6A00;
+}
+
+.section-title .links a:hover::before,
+.section-title .links a.active::before {
+    opacity: 1;
 }
 
 /* Product Card Styles */
@@ -582,35 +638,21 @@ if (empty($tabs)) {
     var tabWrappers = root.querySelectorAll('.tabbed-category-slider-wrapper');
     var currentTab = 0;
 
-    // Create tab navigation if multiple tabs exist
+    // Tab click handlers if multiple tabs exist
     if (tabWrappers.length > 1) {
-        var sectionTitle = root.querySelector('.section-title');
-        if (sectionTitle) {
-            var tabsNav = document.createElement('div');
-            tabsNav.className = 'tabbed-category-tabs';
-            tabsNav.innerHTML = '<ul>';
-            <?php $i=0; foreach ($tabs as $tab) { ?>
-            tabsNav.querySelector('ul').innerHTML += '<li class="<?php echo $i==0 ? 'active' : ''; ?>" data-tab="<?php echo $i; ?>"><?php echo htmlspecialchars($tab['title']); ?></li>';
-            <?php $i++; } ?>
-            tabsNav.innerHTML += '</ul>';
-            
-            var h2 = sectionTitle.querySelector('h2');
-            if (h2) {
-                sectionTitle.insertBefore(tabsNav, h2.nextSibling);
-            }
-        }
-
-        // Tab click handlers
-        var tabItems = root.querySelectorAll('.tabbed-category-tabs li');
+        var tabItems = root.querySelectorAll('.tabbed-category-tab');
         tabItems.forEach(function(tab, index) {
-            tab.addEventListener('click', function() {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                var tabId = parseInt(this.getAttribute('data-tab-id'));
+                
                 // Update active tab
                 tabItems.forEach(function(t) { t.classList.remove('active'); });
                 this.classList.add('active');
                 
                 // Show/hide sliders
                 tabWrappers.forEach(function(wrapper, idx) {
-                    if (idx === index) {
+                    if (idx === tabId) {
                         wrapper.style.display = 'block';
                         wrapper.classList.add('active');
                         // Refresh owl carousel
@@ -624,7 +666,7 @@ if (empty($tabs)) {
                     }
                 });
                 
-                currentTab = index;
+                currentTab = tabId;
             });
         });
     }
