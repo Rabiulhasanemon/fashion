@@ -1,726 +1,605 @@
-<div class="pst-section" id="<?php echo $module_uid; ?>">
-  <div class="pst-container">
-    <?php if ($tabs) { ?>
-    <!-- Tab Navigation -->
-    <div class="pst-tab-nav">
-      <ul class="pst-tab-list">
-        <?php $first = true; ?>
-        <?php foreach ($tabs as $tab) { ?>
-        <li class="pst-tab-item <?php echo $first ? 'active' : ''; ?>" data-tab-id="<?php echo $tab['id']; ?>">
-          <?php echo $tab['title']; ?>
-        </li>
-        <?php $first = false; ?>
-        <?php } ?>
-      </ul>
-    </div>
-
-    <!-- Tab Content -->
-    <div class="pst-tab-content">
-      <div class="pst-loading" style="display: none;">
-        <i class="fa fa-spinner fa-spin"></i> Loading products...
-      </div>
-      <div class="pst-products-wrapper">
-        <button type="button" class="pst-nav-btn pst-prev" style="display: none;">
-          <i class="fa fa-chevron-left"></i>
-        </button>
-        <div class="pst-products-container">
-          <div class="pst-products-grid"></div>
+<section class="newproduct-section popular-category-sec mt-50" id="<?php echo $module_uid; ?>">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <?php if ($tabs) { ?>
+                <div class="section-title">
+                    <h2 class="h3"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
+                    <div class="links">
+                        <?php $first = true; ?>
+                        <?php foreach ($tabs as $tab) { ?>
+                        <a class="category_get pst-tab-item <?php echo $first ? 'active' : ''; ?>" 
+                           data-target="popular_category_view" 
+                           data-tab-id="<?php echo $tab['id']; ?>"
+                           href="javascript:;"><?php echo $tab['title']; ?></a>
+                        <?php $first = false; ?>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
         </div>
-        <button type="button" class="pst-nav-btn pst-next" style="display: none;">
-          <i class="fa fa-chevron-right"></i>
-        </button>
-      </div>
-      <div class="pst-no-products" style="display: none;">
-        <p>No products found in this category.</p>
-      </div>
+        <div class="popular_category_view d-none">
+            <img src="catalog/view/theme/ranger_fashion/image/ajax_loader.gif" alt="Loading..." onerror="this.style.display='none'">
+        </div>
+        <div class="row" id="popular_category_view">
+            <div class="col-lg-12">
+                <div class="popular-category-slider owl-carousel">
+                    <!-- Products will be loaded here via AJAX -->
+                </div>
+            </div>
+        </div>
     </div>
-    <?php } ?>
-  </div>
-</div>
+</section>
 
 <style>
-.pst-section {
-  padding: 30px 0;
-  background-color: #ffffff;
-  width: 100%;
-  margin: 0;
+/* Section Styles */
+.newproduct-section.popular-category-sec {
+    padding: 50px 0;
+    background-color: #f3f5f6;
 }
 
-.pst-container {
-  max-width: 80%;
-  margin: 0 auto;
-  padding: 0 20px;
-  width: 100%;
-  box-sizing: border-box;
+.newproduct-section.popular-category-sec .container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Mobile: Full width */
 @media (max-width: 767px) {
-  .pst-container {
-    max-width: 100% !important;
-    padding: 0 15px !important;
-  }
+    .newproduct-section.popular-category-sec .container {
+        max-width: 100% !important;
+        padding: 0 15px !important;
+    }
 }
 
-/* Tab Navigation */
-.pst-tab-nav {
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e0e0e0;
+/* Section Title */
+.section-title {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 0;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.pst-tab-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
+.section-title h2 {
+    padding-bottom: 12px;
+    margin-bottom: 0;
+    font-weight: 600;
+    font-size: 24px;
+    position: relative;
 }
 
-.pst-tab-item {
-  padding: 12px 25px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #666;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.3s ease;
-  position: relative;
-  bottom: -2px;
+.section-title h2::before {
+    position: absolute;
+    content: "";
+    height: 2px;
+    width: 100%;
+    bottom: -2px;
+    left: 0;
+    background: #377dff;
 }
 
-.pst-tab-item:hover {
-  color: #ff6b00;
+.section-title .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
 }
 
-.pst-tab-item.active {
-  color: #ff6b00;
-  border-bottom-color: #ff6b00;
+.section-title .links a {
+    color: #444;
+    margin-left: 20px;
+    position: relative;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    padding-bottom: 12px;
 }
 
-/* Tab Content */
-.pst-tab-content {
-  position: relative;
-  min-height: 300px;
+.section-title .links a::before {
+    position: absolute;
+    content: "";
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #FF6A00;
+    opacity: 0;
+    transition: 0.3s linear;
 }
 
-.pst-loading {
-  text-align: center;
-  padding: 60px 20px;
-  font-size: 18px;
-  color: #666;
+.section-title .links a:hover,
+.section-title .links a.active {
+    color: #FF6A00;
 }
 
-.pst-loading i {
-  font-size: 32px;
-  margin-bottom: 10px;
-  display: block;
+.section-title .links a:hover::before,
+.section-title .links a.active::before {
+    opacity: 1;
 }
 
-.pst-no-products {
-  text-align: center;
-  padding: 60px 20px;
-  font-size: 16px;
-  color: #999;
+/* Product Card Styles */
+.product-card {
+    display: block;
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow: hidden;
+    border: 1px solid #fff;
+    transition: 0.3s linear;
 }
 
-/* Products Wrapper with Navigation */
-.pst-products-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 15px;
+.product-card:hover {
+    border-color: #FF6A00;
 }
 
-.pst-nav-btn {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #666;
-  z-index: 10;
+.product-card .product-thumb {
+    display: block;
+    width: 100%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    overflow: hidden;
+    position: relative;
 }
 
-.pst-nav-btn:hover {
-  background: #ff6b00;
-  border-color: #ff6b00;
-  color: #fff;
+.product-card .product-thumb > img {
+    display: block;
+    width: 100%;
+    padding-top: 0;
+    transform: scale(1);
+    transition: 0.3s linear;
 }
 
-.pst-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  background: #f5f5f5;
+.product-card:hover .product-thumb > img {
+    transform: scale(1.1);
 }
 
-.pst-nav-btn:disabled:hover {
-  background: #f5f5f5;
-  border-color: #ddd;
-  color: #666;
+.product-card .product-badge {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    border-radius: 0 9px 30px 0;
+    padding: 0 12px 0 10px;
+    height: 24px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 24px;
+    z-index: 9;
 }
 
-/* Products Container */
-.pst-products-container {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
+.product-card .product-badge.product-badge2 {
+    left: auto;
+    right: 0;
+    border-radius: 9px 0 0 30px;
+    padding: 0 10px 0 12px;
+    background: #daa520 !important;
 }
 
-.pst-products-grid {
-  display: flex;
-  gap: 8px;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.product-card .product-badge.bg-info {
+    background: #0dcaf0 !important;
 }
 
-/* Product Card */
-.pst-product-card {
-  flex: 0 0 calc(16.666% - 6.67px); /* 6 items: 100% / 6 = 16.666%. Gap: 8px * 5 gaps / 6 = 6.67px */
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-out;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #f0f0f0;
+.product-card .product-button-group {
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 2;
+    transition: 0.3s linear;
 }
 
-.pst-product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+.product-card:hover .product-button-group {
+    bottom: 10px;
+    opacity: 1;
+    visibility: visible;
 }
 
-.pst-product-image {
-  --gallery-aspect-ratio: 1.0;
-  position: relative;
-  overflow: hidden;
-  background: #fff;
-  padding-top: 100%;
-  aspect-ratio: 1.0;
-  border-radius: 8px 8px 0 0;
-  width: 100%;
-  transition: transform 0.3s ease-out;
-}
-.pst-product-card:hover .pst-product-image {
-  transform: scale(1.02);
-}
-
-.pst-product-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  image-rendering: high-quality;
-  aspect-ratio: inherit;
+.product-card .product-button-group .product-button {
+    height: 35px;
+    width: 35px;
+    line-height: 36px;
+    color: #fff;
+    padding: 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.1);
+    margin: 0 4px;
+    background: #FF6A00 !important;
 }
 
-.pst-discount-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #ff6b00;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  z-index: 2;
+.product-card .product-button-group .product-button:hover {
+    background: #ff8c00 !important;
 }
 
-.pst-product-info {
-  padding: 12px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.product-card .product-card-body {
+    padding: 15px 15px 10px;
 }
 
-.pst-category-name {
-  font-size: 12px;
-  color: #999;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.product-card .product-category {
+    width: 100%;
+    margin-bottom: 6px;
+    font-size: 13px;
 }
 
-.pst-product-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 6px;
-  text-decoration: none;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.3;
-  min-height: 34px;
+.product-card .product-category > a {
+    transition: color 0.2s;
+    color: #999;
+    text-decoration: none;
 }
 
-.pst-product-name:hover {
-  color: #ff6b00;
+.product-card .product-category > a:hover {
+    color: #FF6A00;
 }
 
-.pst-rating {
-  display: flex;
-  gap: 2px;
-  margin-bottom: 6px;
+.product-card .product-title {
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: 400;
 }
 
-.pst-rating .star {
-  color: #ddd;
-  font-size: 12px;
+.product-card .product-title > a {
+    transition: color 0.3s;
+    color: #232323;
+    text-decoration: none;
+    font-size: 14px;
+    height: 37px;
+    display: block;
+    font-weight: 500;
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
-.pst-rating .star.filled {
-  color: #ffa500;
+.product-card .product-title > a:hover {
+    color: #FF6A00;
 }
 
-.pst-rating .star:before {
-  content: "★";
+.product-card .rating-stars {
+    display: block;
+    margin-bottom: 5px;
 }
 
-.pst-product-price {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
+.product-card .rating-stars > i {
+    display: inline-block;
+    margin-right: 2px;
+    color: #c7c7c7;
+    font-size: 12px;
 }
 
-.pst-price-new {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ff6b00;
+.product-card .rating-stars > i.filled {
+    color: #ffa500;
 }
 
-.pst-price-old {
-  font-size: 13px;
-  color: #999;
-  text-decoration: line-through;
+.product-card .product-price {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    color: #FF6A00;
 }
 
-.pst-price-current {
-  font-size: 16px;
-  font-weight: 700;
-  color: #333;
+.product-card .product-price > del {
+    margin-right: 5px;
+    color: #999;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+/* Slider Item */
+.slider-item {
+    padding: 10px 6px;
+}
+
+/* Popular Category View Loading */
+.popular_category_view {
+    width: 100%;
+    height: 398px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.popular_category_view img {
+    width: 70px;
+    display: inline-block;
+}
+
+.popular_category_view.d-none {
+    display: none !important;
+}
+
+/* Owl Carousel Navigation */
+.popular-category-slider.owl-carousel .owl-nav div {
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    border: 0;
+    border-radius: 50px;
+    box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
+    background: #FF6A00 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 0.3s linear;
+}
+
+.popular-category-slider.owl-carousel .owl-prev {
+    right: 33px;
+    left: auto;
+}
+
+.popular-category-slider.owl-carousel .owl-next {
+    right: -10px;
+}
+
+.popular-category-slider.owl-carousel .owl-nav div:hover {
+    background: #ff8c00 !important;
+}
+
+.popular-category-slider.owl-carousel .owl-nav div.disabled {
+    background: #f5f6f9 !important;
+    opacity: 0.5;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .pst-product-card {
-    flex: 0 0 calc(25% - 6px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  }
-  .pst-product-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-  .pst-products-grid {
-    gap: 8px;
-  }
-}
-
 @media (max-width: 992px) {
-  .pst-section {
-    padding: 25px 0;
-  }
-  .pst-product-card {
-    flex: 0 0 calc(33.333% - 5.33px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
-  }
-  .pst-product-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-  .pst-products-grid {
-    gap: 8px;
-  }
-  .pst-tab-nav {
-    margin-bottom: 15px;
-  }
-  .pst-tab-item {
-    padding: 10px 18px;
-    font-size: 14px;
-  }
-  .pst-product-image {
-    padding-top: 100%;
-    aspect-ratio: 1.0;
-    border-radius: 6px 6px 0 0;
-  }
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .section-title .links {
+        margin-top: 15px;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .section-title .links a {
+        margin-left: 0;
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+    
+    .section-title h2 {
+        font-size: 20px;
+    }
 }
 
-@media (max-width: 749px) {
-  .pst-section {
-    padding: 20px 0;
-  }
-  .pst-product-card {
-    flex: 0 0 calc(50% - 4px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
-  }
-  .pst-product-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-  }
-  .pst-products-grid {
-    gap: 8px;
-  }
-  .pst-tab-nav {
-    margin-bottom: 12px;
-  }
-  .pst-tab-item {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  .pst-product-image {
-    padding-top: 100%;
-    aspect-ratio: 1.0;
-    border-radius: 6px 6px 0 0;
-  }
-  .pst-product-info {
-    padding: 10px;
-  }
-  .pst-nav-btn {
-    width: 35px;
-    height: 35px;
-    font-size: 14px;
-  }
+@media (max-width: 767px) {
+    .newproduct-section.popular-category-sec {
+        padding: 30px 0;
+    }
+    
+    .section-title h2 {
+        font-size: 18px;
+    }
+    
+    .section-title .links a {
+        font-size: 14px;
+        margin-right: 15px;
+    }
+    
+    .product-card .product-title > a {
+        font-size: 13px;
+        height: 34px;
+    }
+    
+    .product-card .product-price {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 576px) {
-  .pst-section {
-    padding: 15px 0;
-  }
-  
-  .pst-product-card {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    border-radius: 5px;
-  }
-  
-  .pst-product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-  }
-  
-  .pst-tab-nav {
-    margin-bottom: 15px;
-  }
-  
-  .pst-tab-item {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  .pst-products-wrapper {
-    gap: 6px;
-  }
-  
-  .pst-products-grid {
-    gap: 6px;
-  }
-  
-  .pst-product-image {
-    padding-top: 100%;
-    aspect-ratio: 1.0;
-    border-radius: 5px 5px 0 0;
-  }
-  
-  .pst-product-info {
-    padding: 8px;
-  }
-  
-  .pst-product-name {
-    font-size: 12px;
-    min-height: 30px;
-    margin-bottom: 4px;
-  }
-  
-  .pst-price-new,
-  .pst-price-current {
-    font-size: 14px;
-  }
-  
-  .pst-nav-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
-  }
+    .newproduct-section.popular-category-sec {
+        padding: 20px 0;
+    }
+    
+    .section-title {
+        margin-bottom: 20px;
+    }
+    
+    .section-title h2 {
+        font-size: 16px;
+    }
+    
+    .section-title .links a {
+        font-size: 13px;
+        margin-right: 12px;
+        padding-bottom: 10px;
+    }
 }
 </style>
 
 <script>
 (function() {
-  var root = document.getElementById('<?php echo $module_uid; ?>');
-  if (!root || root.dataset.pstInitialized) return;
-  root.dataset.pstInitialized = 'true';
+    var root = document.getElementById('<?php echo $module_uid; ?>');
+    if (!root || root.dataset.pstInitialized) return;
+    root.dataset.pstInitialized = 'true';
 
-  var moduleId = <?php echo $module_id; ?>;
-  var ajaxUrl = '<?php echo $ajax_url; ?>';
-  var tabs = <?php echo json_encode($tabs); ?>;
-  
-  var tabItems = root.querySelectorAll('.pst-tab-item');
-  var productsGrid = root.querySelector('.pst-products-grid');
-  var loadingEl = root.querySelector('.pst-loading');
-  var noProductsEl = root.querySelector('.pst-no-products');
-  var prevBtn = root.querySelector('.pst-prev');
-  var nextBtn = root.querySelector('.pst-next');
-  
-  var currentTabId = tabs.length > 0 ? tabs[0].id : null;
-  var currentScroll = 0;
-  var cardWidth = 0;
-  var visibleCards = 5;
+    var moduleId = <?php echo $module_id; ?>;
+    var ajaxUrl = '<?php echo $ajax_url; ?>';
+    var tabs = <?php echo json_encode($tabs); ?>;
+    
+    var tabItems = root.querySelectorAll('.pst-tab-item');
+    var sliderContainer = root.querySelector('.popular-category-slider');
+    var loadingEl = root.querySelector('.popular_category_view');
+    var currentTabId = tabs.length > 0 ? tabs[0].id : null;
+    var owlCarousel = null;
 
-  function showLoading() {
-    loadingEl.style.display = 'block';
-    productsGrid.parentElement.parentElement.style.display = 'none';
-    noProductsEl.style.display = 'none';
-  }
+    function showLoading() {
+        loadingEl.classList.remove('d-none');
+        sliderContainer.style.display = 'none';
+    }
 
-  function hideLoading() {
-    loadingEl.style.display = 'none';
-  }
+    function hideLoading() {
+        loadingEl.classList.add('d-none');
+        sliderContainer.style.display = 'block';
+    }
 
-  function showProducts() {
-    productsGrid.parentElement.parentElement.style.display = 'flex';
-    noProductsEl.style.display = 'none';
-  }
-
-  function showNoProducts() {
-    productsGrid.parentElement.parentElement.style.display = 'none';
-    noProductsEl.style.display = 'block';
-  }
-
-  function loadTabProducts(tabId) {
-    showLoading();
-    currentScroll = 0;
-    productsGrid.style.transform = 'translateX(0)';
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', ajaxUrl + '&tab_id=' + tabId + '&module_id=' + moduleId, true);
-    xhr.onload = function() {
-      hideLoading();
-      if (xhr.status === 200) {
-        try {
-          var response = JSON.parse(xhr.responseText);
-          if (response.success && response.products && response.products.length > 0) {
-            renderProducts(response.products);
-            showProducts();
-            updateNavButtons();
-          } else {
-            showNoProducts();
-          }
-        } catch (e) {
-          console.error('Error parsing JSON:', e);
-          showNoProducts();
+    function loadTabProducts(tabId) {
+        showLoading();
+        
+        // Destroy existing carousel
+        if (owlCarousel && typeof jQuery !== 'undefined' && jQuery(sliderContainer).data('owl.carousel')) {
+            jQuery(sliderContainer).trigger('destroy.owl.carousel');
+            owlCarousel = null;
         }
-      } else {
-        showNoProducts();
-      }
-    };
-    xhr.onerror = function() {
-      hideLoading();
-      showNoProducts();
-    };
-    xhr.send();
-  }
 
-  function renderProducts(products) {
-    productsGrid.innerHTML = '';
-    
-    products.forEach(function(product) {
-      var card = document.createElement('div');
-      card.className = 'pst-product-card';
-      
-      var html = '<div class="pst-product-thumb">';
-      html += '<a href="' + product.href + '"><img src="' + product.thumb + '" alt="' + product.name + '" /></a>';
-      if (product.discount) {
-        html += '<span class="pst-discount-badge">-' + product.discount + '%</span>';
-      }
-      html += '</div>';
-      html += '<div class="pst-product-info">';
-      if (product.category_name) {
-        html += '<span class="pst-category-name">' + product.category_name + '</span>';
-      }
-      html += '<a href="' + product.href + '" class="pst-product-name">' + product.name + '</a>';
-      html += '<div class="pst-rating">';
-      for (var i = 1; i <= 5; i++) {
-        html += '<span class="star' + (i <= product.rating ? ' filled' : '') + '"></span>';
-      }
-      html += '</div>';
-      html += '<div class="pst-product-price">';
-      if (product.special) {
-        html += '<span class="pst-price-new">' + product.special + '</span>';
-        html += '<span class="pst-price-old">' + product.price + '</span>';
-      } else if (product.price) {
-        html += '<span class="pst-price-current">' + product.price + '</span>';
-      }
-      html += '</div>';
-      html += '</div>';
-      
-      card.innerHTML = html;
-      productsGrid.appendChild(card);
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', ajaxUrl + '&tab_id=' + tabId + '&module_id=' + moduleId, true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success && response.products && response.products.length > 0) {
+                        renderProducts(response.products);
+                        hideLoading();
+                        initCarousel();
+                    } else {
+                        hideLoading();
+                        sliderContainer.innerHTML = '<div class="text-center p-4">No products found in this category.</div>';
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON:', e);
+                    hideLoading();
+                    sliderContainer.innerHTML = '<div class="text-center p-4">Error loading products.</div>';
+                }
+            } else {
+                hideLoading();
+                sliderContainer.innerHTML = '<div class="text-center p-4">Error loading products.</div>';
+            }
+        };
+        xhr.onerror = function() {
+            hideLoading();
+            sliderContainer.innerHTML = '<div class="text-center p-4">Error loading products.</div>';
+        };
+        xhr.send();
+    }
+
+    function renderProducts(products) {
+        var html = '';
+        
+        products.forEach(function(product) {
+            html += '<div class="slider-item">';
+            html += '<div class="product-card">';
+            html += '<div class="product-thumb">';
+            
+            // Discount badge
+            if (product.discount) {
+                html += '<div class="product-badge product-badge2 bg-info">-' + product.discount + '%</div>';
+            }
+            
+            html += '<img class="lazy" alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" />';
+            html += '<div class="product-button-group">';
+            html += '<a class="product-button wishlist_store" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>';
+            html += '<a class="product-button product_compare" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>';
+            html += '<a class="product-button add_to_single_cart" data-target="' + product.product_id + '" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>';
+            html += '</div>';
+            html += '</div>';
+            html += '<div class="product-card-body">';
+            
+            // Category
+            if (product.category_name) {
+                html += '<div class="product-category"><a href="javascript:;">' + product.category_name + '</a></div>';
+            }
+            
+            // Product title
+            html += '<h3 class="product-title"><a href="' + product.href + '">' + product.name + '</a></h3>';
+            
+            // Rating
+            html += '<div class="rating-stars">';
+            for (var i = 1; i <= 5; i++) {
+                html += '<i class="fas fa-star' + (i <= product.rating ? ' filled' : '') + '"></i>';
+            }
+            html += '</div>';
+            
+            // Price
+            html += '<h4 class="product-price">';
+            if (product.special) {
+                html += '<del>' + product.price + '</del> ' + product.special;
+            } else if (product.price) {
+                html += product.price;
+            }
+            html += '</h4>';
+            
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+        });
+        
+        sliderContainer.innerHTML = html;
+    }
+
+    function initCarousel() {
+        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
+            owlCarousel = jQuery(sliderContainer).owlCarousel({
+                loop: true,
+                margin: 15,
+                nav: true,
+                dots: false,
+                autoplay: true,
+                autoplayTimeout: 3000,
+                autoplayHoverPause: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    576: {
+                        items: 2
+                    },
+                    768: {
+                        items: 3
+                    },
+                    992: {
+                        items: 4
+                    },
+                    1200: {
+                        items: 5
+                    }
+                }
+            });
+        }
+    }
+
+    // Tab click handlers
+    tabItems.forEach(function(tab) {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            var tabId = parseInt(this.getAttribute('data-tab-id'));
+            
+            // Update active tab
+            tabItems.forEach(function(t) { t.classList.remove('active'); });
+            this.classList.add('active');
+            
+            // Load products
+            currentTabId = tabId;
+            loadTabProducts(tabId);
+        });
     });
 
-    // Calculate card width after rendering
-    setTimeout(function() {
-      var firstCard = productsGrid.querySelector('.pst-product-card');
-      if (firstCard) {
-        cardWidth = firstCard.offsetWidth + 15; // including gap
-        updateNavButtons();
-      }
-    }, 100);
-  }
-
-  function updateNavButtons() {
-    var totalCards = productsGrid.children.length;
-    var containerWidth = productsGrid.parentElement.offsetWidth;
-    var gridWidth = productsGrid.scrollWidth;
-    
-    if (gridWidth <= containerWidth) {
-      prevBtn.style.display = 'none';
-      nextBtn.style.display = 'none';
-      return;
+    // Load first tab on init
+    if (currentTabId) {
+        loadTabProducts(currentTabId);
     }
-    
-    prevBtn.style.display = 'flex';
-    nextBtn.style.display = 'flex';
-    
-    prevBtn.disabled = currentScroll <= 0;
-    nextBtn.disabled = Math.abs(currentScroll) >= (gridWidth - containerWidth);
-  }
-
-  var autoScrollInterval = null;
-
-  function scrollProducts(direction) {
-    var containerWidth = productsGrid.parentElement.offsetWidth;
-    var gridWidth = productsGrid.scrollWidth;
-    var scrollAmount = cardWidth * 2; // Scroll 2 cards at a time
-    
-    if (direction === 'next') {
-      currentScroll -= scrollAmount;
-      var maxScroll = -(gridWidth - containerWidth);
-      if (currentScroll < maxScroll) {
-        currentScroll = maxScroll;
-      }
-    } else {
-      currentScroll += scrollAmount;
-      if (currentScroll > 0) {
-        currentScroll = 0;
-      }
-    }
-    
-    productsGrid.style.transform = 'translateX(' + currentScroll + 'px)';
-    updateNavButtons();
-    
-    // Check if we've reached the end, then reset to beginning
-    setTimeout(function() {
-      if (direction === 'next' && Math.abs(currentScroll) >= (gridWidth - containerWidth - 10)) {
-        setTimeout(function() {
-          currentScroll = 0;
-          productsGrid.style.transform = 'translateX(0)';
-          updateNavButtons();
-        }, 500);
-      }
-    }, 600);
-  }
-
-  function startAutoScroll() {
-    // Clear any existing interval
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-    }
-    
-    // Auto-scroll every 3 seconds
-    autoScrollInterval = setInterval(function() {
-      scrollProducts('next');
-    }, 3000);
-  }
-
-  function stopAutoScroll() {
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      autoScrollInterval = null;
-    }
-  }
-
-  // Tab click handlers
-  tabItems.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var tabId = parseInt(this.getAttribute('data-tab-id'));
-      
-      // Update active tab
-      tabItems.forEach(function(t) { t.classList.remove('active'); });
-      this.classList.add('active');
-      
-      // Load products
-      currentTabId = tabId;
-      loadTabProducts(tabId);
-    });
-  });
-
-  // Navigation button handlers
-  if (prevBtn && nextBtn) {
-    prevBtn.addEventListener('click', function() {
-      stopAutoScroll();
-      scrollProducts('prev');
-      // Restart auto-scroll after 5 seconds of inactivity
-      setTimeout(startAutoScroll, 5000);
-    });
-    
-    nextBtn.addEventListener('click', function() {
-      stopAutoScroll();
-      scrollProducts('next');
-      // Restart auto-scroll after 5 seconds of inactivity
-      setTimeout(startAutoScroll, 5000);
-    });
-  }
-
-  // Pause auto-scroll on hover
-  root.addEventListener('mouseenter', function() {
-    stopAutoScroll();
-  });
-
-  // Resume auto-scroll when mouse leaves
-  root.addEventListener('mouseleave', function() {
-    startAutoScroll();
-  });
-
-  // Start auto-scrolling on page load
-  startAutoScroll();
-
-  // Window resize handler
-  var resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-      currentScroll = 0;
-      productsGrid.style.transform = 'translateX(0)';
-      updateNavButtons();
-    }, 250);
-  });
-
-  // Load first tab on init
-  if (currentTabId) {
-    loadTabProducts(currentTabId);
-  }
 })();
 </script>
-
-
-
-
-
-
-
-
-
