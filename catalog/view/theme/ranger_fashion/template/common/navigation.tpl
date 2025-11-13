@@ -107,11 +107,11 @@
 
 .header-bottom .main-nav .menu > li > a {
     display: block;
-    padding: 0.8rem 0;
-    font-size: 1.4rem;
-    font-weight: 500;
-    letter-spacing: 0;
-    line-height: 1.5;
+    padding: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: -0.009em;
+    line-height: 1.1;
     text-transform: capitalize;
     color: var(--white-color, #fff);
     text-decoration: none;
