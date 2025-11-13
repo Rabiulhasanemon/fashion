@@ -6,6 +6,7 @@ class ControllerModuleFeaturedCategory extends Controller
 
 		$data['name'] = $setting['name'];
 		$data['class'] = $setting['class'];
+		$data['see_all_url'] = $this->url->link('product/category');
 
 		$this->load->model('catalog/category');
 		$this->load->model('tool/image');
