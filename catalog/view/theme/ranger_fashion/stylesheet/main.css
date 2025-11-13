@@ -712,7 +712,7 @@ a:focus {
 
 .latest-products__wrapper {
   width: 100%;
-  max-width: 100%;
+  max-width: 80%;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
@@ -720,7 +720,7 @@ a:focus {
 
 .latest-products__layout {
   width: 100%;
-  max-width: 100%;
+  max-width: 80%;
 }
 
 .latest-products__list {
