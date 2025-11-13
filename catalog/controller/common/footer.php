@@ -34,12 +34,16 @@ class ControllerCommonFooter extends Controller {
 
 		// Get categories for footer
 		$data['categories'] = array();
-		$categories = $this->model_catalog_category->getCategories(0);
-		foreach ($categories as $category) {
-			$data['categories'][] = array(
-				'name' => $category['name'],
-				'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
-			);
+		if (isset($this->model_catalog_category)) {
+			$categories = $this->model_catalog_category->getCategories(0);
+			if ($categories) {
+				foreach ($categories as $category) {
+					$data['categories'][] = array(
+						'name' => isset($category['name']) ? $category['name'] : '',
+						'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
+					);
+				}
+			}
 		}
 
 		// Get social media links from config
@@ -63,7 +67,7 @@ class ControllerCommonFooter extends Controller {
 			$data['image'] = '';
 		}
 
-		$data["is_mobile"] = $this->mobile_detect->isMobile();
+		$data["is_mobile"] = isset($this->mobile_detect) && method_exists($this->mobile_detect, 'isMobile') ? $this->mobile_detect->isMobile() : false;
 		$data['contact'] = $this->url->link('information/contact');
 		$data['offer'] = $this->url->link('information/offer');
 		$data['manufacturer'] = $this->url->link('product/manufacturer');
@@ -83,6 +87,7 @@ class ControllerCommonFooter extends Controller {
         $data['address'] = nl2br($this->config->get("config_address"));
         $data['telephone'] = $this->config->get("config_telephone");
         $data['email'] = $this->config->get("config_email");
+        $data['config_name'] = $this->config->get('config_name');
 
 		$data['powered'] = sprintf($this->language->get('text_powered'), $this->config->get('config_name'), date('Y', time()));
 

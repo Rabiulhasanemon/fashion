@@ -6,13 +6,13 @@
                 <div class="col-lg-5 col-xl-3 col-md-5 col-12">
                     <div class="footer-widget footer-about">
                         <!-- Logo  -->
-                        <?php if ($logo) { ?>
-                        <a href="<?php echo $home; ?>" class="footer-logo">
-                            <img src="<?php echo $logo; ?>" alt="<?php echo $this->config->get('config_name'); ?>">
+                        <?php if (isset($logo) && $logo) { ?>
+                        <a href="<?php echo isset($home) ? $home : 'index.php?route=common/home'; ?>" class="footer-logo">
+                            <img src="<?php echo $logo; ?>" alt="<?php echo isset($config_name) ? $config_name : 'Store'; ?>">
                         </a>
                         <?php } ?>
                         <p class="f-about-text">
-                            <?php echo $this->config->get('config_name'); ?> is an e-commerce platform dedicated to providing quality products to every home.
+                            <?php echo isset($config_name) ? $config_name : 'Store'; ?> is an e-commerce platform dedicated to providing quality products to every home.
                         </p>
                         <!-- Footer Contact -->
                         <ul class="footer-contact">
@@ -142,7 +142,7 @@
                 <div class="col-12">
                     <div class="footer-bottom-widget">
                         <p class="f-copyight-text">
-                            Copyright © <?php echo date('Y'); ?> <?php echo $this->config->get('config_name'); ?>
+                            Copyright © <?php echo date('Y'); ?> <?php echo isset($config_name) ? $config_name : 'Store'; ?>
                             <span class="getcommerce-copyright">Developed&nbsp;by <a href="https://getcommerce.xyz" target="_blank">Getcommerce</a> </span>
                         </p>
                         <div class="footer-payment-img">
