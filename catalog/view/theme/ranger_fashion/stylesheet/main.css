@@ -1619,11 +1619,11 @@ a:focus {
 }
 
 .header-bottom .main-nav .menu > li.has-submenu > a::after {
-    content: "";
+    content: "\f107";
     display: inline-block;
     margin-left: 6px;
     font-family: "Font Awesome 5 Free";
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 900;
     vertical-align: middle;
 }
