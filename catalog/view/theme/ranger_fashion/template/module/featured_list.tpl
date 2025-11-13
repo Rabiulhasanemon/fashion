@@ -147,6 +147,25 @@
 }
 .featured-product-area .section-head .title {
     font-size: 28px !important;
+    font-weight: 600 !important;
+    color: #1a1a1a !important;
+    line-height: 1.3 !important;
+    text-align: left !important;
+    padding: 20px 0 16px 0 !important;
+    letter-spacing: -0.02em !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    position: relative !important;
+}
+
+.featured-product-area .section-head .title::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 8px !important;
+    left: 0 !important;
+    width: 60px !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+    border-radius: 2px !important;
 }
 .resource-list__item {
     height: 100%;
@@ -167,6 +186,12 @@
     }
     .featured-product-area .section-head .title {
         font-size: 22px !important;
+        padding: 16px 0 12px 0 !important;
+    }
+    .featured-product-area .section-head .title::after {
+        width: 45px !important;
+        height: 2px !important;
+        bottom: 5px !important;
     }
 }
 @media (max-width: 576px) {
@@ -183,6 +208,12 @@
     }
     .featured-product-area .section-head .title {
         font-size: 20px !important;
+        padding: 14px 0 10px 0 !important;
+    }
+    .featured-product-area .section-head .title::after {
+        width: 40px !important;
+        height: 2px !important;
+        bottom: 4px !important;
     }
 }
 </style>
