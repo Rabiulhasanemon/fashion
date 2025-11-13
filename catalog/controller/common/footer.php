@@ -19,6 +19,7 @@ class ControllerCommonFooter extends Controller {
 		$data['text_newsletter'] = $this->language->get('text_newsletter');
 
 		$this->load->model('catalog/information');
+		$this->load->model('catalog/category');
 
 		$data['informations'] = array();
 
@@ -30,6 +31,25 @@ class ControllerCommonFooter extends Controller {
 				);
 			}
 		}
+
+		// Get categories for footer
+		$data['categories'] = array();
+		$categories = $this->model_catalog_category->getCategories(0);
+		foreach ($categories as $category) {
+			$data['categories'][] = array(
+				'name' => $category['name'],
+				'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
+			);
+		}
+
+		// Get social media links from config
+		$data['facebook_url'] = $this->config->get('config_facebook') ? $this->config->get('config_facebook') : '#';
+		$data['twitter_url'] = $this->config->get('config_twitter') ? $this->config->get('config_twitter') : '#';
+		$data['instagram_url'] = $this->config->get('config_instagram') ? $this->config->get('config_instagram') : '#';
+		$data['youtube_url'] = $this->config->get('config_youtube') ? $this->config->get('config_youtube') : '#';
+		
+		// Newsletter subscription URL
+		$data['newsletter_action'] = $this->url->link('account/newsletter', '', 'SSL');
 
         if (is_file(DIR_IMAGE . $this->config->get('config_logo'))) {
             $data['logo'] = $this->config->get('config_ssl') . '/image/' . $this->config->get('config_logo');
@@ -51,6 +71,8 @@ class ControllerCommonFooter extends Controller {
 		$data['account'] = $this->url->link('account/account', '', 'SSL');
 		$data['order'] = $this->url->link('account/order', '', 'SSL');
 		$data['newsletter'] = $this->url->link('account/newsletter', '', 'SSL');
+		$data['wishlist'] = $this->url->link('account/wishlist', '', 'SSL');
+		$data['special'] = $this->url->link('product/special');
         $data['item_count'] = $this->cart->countProducts();
 
         $data['logged'] = $this->customer->isLogged();

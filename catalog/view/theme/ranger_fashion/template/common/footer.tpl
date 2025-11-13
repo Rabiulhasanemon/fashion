@@ -1,108 +1,156 @@
-<footer>
+<footer class="footer style-3">
+    <div class="container">
+        <!-- Footer Top  -->
     <div class="footer-top">
-        <div class="container">
             <div class="row">
-                <div class="col-lg-6">
-                    <div class="footer-widget">
-                        <h5 class="title">Important Pages</h5>
-                        <ul class="footer-links">
-                            <li><a href="about-us">About Us</a></li>
-                            <li><a href="account/login">Log In or Sign Up</a></li>
-                            <li><a href="refund-policies">Refund Policies</a></li>
-                            <li><a href="mission-and-vission">Mission & Vision</a></li>
-                            <li><a href="terms-and-condition">Terms & Conditions</a></li>
-                            <li><a href="return-cancellation-policies">Return & Cancellation Policies</a></li>
-                            <li><a href="account/account">My Account</a></li>
-                            <li><a href="privacy-policy">Privacy Policy</a></li>
-                            <li><a href="faqs">FAQs</a></li>
-                            <li><a href="account/wishlist">Wishlist</a></li>
+                <div class="col-lg-5 col-xl-3 col-md-5 col-12">
+                    <div class="footer-widget footer-about">
+                        <!-- Logo  -->
+                        <?php if ($logo) { ?>
+                        <a href="<?php echo $home; ?>" class="footer-logo">
+                            <img src="<?php echo $logo; ?>" alt="<?php echo $this->config->get('config_name'); ?>">
+                        </a>
+                        <?php } ?>
+                        <p class="f-about-text">
+                            <?php echo $this->config->get('config_name'); ?> is an e-commerce platform dedicated to providing quality products to every home.
+                        </p>
+                        <!-- Footer Contact -->
+                        <ul class="footer-contact">
+                            <?php if ($address) { ?>
+                            <li>
+                                <i class="w-icon-map-marker"></i><?php echo strip_tags($address); ?>
+                            </li>
+                            <?php } ?>
+                            <?php if ($telephone) { ?>
+                            <li>
+                                <a href="tel:<?php echo $telephone; ?>"><i class="w-icon-phone"></i><?php echo $telephone; ?></a>
+                            </li>
+                            <?php } ?>
+                            <?php if ($email) { ?>
+                            <li>
+                                <a href="mailto:<?php echo $email; ?>">
+                                    <i class="w-icon-envelop-closed"></i>
+                                    <?php echo $email; ?>
+                                </a>
+                            </li>
+                            <?php } ?>
                         </ul>
-
-                        <h5 class="title">Connect Us On</h5>
-                        <div class="social-btn-wrap">
-                            <a href="#" class="btn social facebook">
-                                <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                >
-                                    <path
-                                            d="M12 2.04004C6.5 2.04004 2 6.53004 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85004C10.44 7.34004 11.93 5.96004 14.22 5.96004C15.31 5.96004 16.45 6.15004 16.45 6.15004V8.62004H15.19C13.95 8.62004 13.56 9.39004 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C15.9164 21.5879 18.0622 20.3856 19.6099 18.5701C21.1576 16.7546 22.0054 14.4457 22 12.06C22 6.53004 17.5 2.04004 12 2.04004Z"
-                                            fill="white"
-                                    />
+                        <!-- Footer Social -->
+                        <ul class="footer-social">
+                            <?php if (isset($facebook_url) && $facebook_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $facebook_url; ?>" target="_blank"><i class="w-icon-facebook"></i></a>
+                            </li>
+                            <?php } ?>
+                            <?php if (isset($twitter_url) && $twitter_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $twitter_url; ?>" target="_blank"><i class="w-icon-twitter"></i></a>
+                            </li>
+                            <?php } ?>
+                            <?php if (isset($instagram_url) && $instagram_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $instagram_url; ?>" target="_blank"><i class="w-icon-instagram"></i></a>
+                            </li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xl-2 col-md-4 col-6">
+                    <div class="footer-widget quick-links">
+                        <p class="footer-widget-title">Information</p>
+                        <ul class="footer-widget-list">
+                            <?php if (isset($informations) && $informations) { ?>
+                            <?php foreach ($informations as $information) { ?>
+                            <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
+                            <?php } ?>
+                            <?php } ?>
+                            <?php if ($contact) { ?>
+                            <li><a href="<?php echo $contact; ?>"><?php echo $text_contact; ?></a></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xl-2 col-md-3 col-6">
+                    <div class="footer-widget accounts">
+                        <p class="footer-widget-title">Shop By Category</p>
+                        <ul class="footer-widget-list">
+                            <?php if (isset($categories) && $categories) { ?>
+                            <?php $category_count = 0; ?>
+                            <?php foreach ($categories as $category) { ?>
+                            <?php if ($category_count < 7) { ?>
+                            <li><a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a></li>
+                            <?php $category_count++; ?>
+                            <?php } ?>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-xl-2 col-md-5 col-6">
+                    <div class="footer-widget pages">
+                        <p class="footer-widget-title">Support</p>
+                        <ul class="footer-widget-list">
+                            <?php if ($account) { ?>
+                            <li><a href="<?php echo $account; ?>"><?php echo $text_account; ?></a></li>
+                            <?php } ?>
+                            <?php if ($order) { ?>
+                            <li><a href="<?php echo $order; ?>"><?php echo $text_order; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($wishlist) && $wishlist) { ?>
+                            <li><a href="<?php echo $wishlist; ?>"><?php echo $text_wishlist; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($special) && $special) { ?>
+                            <li><a href="<?php echo $special; ?>"><?php echo $text_special; ?></a></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-xl-3 col-md-7 col-12">
+                    <div class="footer-widget newsletter">
+                        <p class="footer-widget-title">Sign Up Newsletter</p>
+                        <p class="f-widget-text">Don't worry, we won't spam you!</p>
+                        <form action="<?php echo isset($newsletter_action) ? $newsletter_action : $newsletter; ?>" method="POST" class="footer-newsletter needs-validation" id="newsletterForm" novalidate="">
+                            <input type="email" name="email" class="form-control" placeholder="Type Your E-mail" required="">
+                            <button type="submit" class="g-recaptcha">
+                                <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_4110_502)">
+                                        <path d="M13.8945 8.11651L6.57622 15.4546C6.41117 15.6196 6.21643 15.7021 5.992 15.7022C5.76757 15.7022 5.57285 15.6197 5.40785 15.4547C5.24285 15.2897 5.16367 15.0917 5.1703 14.8607C5.17694 14.6296 5.25618 14.4382 5.40802 14.2864L12.7461 6.96811L6.48835 6.96902C6.25072 6.96906 6.05105 6.88823 5.88935 6.72653C5.72765 6.56483 5.64847 6.37011 5.6518 6.14238C5.65513 5.91464 5.73602 5.72155 5.89447 5.56311C6.05292 5.40466 6.25096 5.32542 6.48859 5.32538L14.7266 5.32418C14.951 5.32414 15.1408 5.40168 15.2959 5.55678C15.451 5.71188 15.5351 5.90824 15.5483 6.14588L15.5471 14.3839C15.5471 14.6083 15.4645 14.8031 15.2995 14.9681C15.1344 15.1332 14.943 15.2124 14.7252 15.2058C14.4875 15.2059 14.2879 15.125 14.1262 14.9633C13.9645 14.8016 13.8902 14.6086 13.9035 14.3841L13.8945 8.11651Z" fill="#fff"></path>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_4110_502">
+                                            <rect width="14.8351" height="14.0007" fill="white" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 10 21)"></rect>
+                                        </clipPath>
+                                    </defs>
                                 </svg>
-                                Facebook
-                            </a>
-                            <a href="#" class="btn social instagram">
-                                <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                >
-                                    <path
-                                            d="M13.028 2C14.153 2.003 14.724 2.009 15.217 2.023L15.411 2.03C15.635 2.038 15.856 2.048 16.123 2.06C17.187 2.11 17.913 2.278 18.55 2.525C19.21 2.779 19.766 3.123 20.322 3.678C20.8307 4.17773 21.2242 4.78247 21.475 5.45C21.722 6.087 21.89 6.813 21.94 7.878C21.952 8.144 21.962 8.365 21.97 8.59L21.976 8.784C21.991 9.276 21.997 9.847 21.999 10.972L22 11.718V13.028C22.0025 13.7574 21.9948 14.4868 21.977 15.216L21.971 15.41C21.963 15.635 21.953 15.856 21.941 16.122C21.891 17.187 21.721 17.912 21.475 18.55C21.2242 19.2175 20.8307 19.8223 20.322 20.322C19.8223 20.8307 19.2175 21.2242 18.55 21.475C17.913 21.722 17.187 21.89 16.123 21.94L15.411 21.97L15.217 21.976C14.724 21.99 14.153 21.997 13.028 21.999L12.282 22H10.973C10.2433 22.0026 9.51354 21.9949 8.78402 21.977L8.59002 21.971C8.35263 21.962 8.11529 21.9517 7.87802 21.94C6.81402 21.89 6.08802 21.722 5.45002 21.475C4.78285 21.2241 4.17846 20.8306 3.67902 20.322C3.16996 19.8224 2.77613 19.2176 2.52502 18.55C2.27802 17.913 2.11002 17.187 2.06002 16.122L2.03002 15.41L2.02502 15.216C2.00659 14.4868 1.99825 13.7574 2.00002 13.028V10.972C1.99725 10.2426 2.00459 9.5132 2.02202 8.784L2.02902 8.59C2.03702 8.365 2.04702 8.144 2.05902 7.878C2.10902 6.813 2.27702 6.088 2.52402 5.45C2.77571 4.7822 3.17024 4.17744 3.68002 3.678C4.17917 3.16955 4.78321 2.77607 5.45002 2.525C6.08802 2.278 6.81302 2.11 7.87802 2.06C8.14402 2.048 8.36602 2.038 8.59002 2.03L8.78402 2.024C9.51321 2.00623 10.2426 1.99857 10.972 2.001L13.028 2ZM12 7C10.6739 7 9.40217 7.52678 8.46449 8.46447C7.5268 9.40215 7.00002 10.6739 7.00002 12C7.00002 13.3261 7.5268 14.5979 8.46449 15.5355C9.40217 16.4732 10.6739 17 12 17C13.3261 17 14.5979 16.4732 15.5356 15.5355C16.4732 14.5979 17 13.3261 17 12C17 10.6739 16.4732 9.40215 15.5356 8.46447C14.5979 7.52678 13.3261 7 12 7ZM12 9C12.394 8.99993 12.7841 9.07747 13.1481 9.22817C13.5121 9.37887 13.8429 9.5998 14.1215 9.87833C14.4001 10.1569 14.6211 10.4875 14.772 10.8515C14.9228 11.2154 15.0005 11.6055 15.0005 11.9995C15.0006 12.3935 14.9231 12.7836 14.7723 13.1476C14.6216 13.5116 14.4007 13.8423 14.1222 14.121C13.8437 14.3996 13.513 14.6206 13.149 14.7714C12.7851 14.9223 12.395 14.9999 12.001 15C11.2054 15 10.4423 14.6839 9.8797 14.1213C9.31709 13.5587 9.00102 12.7956 9.00102 12C9.00102 11.2044 9.31709 10.4413 9.8797 9.87868C10.4423 9.31607 11.2054 9 12.001 9M17.251 5.5C16.9195 5.5 16.6016 5.6317 16.3671 5.86612C16.1327 6.10054 16.001 6.41848 16.001 6.75C16.001 7.08152 16.1327 7.39946 16.3671 7.63388C16.6016 7.8683 16.9195 8 17.251 8C17.5825 8 17.9005 7.8683 18.1349 7.63388C18.3693 7.39946 18.501 7.08152 18.501 6.75C18.501 6.41848 18.3693 6.10054 18.1349 5.86612C17.9005 5.6317 17.5825 5.5 17.251 5.5Z"
-                                            fill="white"
-                                    />
-                                </svg>
-                                Instagram
-                            </a>
-                            <a href="#" class="btn social whatsApp">
-                                <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                >
-                                    <path
-                                            d="M12.001 2C17.524 2 22.001 6.477 22.001 12C22.001 17.523 17.524 22 12.001 22C10.2337 22.003 8.49757 21.5353 6.97099 20.645L2.00499 22L3.35699 17.032C2.46595 15.5049 1.99789 13.768 2.00099 12C2.00099 6.477 6.47799 2 12.001 2ZM8.59299 7.3L8.39299 7.308C8.26368 7.31691 8.13734 7.35087 8.02099 7.408C7.91257 7.46951 7.81355 7.5463 7.72699 7.636C7.60699 7.749 7.53899 7.847 7.46599 7.942C7.09611 8.4229 6.89696 9.01331 6.89999 9.62C6.90199 10.11 7.02999 10.587 7.22999 11.033C7.63899 11.935 8.31199 12.89 9.19999 13.775C9.41399 13.988 9.62399 14.202 9.84999 14.401C10.9534 15.3724 12.2683 16.073 13.69 16.447L14.258 16.534C14.443 16.544 14.628 16.53 14.814 16.521C15.1052 16.5056 15.3895 16.4268 15.647 16.29C15.7778 16.2223 15.9056 16.1489 16.03 16.07C16.03 16.07 16.0723 16.0413 16.155 15.98C16.29 15.88 16.373 15.809 16.485 15.692C16.569 15.6053 16.639 15.5047 16.695 15.39C16.773 15.227 16.851 14.916 16.883 14.657C16.907 14.459 16.9 14.351 16.897 14.284C16.893 14.177 16.804 14.066 16.707 14.019L16.125 13.758C16.125 13.758 15.255 13.379 14.723 13.137C14.6673 13.1128 14.6077 13.0989 14.547 13.096C14.4786 13.0888 14.4094 13.0965 14.3442 13.1184C14.279 13.1403 14.2192 13.176 14.169 13.223C14.164 13.221 14.097 13.278 13.374 14.154C13.3325 14.2098 13.2753 14.2519 13.2098 14.2751C13.1443 14.2982 13.0733 14.3013 13.006 14.284C12.9408 14.2666 12.877 14.2446 12.815 14.218C12.691 14.166 12.648 14.146 12.563 14.11C11.9889 13.8599 11.4574 13.5215 10.988 13.107C10.862 12.997 10.745 12.877 10.625 12.761C10.2316 12.3842 9.88874 11.958 9.60499 11.493L9.54599 11.398C9.50425 11.3338 9.47003 11.265 9.44399 11.193C9.40599 11.046 9.50499 10.928 9.50499 10.928C9.50499 10.928 9.74799 10.662 9.86099 10.518C9.97099 10.378 10.064 10.242 10.124 10.145C10.242 9.955 10.279 9.76 10.217 9.609C9.93699 8.925 9.64766 8.24467 9.34899 7.568C9.28999 7.434 9.11499 7.338 8.95599 7.319C8.90199 7.31233 8.84799 7.307 8.79399 7.303C8.65972 7.2953 8.52508 7.29664 8.39099 7.307L8.59299 7.3Z"
-                                            fill="white"
-                                    />
-                                </svg>
-                                WhatsApp
-                            </a>
+                            </button>
+                        </form>
+                        <div class="footer-download-app">
+                            <p class="title">Download App on Mobile :</p>
+                            <p>15% discount on your first purchase</p>
+                            <div class="f-download-app-links">
+                                <a href="#" target="_blank"><img src="catalog/view/theme/ranger_fashion/image/google-play.svg" alt="play-store" onerror="this.style.display='none'"></a>
+                                <a href="#" target="_blank"><img src="catalog/view/theme/ranger_fashion/image/app-store.svg" alt="app-store" onerror="this.style.display='none'"></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 offset-lg-2">
-                    <div class="footer-widget">
-                        <h5 class="title">Contact Information</h5>
-                        <div class="footer-contact-info">
-                            <a href="tel:<?php echo $telephone; ?>" class="footer-big-btn">
-                                <div class="icon"><i class="material-icons">phone</i></div>
-                                <div class="txt">
-                                    <h5>Phone NO.</h5>
-                                    <p><?php echo $telephone; ?></p>
                                 </div>
-                            </a>
-                            <a href="mailto:<?php echo $email; ?>" class="footer-big-btn">
-                                <div class="icon"><i class="material-icons">mail</i></div>
-                                <div class="txt">
-                                    <h5>Email Us on</h5>
-                                    <p><?php echo $email; ?></p>
                                 </div>
-                            </a>
-                            <a href="#" class="footer-big-btn">
-                                <div class="icon"><i class="material-icons">home</i></div>
-                                <div class="txt">
-                                    <h5>Address</h5>
-                                    <p><?php echo $address; ?></p>
-                                </div>
-                            </a>
+        <!-- Footer Bottom  -->
+        <div class="footer-bottom">
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-bottom-widget">
+                        <p class="f-copyight-text">
+                            Copyright © <?php echo date('Y'); ?> <?php echo $this->config->get('config_name'); ?>
+                            <span class="getcommerce-copyright">Developed&nbsp;by <a href="https://getcommerce.xyz" target="_blank">Getcommerce</a> </span>
+                        </p>
+                        <div class="footer-payment-img">
+                            <img src="catalog/view/theme/ranger_fashion/image/payment-methods.png" alt="payment-img" onerror="this.style.display='none'">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="footer-bottom">
-        <p>
-            Design &amp; Developed By
-            <a href="https://forms.gle/gPEqAkxMiS8LjXuK7" target="_blank">Star Tech Ltd.</a>
-        </p>
     </div>
 </footer>
