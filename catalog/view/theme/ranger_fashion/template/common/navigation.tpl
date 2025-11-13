@@ -2,6 +2,7 @@
 <div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
     <div class="container">
         <div class="inner-wrap">
+            <div id="nav-toggler" class="nav-toggler"><span></span></div>
             <div class="header-left">
                 <nav class="main-nav ml-0">
                     <ul class="menu">
@@ -227,10 +228,131 @@
     background: var(--secondary-color, #ff8c42);
 }
 
+/* Mobile Navigation Toggle */
+.header-bottom .nav-toggler {
+    display: none;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    cursor: pointer;
+    z-index: 1002;
+    margin-right: 15px;
+}
+
+.header-bottom .nav-toggler span {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: var(--white-color, #fff);
+    border-radius: 3px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+}
+
+.header-bottom .nav-toggler span:nth-child(1) {
+    top: 0px;
+}
+
+.header-bottom .nav-toggler span:nth-child(2) {
+    top: 10px;
+}
+
+.header-bottom .nav-toggler span:nth-child(3) {
+    top: 20px;
+}
+
+.header-bottom .nav-toggler.active span:nth-child(1) {
+    top: 10px;
+    transform: rotate(135deg);
+}
+
+.header-bottom .nav-toggler.active span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+.header-bottom .nav-toggler.active span:nth-child(3) {
+    top: 10px;
+    transform: rotate(-135deg);
+}
+
 /* Responsive */
 @media (max-width: 991px) {
+    .header-bottom .nav-toggler {
+        display: block;
+    }
+    
     .header-bottom .main-nav {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--primary-color, #FF6A00);
+        width: 100%;
+        z-index: 1001;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .header-bottom .main-nav.active {
+        display: block;
+        max-height: 1000px;
+        padding: 15px 0;
+    }
+    
+    .header-bottom .main-nav .menu {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 15px;
+    }
+    
+    .header-bottom .main-nav .menu > li {
+        width: 100%;
+        margin-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .header-bottom .main-nav .menu > li:last-child {
+        border-bottom: none;
+    }
+    
+    .header-bottom .main-nav .menu > li > a {
+        padding: 15px 0;
+        width: 100%;
+    }
+    
+    .header-bottom .main-nav .menu .submenu {
+        position: static;
+        visibility: visible;
+        opacity: 1;
+        transform: none;
+        box-shadow: none;
+        background: rgba(0, 0, 0, 0.1);
+        margin-top: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        padding: 0;
+    }
+    
+    .header-bottom .main-nav .menu > li.show > .submenu {
+        max-height: 500px;
+        padding: 10px 0;
+    }
+    
+    .header-bottom .main-nav .menu .submenu li {
+        padding: 0 1.5rem;
+    }
+    
+    .header-bottom .main-nav .menu .submenu li a {
+        padding: 10px 0;
+        color: rgba(255, 255, 255, 0.9);
     }
     
     .header-bottom .h-flash-btn {
@@ -276,11 +398,27 @@ jQuery(document).ready(function($) {
     $(window).on('scroll', checkSticky);
     checkSticky();
     
-    // Mobile menu toggle (if needed)
+    // Mobile navigation toggle
+    $('#nav-toggler').on('click', function() {
+        $(this).toggleClass('active');
+        $('.header-bottom .main-nav').toggleClass('active');
+    });
+    
+    // Mobile submenu toggle
     $('.header-bottom .menu > li.has-submenu > a').on('click', function(e) {
         if ($(window).width() <= 991) {
             e.preventDefault();
             $(this).parent().toggleClass('show');
+        }
+    });
+    
+    // Close menu when clicking outside
+    $(document).on('click', function(e) {
+        if ($(window).width() <= 991) {
+            if (!$(e.target).closest('.header-bottom').length) {
+                $('#nav-toggler').removeClass('active');
+                $('.header-bottom .main-nav').removeClass('active');
+            }
         }
     });
 });
