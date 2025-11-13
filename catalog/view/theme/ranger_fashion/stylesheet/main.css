@@ -655,10 +655,18 @@ a:focus {
 
 .latest-products__top {
   width: 100%;
-  max-width: 100%;
+  max-width: 80%;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 20px;
   box-sizing: border-box;
+}
+
+/* Mobile: Full width */
+@media (max-width: 767px) {
+  .latest-products__top {
+    max-width: 100%;
+    padding: 0 15px;
+  }
 }
 
 .latest-products__top-main {

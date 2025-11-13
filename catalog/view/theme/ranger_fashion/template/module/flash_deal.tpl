@@ -122,6 +122,19 @@
   text-align: left;
   margin-bottom: 0;
   padding: 0 20px;
+  width: 100%;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile: Full width */
+@media (max-width: 767px) {
+  .flash-deal-header {
+    max-width: 100%;
+    padding: 0 15px;
+  }
 }
 
 .flash-deal-title,
