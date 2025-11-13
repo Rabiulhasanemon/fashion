@@ -138,6 +138,7 @@
     display: flex;
     position: relative;
     width: 100%;
+    height: 250px;
     border-radius: 10px;
     background-color: #fff;
     overflow: hidden;
@@ -153,6 +154,8 @@
 
 .flash-sell-new-section .product-card .product-thumb {
     width: 250px;
+    height: 250px;
+    flex-shrink: 0;
     display: block;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -163,7 +166,8 @@
 .flash-sell-new-section .product-card .product-thumb > img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     transform: scale(1);
     transition: 0.3s linear;
 }
@@ -181,6 +185,9 @@
 .flash-sell-new-section .product-card .product-card-body {
     padding: 15px 15px 10px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .flash-sell-new-section .product-card .product-category {
@@ -199,6 +206,7 @@
     margin-bottom: 5px;
     font-size: 16px;
     font-weight: 400;
+    line-height: 1.3;
 }
 
 .flash-sell-new-section .product-card .product-title > a {
@@ -208,8 +216,12 @@
     font-size: 16px;
     line-height: 20px;
     height: auto;
+    max-height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     font-weight: 500;
-    display: block;
 }
 
 .flash-sell-new-section .product-card .product-title > a:hover {
@@ -234,11 +246,12 @@
 
 .flash-sell-new-section .product-card .product-price {
     display: inline-block;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-size: 15px;
     font-weight: 600;
     text-align: left;
     color: #377dff;
+    line-height: 1.2;
 }
 
 .flash-sell-new-section .product-card .product-price > del {
@@ -317,6 +330,7 @@
 .flash-sell-new-section .product-card .countdown {
     display: block;
     margin-top: 5px;
+    margin-bottom: 0;
 }
 
 .flash-sell-new-section .product-card .countdown span {
@@ -391,18 +405,26 @@
 
 /* Responsive */
 @media (max-width: 991px) {
+    .flash-sell-new-section .product-card {
+        height: 220px;
+    }
+    
     .flash-sell-new-section .product-card .product-thumb {
         width: 200px;
+        height: 220px;
     }
 }
 
 @media (max-width: 767px) {
     .flash-sell-new-section .product-card {
         flex-direction: column;
+        height: auto;
+        min-height: 300px;
     }
     
     .flash-sell-new-section .product-card .product-thumb {
         width: 100%;
+        height: 200px;
     }
     
     .flash-sell-new-section .product-card .product-card-inner {
