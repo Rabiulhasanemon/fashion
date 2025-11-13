@@ -34,7 +34,7 @@
             </div>
             <?php if (isset($flash_sale_url) && $flash_sale_url) { ?>
             <a href="<?php echo $flash_sale_url; ?>" class="h-flash-btn">
-                <i class="fi-rs-sparkles"></i>Flash Sale
+                <i class="fi-rs-sparkles"></i><span>Flash Sale</span>
             </a>
             <?php } ?>
         </div>
@@ -116,11 +116,11 @@
 }
 
 .header-bottom .main-nav .menu > li.has-submenu > a::after {
-    content: "";
+    content: "\f107";
     display: inline-block;
     margin-left: 6px;
     font-family: "Font Awesome 5 Free";
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 900;
     vertical-align: middle;
 }
