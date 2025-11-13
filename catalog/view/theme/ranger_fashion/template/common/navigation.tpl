@@ -98,7 +98,7 @@
 .header-bottom .main-nav .menu > li {
     position: relative;
     display: inline-block;
-    margin-right: 3rem;
+    margin-right: 2.4rem;
 }
 
 .header-bottom .main-nav .menu > li:last-child {
@@ -107,11 +107,11 @@
 
 .header-bottom .main-nav .menu > li > a {
     display: block;
-    padding: 1.8rem 0 1.7rem 0;
+    padding: 0.8rem 0;
     font-size: 1.4rem;
-    font-weight: 600;
-    letter-spacing: -0.009em;
-    line-height: 1.1;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.5;
     text-transform: capitalize;
     color: var(--white-color, #fff);
     text-decoration: none;
@@ -188,29 +188,32 @@
 .header-bottom .h-flash-btn {
     border-radius: 4px;
     background: var(--white-color, #fff);
-    padding: 6px 10px;
+    padding: 0.6rem 1.2rem;
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
+    gap: 0.5rem;
+    font-size: 1.2rem;
     font-style: normal;
     font-weight: 600;
-    line-height: 120%;
-    letter-spacing: 0.7px;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     color: var(--primary-color, #FF6A00) !important;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .header-bottom .h-flash-btn:hover {
-    background: var(--secondary-color, #ff8c42);
-    color: var(--white-color, #fff) !important;
+    background: var(--white-color, #fff);
+    color: var(--primary-color, #FF6A00) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .header-bottom .h-flash-btn i {
-    font-size: 24px;
+    font-size: 1.6rem;
+    color: var(--primary-color, #FF6A00);
 }
 
 /* Sticky Header */
