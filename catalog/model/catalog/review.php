@@ -77,8 +77,24 @@ class ModelCatalogReview extends Model {
 		$sql .= ", date_added = NOW()";
 
 		// Proactively fix AUTO_INCREMENT if needed (only check, don't always fix)
-		// Check if there's a review with review_id = 0 and remove it
-		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = 0");
+		// Check if there's a review with review_id = 0 and fix it (don't delete, update it to proper ID)
+		$check_zero = $this->db->query("SELECT review_id FROM " . DB_PREFIX . "review WHERE review_id = 0 LIMIT 1");
+		if ($check_zero && $check_zero->num_rows > 0) {
+			// Get next available ID
+			$max_check = $this->db->query("SELECT MAX(review_id) as max_id FROM " . DB_PREFIX . "review");
+			$max_id = 0;
+			if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+				$max_id = (int)$max_check->row['max_id'];
+			}
+			$next_id = max($max_id + 1, 1);
+			
+			// Update review_id from 0 to next_id (use temporary ID to avoid conflicts)
+			$temp_id = 999999;
+			$this->db->query("UPDATE " . DB_PREFIX . "review SET review_id = " . $temp_id . " WHERE review_id = 0");
+			$this->db->query("UPDATE " . DB_PREFIX . "review SET review_id = " . $next_id . " WHERE review_id = " . $temp_id);
+			
+			error_log('Fixed review with review_id = 0, assigned new ID: ' . $next_id);
+		}
 		
 		// Check current AUTO_INCREMENT value and fix if it's problematic
 		$table_status = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "review'");
