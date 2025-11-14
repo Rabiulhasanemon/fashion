@@ -1449,6 +1449,7 @@ a:focus {
     padding: 16px 0px;
     flex-wrap: nowrap;
     gap: 20px;
+    width: 100%;
 }
 
 .footer.style-3 .f-copyight-text {
@@ -1458,8 +1459,9 @@ a:focus {
     color: #666;
     margin: 0;
     white-space: normal;
-    flex-shrink: 0;
-    display: inline;
+    flex-shrink: 1;
+    flex-grow: 0;
+    display: inline-block;
 }
 
 .footer.style-3 .f-copyight-text .getcommerce-copyright {
@@ -1482,9 +1484,8 @@ a:focus {
     flex-shrink: 0;
     margin-left: auto;
     text-align: right;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    display: block;
+    width: auto;
 }
 
 .footer.style-3 .footer-payment-img img {
@@ -1492,6 +1493,7 @@ a:focus {
     height: auto;
     display: block;
     margin-left: auto;
+    margin-right: 0;
 }
 
 .footer.style-3 .getcommerce-copyright {
