@@ -6,11 +6,11 @@
   </div>
   <?php } ?>
   
-  <div class="rv-container-wrapper">
-    <div class="swiper rv-testimonial-swiper" id="rv-swiper-<?php echo $module; ?>">
-      <div class="swiper-wrapper">
-        <?php foreach ($reviews as $review) { ?>
-        <div class="swiper-slide">
+   <div class="rv-container-wrapper">
+     <div class="swiper rv-swiper-container" id="rv-testimonial-swiper-<?php echo $module; ?>">
+       <div class="swiper-wrapper rv-swiper-wrapper">
+         <?php foreach ($reviews as $review) { ?>
+         <div class="swiper-slide rv-swiper-slide">
           <div class="rv-testimonial-card">
             <div class="rv-testimonial-content">
               <p class="rv-testimonial-text">
@@ -40,15 +40,15 @@
         </div>
         <?php } ?>
       </div>
-      <div class="swiper-button-next rv-nav-next"></div>
-      <div class="swiper-button-prev rv-nav-prev"></div>
-      <div class="swiper-pagination rv-pagination"></div>
+       <div class="swiper-button-prev rv-swiper-nav rv-nav-prev"></div>
+       <div class="swiper-button-next rv-swiper-nav rv-nav-next"></div>
+       <div class="swiper-pagination rv-swiper-pagination"></div>
     </div>
   </div>
 </section>
 
 <style>
-/* Review View Testimonial - Unique Classes */
+/* Review View Testimonial - Unique Classes to Avoid Conflicts */
 .rv-testimonial-section {
   padding: 40px 0;
   position: relative;
@@ -59,10 +59,28 @@
   padding: 0 60px;
 }
 
-.rv-testimonial-swiper {
+.rv-swiper-container {
   position: relative;
   overflow: hidden;
   padding-bottom: 50px;
+}
+
+.rv-swiper-container.swiper {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 50px;
+}
+
+.rv-swiper-wrapper.swiper-wrapper {
+  display: flex;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.rv-swiper-slide {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .rv-testimonial-card {
@@ -160,74 +178,103 @@
   font-weight: 400;
 }
 
-/* Navigation Arrows - Override Swiper Defaults */
-.rv-testimonial-swiper .swiper-button-next,
-.rv-testimonial-swiper .swiper-button-prev {
+/* Navigation Arrows */
+.rv-swiper-nav.swiper-button-prev,
+.rv-swiper-nav.swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   background: #ffffff;
   border: 2px solid #e1e1e1;
   border-radius: 50%;
-  color: var(--primary-color, #007bff);
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
-  margin-top: -22px;
+  margin-top: 0;
 }
 
-.rv-testimonial-swiper .swiper-button-next::after,
-.rv-testimonial-swiper .swiper-button-prev::after {
+.rv-swiper-nav.swiper-button-prev::after,
+.rv-swiper-nav.swiper-button-next::after {
+  font-family: 'swiper-icons';
   font-size: 18px;
   font-weight: bold;
+  color: var(--primary-color, #007bff);
+  transition: all 0.3s ease;
 }
 
-.rv-testimonial-swiper .swiper-button-prev {
+.rv-nav-prev.swiper-button-prev {
   left: 0;
 }
 
-.rv-testimonial-swiper .swiper-button-next {
+.rv-nav-next.swiper-button-next {
   right: 0;
 }
 
-.rv-testimonial-swiper .swiper-button-next:hover,
-.rv-testimonial-swiper .swiper-button-prev:hover {
+.rv-swiper-nav:hover {
   background: var(--primary-color, #007bff);
-  color: #fff;
   border-color: var(--primary-color, #007bff);
   box-shadow: 0 4px 12px rgba(0,123,255,0.3);
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.rv-testimonial-swiper .swiper-button-disabled {
+.rv-swiper-nav:hover::after {
+  color: #ffffff;
+}
+
+.rv-swiper-nav.swiper-button-disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
 /* Pagination */
-.rv-testimonial-swiper .rv-pagination {
+.rv-swiper-pagination.swiper-pagination {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
+  width: auto;
 }
 
-.rv-testimonial-swiper .rv-pagination .swiper-pagination-bullet {
+.rv-swiper-pagination .swiper-pagination-bullet {
   width: 10px;
   height: 10px;
   background: #ddd;
   border-radius: 50%;
   opacity: 1;
-  margin: 0 5px;
+  cursor: pointer;
   transition: all 0.3s ease;
+  margin: 0 5px !important;
 }
 
-.rv-testimonial-swiper .rv-pagination .swiper-pagination-bullet-active {
+.rv-swiper-pagination .swiper-pagination-bullet-active {
   background: var(--primary-color, #007bff);
   width: 30px;
   border-radius: 5px;
 }
 
 /* Responsive */
+@media (min-width: 992px) {
+  .rv-swiper-slide {
+    width: 33.333%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .rv-swiper-slide {
+    width: 50%;
+  }
+  .rv-container-wrapper {
+    padding: 0 50px;
+  }
+}
+
 @media (max-width: 767px) {
   .rv-testimonial-section {
     max-width: 100% !important;
@@ -238,16 +285,18 @@
     padding: 0 45px;
   }
   
-  .rv-testimonial-swiper .swiper-button-next,
-  .rv-testimonial-swiper .swiper-button-prev {
-    width: 36px;
-    height: 36px;
-    margin-top: -18px;
+  .rv-swiper-slide {
+    width: 100%;
   }
   
-  .rv-testimonial-swiper .swiper-button-next::after,
-  .rv-testimonial-swiper .swiper-button-prev::after {
-    font-size: 14px;
+  .rv-swiper-nav {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .rv-swiper-nav::before {
+    width: 6px;
+    height: 6px;
   }
   
   .rv-testimonial-card {
@@ -262,25 +311,26 @@
 
 <script>
 (function() {
-  var moduleId = 'rv-swiper-<?php echo $module; ?>';
-  var swiperContainer = document.getElementById(moduleId);
+  var moduleId = 'rv-testimonial-swiper-<?php echo $module; ?>';
+  var swiperEl = document.getElementById(moduleId);
   
-  if (!swiperContainer) {
-    console.log('RV Swiper: Container not found');
+  if (!swiperEl) {
+    console.log('RV Slider: Element not found');
     return;
   }
   
-  var initAttempts = 0;
-  var maxAttempts = 50;
+  var initCount = 0;
+  var maxInitAttempts = 100;
   
   function initRVSlider() {
-    initAttempts++;
+    initCount++;
     
+    // Check if Swiper is loaded
     if (typeof Swiper === 'undefined') {
-      if (initAttempts < maxAttempts) {
+      if (initCount < maxInitAttempts) {
         setTimeout(initRVSlider, 100);
       } else {
-        console.error('RV Swiper: Swiper library not loaded after ' + maxAttempts + ' attempts');
+        console.error('RV Slider: Swiper library not found');
       }
       return;
     }
@@ -289,23 +339,25 @@
       var reviewCount = <?php echo count($reviews); ?>;
       var enableLoop = reviewCount > 3;
       
+      // Initialize Swiper
       var rvSwiper = new Swiper('#' + moduleId, {
         slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 20,
         loop: enableLoop,
-        speed: 800,
+        speed: 600,
         autoplay: {
-          delay: 4000,
+          delay: 3000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: true,
+          pauseOnMouseEnter: false,
+          stopOnLastSlide: false,
         },
         navigation: {
-          nextEl: swiperContainer.querySelector('.rv-nav-next'),
-          prevEl: swiperContainer.querySelector('.rv-nav-prev'),
+          nextEl: swiperEl.querySelector('.rv-nav-next'),
+          prevEl: swiperEl.querySelector('.rv-nav-prev'),
         },
         pagination: {
-          el: swiperContainer.querySelector('.rv-pagination'),
+          el: swiperEl.querySelector('.rv-swiper-pagination'),
           clickable: true,
           dynamicBullets: true,
           dynamicMainBullets: 3,
@@ -334,42 +386,54 @@
         },
         on: {
           init: function() {
-            console.log('RV Swiper initialized successfully');
+            console.log('RV Slider initialized');
+            // Force start autoplay
             if (this.autoplay && this.autoplay.running === false) {
               this.autoplay.start();
             }
           },
           autoplayStart: function() {
-            console.log('RV Swiper autoplay started');
-          },
-          autoplayStop: function() {
-            console.log('RV Swiper autoplay stopped');
+            console.log('RV Slider autoplay started');
           }
         }
       });
       
-      // Force start autoplay
-      setTimeout(function() {
+      // Multiple attempts to ensure autoplay starts
+      var startAutoplay = function() {
         if (rvSwiper && rvSwiper.autoplay) {
-          rvSwiper.autoplay.start();
-          console.log('RV Swiper: Forced autoplay start');
+          if (!rvSwiper.autoplay.running) {
+            rvSwiper.autoplay.start();
+          }
         }
-      }, 1000);
+      };
       
-      // Store instance for debugging
-      window['rvSwiper_' + moduleId] = rvSwiper;
+      // Try to start autoplay multiple times
+      setTimeout(startAutoplay, 100);
+      setTimeout(startAutoplay, 500);
+      setTimeout(startAutoplay, 1000);
+      setTimeout(startAutoplay, 2000);
+      
+      // Store instance globally for debugging
+      window['rvSwiperInstance_' + moduleId] = rvSwiper;
       
     } catch (error) {
-      console.error('RV Swiper initialization error:', error);
+      console.error('RV Slider initialization error:', error);
     }
   }
   
-  // Initialize
+  // Wait for DOM and Swiper to be ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initRVSlider);
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(initRVSlider, 200);
+    });
   } else {
-    initRVSlider();
+    setTimeout(initRVSlider, 200);
   }
+  
+  // Also try on window load as fallback
+  window.addEventListener('load', function() {
+    setTimeout(initRVSlider, 300);
+  });
 })();
 </script>
 <?php } ?>
