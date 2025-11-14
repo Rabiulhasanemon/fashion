@@ -297,7 +297,7 @@
                         <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" class="module-id-input" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
                       </td>
                       <td class="text-left">
-                        <textarea name="category_module[<?php echo $module_row; ?>][description]" id="module-description-<?php echo $module_row; ?>" rows="3" class="form-control summernote" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? htmlspecialchars($category_module['description']) : ''; ?></textarea>
+                        <textarea name="category_module[<?php echo $module_row; ?>][description]" id="module-description-<?php echo $module_row; ?>" rows="3" class="form-control summernote" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? $category_module['description'] : ''; ?></textarea>
                       </td>
                       <td class="text-left">
                         <input type="text" name="category_module[<?php echo $module_row; ?>][sort_order]" value="<?php echo isset($category_module['sort_order']) ? $category_module['sort_order'] : 0; ?>" placeholder="0" class="form-control" />
@@ -440,7 +440,18 @@ function addModule() {
 
 	// Initialize Summernote for the newly added description field
 	$('#module-description-' + (module_row - 1)).summernote({
-		height: 150
+		height: 150,
+		toolbar: [
+			['style', ['style']],
+			['font', ['bold', 'italic', 'underline', 'clear']],
+			['fontname', ['fontname']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['table', ['table']],
+			['insert', ['link', 'picture', 'video']],
+			['view', ['fullscreen', 'codeview', 'help']]
+		]
 	});
 
 	module_row++;

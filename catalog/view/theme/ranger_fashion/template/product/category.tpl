@@ -19,7 +19,16 @@
             <div class="category-module-item" style="margin-bottom: 20px;">
                 <?php if (!empty($module['description'])) { ?>
                 <div class="category-module-description" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-                    <?php echo html_entity_decode($module['description'], ENT_QUOTES, 'UTF-8'); ?>
+                    <?php 
+                    $description = $module['description'];
+                    // Decode HTML entities if needed
+                    if (htmlspecialchars_decode($description) != $description) {
+                        $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
+                    // Strip slashes if double-encoded
+                    $description = stripslashes($description);
+                    echo $description;
+                    ?>
                 </div>
                 <?php } ?>
                 <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
