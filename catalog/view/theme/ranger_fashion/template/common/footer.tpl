@@ -139,7 +139,7 @@
         <!-- Footer Bottom  -->
         <div class="footer-bottom">
             <div class="row">
-                <div class="col-12">
+                <div class="col-md-12">
                     <div class="footer-bottom-widget">
                         <p class="f-copyight-text">
                             Copyright © <?php echo date('Y'); ?> <?php echo isset($config_name) ? $config_name : 'Store'; ?> <span class="getcommerce-copyright">Developed&nbsp;by <a href="https://getcommerce.xyz" target="_blank">Getcommerce</a></span>
