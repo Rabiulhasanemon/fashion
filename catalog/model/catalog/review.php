@@ -76,21 +76,6 @@ class ModelCatalogReview extends Model {
 		
 		$sql .= ", date_added = NOW()";
 
-		// Fix AUTO_INCREMENT if needed before inserting
-		// Check if there's a review with review_id = 0 and remove it
-		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = 0");
-		
-		// Get current max review_id and ensure AUTO_INCREMENT is set correctly
-		$max_check = $this->db->query("SELECT MAX(review_id) as max_id FROM " . DB_PREFIX . "review");
-		$max_id = 0;
-		if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
-			$max_id = (int)$max_check->row['max_id'];
-		}
-		$next_id = max($max_id + 1, 1);
-		
-		// Set AUTO_INCREMENT to next available value
-		$this->db->query("ALTER TABLE " . DB_PREFIX . "review AUTO_INCREMENT = " . $next_id);
-
 		// Execute query with error handling
 		// Use output buffering to catch any trigger_error output
 		ob_start();
@@ -102,6 +87,7 @@ class ModelCatalogReview extends Model {
 		// Check if query failed
 		if ($result === false) {
 			$error_msg = 'Database query failed';
+			$error_no = 0;
 			
 			// Try to get database error if available (for MySQLi)
 			if (is_object($this->db)) {
@@ -113,7 +99,8 @@ class ModelCatalogReview extends Model {
 						$link = $link_property->getValue($this->db);
 						
 						if ($link instanceof \mysqli && $link->error) {
-							$error_msg .= ': ' . $link->error . ' (Error No: ' . $link->errno . ')';
+							$error_msg .= ': ' . $link->error;
+							$error_no = $link->errno;
 						}
 					}
 				} catch (Exception $reflection_error) {
@@ -127,19 +114,67 @@ class ModelCatalogReview extends Model {
 				error_log('Review INSERT captured output: ' . $output);
 			}
 			
-			error_log('=== REVIEW INSERT SQL ERROR ===');
-			error_log('Error: ' . $error_msg);
-			error_log('SQL: ' . $sql);
-			error_log('Author: ' . $author);
-			error_log('Customer ID: ' . $customer_id);
-			error_log('Product ID: ' . $product_id);
-			error_log('Rating: ' . $rating);
-			error_log('Status: ' . $status);
-			error_log('Text length: ' . strlen($text));
-			error_log('Text preview: ' . substr($text, 0, 100));
-			error_log('===============================');
-			
-			throw new Exception($error_msg);
+			// If it's a duplicate key error (1062), try to fix AUTO_INCREMENT and retry
+			if ($error_no == 1062 || strpos(strtolower($error_msg), 'duplicate') !== false || strpos(strtolower($error_msg), 'primary') !== false) {
+				error_log('=== DUPLICATE KEY ERROR DETECTED - FIXING AUTO_INCREMENT ===');
+				
+				// Fix AUTO_INCREMENT only when we get a duplicate key error
+				// Step 1: Delete any review with review_id = 0 (shouldn't exist, but just in case)
+				$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = 0");
+				
+				// Step 2: Get current max review_id
+				$max_check = $this->db->query("SELECT MAX(review_id) as max_id FROM " . DB_PREFIX . "review");
+				$max_id = 0;
+				if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+					$max_id = (int)$max_check->row['max_id'];
+				}
+				$next_id = max($max_id + 1, 1);
+				
+				// Step 3: Set AUTO_INCREMENT to next available value
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "review AUTO_INCREMENT = " . $next_id);
+				
+				error_log('AUTO_INCREMENT fixed to: ' . $next_id);
+				
+				// Retry the insert
+				ob_start();
+				$result = $this->db->query($sql);
+				$output = ob_get_clean();
+				
+				if ($result === false) {
+					// Still failed after fix, log and throw
+					error_log('Review INSERT still failed after AUTO_INCREMENT fix');
+					error_log('=== REVIEW INSERT SQL ERROR ===');
+					error_log('Error: ' . $error_msg);
+					error_log('SQL: ' . $sql);
+					error_log('Author: ' . $author);
+					error_log('Customer ID: ' . $customer_id);
+					error_log('Product ID: ' . $product_id);
+					error_log('Rating: ' . $rating);
+					error_log('Status: ' . $status);
+					error_log('Text length: ' . strlen($text));
+					error_log('Text preview: ' . substr($text, 0, 100));
+					error_log('===============================');
+					
+					throw new Exception($error_msg);
+				} else {
+					error_log('Review INSERT succeeded after AUTO_INCREMENT fix');
+				}
+			} else {
+				// Other error, log and throw
+				error_log('=== REVIEW INSERT SQL ERROR ===');
+				error_log('Error: ' . $error_msg);
+				error_log('SQL: ' . $sql);
+				error_log('Author: ' . $author);
+				error_log('Customer ID: ' . $customer_id);
+				error_log('Product ID: ' . $product_id);
+				error_log('Rating: ' . $rating);
+				error_log('Status: ' . $status);
+				error_log('Text length: ' . strlen($text));
+				error_log('Text preview: ' . substr($text, 0, 100));
+				error_log('===============================');
+				
+				throw new Exception($error_msg);
+			}
 		}
 		
 		$review_id = $this->db->getLastId();
