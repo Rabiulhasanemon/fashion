@@ -31,7 +31,13 @@
             <?php echo $image['name']; ?></label>
           <?php } ?>
           <?php if ($image['type'] == 'image') { ?>
-          <a href="<?php echo $image['href']; ?>" class="thumbnail"><img src="<?php echo $image['thumb']; ?>" alt="<?php echo $image['name']; ?>" title="<?php echo $image['name']; ?>" /></a>
+          <a href="<?php echo $image['href']; ?>" class="thumbnail">
+            <img src="<?php echo $image['thumb']; ?>" 
+                 alt="<?php echo $image['name']; ?>" 
+                 title="<?php echo $image['name']; ?>" 
+                 onerror="this.onerror=null; this.src='<?php echo $image['href']; ?>';" 
+                 style="max-width: 100px; max-height: 100px; object-fit: contain;" />
+          </a>
           <label>
             <input type="checkbox" name="path[]" value="<?php echo $image['path']; ?>" />
             <?php echo $image['name']; ?></label>

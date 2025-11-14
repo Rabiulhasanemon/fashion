@@ -15,16 +15,23 @@ class ModelToolImage extends Model {
 		$old_image = $filename;
 		$new_image = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
 
+		// Ensure cache directory exists
+		if (!is_dir(DIR_IMAGE . 'cache')) {
+			@mkdir(DIR_IMAGE . 'cache', 0777, true);
+		}
+
 		if (!is_file(DIR_IMAGE . $new_image) || (filectime(DIR_IMAGE . $old_image) > filectime(DIR_IMAGE . $new_image))) {
 			$path = '';
 
 			$directories = explode('/', dirname(str_replace('../', '', $new_image)));
 
 			foreach ($directories as $directory) {
-				$path = $path . '/' . $directory;
+				if ($directory) {
+					$path = $path . '/' . $directory;
 
-				if (!is_dir(DIR_IMAGE . $path)) {
-					@mkdir(DIR_IMAGE . $path, 0777);
+					if (!is_dir(DIR_IMAGE . $path)) {
+						@mkdir(DIR_IMAGE . $path, 0777, true);
+					}
 				}
 			}
 
@@ -68,6 +75,16 @@ class ModelToolImage extends Model {
 		} else {
 			copy(DIR_IMAGE . $old_image, DIR_IMAGE . $new_image);
 		}
+		}
+
+		// Verify the thumbnail was actually created
+		if (!is_file(DIR_IMAGE . $new_image)) {
+			// If thumbnail creation failed, return original image URL
+			if ($this->request->server['HTTPS']) {
+				return HTTPS_CATALOG . 'image/' . $old_image;
+			} else {
+				return HTTP_CATALOG . 'image/' . $old_image;
+			}
 		}
 
 		if ($this->request->server['HTTPS']) {

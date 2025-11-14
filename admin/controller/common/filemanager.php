@@ -80,12 +80,18 @@ class ControllerCommonFileManager extends Controller {
 
 				$image_path = utf8_substr($image, utf8_strlen(DIR_IMAGE));
 				
-				// Generate thumbnail
+				// Generate thumbnail - ensure it's created
 				$thumb = $this->model_tool_image->resize($image_path, 100, 100);
 				
-				// If resize failed, use direct image URL as fallback
-				if (empty($thumb)) {
+				// If resize failed or returned empty, use direct image URL as fallback
+				if (empty($thumb) || !$thumb) {
 					$thumb = $server . 'image/' . $image_path;
+				} else {
+					// Verify thumbnail actually exists, if not use original
+					$thumb_path = str_replace($server . 'image/', '', $thumb);
+					if (!is_file(DIR_IMAGE . $thumb_path)) {
+						$thumb = $server . 'image/' . $image_path;
+					}
 				}
 
 				$data['images'][] = array(
