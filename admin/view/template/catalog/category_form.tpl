@@ -297,7 +297,7 @@
                         <input type="hidden" name="category_module[<?php echo $module_row; ?>][module_id]" class="module-id-input" value="<?php echo isset($category_module['module_id']) ? $category_module['module_id'] : 0; ?>" />
                       </td>
                       <td class="text-left">
-                        <textarea name="category_module[<?php echo $module_row; ?>][description]" id="module-description-<?php echo $module_row; ?>" rows="3" class="form-control summernote" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? $category_module['description'] : ''; ?></textarea>
+                        <textarea name="category_module[<?php echo $module_row; ?>][description]" id="module-description-<?php echo $module_row; ?>" rows="5" class="form-control summernote" placeholder="Enter module description..."><?php echo isset($category_module['description']) ? htmlspecialchars_decode($category_module['description'], ENT_QUOTES) : ''; ?></textarea>
                       </td>
                       <td class="text-left">
                         <input type="text" name="category_module[<?php echo $module_row; ?>][sort_order]" value="<?php echo isset($category_module['sort_order']) ? $category_module['sort_order'] : 0; ?>" placeholder="0" class="form-control" />
@@ -514,16 +514,19 @@ $(document).ready(function() {
 
 // Sync Summernote content before form submission
 $(document).ready(function() {
-	console.log('Document ready - attaching form submit handler');
-	
 	$('#form-category').on('submit', function(e) {
-		console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
-		
 		// Sync all Summernote editors
 		$('textarea.summernote').each(function() {
-			if ($(this).next('.note-editor').length) {
-				var content = $(this).summernote('code');
-				$(this).val(content);
+			var $textarea = $(this);
+			if ($textarea.next('.note-editor').length || $textarea.summernote('isEmpty') === false) {
+				try {
+					var content = $textarea.summernote('code');
+					// Ensure content is properly set
+					$textarea.val(content || '');
+				} catch(err) {
+					// If Summernote is not initialized, just use the textarea value
+					console.log('Summernote sync error for ' + $textarea.attr('id') + ':', err);
+				}
 			}
 		});
 		
