@@ -65,7 +65,7 @@ class ModelCatalogReview extends Model {
 		}
 
 		$sort_data = array(
-			'pd.name',
+			'name',
 			'r.author',
 			'r.rating',
 			'r.status',
@@ -73,7 +73,12 @@ class ModelCatalogReview extends Model {
 		);
 
 		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-			$sql .= " ORDER BY " . $data['sort'];
+			// Handle special case for product name sorting
+			if ($data['sort'] == 'name' || $data['sort'] == 'pd.name') {
+				$sql .= " ORDER BY (SELECT pd.name FROM " . DB_PREFIX . "product_description pd WHERE pd.product_id = r.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' LIMIT 1)";
+			} else {
+				$sql .= " ORDER BY " . $data['sort'];
+			}
 		} else {
 			$sql .= " ORDER BY r.date_added";
 		}
@@ -96,7 +101,22 @@ class ModelCatalogReview extends Model {
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
 
+		// Debug: Log the SQL query
+		error_log('=== ADMIN REVIEW QUERY DEBUG ===');
+		error_log('SQL: ' . $sql);
+		error_log('Filter Data: ' . print_r($data, true));
+		
 		$query = $this->db->query($sql);
+		
+		// Debug: Log the results
+		if ($query) {
+			error_log('Query executed successfully');
+			error_log('Number of rows returned: ' . (isset($query->num_rows) ? $query->num_rows : 'N/A'));
+			error_log('Rows: ' . print_r($query->rows, true));
+		} else {
+			error_log('Query failed!');
+		}
+		error_log('================================');
 
 		return $query->rows;
 	}
@@ -120,9 +140,17 @@ class ModelCatalogReview extends Model {
 			$sql .= " AND DATE(r.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
 		}
 
+		// Debug: Log the count query
+		error_log('=== ADMIN REVIEW COUNT QUERY DEBUG ===');
+		error_log('Count SQL: ' . $sql);
+		
 		$query = $this->db->query($sql);
+		
+		$total = isset($query->row['total']) ? $query->row['total'] : 0;
+		error_log('Total reviews found: ' . $total);
+		error_log('======================================');
 
-		return $query->row['total'];
+		return $total;
 	}
 
 	public function getTotalReviewsAwaitingApproval() {

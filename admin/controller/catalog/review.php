@@ -198,6 +198,16 @@ class ControllerCatalogReview extends Controller {
 			$sort = 'r.date_added';
 			$order = 'DESC';
 		}
+		
+		// Debug: Log controller data
+		error_log('=== ADMIN REVIEW CONTROLLER DEBUG ===');
+		error_log('Sort: ' . $sort);
+		error_log('Order: ' . $order);
+		error_log('Page: ' . $page);
+		error_log('Filter Status: ' . ($filter_status !== null ? $filter_status : 'null'));
+		error_log('Filter Product: ' . ($filter_product !== null ? $filter_product : 'null'));
+		error_log('Filter Author: ' . ($filter_author !== null ? $filter_author : 'null'));
+		error_log('=====================================');
 
 		if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
@@ -339,7 +349,7 @@ class ControllerCatalogReview extends Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-		$data['sort_product'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=pd.name' . $url, 'SSL');
+		$data['sort_product'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=name' . $url, 'SSL');
 		$data['sort_author'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.author' . $url, 'SSL');
 		$data['sort_rating'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.rating' . $url, 'SSL');
 		$data['sort_status'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.status' . $url, 'SSL');
