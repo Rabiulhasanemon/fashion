@@ -1471,12 +1471,14 @@ a:focus {
     max-width: 380px;
     flex-shrink: 0;
     margin-left: auto;
+    text-align: right;
 }
 
 .footer.style-3 .footer-payment-img img {
     max-width: 100%;
     height: auto;
     display: block;
+    margin-left: auto;
 }
 
 .footer.style-3 .getcommerce-copyright {
