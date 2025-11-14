@@ -38,11 +38,28 @@
         .category-page-module .popular-products__title,
         .category-page-module .section-title h2,
         .category-page-module .section-title h3,
-        .category-page-module .section-title .h3 {
+        .category-page-module .section-title .h3,
+        .category-page-module .section-title > div:first-child > h2,
+        .category-page-module .section-title > div:first-child > h3,
+        .category-page-module h2.h3,
+        .category-page-module .heading_title,
+        .category-page-module .panel-heading {
             display: none !important;
         }
         
-        /* Also hide section title containers */
+        /* Hide entire section-title div if it only contains title */
+        .category-page-module .section-title:has(> div:first-child > h2:only-child),
+        .category-page-module .section-title:has(> h2:only-child),
+        .category-page-module .section-title:has(> h3:only-child) {
+            display: none !important;
+        }
+        
+        /* For modules like tabbed_category and flash_deal that have section-title with content */
+        .category-page-module .section-title > div:first-child {
+            display: none !important;
+        }
+        
+        /* Keep the right-area (countdown, view all link) if it exists, but hide title */
         .category-page-module .section-title > div:first-child > h2,
         .category-page-module .section-title > div:first-child > h3 {
             display: none !important;
@@ -52,6 +69,13 @@
         .category-page-module > div:first-child {
             margin-top: 0;
             padding-top: 0;
+        }
+        
+        /* Remove top margin from module containers */
+        .category-page-module .deal-of-day-section,
+        .category-page-module .flash-sell-new-section,
+        .category-page-module .newproduct-section {
+            margin-top: 0 !important;
         }
         </style>
         <?php } ?>
