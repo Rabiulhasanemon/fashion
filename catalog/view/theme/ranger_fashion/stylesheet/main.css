@@ -1211,7 +1211,7 @@ a:focus {
 }
 
 .footer.style-3 .f-about-text {
-    color: var(--body-color);
+    color: #666;
     font-size: 14px;
     font-weight: 400;
     line-height: 150%;
@@ -1226,7 +1226,7 @@ a:focus {
 }
 
 .footer.style-3 .footer-contact li a {
-    color: var(--body-color);
+    color: #666;
     display: inline-flex;
     align-items: center;
     font-weight: 400;
@@ -1240,7 +1240,7 @@ a:focus {
 }
 
 .footer.style-3 .footer-contact li {
-    color: var(--body-color);
+    color: #666;
     align-items: center;
     font-weight: 400;
     line-height: 150%;
@@ -1327,7 +1327,7 @@ a:focus {
     font-size: 14px;
     font-weight: 400;
     line-height: 120%;
-    color: var(--body-color);
+    color: #666;
     text-decoration: none;
 }
 
@@ -1339,7 +1339,7 @@ a:focus {
     font-size: 14px;
     font-weight: 400;
     line-height: 120%;
-    color: var(--body-color);
+    color: #666;
     margin-bottom: 16px;
 }
 
@@ -1358,7 +1358,7 @@ a:focus {
     font-weight: 500;
     line-height: 120%;
     color: #626571;
-    background: #fff;
+    background: #FBF9F5;
     border: none;
     text-align: left;
     box-sizing: border-box;
@@ -1393,7 +1393,7 @@ a:focus {
     font-style: normal;
     font-weight: 400;
     line-height: 150%;
-    color: var(--body-color);
+    color: #666;
     margin-bottom: 4px;
 }
 
@@ -1408,7 +1408,7 @@ a:focus {
     font-size: 14px;
     font-weight: 400;
     line-height: 120%;
-    color: var(--body-color);
+    color: #666;
     margin: 0;
 }
 
@@ -1448,7 +1448,7 @@ a:focus {
     font-size: 14px;
     font-weight: 400;
     line-height: 150%;
-    color: var(--body-color);
+    color: #666;
     margin: 0;
 }
 
