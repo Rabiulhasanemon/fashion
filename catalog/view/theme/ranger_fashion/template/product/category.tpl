@@ -56,20 +56,23 @@
                 <?php if (isset($category_modules) && !empty($category_modules)) { ?>
                 <div class="category-modules" style="margin-bottom: 30px;">
                     <?php foreach ($category_modules as $module) { ?>
-                    <?php if (isset($module['output'])) { ?>
                     <div class="category-module-item" style="margin-bottom: 20px;">
                         <?php if (!empty($module['description'])) { ?>
                         <div class="category-module-description" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
                             <?php echo html_entity_decode($module['description'], ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                         <?php } ?>
-                        <?php if (!empty($module['output'])) { ?>
+                        <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
                         <?php echo $module['output']; ?>
                         <?php } else { ?>
-                        <!-- Module <?php echo isset($module['code']) ? htmlspecialchars($module['code']) : 'unknown'; ?> loaded but produced no output -->
+                        <div style="padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; color: #856404;">
+                            <strong>Module Debug:</strong> Module "<?php echo isset($module['code']) ? htmlspecialchars($module['code']) : 'unknown'; ?>" loaded but produced no output.
+                            <?php if (empty($module['output'])) { ?>
+                            <br><small>Output is empty. Check module settings and ensure module has data to display.</small>
+                            <?php } ?>
+                        </div>
                         <?php } ?>
                     </div>
-                    <?php } ?>
                     <?php } ?>
                 </div>
                 <?php } ?>
