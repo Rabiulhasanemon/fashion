@@ -19,12 +19,24 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     return false;
 }, E_ALL);
 
-// Start output buffering to catch any errors
-ob_start();
+// Start output buffering with callback to filter deprecation warnings
+ob_start(function($buffer) {
+    // Remove deprecation warnings from Google API client
+    $patterns = [
+        '/Deprecated:.*?Google\\\\Model::.*?\n/',
+        '/Deprecated:.*?Google\\\\Collection::.*?\n/',
+        '/Deprecated:.*?vendor\/google\/apiclient.*?\n/',
+    ];
+    foreach ($patterns as $pattern) {
+        $buffer = preg_replace($pattern, '', $buffer);
+    }
+    return $buffer;
+});
 
 try {
     // Check if config.php exists
     if (!file_exists('config.php')) {
+        ob_end_clean();
         die('<h1>Error: config.php not found</h1><p>Please ensure this file is in the admin directory.</p>');
     }
 
@@ -33,19 +45,23 @@ try {
     
     // Check if DIR_SYSTEM is defined
     if (!defined('DIR_SYSTEM')) {
+        ob_end_clean();
         die('<h1>Error: DIR_SYSTEM not defined</h1><p>config.php may be missing required definitions.</p>');
     }
     
     // Check if startup.php exists
     if (!file_exists(DIR_SYSTEM . 'startup.php')) {
+        ob_end_clean();
         die('<h1>Error: startup.php not found</h1><p>Path: ' . DIR_SYSTEM . 'startup.php</p>');
     }
     
     // Suppress warnings during startup
     @require_once(DIR_SYSTEM . 'startup.php');
     
-    // Restore error handler after startup
-    restore_error_handler();
+    // Restore error handler after startup (if it was changed)
+    if (function_exists('restore_error_handler')) {
+        restore_error_handler();
+    }
     set_error_handler(function($errno, $errstr, $errfile, $errline) {
         // Suppress deprecation warnings from Google API client vendor directory
         if (($errno === E_DEPRECATED || $errno === E_STRICT) && 
