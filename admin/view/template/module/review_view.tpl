@@ -56,7 +56,7 @@
                   <tbody>
                     <?php foreach ($reviews as $review) { 
                       $is_selected = in_array($review['review_id'], $review_ids);
-                      $custom_data = isset($review_custom_data[$review['review_id']]) ? $review_custom_data[$review['review_id']] : array();
+                      $custom_data = isset($review_custom_data) && isset($review_custom_data[$review['review_id']]) ? $review_custom_data[$review['review_id']] : array();
                       $author_image = isset($custom_data['author_image']) ? $custom_data['author_image'] : '';
                       $designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
                     ?>
