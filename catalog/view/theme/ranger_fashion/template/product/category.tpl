@@ -27,7 +27,6 @@
         </div>
         <style>
         /* Hide module titles and section headings when displayed on category pages */
-        .category-page-module .section-title,
         .category-page-module .module-heading-wrapper,
         .category-page-module .section-head,
         .category-page-module h2.cosmetics-module-heading,
@@ -36,33 +35,38 @@
         .category-page-module .unified-module-heading,
         .category-page-module .latest-products__title,
         .category-page-module .popular-products__title,
-        .category-page-module .section-title h2,
-        .category-page-module .section-title h3,
-        .category-page-module .section-title .h3,
-        .category-page-module .section-title > div:first-child > h2,
-        .category-page-module .section-title > div:first-child > h3,
-        .category-page-module h2.h3,
         .category-page-module .heading_title,
         .category-page-module .panel-heading {
             display: none !important;
         }
         
-        /* Hide entire section-title div if it only contains title */
-        .category-page-module .section-title:has(> div:first-child > h2:only-child),
+        /* Hide titles within section-title but keep other content like tabs/links */
+        .category-page-module .section-title h2,
+        .category-page-module .section-title h3,
+        .category-page-module .section-title .h3,
+        .category-page-module .section-title > div:first-child > h2,
+        .category-page-module .section-title > div:first-child > h3,
+        .category-page-module h2.h3 {
+            display: none !important;
+        }
+        
+        /* Hide entire section-title if it only contains a title (no tabs/links) */
+        .category-page-module .section-title:only-child,
         .category-page-module .section-title:has(> h2:only-child),
         .category-page-module .section-title:has(> h3:only-child) {
             display: none !important;
         }
         
-        /* For modules like tabbed_category and flash_deal that have section-title with content */
-        .category-page-module .section-title > div:first-child {
+        /* For modules with section-title containing only title in first div */
+        .category-page-module .section-title > div:first-child:has(> h2:only-child),
+        .category-page-module .section-title > div:first-child:has(> h3:only-child) {
             display: none !important;
         }
         
-        /* Keep the right-area (countdown, view all link) if it exists, but hide title */
-        .category-page-module .section-title > div:first-child > h2,
-        .category-page-module .section-title > div:first-child > h3 {
-            display: none !important;
+        /* Adjust section-title padding when title is hidden but tabs remain */
+        .category-page-module .section-title {
+            padding-bottom: 0 !important;
+            margin-bottom: 15px !important;
         }
         
         /* Adjust spacing when titles are hidden */
