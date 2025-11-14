@@ -1459,7 +1459,7 @@ a:focus {
     margin: 0;
     white-space: normal;
     flex-shrink: 0;
-    display: inline-block;
+    display: inline;
 }
 
 .footer.style-3 .f-copyight-text .getcommerce-copyright {
