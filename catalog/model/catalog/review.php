@@ -17,9 +17,9 @@ class ModelCatalogReview extends Model {
 
 		// Get author name - use provided name or customer name if logged in
 		$author = '';
-		if (isset($data['name']) && !empty($data['name'])) {
-			$author = $data['name'];
-		} elseif ($this->customer->isLogged()) {
+		if (isset($data['name']) && !empty(trim($data['name']))) {
+			$author = trim($data['name']);
+		} elseif (isset($this->customer) && method_exists($this->customer, 'isLogged') && $this->customer->isLogged()) {
 			$first_name = $this->customer->getFirstName();
 			$last_name = $this->customer->getLastName();
 			$author = trim($first_name . ' ' . $last_name);
@@ -27,22 +27,32 @@ class ModelCatalogReview extends Model {
 				$author = $this->customer->getEmail();
 			}
 		} else {
-			$author = isset($data['name']) ? $data['name'] : 'Guest';
+			$author = isset($data['name']) && !empty(trim($data['name'])) ? trim($data['name']) : 'Guest';
+		}
+		
+		if (empty($author)) {
+			error_log('Review addReview: Empty author name, using Guest');
+			$author = 'Guest'; // Fallback to Guest
 		}
 
 		// Get customer ID - 0 if not logged in
 		$customer_id = 0;
-		if ($this->customer->isLogged()) {
+		if (isset($this->customer) && method_exists($this->customer, 'isLogged') && $this->customer->isLogged()) {
 			$customer_id = (int)$this->customer->getId();
 		}
 
 		// Get review text
-		$text = isset($data['text']) ? $data['text'] : '';
+		$text = isset($data['text']) ? trim($data['text']) : '';
+		if (empty($text)) {
+			error_log('Review addReview: Empty review text');
+			throw new Exception('Review text is required');
+		}
 		
 		// Get rating
 		$rating = isset($data['rating']) ? (int)$data['rating'] : 0;
 		if ($rating < 1 || $rating > 5) {
-			$rating = 5; // Default to 5 if invalid
+			error_log('Review addReview: Invalid rating - ' . $rating);
+			throw new Exception('Rating must be between 1 and 5');
 		}
 
 		// Get review status (0 = pending, 1 = approved) - default to 0 for moderation
@@ -65,13 +75,28 @@ class ModelCatalogReview extends Model {
 		$sql .= ", date_added = NOW()";
 
 		// Execute query with error handling
+		// Suppress PHP errors and catch them manually
+		$old_error_handler = set_error_handler(function($errno, $errstr, $errfile, $errline) {
+			// Log the error but don't display it
+			error_log("Review INSERT PHP Error: [$errno] $errstr in $errfile on line $errline");
+			return true; // Suppress error
+		});
+		
 		$result = $this->db->query($sql);
+		
+		// Restore error handler
+		if ($old_error_handler !== null) {
+			set_error_handler($old_error_handler);
+		} else {
+			restore_error_handler();
+		}
 		
 		// Check if query failed
 		if ($result === false) {
 			$error_msg = 'Database query failed';
-			if (method_exists($this->db, 'getError')) {
-				$error_msg .= ': ' . $this->db->getError();
+			// Try to get database error if available
+			if (is_object($this->db) && property_exists($this->db, 'link') && isset($this->db->link->error)) {
+				$error_msg .= ': ' . $this->db->link->error;
 			}
 			error_log('Review INSERT SQL Error: ' . $error_msg);
 			error_log('Review INSERT SQL: ' . $sql);
@@ -80,6 +105,7 @@ class ModelCatalogReview extends Model {
 			error_log('Product ID: ' . $product_id);
 			error_log('Rating: ' . $rating);
 			error_log('Status: ' . $status);
+			error_log('Text length: ' . strlen($text));
 			throw new Exception($error_msg);
 		}
 		
