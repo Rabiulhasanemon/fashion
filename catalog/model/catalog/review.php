@@ -1,6 +1,18 @@
 <?php
 class ModelCatalogReview extends Model {
 	public function addReview($product_id, $data) {
+		// Validate product_id
+		if (empty($product_id) || !is_numeric($product_id)) {
+			error_log('Review addReview: Invalid product_id - ' . $product_id);
+			throw new Exception('Invalid product ID');
+		}
+		
+		// Validate required data
+		if (empty($data) || !is_array($data)) {
+			error_log('Review addReview: Invalid or empty data array');
+			throw new Exception('Invalid review data');
+		}
+		
 		$this->event->trigger('pre.review.add', $data);
 
 		// Get author name - use provided name or customer name if logged in
