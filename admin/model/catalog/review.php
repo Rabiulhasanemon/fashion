@@ -80,13 +80,21 @@ class ModelCatalogReview extends Model {
 				$sql .= " ORDER BY " . $data['sort'];
 			}
 		} else {
-			$sql .= " ORDER BY r.date_added";
+			// Default sort by date_added DESC (newest first)
+			$sql .= " ORDER BY r.date_added DESC";
 		}
 
-		if (isset($data['order']) && ($data['order'] == 'DESC')) {
-			$sql .= " DESC";
-		} else {
-			$sql .= " ASC";
+		// Only add order direction if sort was explicitly set
+		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+			if (isset($data['order']) && ($data['order'] == 'DESC')) {
+				// If already has DESC from default, don't add again
+				if (strpos($sql, 'DESC') === false && strpos($sql, 'ASC') === false) {
+					$sql .= " DESC";
+				}
+			} else if (isset($data['order']) && ($data['order'] == 'ASC')) {
+				// Replace DESC with ASC if needed
+				$sql = str_replace(' DESC', ' ASC', $sql);
+			}
 		}
 
 		if (isset($data['start']) || isset($data['limit'])) {
