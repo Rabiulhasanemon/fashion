@@ -78,12 +78,22 @@ class ControllerCommonFileManager extends Controller {
 					$server = HTTP_CATALOG;
 				}
 
+				$image_path = utf8_substr($image, utf8_strlen(DIR_IMAGE));
+				
+				// Generate thumbnail
+				$thumb = $this->model_tool_image->resize($image_path, 100, 100);
+				
+				// If resize failed, use direct image URL as fallback
+				if (empty($thumb)) {
+					$thumb = $server . 'image/' . $image_path;
+				}
+
 				$data['images'][] = array(
-					'thumb' => $this->model_tool_image->resize(utf8_substr($image, utf8_strlen(DIR_IMAGE)), 100, 100),
+					'thumb' => $thumb,
 					'name'  => implode(' ', $name),
 					'type'  => 'image',
-					'path'  => utf8_substr($image, utf8_strlen(DIR_IMAGE)),
-					'href'  => $server . 'image/' . utf8_substr($image, utf8_strlen(DIR_IMAGE))
+					'path'  => $image_path,
+					'href'  => $server . 'image/' . $image_path
 				);
 			}
 		}

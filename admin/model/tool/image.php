@@ -2,7 +2,12 @@
 class ModelToolImage extends Model {
 	public function resize($filename, $width, $height) {
 		if (!is_file(DIR_IMAGE . $filename)) {
-			return;
+			// Return placeholder if file doesn't exist
+			if ($this->request->server['HTTPS']) {
+				return HTTPS_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+			} else {
+				return HTTP_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+			}
 		}
 
 		$extension = pathinfo($filename, PATHINFO_EXTENSION);
@@ -23,7 +28,18 @@ class ModelToolImage extends Model {
 				}
 			}
 
-		list($width_orig, $height_orig) = getimagesize(DIR_IMAGE . $old_image);
+		$image_info = @getimagesize(DIR_IMAGE . $old_image);
+		
+		if (!$image_info) {
+			// Invalid image file, return placeholder
+			if ($this->request->server['HTTPS']) {
+				return HTTPS_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+			} else {
+				return HTTP_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+			}
+		}
+		
+		list($width_orig, $height_orig) = $image_info;
 
 		// Skip image resizing during import to prevent memory exhaustion
 		$import_in_progress = (defined('IMPORT_IN_PROGRESS') && IMPORT_IN_PROGRESS) || 
@@ -33,9 +49,22 @@ class ModelToolImage extends Model {
 			// During import, just copy the file without resizing - never load into memory!
 			@copy(DIR_IMAGE . $old_image, DIR_IMAGE . $new_image);
 		} elseif ($width_orig != $width || $height_orig != $height) {
-			$image = new Image(DIR_IMAGE . $old_image);
-			$image->resize($width, $height);
-			$image->save(DIR_IMAGE . $new_image);
+			try {
+				$image = new Image(DIR_IMAGE . $old_image);
+				$image->resize($width, $height);
+				$image->save(DIR_IMAGE . $new_image);
+			} catch (Exception $e) {
+				// If resize fails, copy original or return placeholder
+				if (is_file(DIR_IMAGE . $old_image)) {
+					@copy(DIR_IMAGE . $old_image, DIR_IMAGE . $new_image);
+				} else {
+					if ($this->request->server['HTTPS']) {
+						return HTTPS_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+					} else {
+						return HTTP_CATALOG . 'image/cache/no_image-' . $width . 'x' . $height . '.png';
+					}
+				}
+			}
 		} else {
 			copy(DIR_IMAGE . $old_image, DIR_IMAGE . $new_image);
 		}
