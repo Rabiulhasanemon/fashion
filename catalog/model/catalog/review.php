@@ -97,7 +97,7 @@ class ModelCatalogReview extends Model {
 						$link_property->setAccessible(true);
 						$link = $link_property->getValue($this->db);
 						
-						if ($link instanceof mysqli && $link->error) {
+						if ($link instanceof \mysqli && $link->error) {
 							$error_msg .= ': ' . $link->error . ' (Error No: ' . $link->errno . ')';
 						}
 					}
