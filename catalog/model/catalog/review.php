@@ -76,6 +76,21 @@ class ModelCatalogReview extends Model {
 		
 		$sql .= ", date_added = NOW()";
 
+		// Fix AUTO_INCREMENT if needed before inserting
+		// Check if there's a review with review_id = 0 and remove it
+		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = 0");
+		
+		// Get current max review_id and ensure AUTO_INCREMENT is set correctly
+		$max_check = $this->db->query("SELECT MAX(review_id) as max_id FROM " . DB_PREFIX . "review");
+		$max_id = 0;
+		if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+			$max_id = (int)$max_check->row['max_id'];
+		}
+		$next_id = max($max_id + 1, 1);
+		
+		// Set AUTO_INCREMENT to next available value
+		$this->db->query("ALTER TABLE " . DB_PREFIX . "review AUTO_INCREMENT = " . $next_id);
+
 		// Execute query with error handling
 		// Use output buffering to catch any trigger_error output
 		ob_start();
