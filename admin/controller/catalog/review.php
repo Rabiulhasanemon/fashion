@@ -198,8 +198,14 @@ class ControllerCatalogReview extends Controller {
 			$sort = 'r.date_added';
 			$order = 'DESC';
 		}
+
+		if (isset($this->request->get['page'])) {
+			$page = $this->request->get['page'];
+		} else {
+			$page = 1;
+		}
 		
-		// Debug: Log controller data
+		// Debug: Log controller data (after all variables are initialized)
 		error_log('=== ADMIN REVIEW CONTROLLER DEBUG ===');
 		error_log('Sort: ' . $sort);
 		error_log('Order: ' . $order);
@@ -208,12 +214,6 @@ class ControllerCatalogReview extends Controller {
 		error_log('Filter Product: ' . ($filter_product !== null ? $filter_product : 'null'));
 		error_log('Filter Author: ' . ($filter_author !== null ? $filter_author : 'null'));
 		error_log('=====================================');
-
-		if (isset($this->request->get['page'])) {
-			$page = $this->request->get['page'];
-		} else {
-			$page = 1;
-		}
 
 		$url = '';
 
