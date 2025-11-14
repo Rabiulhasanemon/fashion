@@ -20,16 +20,20 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Debug: Log what we're receiving
-			error_log('Category Add - POST data received');
-			error_log('Raw $_POST keys: ' . implode(', ', array_keys($_POST)));
-			error_log('$this->request->post keys: ' . implode(', ', array_keys($this->request->post)));
-			error_log('category_module in $_POST: ' . (isset($_POST['category_module']) ? 'YES' : 'NO'));
-			error_log('category_module in $this->request->post: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
-			if (isset($this->request->post['category_module'])) {
-				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
-			} elseif (isset($_POST['category_module'])) {
-				error_log('category_module in raw $_POST: ' . print_r($_POST['category_module'], true));
+			// Ensure category_module data is properly extracted from POST
+			if (!isset($this->request->post['category_module']) && isset($_POST['category_module'])) {
+				$this->request->post['category_module'] = $_POST['category_module'];
+			}
+			
+			// Filter out empty module entries (where code is empty)
+			if (isset($this->request->post['category_module']) && is_array($this->request->post['category_module'])) {
+				$filtered_modules = array();
+				foreach ($this->request->post['category_module'] as $module) {
+					if (isset($module['code']) && !empty(trim($module['code']))) {
+						$filtered_modules[] = $module;
+					}
+				}
+				$this->request->post['category_module'] = $filtered_modules;
 			}
 			
             $category_id = $this->model_catalog_category->addCategory($this->request->post);
@@ -75,61 +79,20 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Debug: Log what we're receiving
-			$log_file = DIR_LOGS . 'category_module_debug.log';
-			
-			// Ensure log directory exists and is writable
-			if (!is_dir(DIR_LOGS)) {
-				@mkdir(DIR_LOGS, 0755, true);
+			// Ensure category_module data is properly extracted from POST
+			if (!isset($this->request->post['category_module']) && isset($_POST['category_module'])) {
+				$this->request->post['category_module'] = $_POST['category_module'];
 			}
 			
-			$log_msg = date('Y-m-d H:i:s') . " - Category Edit - POST data received for category_id: " . $this->request->get['category_id'] . "\n";
-			$log_msg .= "Raw \$_POST keys: " . implode(', ', array_keys($_POST)) . "\n";
-			$log_msg .= "\$this->request->post keys: " . implode(', ', array_keys($this->request->post)) . "\n";
-			$log_msg .= "category_module in \$_POST: " . (isset($_POST['category_module']) ? 'YES' : 'NO') . "\n";
-			$log_msg .= "category_module in \$this->request->post: " . (isset($this->request->post['category_module']) ? 'YES' : 'NO') . "\n";
-			
-			// Check all POST keys for anything containing 'module'
-			$module_keys = array();
-			foreach ($_POST as $key => $value) {
-				if (stripos($key, 'module') !== false) {
-					$module_keys[] = $key;
-				}
-			}
-			$log_msg .= "Keys containing 'module' in \$_POST: " . implode(', ', $module_keys) . "\n";
-			
-			if (isset($this->request->post['category_module'])) {
-				$log_msg .= "category_module data: " . print_r($this->request->post['category_module'], true) . "\n";
-			} elseif (isset($_POST['category_module'])) {
-				$log_msg .= "category_module in raw \$_POST: " . print_r($_POST['category_module'], true) . "\n";
-			} else {
-				// Try to find it with different key patterns
-				foreach ($_POST as $key => $value) {
-					if (strpos($key, 'category_module') === 0) {
-						$log_msg .= "Found key starting with 'category_module': " . $key . " = " . print_r($value, true) . "\n";
+			// Filter out empty module entries (where code is empty)
+			if (isset($this->request->post['category_module']) && is_array($this->request->post['category_module'])) {
+				$filtered_modules = array();
+				foreach ($this->request->post['category_module'] as $module) {
+					if (isset($module['code']) && !empty(trim($module['code']))) {
+						$filtered_modules[] = $module;
 					}
 				}
-			}
-			$log_msg .= "Log file path: " . $log_file . "\n";
-			$log_msg .= "---\n";
-			
-			$write_result = @file_put_contents($log_file, $log_msg, FILE_APPEND);
-			if ($write_result === false) {
-				error_log('FAILED to write to log file: ' . $log_file);
-			} else {
-				error_log('Successfully wrote ' . $write_result . ' bytes to log file: ' . $log_file);
-			}
-			
-			// Also use error_log
-			error_log('Category Edit - POST data received for category_id: ' . $this->request->get['category_id']);
-			error_log('Raw $_POST keys: ' . implode(', ', array_keys($_POST)));
-			error_log('$this->request->post keys: ' . implode(', ', array_keys($this->request->post)));
-			error_log('category_module in $_POST: ' . (isset($_POST['category_module']) ? 'YES' : 'NO'));
-			error_log('category_module in $this->request->post: ' . (isset($this->request->post['category_module']) ? 'YES' : 'NO'));
-			if (isset($this->request->post['category_module'])) {
-				error_log('category_module data: ' . print_r($this->request->post['category_module'], true));
-			} elseif (isset($_POST['category_module'])) {
-				error_log('category_module in raw $_POST: ' . print_r($_POST['category_module'], true));
+				$this->request->post['category_module'] = $filtered_modules;
 			}
 			
 			$this->model_catalog_category->editCategory($this->request->get['category_id'], $this->request->post);
