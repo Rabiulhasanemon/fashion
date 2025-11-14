@@ -274,8 +274,16 @@ class ControllerCatalogReview extends Controller {
 		);
 
 		$review_total = $this->model_catalog_review->getTotalReviews($filter_data);
-
+		
+		error_log('=== ADMIN REVIEW CONTROLLER - AFTER MODEL CALL ===');
+		error_log('Review Total: ' . $review_total);
+		error_log('Filter Data: ' . print_r($filter_data, true));
+		
 		$results = $this->model_catalog_review->getReviews($filter_data);
+		
+		error_log('Results count: ' . count($results));
+		error_log('Results: ' . print_r($results, true));
+		error_log('==================================================');
 
 		foreach ($results as $result) {
 			$data['reviews'][] = array(
