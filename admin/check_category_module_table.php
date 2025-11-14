@@ -3,9 +3,21 @@
 // Access via: http://yourdomain.com/admin/check_category_module_table.php
 
 // Suppress deprecation warnings from vendor libraries (Google API client)
+// Must be set BEFORE any includes
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
+
+// Custom error handler to filter out deprecation warnings from vendor libraries
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    // Suppress deprecation warnings from Google API client vendor directory
+    if (($errno === E_DEPRECATED || $errno === E_STRICT) && 
+        strpos($errfile, 'vendor/google/apiclient') !== false) {
+        return true; // Suppress this error
+    }
+    // For other errors, use default PHP error handler
+    return false;
+}, E_ALL);
 
 // Start output buffering to catch any errors
 ob_start();
@@ -17,7 +29,7 @@ try {
     }
 
     // Include OpenCart configuration
-    require_once('config.php');
+    @require_once('config.php');
     
     // Check if DIR_SYSTEM is defined
     if (!defined('DIR_SYSTEM')) {
@@ -29,7 +41,19 @@ try {
         die('<h1>Error: startup.php not found</h1><p>Path: ' . DIR_SYSTEM . 'startup.php</p>');
     }
     
-    require_once(DIR_SYSTEM . 'startup.php');
+    // Suppress warnings during startup
+    @require_once(DIR_SYSTEM . 'startup.php');
+    
+    // Restore error handler after startup
+    restore_error_handler();
+    set_error_handler(function($errno, $errstr, $errfile, $errline) {
+        // Suppress deprecation warnings from Google API client vendor directory
+        if (($errno === E_DEPRECATED || $errno === E_STRICT) && 
+            strpos($errfile, 'vendor/google/apiclient') !== false) {
+            return true; // Suppress this error
+        }
+        return false;
+    }, E_ALL);
 
     // Registry
     $registry = new Registry();
