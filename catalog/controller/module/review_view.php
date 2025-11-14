@@ -73,8 +73,13 @@ class ControllerModuleReviewView extends Controller {
 		}
 
 		// Debug: Log if no reviews found (only in development)
-		if (empty($data['reviews']) && isset($this->config) && $this->config->get('config_error_display')) {
-			error_log('Review View Module: No reviews found. Setting: ' . print_r($setting, true));
+		if (empty($data['reviews'])) {
+			if (isset($this->config) && $this->config->get('config_error_display')) {
+				error_log('Review View Module: No reviews found. Setting: ' . print_r($setting, true));
+				error_log('Review View Module: review_ids = ' . (isset($setting['review_ids']) ? print_r($setting['review_ids'], true) : 'not set'));
+			}
+			// Return empty string if no reviews (don't show module)
+			return '';
 		}
 
 		$data['module'] = $module++;
