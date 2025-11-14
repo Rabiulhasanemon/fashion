@@ -18,7 +18,7 @@
             <?php foreach ($category_modules as $module) { ?>
             <div class="category-module-item" style="margin-bottom: 20px;">
                 <?php if (!empty($module['description'])) { ?>
-                <div class="category-module-description" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                <div class="category-module-description" style="margin-bottom: 15px;">
                     <?php 
                     $description = $module['description'];
                     // Decode HTML entities if needed
@@ -27,6 +27,8 @@
                     }
                     // Strip slashes if double-encoded
                     $description = stripslashes($description);
+                    // Remove any padding/background styling from wrapper - let the HTML control its own styling
+                    // Output the description as raw HTML (it's already sanitized from admin)
                     echo $description;
                     ?>
                 </div>
