@@ -1,203 +1,192 @@
 <?php if (!empty($reviews)) { ?>
-<div class="review-view-module review-view-<?php echo $layout; ?>" style="max-width: 80%; margin: 0 auto;">
+<section class="testimonial testimonial-style-1 section-padding" style="max-width: 80%; margin: 0 auto; padding: 40px 0;">
   <?php if ($title) { ?>
-  <div class="module-heading-wrapper">
+  <div class="module-heading-wrapper" style="margin-bottom: 30px;">
     <h2 class="module-heading-title"><?php echo $title; ?></h2>
   </div>
   <?php } ?>
   
-  <style>
-  .review-view-module {
-    padding: 20px 0;
-  }
-  
-  .review-view-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-  
-  .review-view-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .review-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .review-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  }
-  
-  .review-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    gap: 15px;
-  }
-  
-  .review-author {
-    font-weight: 600;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .review-rating {
-    display: flex;
-    gap: 3px;
-  }
-  
-  .review-rating .star {
-    color: #ffc107;
-    font-size: 18px;
-  }
-  
-  .review-rating .star.empty {
-    color: #ddd;
-  }
-  
-  .review-text {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
-  
-  .review-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-    font-size: 13px;
-    color: #999;
-  }
-  
-  .review-product {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .review-product img {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    object-fit: cover;
-  }
-  
-  .review-product a {
-    color: #666;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .review-product a:hover {
-    color: var(--primary-color, #007bff);
-  }
-  
-  .review-view-slider .review-card {
-    margin: 0 10px;
-  }
-  
-  @media (max-width: 767px) {
-    .review-view-module {
-      max-width: 100% !important;
-      padding: 15px;
-    }
-    
-    .review-view-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  </style>
-  
-  <?php if ($layout == 'slider') { ?>
-  <div class="review-slider owl-carousel">
-    <?php foreach ($reviews as $review) { ?>
-    <div class="review-card">
-      <div class="review-header">
-        <div class="review-author"><?php echo $review['author']; ?></div>
-        <?php if ($show_rating) { ?>
-        <div class="review-rating">
-          <?php for ($i = 1; $i <= 5; $i++) { ?>
-          <span class="star <?php echo $i <= $review['rating'] ? '' : 'empty'; ?>">★</span>
-          <?php } ?>
+  <div class="container" style="max-width: 100%; padding: 0;">
+    <div class="swiper slider-active overflow-hide testimonial-slider-1">
+      <div class="swiper-wrapper">
+        <?php foreach ($reviews as $review) { ?>
+        <div class="swiper-slide testimonial-card">
+          <p class="testimonial-text">
+            <?php echo $review['text']; ?>
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-author-thumbnail">
+              <?php if (!empty($review['author_image'])) { ?>
+              <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>">
+              <?php } else { ?>
+              <img src="catalog/view/theme/ranger_fashion/image/placeholder-user.png" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Crect fill=\'%23ddd\' width=\'60\' height=\'60\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' font-size=\'20\'%3E<?php echo strtoupper(substr($review['author'], 0, 1)); ?>%3C/text%3E%3C/svg%3E'">
+              <?php } ?>
+            </div>
+            <div class="testimonial-info">
+              <h5><?php echo htmlspecialchars($review['author']); ?></h5>
+              <?php if (!empty($review['designation'])) { ?>
+              <span><?php echo htmlspecialchars($review['designation']); ?></span>
+              <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
+              <span><?php echo htmlspecialchars($review['product_name']); ?></span>
+              <?php } ?>
+            </div>
+          </div>
         </div>
         <?php } ?>
       </div>
-      <div class="review-text"><?php echo $review['text']; ?></div>
-      <div class="review-meta">
-        <?php if ($show_product && $review['product_href']) { ?>
-        <div class="review-product">
-          <?php if ($review['product_image']) { ?>
-          <img src="<?php echo $review['product_image']; ?>" alt="<?php echo $review['product_name']; ?>" />
-          <?php } ?>
-          <a href="<?php echo $review['product_href']; ?>"><?php echo $review['product_name']; ?></a>
-        </div>
-        <?php } ?>
-        <?php if ($show_date) { ?>
-        <div class="review-date"><?php echo $review['date_added']; ?></div>
-        <?php } ?>
-      </div>
+      <div class="swiper-pagination testimonial-pagination-1"></div>
     </div>
-    <?php } ?>
   </div>
-  
-  <script>
-  $(document).ready(function() {
-    $('.review-slider').owlCarousel({
-      items: 3,
-      itemsDesktop: [1199, 3],
-      itemsDesktopSmall: [979, 2],
-      itemsTablet: [768, 2],
-      itemsMobile: [479, 1],
-      navigation: true,
-      navigationText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
-      pagination: false,
-      autoPlay: false
-    });
-  });
-  </script>
-  <?php } else { ?>
-  <div class="review-view-<?php echo $layout; ?>">
-    <?php foreach ($reviews as $review) { ?>
-    <div class="review-card">
-      <div class="review-header">
-        <div class="review-author"><?php echo $review['author']; ?></div>
-        <?php if ($show_rating) { ?>
-        <div class="review-rating">
-          <?php for ($i = 1; $i <= 5; $i++) { ?>
-          <span class="star <?php echo $i <= $review['rating'] ? '' : 'empty'; ?>">★</span>
-          <?php } ?>
-        </div>
-        <?php } ?>
-      </div>
-      <div class="review-text"><?php echo $review['text']; ?></div>
-      <div class="review-meta">
-        <?php if ($show_product && $review['product_href']) { ?>
-        <div class="review-product">
-          <?php if ($review['product_image']) { ?>
-          <img src="<?php echo $review['product_image']; ?>" alt="<?php echo $review['product_name']; ?>" />
-          <?php } ?>
-          <a href="<?php echo $review['product_href']; ?>"><?php echo $review['product_name']; ?></a>
-        </div>
-        <?php } ?>
-        <?php if ($show_date) { ?>
-        <div class="review-date"><?php echo $review['date_added']; ?></div>
-        <?php } ?>
-      </div>
-    </div>
-    <?php } ?>
-  </div>
-  <?php } ?>
-</div>
-<?php } ?>
+</section>
 
+<style>
+/* Testimonial Style 1 */
+.testimonial-style-1 {
+  padding: 40px 0;
+}
+
+.testimonial-style-1 .testimonial-card {
+  border: 1px solid var(--border-color, #e1e1e1);
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 224px;
+  margin-top: 1px;
+  background: #fff;
+}
+
+.testimonial-style-1 .testimonial-text {
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #666;
+}
+
+.testimonial-style-1 .testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.testimonial-style-1 .testimonial-author-thumbnail {
+  flex-shrink: 0;
+}
+
+.testimonial-style-1 .testimonial-author-thumbnail img {
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  object-fit: cover;
+}
+
+.testimonial-style-1 .testimonial-info {
+  margin: 0;
+  flex: 1;
+}
+
+.testimonial-style-1 .testimonial-info h5 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 120%;
+  color: var(--title-color, #222);
+}
+
+.testimonial-style-1 .testimonial-info span {
+  font-size: 12px;
+  font-weight: 400;
+  display: block;
+  margin-top: 4px;
+  color: #999;
+}
+
+/* Swiper Styles */
+.testimonial-slider-1 {
+  padding-bottom: 24px;
+}
+
+.testimonial-slider-1 .swiper-pagination {
+  bottom: 0;
+  position: absolute;
+  line-height: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin: 0;
+}
+
+.testimonial-slider-1 .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: #ddd;
+  opacity: 1;
+  margin: 0 4px;
+}
+
+.testimonial-slider-1 .swiper-pagination-bullet-active {
+  background: var(--primary-color, #007bff);
+}
+
+.testimonial-slider-1 .swiper-slide {
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .testimonial-style-1 {
+    max-width: 100% !important;
+    padding: 20px 15px;
+  }
+  
+  .testimonial-style-1 .testimonial-card {
+    min-height: auto;
+    padding: 20px;
+  }
+  
+  .testimonial-style-1 .testimonial-text {
+    -webkit-line-clamp: 3;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var testimonialSlider = document.querySelector('.testimonial-slider-1');
+  if (testimonialSlider && typeof Swiper !== 'undefined') {
+    new Swiper('.testimonial-slider-1', {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.testimonial-pagination-1',
+        clickable: true,
+      },
+      breakpoints: {
+        576: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        992: {
+          slidesPerView: 3,
+          spaceBetween: 20,
+        },
+        1200: {
+          slidesPerView: 3,
+          spaceBetween: 20,
+        }
+      }
+    });
+  }
+});
+</script>
+<?php } ?>

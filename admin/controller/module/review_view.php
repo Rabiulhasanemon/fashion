@@ -114,6 +114,14 @@ class ControllerModuleReviewView extends Controller {
 			$data['review_ids'] = array();
 		}
 
+		if (isset($this->request->post['review_custom_data'])) {
+			$data['review_custom_data'] = $this->request->post['review_custom_data'];
+		} elseif (!empty($module_info) && isset($module_info['review_custom_data'])) {
+			$data['review_custom_data'] = $module_info['review_custom_data'];
+		} else {
+			$data['review_custom_data'] = array();
+		}
+
 		if (isset($this->request->post['limit'])) {
 			$data['limit'] = $this->request->post['limit'];
 		} elseif (!empty($module_info) && isset($module_info['limit'])) {

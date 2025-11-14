@@ -43,21 +43,46 @@
           <div class="form-group">
             <label class="col-sm-2 control-label"><?php echo $entry_reviews; ?></label>
             <div class="col-sm-10">
-              <div class="well well-sm" style="height: 200px; overflow: auto;">
-                <?php foreach ($reviews as $review) { ?>
-                <div class="checkbox">
-                  <label>
-                    <?php if (in_array($review['review_id'], $review_ids)) { ?>
-                    <input type="checkbox" name="review_ids[]" value="<?php echo $review['review_id']; ?>" checked="checked" />
-                    <?php } else { ?>
-                    <input type="checkbox" name="review_ids[]" value="<?php echo $review['review_id']; ?>" />
+              <div class="well well-sm" style="max-height: 400px; overflow: auto;">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px;">Select</th>
+                      <th>Review</th>
+                      <th>Author Image</th>
+                      <th>Designation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reviews as $review) { 
+                      $is_selected = in_array($review['review_id'], $review_ids);
+                      $custom_data = isset($review_custom_data[$review['review_id']]) ? $review_custom_data[$review['review_id']] : array();
+                      $author_image = isset($custom_data['author_image']) ? $custom_data['author_image'] : '';
+                      $designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
+                    ?>
+                    <tr>
+                      <td>
+                        <input type="checkbox" name="review_ids[]" value="<?php echo $review['review_id']; ?>" <?php echo $is_selected ? 'checked="checked"' : ''; ?> />
+                      </td>
+                      <td>
+                        <strong><?php echo $review['author']; ?></strong><br>
+                        <small><?php echo $review['product']; ?> (<?php echo $review['rating']; ?>★) - <?php echo $review['date_added']; ?></small>
+                      </td>
+                      <td>
+                        <a href="" id="thumb-image-<?php echo $review['review_id']; ?>" data-toggle="image" class="img-thumbnail">
+                          <img src="<?php echo !empty($author_image) ? '../image/' . $author_image : '../image/no_image.png'; ?>" alt="" title="" data-placeholder="../image/no_image.png" />
+                        </a>
+                        <input type="hidden" name="review_custom_data[<?php echo $review['review_id']; ?>][author_image]" value="<?php echo $author_image; ?>" id="input-image-<?php echo $review['review_id']; ?>" />
+                      </td>
+                      <td>
+                        <input type="text" name="review_custom_data[<?php echo $review['review_id']; ?>][designation]" value="<?php echo htmlspecialchars($designation); ?>" placeholder="e.g., Housewife, Banker, Student" class="form-control" />
+                      </td>
+                    </tr>
                     <?php } ?>
-                    <?php echo $review['author']; ?> - <?php echo $review['product']; ?> (<?php echo $review['rating']; ?>★) - <?php echo $review['date_added']; ?>
-                  </label>
-                </div>
-                <?php } ?>
+                  </tbody>
+                </table>
               </div>
-              <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">Select All</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">Unselect All</a>
+              <a onclick="$(this).closest('.form-group').find(':checkbox').prop('checked', true);">Select All</a> / <a onclick="$(this).closest('.form-group').find(':checkbox').prop('checked', false);">Unselect All</a>
             </div>
           </div>
           <div class="form-group">

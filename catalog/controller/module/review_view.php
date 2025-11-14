@@ -18,11 +18,21 @@ class ControllerModuleReviewView extends Controller {
 
 		if (isset($setting['review_ids']) && is_array($setting['review_ids']) && !empty($setting['review_ids'])) {
 			$limit = isset($setting['limit']) ? (int)$setting['limit'] : 5;
+			$review_custom_data = isset($setting['review_custom_data']) ? $setting['review_custom_data'] : array();
 			
 			foreach ($setting['review_ids'] as $review_id) {
 				$review_info = $this->model_catalog_review->getReview($review_id);
 				
 				if ($review_info && $review_info['status']) {
+					// Get custom data for this review
+					$custom_data = isset($review_custom_data[$review_id]) ? $review_custom_data[$review_id] : array();
+					$author_image = '';
+					$designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
+					
+					if (!empty($custom_data['author_image'])) {
+						$author_image = $this->model_tool_image->resize($custom_data['author_image'], 60, 60);
+					}
+					
 					// Get product info
 					$product_info = $this->model_catalog_product->getProduct($review_info['product_id']);
 					
@@ -39,12 +49,14 @@ class ControllerModuleReviewView extends Controller {
 					$data['reviews'][] = array(
 						'review_id'   => $review_info['review_id'],
 						'author'      => $review_info['author'],
-						'text'        => utf8_substr(strip_tags(html_entity_decode($review_info['text'], ENT_QUOTES, 'UTF-8')), 0, 150) . '..',
+						'text'        => strip_tags(html_entity_decode($review_info['text'], ENT_QUOTES, 'UTF-8')),
 						'rating'      => $review_info['rating'],
 						'date_added'  => date($this->language->get('date_format_short'), strtotime($review_info['date_added'])),
 						'product_name' => $review_info['product'] ? $review_info['product'] : 'N/A',
 						'product_image' => $product_image,
-						'product_href' => $product_href
+						'product_href' => $product_href,
+						'author_image' => $author_image,
+						'designation' => $designation
 					);
 					
 					if (count($data['reviews']) >= $limit) {
