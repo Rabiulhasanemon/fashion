@@ -56,14 +56,18 @@
                 <?php if (isset($category_modules) && !empty($category_modules)) { ?>
                 <div class="category-modules" style="margin-bottom: 30px;">
                     <?php foreach ($category_modules as $module) { ?>
-                    <?php if (isset($module['output']) && !empty($module['output'])) { ?>
+                    <?php if (isset($module['output'])) { ?>
                     <div class="category-module-item" style="margin-bottom: 20px;">
                         <?php if (!empty($module['description'])) { ?>
                         <div class="category-module-description" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
                             <?php echo html_entity_decode($module['description'], ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                         <?php } ?>
+                        <?php if (!empty($module['output'])) { ?>
                         <?php echo $module['output']; ?>
+                        <?php } else { ?>
+                        <!-- Module <?php echo isset($module['code']) ? htmlspecialchars($module['code']) : 'unknown'; ?> loaded but produced no output -->
+                        <?php } ?>
                     </div>
                     <?php } ?>
                     <?php } ?>
