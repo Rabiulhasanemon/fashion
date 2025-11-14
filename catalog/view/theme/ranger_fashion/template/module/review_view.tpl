@@ -20,7 +20,10 @@
             <div class="rv-testimonial-footer">
               <div class="rv-author-avatar">
                 <?php if (!empty($review['author_image'])) { ?>
-                <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>">
+                <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="rv-avatar-placeholder" style="display: none;">
+                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                </div>
                 <?php } else { ?>
                 <div class="rv-avatar-placeholder">
                   <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
@@ -40,8 +43,8 @@
         </div>
         <?php } ?>
       </div>
-       <div class="swiper-button-prev rv-swiper-nav rv-nav-prev"></div>
-       <div class="swiper-button-next rv-swiper-nav rv-nav-next"></div>
+       <div class="swiper-button-prev rv-swiper-nav rv-nav-prev"><i class="fa fa-angle-left"></i></div>
+       <div class="swiper-button-next rv-swiper-nav rv-nav-next"><i class="fa fa-angle-right"></i></div>
        <div class="swiper-pagination rv-swiper-pagination"></div>
     </div>
   </div>
@@ -197,15 +200,19 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
   margin-top: 0;
+  text-align: center;
 }
 
 .rv-swiper-nav.swiper-button-prev::after,
 .rv-swiper-nav.swiper-button-next::after {
-  font-family: 'swiper-icons';
+  display: none;
+}
+
+.rv-swiper-nav i {
   font-size: 18px;
-  font-weight: bold;
   color: var(--primary-color, #007bff);
   transition: all 0.3s ease;
+  line-height: 1;
 }
 
 .rv-nav-prev.swiper-button-prev {
@@ -223,13 +230,14 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-.rv-swiper-nav:hover::after {
+.rv-swiper-nav:hover i {
   color: #ffffff;
 }
 
 .rv-swiper-nav.swiper-button-disabled {
   opacity: 0.3;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Pagination */
@@ -315,12 +323,12 @@
   var swiperEl = document.getElementById(moduleId);
   
   if (!swiperEl) {
-    console.log('RV Slider: Element not found');
     return;
   }
   
   var initCount = 0;
   var maxInitAttempts = 100;
+  var rvSwiper = null;
   
   function initRVSlider() {
     initCount++;
@@ -329,9 +337,12 @@
     if (typeof Swiper === 'undefined') {
       if (initCount < maxInitAttempts) {
         setTimeout(initRVSlider, 100);
-      } else {
-        console.error('RV Slider: Swiper library not found');
       }
+      return;
+    }
+    
+    // Prevent multiple initializations
+    if (rvSwiper) {
       return;
     }
     
@@ -339,8 +350,13 @@
       var reviewCount = <?php echo count($reviews); ?>;
       var enableLoop = reviewCount > 3;
       
+      // Get navigation elements
+      var nextBtn = swiperEl.querySelector('.rv-nav-next');
+      var prevBtn = swiperEl.querySelector('.rv-nav-prev');
+      var paginationEl = swiperEl.querySelector('.rv-swiper-pagination');
+      
       // Initialize Swiper
-      var rvSwiper = new Swiper('#' + moduleId, {
+      rvSwiper = new Swiper('#' + moduleId, {
         slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 20,
@@ -353,11 +369,11 @@
           stopOnLastSlide: false,
         },
         navigation: {
-          nextEl: swiperEl.querySelector('.rv-nav-next'),
-          prevEl: swiperEl.querySelector('.rv-nav-prev'),
+          nextEl: nextBtn,
+          prevEl: prevBtn,
         },
         pagination: {
-          el: swiperEl.querySelector('.rv-swiper-pagination'),
+          el: paginationEl,
           clickable: true,
           dynamicBullets: true,
           dynamicMainBullets: 3,
@@ -386,53 +402,45 @@
         },
         on: {
           init: function() {
-            console.log('RV Slider initialized');
             // Force start autoplay
             if (this.autoplay && this.autoplay.running === false) {
               this.autoplay.start();
             }
-          },
-          autoplayStart: function() {
-            console.log('RV Slider autoplay started');
           }
         }
       });
       
-      // Multiple attempts to ensure autoplay starts
-      var startAutoplay = function() {
+      // Ensure autoplay starts
+      setTimeout(function() {
         if (rvSwiper && rvSwiper.autoplay) {
           if (!rvSwiper.autoplay.running) {
             rvSwiper.autoplay.start();
           }
         }
-      };
+      }, 500);
       
-      // Try to start autoplay multiple times
-      setTimeout(startAutoplay, 100);
-      setTimeout(startAutoplay, 500);
-      setTimeout(startAutoplay, 1000);
-      setTimeout(startAutoplay, 2000);
-      
-      // Store instance globally for debugging
+      // Store instance globally
       window['rvSwiperInstance_' + moduleId] = rvSwiper;
       
     } catch (error) {
-      console.error('RV Slider initialization error:', error);
+      console.error('RV Slider error:', error);
     }
   }
   
-  // Wait for DOM and Swiper to be ready
+  // Initialize when ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(initRVSlider, 200);
+      setTimeout(initRVSlider, 300);
     });
   } else {
-    setTimeout(initRVSlider, 200);
+    setTimeout(initRVSlider, 300);
   }
   
-  // Also try on window load as fallback
+  // Fallback on window load
   window.addEventListener('load', function() {
-    setTimeout(initRVSlider, 300);
+    if (!rvSwiper) {
+      setTimeout(initRVSlider, 200);
+    }
   });
 })();
 </script>

@@ -35,7 +35,19 @@ class ControllerModuleReviewView extends Controller {
 						$designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
 						
 						if (!empty($custom_data['author_image'])) {
-							$author_image = $this->model_tool_image->resize($custom_data['author_image'], 60, 60);
+							// Check if image path exists
+							$image_path = $custom_data['author_image'];
+							if (file_exists(DIR_IMAGE . $image_path)) {
+								$author_image = $this->model_tool_image->resize($image_path, 60, 60);
+							} else {
+								// Try with catalog/ prefix
+								if (strpos($image_path, 'catalog/') !== 0) {
+									$image_path = 'catalog/' . $image_path;
+								}
+								if (file_exists(DIR_IMAGE . $image_path)) {
+									$author_image = $this->model_tool_image->resize($image_path, 60, 60);
+								}
+							}
 						}
 						
 						// Get product info
