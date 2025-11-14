@@ -49,7 +49,7 @@ class ModelCatalogReview extends Model {
 			WHERE 1=1";
 
 		if (!empty($data['filter_product'])) {
-			$sql .= " AND (pd.name LIKE '" . $this->db->escape($data['filter_product']) . "%' OR pd.name IS NULL)";
+			$sql .= " AND (SELECT pd.name FROM " . DB_PREFIX . "product_description pd WHERE pd.product_id = r.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' LIMIT 1) LIKE '" . $this->db->escape($data['filter_product']) . "%'";
 		}
 
 		if (!empty($data['filter_author'])) {
