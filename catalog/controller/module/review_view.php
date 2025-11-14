@@ -23,7 +23,12 @@ class ControllerModuleReviewView extends Controller {
 			foreach ($setting['review_ids'] as $review_id) {
 				$review_info = $this->model_catalog_review->getReview($review_id);
 				
-				if ($review_info && $review_info['status']) {
+				// Check if review exists and is approved (status = 1)
+				if ($review_info) {
+					// Check status - if status column doesn't exist, assume approved
+					$review_status = isset($review_info['status']) ? (int)$review_info['status'] : 1;
+					
+					if ($review_status == 1) {
 					// Get custom data for this review
 					$custom_data = isset($review_custom_data[$review_id]) ? $review_custom_data[$review_id] : array();
 					$author_image = '';
@@ -62,8 +67,14 @@ class ControllerModuleReviewView extends Controller {
 					if (count($data['reviews']) >= $limit) {
 						break;
 					}
+					}
 				}
 			}
+		}
+
+		// Debug: Log if no reviews found (only in development)
+		if (empty($data['reviews']) && isset($this->config) && $this->config->get('config_error_display')) {
+			error_log('Review View Module: No reviews found. Setting: ' . print_r($setting, true));
 		}
 
 		$data['module'] = $module++;
