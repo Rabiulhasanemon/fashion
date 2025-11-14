@@ -2,13 +2,13 @@
 // Test Reviews Query
 // This script tests the exact query used in admin panel
 
-// Database configuration - Update these with your actual database credentials
+// Database configuration - Using your actual database credentials from config.php
 define('DB_HOSTNAME', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_DATABASE', 'your_database_name');
-define('DB_PREFIX', 'oc_'); // Change to your table prefix
-define('LANGUAGE_ID', 1); // Change to your language ID
+define('DB_USERNAME', 'masterco_rup');
+define('DB_PASSWORD', 'masterco_new1');
+define('DB_DATABASE', 'masterco_rup');
+define('DB_PREFIX', 'sr_'); // Your table prefix
+define('LANGUAGE_ID', 1); // Default language ID (usually 1)
 
 // Connect to database
 $mysqli = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);

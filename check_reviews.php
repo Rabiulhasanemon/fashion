@@ -2,12 +2,12 @@
 // Check Reviews in Database
 // Run this script to see all reviews in the database
 
-// Database configuration - Update these with your actual database credentials
+// Database configuration - Using your actual database credentials from config.php
 define('DB_HOSTNAME', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_DATABASE', 'your_database_name');
-define('DB_PREFIX', 'oc_'); // Change to your table prefix
+define('DB_USERNAME', 'masterco_rup');
+define('DB_PASSWORD', 'masterco_new1');
+define('DB_DATABASE', 'masterco_rup');
+define('DB_PREFIX', 'sr_'); // Your table prefix
 
 // Connect to database
 $mysqli = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
