@@ -61,14 +61,9 @@ class ModelCatalogCategory extends Model {
 			$this->db->query("REPLACE INTO " . DB_PREFIX . "url_alias SET query = 'category_id=" . (int)$category_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 
-		// Save category modules
-		error_log('addCategory - Checking for category_module in data');
-		error_log('addCategory - Data keys: ' . implode(', ', array_keys($data)));
-		if (isset($data['category_module'])) {
-			error_log('addCategory - category_module found, calling saveCategoryModules');
+		// Save category modules - always call to ensure modules are saved if provided
+		if (isset($data['category_module']) && is_array($data['category_module'])) {
 			$this->saveCategoryModules($category_id, $data['category_module']);
-		} else {
-			error_log('addCategory - category_module NOT found in data');
 		}
 
 		$this->cache->delete('category');
@@ -178,37 +173,12 @@ class ModelCatalogCategory extends Model {
 			$this->db->query("REPLACE INTO " . DB_PREFIX . "url_alias SET query = 'category_id=" . (int)$category_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 
-		// Save category modules
-		$log_file = DIR_LOGS . 'category_module_debug.log';
-		$log_msg = date('Y-m-d H:i:s') . " - editCategory - Checking for category_module in data\n";
-		$log_msg .= "Data keys: " . implode(', ', array_keys($data)) . "\n";
-		$log_msg .= "Full data structure (first 2000 chars): " . substr(print_r($data, true), 0, 2000) . "\n";
-		
-		// Check for category_module in various possible formats
-		$has_category_module = false;
-		if (isset($data['category_module'])) {
-			$has_category_module = true;
-			$log_msg .= "category_module found in data['category_module']\n";
-		}
-		
-		// Also check if it's nested differently
-		foreach ($data as $key => $value) {
-			if (strpos($key, 'category_module') !== false) {
-				$log_msg .= "Found key containing 'category_module': " . $key . "\n";
-			}
-		}
-		
-		if ($has_category_module) {
-			$log_msg .= "category_module data structure: " . print_r($data['category_module'], true) . "\n";
-			$log_msg .= "Calling saveCategoryModules\n";
-			file_put_contents($log_file, $log_msg, FILE_APPEND);
-			error_log('editCategory - category_module found, calling saveCategoryModules');
+		// Save category modules - always call to ensure existing modules are cleared if none provided
+		if (isset($data['category_module']) && is_array($data['category_module'])) {
 			$this->saveCategoryModules($category_id, $data['category_module']);
 		} else {
-			$log_msg .= "category_module NOT found in data\n";
-			$log_msg .= "---\n";
-			file_put_contents($log_file, $log_msg, FILE_APPEND);
-			error_log('editCategory - category_module NOT found in data');
+			// If category_module is not set, clear all modules for this category
+			$this->saveCategoryModules($category_id, array());
 		}
 
 		$this->cache->delete('category');
@@ -438,36 +408,43 @@ class ModelCatalogCategory extends Model {
 		if (!$table_check->num_rows) {
 			$log_msg .= "ERROR: Category module table does not exist\n";
 			$log_msg .= "---\n";
-			file_put_contents($log_file, $log_msg, FILE_APPEND);
+			@file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('Category module table does not exist');
-			return; // Exit if table doesn't exist
+			return false; // Exit if table doesn't exist
 		}
 		$log_msg .= "Table exists: YES\n";
+
+		// Check if description column exists
+		$has_description = false;
+		try {
+			$columns = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "category_module LIKE 'description'");
+			$has_description = ($columns->num_rows > 0);
+			$log_msg .= "Description column exists: " . ($has_description ? 'YES' : 'NO') . "\n";
+		} catch (Exception $e) {
+			$log_msg .= "Error checking description column: " . $e->getMessage() . "\n";
+		}
 
 		try {
 			// Delete existing modules for this category
 			$this->db->query("DELETE FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "'");
 			$log_msg .= "Deleted existing modules for category\n";
 
-			error_log('saveCategoryModules called for category_id: ' . $category_id);
-			error_log('Modules data received: ' . print_r($modules, true));
-
-			if (isset($modules) && is_array($modules) && !empty($modules)) {
-				$log_msg .= "Modules array is valid, processing...\n";
+			if (isset($modules) && is_array($modules)) {
+				$log_msg .= "Modules array received, processing...\n";
 				$saved_count = 0;
+				$error_count = 0;
+				
 				foreach ($modules as $index => $module) {
 					// Skip empty modules (no code selected)
 					if (!isset($module['code']) || empty(trim($module['code']))) {
-						error_log('Skipping module at index ' . $index . ' - no code: ' . print_r($module, true));
+						$log_msg .= "Skipping module at index " . $index . " - no code\n";
 						continue;
 					}
-					
-					error_log('Processing module at index ' . $index . ': code=' . $module['code']);
 					
 					$module_id = isset($module['module_id']) ? (int)$module['module_id'] : 0;
 					$code = $this->db->escape(trim($module['code']));
 					
-					// Handle settings - can be array or JSON string (keep for backward compatibility)
+					// Handle settings - can be array or JSON string
 					$setting_data = array();
 					if (isset($module['setting'])) {
 						if (is_array($module['setting'])) {
@@ -476,9 +453,6 @@ class ModelCatalogCategory extends Model {
 							$decoded = json_decode(trim($module['setting']), true);
 							if (json_last_error() === JSON_ERROR_NONE) {
 								$setting_data = $decoded;
-							} else {
-								// If JSON decode fails, try to use as-is (might be malformed JSON)
-								error_log('Warning: Invalid JSON in module setting for code: ' . $code);
 							}
 						}
 					}
@@ -490,28 +464,57 @@ class ModelCatalogCategory extends Model {
 					$sort_order = isset($module['sort_order']) ? (int)$module['sort_order'] : 0;
 					$status = isset($module['status']) ? (int)$module['status'] : 1;
 
-					$this->db->query("INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', description = '" . $description . "', sort_order = '" . $sort_order . "', status = '" . $status . "'");
+					// Build INSERT query based on whether description column exists
+					if ($has_description) {
+						$sql = "INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', description = '" . $description . "', sort_order = '" . $sort_order . "', status = '" . $status . "'";
+					} else {
+						$sql = "INSERT INTO " . DB_PREFIX . "category_module SET category_id = '" . (int)$category_id . "', module_id = '" . $module_id . "', code = '" . $code . "', setting = '" . $setting . "', sort_order = '" . $sort_order . "', status = '" . $status . "'";
+					}
 					
-					$saved_count++;
-					$log_msg .= "Saved module " . $saved_count . ": code=" . $code . ", module_id=" . $module_id . "\n";
+					try {
+						$result = $this->db->query($sql);
+						if ($result) {
+							$saved_count++;
+							$log_msg .= "Saved module " . $saved_count . ": code=" . $code . ", module_id=" . $module_id . "\n";
+						} else {
+							$error_count++;
+							$log_msg .= "ERROR: Query returned false for module " . ($index + 1) . "\n";
+							$log_msg .= "SQL: " . $sql . "\n";
+							error_log('Query returned false for category module: ' . $code);
+						}
+					} catch (Exception $e) {
+						$error_count++;
+						$log_msg .= "ERROR saving module " . ($index + 1) . ": " . $e->getMessage() . "\n";
+						$log_msg .= "SQL: " . $sql . "\n";
+						error_log('Error inserting category module: ' . $e->getMessage());
+						error_log('SQL: ' . $sql);
+					}
 				}
+				
 				$log_msg .= "Total saved: " . $saved_count . " category modules for category_id: " . $category_id . "\n";
-				file_put_contents($log_file, $log_msg, FILE_APPEND);
-				error_log('Saved ' . $saved_count . ' category modules for category_id: ' . $category_id);
-			} else {
-				$log_msg .= "ERROR: No modules array provided or modules is not an array\n";
+				if ($error_count > 0) {
+					$log_msg .= "Total errors: " . $error_count . "\n";
+				}
 				$log_msg .= "---\n";
-				file_put_contents($log_file, $log_msg, FILE_APPEND);
-				error_log('No modules array provided or modules is not an array');
+				@file_put_contents($log_file, $log_msg, FILE_APPEND);
+				error_log('Saved ' . $saved_count . ' category modules for category_id: ' . $category_id);
+				
+				return true; // Return true even if no modules saved (existing ones were deleted)
+			} else {
+				$log_msg .= "ERROR: Modules is not an array\n";
+				$log_msg .= "---\n";
+				@file_put_contents($log_file, $log_msg, FILE_APPEND);
+				error_log('Modules is not an array');
+				return false;
 			}
 		} catch (Exception $e) {
 			$log_msg .= "EXCEPTION: " . $e->getMessage() . "\n";
 			$log_msg .= "Stack trace: " . $e->getTraceAsString() . "\n";
 			$log_msg .= "---\n";
-			file_put_contents($log_file, $log_msg, FILE_APPEND);
+			@file_put_contents($log_file, $log_msg, FILE_APPEND);
 			error_log('Error saving category modules: ' . $e->getMessage());
 			error_log('Stack trace: ' . $e->getTraceAsString());
-			// Don't throw exception - allow category to save even if modules fail
+			return false;
 		}
 	}
 }

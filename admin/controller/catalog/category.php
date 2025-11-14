@@ -20,9 +20,27 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Ensure category_module data is properly extracted from POST
-			if (!isset($this->request->post['category_module']) && isset($_POST['category_module'])) {
-				$this->request->post['category_module'] = $_POST['category_module'];
+			// Manually parse category_module from POST if not already parsed
+			if (!isset($this->request->post['category_module']) || !is_array($this->request->post['category_module'])) {
+				$category_modules = array();
+				// Parse category_module[0][code], category_module[0][module_id], etc.
+				foreach ($_POST as $key => $value) {
+					if (preg_match('/^category_module\[(\d+)\]\[(.+)\]$/', $key, $matches)) {
+						$index = (int)$matches[1];
+						$field = $matches[2];
+						if (!isset($category_modules[$index])) {
+							$category_modules[$index] = array();
+						}
+						$category_modules[$index][$field] = $value;
+					}
+				}
+				if (!empty($category_modules)) {
+					// Re-index array and filter out empty entries
+					$category_modules = array_values($category_modules);
+					$this->request->post['category_module'] = $category_modules;
+				} elseif (isset($_POST['category_module']) && is_array($_POST['category_module'])) {
+					$this->request->post['category_module'] = $_POST['category_module'];
+				}
 			}
 			
 			// Filter out empty module entries (where code is empty)
@@ -79,9 +97,27 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('catalog/category');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			// Ensure category_module data is properly extracted from POST
-			if (!isset($this->request->post['category_module']) && isset($_POST['category_module'])) {
-				$this->request->post['category_module'] = $_POST['category_module'];
+			// Manually parse category_module from POST if not already parsed
+			if (!isset($this->request->post['category_module']) || !is_array($this->request->post['category_module'])) {
+				$category_modules = array();
+				// Parse category_module[0][code], category_module[0][module_id], etc.
+				foreach ($_POST as $key => $value) {
+					if (preg_match('/^category_module\[(\d+)\]\[(.+)\]$/', $key, $matches)) {
+						$index = (int)$matches[1];
+						$field = $matches[2];
+						if (!isset($category_modules[$index])) {
+							$category_modules[$index] = array();
+						}
+						$category_modules[$index][$field] = $value;
+					}
+				}
+				if (!empty($category_modules)) {
+					// Re-index array and filter out empty entries
+					$category_modules = array_values($category_modules);
+					$this->request->post['category_module'] = $category_modules;
+				} elseif (isset($_POST['category_module']) && is_array($_POST['category_module'])) {
+					$this->request->post['category_module'] = $_POST['category_module'];
+				}
 			}
 			
 			// Filter out empty module entries (where code is empty)
