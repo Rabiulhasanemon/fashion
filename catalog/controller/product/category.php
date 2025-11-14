@@ -414,28 +414,54 @@ class ControllerProductCategory extends Controller {
 			$category_modules = $this->model_catalog_category->getCategoryModules($category_id);
 			
 			if (!empty($category_modules)) {
+				// Load extension module model if needed
+				$this->load->model('extension/module');
+				
 				foreach ($category_modules as $module) {
 					$module_output = '';
 					$module_description = isset($module['description']) ? $module['description'] : '';
+					$module_code = isset($module['code']) ? $module['code'] : '';
+					
+					// Get module settings
+					$module_setting = array();
+					
+					// If module_id is set and > 0, load full settings from module table
+					if (isset($module['module_id']) && (int)$module['module_id'] > 0) {
+						$module_setting = $this->model_extension_module->getModule($module['module_id']);
+						// Merge with category_module settings (category_module settings take precedence)
+						if (isset($module['setting']) && is_array($module['setting']) && !empty($module['setting'])) {
+							$module_setting = array_merge($module_setting, $module['setting']);
+						}
+					} else {
+						// Use settings directly from category_module
+						$module_setting = isset($module['setting']) && is_array($module['setting']) ? $module['setting'] : array();
+					}
 					
 					// Ensure setting is an array
-					if (!is_array($module['setting'])) {
-						$module['setting'] = array();
+					if (!is_array($module_setting)) {
+						$module_setting = array();
 					}
 					
 					// Try to load module from extension/module first, then module/
-					$extension_path = DIR_APPLICATION . '../catalog/controller/extension/module/' . $module['code'] . '.php';
-					$module_path = DIR_APPLICATION . '../catalog/controller/module/' . $module['code'] . '.php';
+					$extension_path = DIR_APPLICATION . '../catalog/controller/extension/module/' . $module_code . '.php';
+					$module_path = DIR_APPLICATION . '../catalog/controller/module/' . $module_code . '.php';
 					
 					try {
 						if (file_exists($extension_path)) {
-							$module_output = $this->load->controller('extension/module/' . $module['code'], $module['setting']);
+							$module_output = $this->load->controller('extension/module/' . $module_code, $module_setting);
 						} elseif (file_exists($module_path)) {
-							$module_output = $this->load->controller('module/' . $module['code'], $module['setting']);
+							$module_output = $this->load->controller('module/' . $module_code, $module_setting);
+						} else {
+							// Log missing controller file
+							error_log('Category module controller not found: ' . $module_code . ' (checked: ' . $extension_path . ' and ' . $module_path . ')');
 						}
 					} catch (Exception $e) {
 						// Log error but don't break the page
-						error_log('Error loading category module ' . $module['code'] . ': ' . $e->getMessage());
+						error_log('Error loading category module ' . $module_code . ': ' . $e->getMessage());
+						$module_output = '';
+					} catch (Error $e) {
+						// Catch fatal errors too
+						error_log('Fatal error loading category module ' . $module_code . ': ' . $e->getMessage());
 						$module_output = '';
 					}
 					
@@ -443,7 +469,7 @@ class ControllerProductCategory extends Controller {
 					$data['category_modules'][] = array(
 						'output' => $module_output,
 						'description' => $module_description,
-						'code' => isset($module['code']) ? $module['code'] : ''
+						'code' => $module_code
 					);
 				}
 			}
