@@ -4,10 +4,10 @@ class ControllerModuleBannerTab extends Controller {
 		$this->load->language('module/featured');
 
 		$data['heading_title'] = $this->language->get('heading_title');
-        $data['name'] = $setting['name'];
-		$data['blurb'] = $setting['blurb'];
+        $data['name'] = isset($setting['name']) ? $setting['name'] : '';
+		$data['blurb'] = isset($setting['blurb']) ? $setting['blurb'] : '';
         $data['see_all'] = isset($setting['url']) ? $setting['url'] : null;
-        $data['class'] = $setting['class'];
+        $data['class'] = isset($setting['class']) ? $setting['class'] : '';
 
 		$data['text_tax'] = $this->language->get('text_tax');
 
@@ -21,7 +21,7 @@ class ControllerModuleBannerTab extends Controller {
 
 		$data['banners'] = array();
 
-		if (!$setting['limit']) {
+		if (!isset($setting['limit']) || !$setting['limit']) {
 			$setting['limit'] = 3;
 		}
 
