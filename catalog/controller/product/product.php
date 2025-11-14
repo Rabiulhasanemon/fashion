@@ -601,26 +601,68 @@ class ControllerProductProduct extends Controller
 
         $json = array();
 
+        // Check if product_id is provided
+        if (!isset($this->request->get['product_id']) || empty($this->request->get['product_id'])) {
+            $json['error'] = 'Invalid product ID';
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode($json));
+            return;
+        }
+
+        $product_id = (int)$this->request->get['product_id'];
+
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-            if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 100)) {
+            // Validate name
+            if (!isset($this->request->post['name']) || empty($this->request->post['name'])) {
                 $json['error'] = $this->language->get('error_name');
+            } elseif (function_exists('utf8_strlen')) {
+                if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 100)) {
+                    $json['error'] = $this->language->get('error_name');
+                }
+            } elseif (function_exists('mb_strlen')) {
+                if ((mb_strlen($this->request->post['name'], 'UTF-8') < 3) || (mb_strlen($this->request->post['name'], 'UTF-8') > 100)) {
+                    $json['error'] = $this->language->get('error_name');
+                }
+            } else {
+                if ((strlen($this->request->post['name']) < 3) || (strlen($this->request->post['name']) > 100)) {
+                    $json['error'] = $this->language->get('error_name');
+                }
             }
 
-            if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
+            // Validate text
+            if (!isset($this->request->post['text']) || empty($this->request->post['text'])) {
                 $json['error'] = $this->language->get('error_text');
+            } elseif (function_exists('utf8_strlen')) {
+                if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
+                    $json['error'] = $this->language->get('error_text');
+                }
+            } elseif (function_exists('mb_strlen')) {
+                if ((mb_strlen($this->request->post['text'], 'UTF-8') < 25) || (mb_strlen($this->request->post['text'], 'UTF-8') > 1000)) {
+                    $json['error'] = $this->language->get('error_text');
+                }
+            } else {
+                if ((strlen($this->request->post['text']) < 25) || (strlen($this->request->post['text']) > 1000)) {
+                    $json['error'] = $this->language->get('error_text');
+                }
             }
 
+            // Validate rating
             if (empty($this->request->post['rating']) || $this->request->post['rating'] < 0 || $this->request->post['rating'] > 5) {
                 $json['error'] = $this->language->get('error_rating');
             }
 
+            // Validate Google reCAPTCHA if enabled
             if ($this->config->get('config_google_captcha_status') && empty($json['error'])) {
                 if (isset($this->request->post['g-recaptcha-response'])) {
-                    $recaptcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($this->config->get('config_google_captcha_secret')) . '&response=' . $this->request->post['g-recaptcha-response'] . '&remoteip=' . $this->request->server['REMOTE_ADDR']);
+                    $recaptcha = @file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($this->config->get('config_google_captcha_secret')) . '&response=' . $this->request->post['g-recaptcha-response'] . '&remoteip=' . (isset($this->request->server['REMOTE_ADDR']) ? $this->request->server['REMOTE_ADDR'] : ''));
 
-                    $recaptcha = json_decode($recaptcha, true);
+                    if ($recaptcha) {
+                        $recaptcha = json_decode($recaptcha, true);
 
-                    if (!$recaptcha['success']) {
+                        if (!$recaptcha || !isset($recaptcha['success']) || !$recaptcha['success']) {
+                            $json['error'] = $this->language->get('error_captcha');
+                        }
+                    } else {
                         $json['error'] = $this->language->get('error_captcha');
                     }
                 } else {
@@ -628,13 +670,20 @@ class ControllerProductProduct extends Controller
                 }
             }
 
+            // If no errors, save the review
             if (!isset($json['error'])) {
-                $this->load->model('catalog/review');
-
-                $this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
-
-                $json['success'] = $this->language->get('text_success');
+                try {
+                    $this->load->model('catalog/review');
+                    $this->model_catalog_review->addReview($product_id, $this->request->post);
+                    $json['success'] = $this->language->get('text_success');
+                } catch (Exception $e) {
+                    $json['error'] = 'An error occurred while saving your review. Please try again.';
+                    // Log error for debugging (optional)
+                    error_log('Review submission error: ' . $e->getMessage());
+                }
             }
+        } else {
+            $json['error'] = 'Invalid request method';
         }
 
         $this->response->addHeader('Content-Type: application/json');
