@@ -144,47 +144,94 @@
     position: absolute;
     top: -9999px;
     left: -1.5rem;
-    min-width: 21.5rem;
-    padding: 2rem 0;
-    background: #fff;
-    box-shadow: 0 2px 35px rgba(0, 0, 0, 0.1);
+    min-width: 240px;
+    padding: 1.2rem 0;
+    background: #ffffff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
     z-index: 1001;
     visibility: hidden;
-    opacity: 1;
-    transform: translate3d(0, -10px, 0);
-    transition: transform 0.3s ease-out;
+    opacity: 0;
+    transform: translate3d(0, -15px, 0);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     list-style: none;
     margin: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
 .header-bottom .main-nav .menu > li.show > .submenu,
 .header-bottom .main-nav .menu > li:hover > .submenu {
     visibility: visible;
-    top: 100%;
+    top: calc(100% + 8px);
+    opacity: 1;
     transform: translate3d(0, 0, 0);
 }
 
 .header-bottom .main-nav .menu .submenu li {
-    padding: 0 1.9rem;
+    padding: 0;
     width: 100%;
+    margin: 0;
+    position: relative;
+}
+
+.header-bottom .main-nav .menu .submenu li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #FF6A00 0%, #ff8c42 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header-bottom .main-nav .menu .submenu li:hover::before {
+    opacity: 1;
 }
 
 .header-bottom .main-nav .menu .submenu li a {
     display: block;
-    padding: 0;
-    color: var(--title-color, #232323);
+    padding: 0.85rem 1.9rem;
+    color: #333333;
     font-weight: 400;
-    font-size: 0.9rem;
-    letter-spacing: -0.009em;
-    line-height: 1.1;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
     text-transform: capitalize;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: transparent;
+}
+
+.header-bottom .main-nav .menu .submenu li a::after {
+    content: '';
+    position: absolute;
+    left: 1.9rem;
+    right: 1.9rem;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header-bottom .main-nav .menu .submenu li:last-child a::after {
+    display: none;
 }
 
 .header-bottom .main-nav .menu .submenu li.active > a,
 .header-bottom .main-nav .menu .submenu li:hover > a {
-    color: var(--secondary-color, #ff8c42);
+    color: #FF6A00;
+    background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
+    padding-left: 2.1rem;
+    font-weight: 500;
+}
+
+.header-bottom .main-nav .menu .submenu li:hover > a::after {
+    opacity: 1;
 }
 
 .header-bottom .h-flash-btn {
@@ -376,26 +423,46 @@
         opacity: 1;
         transform: none;
         box-shadow: none;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.12);
         margin-top: 0;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease-out;
         padding: 0;
+        border-radius: 0;
+        border: none;
     }
     
     .header-bottom .main-nav .menu > li.show > .submenu {
         max-height: 500px;
-        padding: 10px 0;
+        padding: 8px 0;
     }
     
     .header-bottom .main-nav .menu .submenu li {
-        padding: 0 1.5rem;
+        padding: 0;
+    }
+    
+    .header-bottom .main-nav .menu .submenu li::before {
+        display: none;
     }
     
     .header-bottom .main-nav .menu .submenu li a {
-        padding: 10px 0;
-        color: rgba(255, 255, 255, 0.9);
+        padding: 12px 1.5rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 14px;
+    }
+    
+    .header-bottom .main-nav .menu .submenu li a::after {
+        left: 1.5rem;
+        right: 1.5rem;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    }
+    
+    .header-bottom .main-nav .menu .submenu li.active > a,
+    .header-bottom .main-nav .menu .submenu li:hover > a {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.15);
+        padding-left: 1.7rem;
     }
     
     .header-bottom .h-flash-btn {
