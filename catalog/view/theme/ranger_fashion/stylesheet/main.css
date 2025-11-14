@@ -1405,7 +1405,7 @@ a:focus {
 .footer.style-3 .footer-download-app .title {
     font-size: 16px;
     font-weight: 500;
-    color: var(--title-color);
+    color: #666666;
     margin-bottom: 6px;
 }
 
