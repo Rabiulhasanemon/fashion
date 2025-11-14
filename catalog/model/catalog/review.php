@@ -36,19 +36,55 @@ class ModelCatalogReview extends Model {
 		// Get review status (0 = pending, 1 = approved) - default to 0 for moderation
 		$status = isset($data['status']) ? (int)$data['status'] : 0;
 
-		// Insert review
+		// Insert review - check if status column exists
 		$sql = "INSERT INTO " . DB_PREFIX . "review SET ";
 		$sql .= "author = '" . $this->db->escape($author) . "', ";
 		$sql .= "customer_id = '" . $customer_id . "', ";
 		$sql .= "product_id = '" . (int)$product_id . "', ";
 		$sql .= "text = '" . $this->db->escape($text) . "', ";
-		$sql .= "rating = '" . $rating . "', ";
-		$sql .= "status = '" . $status . "', ";
-		$sql .= "date_added = NOW()";
+		$sql .= "rating = '" . $rating . "'";
+		
+		// Check if status column exists in review table
+		$check_status = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "review LIKE 'status'");
+		if ($check_status && $check_status->num_rows > 0) {
+			$sql .= ", status = '" . $status . "'";
+		}
+		
+		$sql .= ", date_added = NOW()";
 
-		$this->db->query($sql);
-
+		// Execute query with error handling
+		$result = $this->db->query($sql);
+		
+		// Check if query failed
+		if ($result === false) {
+			$error_msg = 'Database query failed';
+			if (method_exists($this->db, 'getError')) {
+				$error_msg .= ': ' . $this->db->getError();
+			}
+			error_log('Review INSERT SQL Error: ' . $error_msg);
+			error_log('Review INSERT SQL: ' . $sql);
+			error_log('Author: ' . $author);
+			error_log('Customer ID: ' . $customer_id);
+			error_log('Product ID: ' . $product_id);
+			error_log('Rating: ' . $rating);
+			error_log('Status: ' . $status);
+			throw new Exception($error_msg);
+		}
+		
 		$review_id = $this->db->getLastId();
+		
+		if (!$review_id) {
+			error_log('Review INSERT: Query executed but no review_id returned');
+			error_log('Review INSERT SQL: ' . $sql);
+			// Don't throw error here - some databases might return 0 for insert_id in certain cases
+			// Check if review was actually inserted by querying
+			$check_query = $this->db->query("SELECT review_id FROM " . DB_PREFIX . "review WHERE product_id = '" . (int)$product_id . "' AND author = '" . $this->db->escape($author) . "' ORDER BY review_id DESC LIMIT 1");
+			if ($check_query && $check_query->num_rows > 0) {
+				$review_id = $check_query->row['review_id'];
+			} else {
+				throw new Exception('Failed to insert review - no review_id returned and review not found in database');
+			}
+		}
 
 		// Send email notification if enabled
 		if ($this->config->get('config_review_mail')) {
