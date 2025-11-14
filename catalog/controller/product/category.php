@@ -230,6 +230,15 @@ class ControllerProductCategory extends Controller {
 					$rating = false;
 				}
 
+				// Check if purchase should be disabled (out of stock)
+				$disablePurchase = false;
+				$stock_status = isset($result['stock_status']) ? $result['stock_status'] : '';
+				$restock_request_btn = isset($result['restock_request_btn']) ? $result['restock_request_btn'] : '';
+				
+				if (isset($result['quantity']) && $result['quantity'] <= 0 && $stock_status != "In Stock") {
+					$disablePurchase = true;
+				}
+
 				$data['products'][] = array(
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
@@ -240,6 +249,9 @@ class ControllerProductCategory extends Controller {
 					'tax'         => $tax,
 					'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
 					'rating'      => $result['rating'],
+					'disablePurchase' => $disablePurchase,
+					'stock_status' => $stock_status,
+					'restock_request_btn' => $restock_request_btn,
 					'href'        => $this->url->link('product/product', (isset($this->request->get['path']) ? 'path=' . $this->request->get['path'] . '&' : (isset($this->request->get['category_id']) ? 'category_id=' . $category_id . '&' : '')) . 'product_id=' . $result['product_id'] . $url)
 				);
 			}
@@ -401,24 +413,37 @@ class ControllerProductCategory extends Controller {
 			$data['category_modules'] = array();
 			$category_modules = $this->model_catalog_category->getCategoryModules($category_id);
 			
-			foreach ($category_modules as $module) {
-				$module_output = '';
-				$module_description = isset($module['description']) ? $module['description'] : '';
-				
-				// Try to load module from extension/module first, then module/
-				$extension_path = DIR_APPLICATION . '../catalog/controller/extension/module/' . $module['code'] . '.php';
-				$module_path = DIR_APPLICATION . '../catalog/controller/module/' . $module['code'] . '.php';
-				
-				if (file_exists($extension_path)) {
-					$module_output = $this->load->controller('extension/module/' . $module['code'], $module['setting']);
-				} elseif (file_exists($module_path)) {
-					$module_output = $this->load->controller('module/' . $module['code'], $module['setting']);
-				}
-				
-				if (!empty($module_output)) {
+			if (!empty($category_modules)) {
+				foreach ($category_modules as $module) {
+					$module_output = '';
+					$module_description = isset($module['description']) ? $module['description'] : '';
+					
+					// Ensure setting is an array
+					if (!is_array($module['setting'])) {
+						$module['setting'] = array();
+					}
+					
+					// Try to load module from extension/module first, then module/
+					$extension_path = DIR_APPLICATION . '../catalog/controller/extension/module/' . $module['code'] . '.php';
+					$module_path = DIR_APPLICATION . '../catalog/controller/module/' . $module['code'] . '.php';
+					
+					try {
+						if (file_exists($extension_path)) {
+							$module_output = $this->load->controller('extension/module/' . $module['code'], $module['setting']);
+						} elseif (file_exists($module_path)) {
+							$module_output = $this->load->controller('module/' . $module['code'], $module['setting']);
+						}
+					} catch (Exception $e) {
+						// Log error but don't break the page
+						error_log('Error loading category module ' . $module['code'] . ': ' . $e->getMessage());
+						$module_output = '';
+					}
+					
+					// Add module even if output is empty (for debugging)
 					$data['category_modules'][] = array(
 						'output' => $module_output,
-						'description' => $module_description
+						'description' => $module_description,
+						'code' => isset($module['code']) ? $module['code'] : ''
 					);
 				}
 			}
