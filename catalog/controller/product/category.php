@@ -353,21 +353,9 @@ class ControllerProductCategory extends Controller {
 			$data['category_modules'] = array();
 			$category_modules = $this->model_catalog_category->getCategoryModules($category_id);
 			
-			$this->load->model('extension/module');
-			
 			foreach ($category_modules as $module) {
 				$module_output = '';
-				$module_description = '';
-				
-				// Get description from database if available
-				try {
-					$module_query = $this->db->query("SELECT description FROM " . DB_PREFIX . "category_module WHERE category_id = '" . (int)$category_id . "' AND code = '" . $this->db->escape($module['code']) . "' AND status = '1' LIMIT 1");
-					if ($module_query->num_rows && !empty($module_query->row['description'])) {
-						$module_description = $module_query->row['description'];
-					}
-				} catch (Exception $e) {
-					// Ignore if description column doesn't exist or query fails
-				}
+				$module_description = isset($module['description']) ? $module['description'] : '';
 				
 				// Try to load module from extension/module first, then module/
 				$extension_path = DIR_APPLICATION . '../catalog/controller/extension/module/' . $module['code'] . '.php';

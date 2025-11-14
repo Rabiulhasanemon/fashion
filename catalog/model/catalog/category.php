@@ -146,6 +146,7 @@ class ModelCatalogCategory extends Model {
 					'module_id' => isset($result['module_id']) ? $result['module_id'] : 0,
 					'code' => $result['code'],
 					'setting' => $setting,
+					'description' => isset($result['description']) ? $result['description'] : '',
 					'sort_order' => isset($result['sort_order']) ? $result['sort_order'] : 0,
 					'status' => isset($result['status']) ? $result['status'] : 1
 				);
