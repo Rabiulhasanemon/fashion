@@ -23,8 +23,8 @@ if (empty($tabs)) {
                                href="javascript:;"><?php echo htmlspecialchars($tab['title']); ?></a>
                             <?php $i++; } ?>
                         </div>
-                        <?php } ?>
-                    </div>
+      <?php } ?>
+    </div>
                     <div class="right-area">
                         <div class="countdown countdown-alt" data-date-time="10/10/2022">
                             <span>00<small>Days</small></span> 
@@ -37,59 +37,59 @@ if (empty($tabs)) {
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
+      </div>
+    </div>
         <div class="row g-3">
             <div class="col-lg-12">
-                <?php $i=0; foreach ($tabs as $tab) { ?>
+        <?php $i=0; foreach ($tabs as $tab) { ?>
                 <div class="tabbed-category-slider-wrapper <?php echo $i==0 ? 'active' : ''; ?>" data-tab-id="<?php echo $i; ?>" style="<?php echo $i==0 ? '' : 'display: none;'; ?>">
                     <div class="popular-category-slider owl-carousel">
-                        <?php if (!empty($tab['products']) && is_array($tab['products'])) { ?>
-                            <?php foreach ($tab['products'] as $product) { ?>
+          <?php if (!empty($tab['products']) && is_array($tab['products'])) { ?>
+              <?php foreach ($tab['products'] as $product) { ?>
                             <div class="slider-item">
                                 <div class="product-card">
                                     <div class="product-thumb">
-                                        <?php if ($product['discount']) { ?>
+                <?php if ($product['discount']) { ?>
                                         <div class="product-badge product-badge2 bg-info">-<?php echo $product['discount']; ?>%</div>
-                                        <?php } ?>
+                <?php } ?>
                                         <img class="lazy" alt="<?php echo htmlspecialchars($product['name']); ?>" src="<?php echo $product['thumb']; ?>">
                                         <div class="product-button-group">
                                             <a class="product-button wishlist_store" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
                                             <a data-target="javascript:;" class="product-button product_compare" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>
                                             <a class="product-button add_to_single_cart" data-target="<?php echo $product['product_id']; ?>" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
                                         </div>
-                                    </div>
+              </div>
                                     <div class="product-card-body">
                                         <?php if ($product['category_name']) { ?>
                                         <div class="product-category"><a href="javascript:;"><?php echo htmlspecialchars($product['category_name']); ?></a></div>
-                                        <?php } ?>
+                <?php } ?>
                                         <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a></h3>
                                         <div class="rating-stars">
-                                            <?php for ($s = 1; $s <= 5; $s++) { ?>
+                  <?php for ($s = 1; $s <= 5; $s++) { ?>
                                             <i class="fas fa-star<?php echo ($s <= $product['rating']) ? ' filled' : ''; ?>"></i>
-                                            <?php } ?>
-                                        </div>
+                  <?php } ?>
+                </div>
                                         <h4 class="product-price">
-                                            <?php if ($product['special']) { ?>
+                      <?php if ($product['special']) { ?>
                                             <del><?php echo $product['price']; ?></del>
                                             <?php echo $product['special']; ?>
-                                            <?php } else { ?>
+                      <?php } else { ?>
                                             <?php echo $product['price']; ?>
-                                            <?php } ?>
+                      <?php } ?>
                                         </h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php } ?>
-                        <?php } else { ?>
-                            <div class="text-center p-4">No products found in this category.</div>
-                        <?php } ?>
                     </div>
+                  </div>
                 </div>
-                <?php $i++; } ?>
+            <?php } ?>
+          <?php } else { ?>
+                            <div class="text-center p-4">No products found in this category.</div>
+              <?php } ?>
             </div>
-        </div>
-    </div>
+          </div>
+        <?php $i++; } ?>
+            </div>
+      </div>
+  </div>
 </div>
 
 <style>
@@ -110,7 +110,7 @@ if (empty($tabs)) {
 /* Mobile: Full width */
 @media (max-width: 767px) {
     .deal-of-day-section .container {
-        max-width: 100% !important;
+    max-width: 100% !important;
         padding: 0 15px !important;
     }
 }
