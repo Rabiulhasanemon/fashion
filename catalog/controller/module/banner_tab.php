@@ -64,7 +64,7 @@ class ControllerModuleBannerTab extends Controller {
         }
 
         // Always return output, even if banners array is empty (for debugging)
-        if ($setting['view']) {
+        if (isset($setting['view']) && $setting['view']) {
             if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/banner_tab_' . $setting['view'] . '.tpl')) {
                 return $this->load->view($this->config->get('config_template') . '/template/module/banner_tab_' . $setting['view'] . '.tpl', $data);
             }
