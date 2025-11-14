@@ -2,28 +2,62 @@
 // Diagnostic script to check category_module table
 // Access via: http://yourdomain.com/admin/check_category_module_table.php
 
-// Include OpenCart configuration
-require_once('config.php');
-require_once(DIR_SYSTEM . 'startup.php');
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 
-// Registry
-$registry = new Registry();
+// Start output buffering to catch any errors
+ob_start();
 
-// Config
-$config = new Config();
-$config->load('default');
-$config->load('admin');
-$registry->set('config', $config);
+try {
+    // Check if config.php exists
+    if (!file_exists('config.php')) {
+        die('<h1>Error: config.php not found</h1><p>Please ensure this file is in the admin directory.</p>');
+    }
 
-// Database
-$db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
-$registry->set('db', $db);
+    // Include OpenCart configuration
+    require_once('config.php');
+    
+    // Check if DIR_SYSTEM is defined
+    if (!defined('DIR_SYSTEM')) {
+        die('<h1>Error: DIR_SYSTEM not defined</h1><p>config.php may be missing required definitions.</p>');
+    }
+    
+    // Check if startup.php exists
+    if (!file_exists(DIR_SYSTEM . 'startup.php')) {
+        die('<h1>Error: startup.php not found</h1><p>Path: ' . DIR_SYSTEM . 'startup.php</p>');
+    }
+    
+    require_once(DIR_SYSTEM . 'startup.php');
 
-echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Category Module Diagnostic</title>";
-echo "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;} .container{max-width:1200px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);} h2{color:#333;border-bottom:2px solid #007bff;padding-bottom:10px;} h3{color:#555;margin-top:20px;} table{border-collapse:collapse;margin:10px 0;width:100%;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#f0f0f0;font-weight:bold;} .success{color:green;font-weight:bold;} .error{color:red;font-weight:bold;} pre{background:#f8f8f8;padding:10px;border-radius:4px;overflow-x:auto;} .info{background:#e7f3ff;padding:10px;border-left:4px solid #2196F3;margin:10px 0;}</style>";
-echo "</head><body><div class='container'>";
+    // Registry
+    $registry = new Registry();
 
-echo "<h2>Category Module Table Diagnostic</h2>";
+    // Config
+    $config = new Config();
+    $config->load('default');
+    $config->load('admin');
+    $registry->set('config', $config);
+
+    // Check database constants
+    if (!defined('DB_DRIVER') || !defined('DB_HOSTNAME') || !defined('DB_USERNAME') || !defined('DB_PASSWORD') || !defined('DB_DATABASE')) {
+        die('<h1>Error: Database constants not defined</h1><p>Please check your config.php file.</p>');
+    }
+
+    // Database
+    try {
+        $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
+        $registry->set('db', $db);
+    } catch (Exception $e) {
+        die('<h1>Database Connection Error</h1><p>' . htmlspecialchars($e->getMessage()) . '</p>');
+    }
+
+    echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Category Module Diagnostic</title>";
+    echo "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;} .container{max-width:1200px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);} h2{color:#333;border-bottom:2px solid #007bff;padding-bottom:10px;} h3{color:#555;margin-top:20px;} table{border-collapse:collapse;margin:10px 0;width:100%;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#f0f0f0;font-weight:bold;} .success{color:green;font-weight:bold;} .error{color:red;font-weight:bold;} pre{background:#f8f8f8;padding:10px;border-radius:4px;overflow-x:auto;} .info{background:#e7f3ff;padding:10px;border-left:4px solid #2196F3;margin:10px 0;}</style>";
+    echo "</head><body><div class='container'>";
+
+    echo "<h2>Category Module Table Diagnostic</h2>";
 
 // Check if table exists
 echo "<h3>1. Table Existence Check</h3>";
@@ -172,9 +206,37 @@ try {
     echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
 }
 
-echo "<hr>";
-echo "<p><strong>Diagnostic Complete!</strong></p>";
-echo "<p><small>If you see any errors above, please fix them before trying to save category modules.</small></p>";
-echo "</div></body></html>";
+    echo "<hr>";
+    echo "<p><strong>Diagnostic Complete!</strong></p>";
+    echo "<p><small>If you see any errors above, please fix them before trying to save category modules.</small></p>";
+    echo "</div></body></html>";
+    
+} catch (Exception $e) {
+    ob_clean();
+    echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Error</title>";
+    echo "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;} .error-box{max-width:800px;margin:0 auto;background:white;padding:20px;border-radius:8px;border:2px solid #dc3545;} h1{color:#dc3545;} pre{background:#f8f8f8;padding:10px;border-radius:4px;overflow-x:auto;}</style>";
+    echo "</head><body><div class='error-box'>";
+    echo "<h1>Error Running Diagnostic Script</h1>";
+    echo "<p><strong>Error Message:</strong></p>";
+    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . "</p>";
+    echo "<p><strong>Line:</strong> " . $e->getLine() . "</p>";
+    echo "<p><strong>Stack Trace:</strong></p>";
+    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "</div></body></html>";
+} catch (Error $e) {
+    ob_clean();
+    echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Error</title>";
+    echo "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;} .error-box{max-width:800px;margin:0 auto;background:white;padding:20px;border-radius:8px;border:2px solid #dc3545;} h1{color:#dc3545;} pre{background:#f8f8f8;padding:10px;border-radius:4px;overflow-x:auto;}</style>";
+    echo "</head><body><div class='error-box'>";
+    echo "<h1>Fatal Error Running Diagnostic Script</h1>";
+    echo "<p><strong>Error Message:</strong></p>";
+    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . "</p>";
+    echo "<p><strong>Line:</strong> " . $e->getLine() . "</p>";
+    echo "</div></body></html>";
+}
+
+ob_end_flush();
 ?>
 
