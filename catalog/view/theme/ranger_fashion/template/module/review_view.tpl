@@ -107,6 +107,12 @@
 /* Swiper Styles */
 .testimonial-slider-1 {
   padding-bottom: 24px;
+  overflow: hidden;
+}
+
+.testimonial-slider-1 .swiper-wrapper {
+  display: flex;
+  transition-timing-function: ease-in-out;
 }
 
 .testimonial-slider-1 .swiper-pagination {
@@ -116,6 +122,7 @@
   left: 50%;
   transform: translate(-50%, 0);
   margin: 0;
+  z-index: 10;
 }
 
 .testimonial-slider-1 .swiper-pagination-bullet {
@@ -124,14 +131,18 @@
   background: #ddd;
   opacity: 1;
   margin: 0 4px;
+  transition: all 0.3s ease;
 }
 
 .testimonial-slider-1 .swiper-pagination-bullet-active {
   background: var(--primary-color, #007bff);
+  width: 12px;
+  border-radius: 4px;
 }
 
 .testimonial-slider-1 .swiper-slide {
   height: auto;
+  flex-shrink: 0;
 }
 
 @media (max-width: 767px) {
@@ -157,8 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
   if (testimonialSlider && typeof Swiper !== 'undefined') {
     new Swiper('.testimonial-slider-1', {
       slidesPerView: 1,
+      slidesPerGroup: 1,
       spaceBetween: 20,
       loop: true,
+      speed: 600,
       autoplay: {
         delay: 3000,
         disableOnInteraction: false,
@@ -170,18 +183,22 @@ document.addEventListener('DOMContentLoaded', function() {
       breakpoints: {
         576: {
           slidesPerView: 2,
+          slidesPerGroup: 1,
           spaceBetween: 20,
         },
         768: {
           slidesPerView: 2,
+          slidesPerGroup: 1,
           spaceBetween: 20,
         },
         992: {
           slidesPerView: 3,
+          slidesPerGroup: 1,
           spaceBetween: 20,
         },
         1200: {
           slidesPerView: 3,
+          slidesPerGroup: 1,
           spaceBetween: 20,
         }
       }
