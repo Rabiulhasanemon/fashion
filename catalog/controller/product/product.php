@@ -697,25 +697,46 @@ class ControllerProductProduct extends Controller
                     $json['success'] = $this->language->get('text_success');
                 } catch (Exception $e) {
                     $error_message = $e->getMessage();
-                    $json['error'] = 'An error occurred while saving your review. Please try again.';
+                    
                     // Log detailed error for debugging
-                    error_log('Review submission error: ' . $error_message);
-                    error_log('Review submission error file: ' . $e->getFile());
-                    error_log('Review submission error line: ' . $e->getLine());
-                    error_log('Review submission error trace: ' . $e->getTraceAsString());
+                    error_log('=== REVIEW SUBMISSION ERROR ===');
+                    error_log('Error Message: ' . $error_message);
+                    error_log('Error File: ' . $e->getFile());
+                    error_log('Error Line: ' . $e->getLine());
+                    error_log('Error Trace: ' . $e->getTraceAsString());
+                    error_log('POST Data: ' . print_r($this->request->post, true));
+                    error_log('Product ID: ' . $product_id);
+                    error_log('==============================');
+                    
+                    // Show more specific error message for debugging (can be removed in production)
+                    if ($this->config->get('config_error_display')) {
+                        $json['error'] = 'Error: ' . $error_message;
+                        $json['debug'] = array(
+                            'file' => $e->getFile(),
+                            'line' => $e->getLine()
+                        );
+                    } else {
+                        $json['error'] = 'An error occurred while saving your review. Please try again.';
+                    }
                     
                     // Check if it's a database error
-                    if (strpos($error_message, 'SQL') !== false || strpos($error_message, 'database') !== false) {
+                    if (strpos(strtolower($error_message), 'sql') !== false || strpos(strtolower($error_message), 'database') !== false || strpos(strtolower($error_message), 'query') !== false) {
                         $json['error'] = 'Database error occurred. Please contact the administrator.';
                     }
                 } catch (Error $e) {
                     $error_message = $e->getMessage();
-                    $json['error'] = 'An error occurred while saving your review. Please try again.';
+                    
                     // Log detailed error for debugging
-                    error_log('Review submission fatal error: ' . $error_message);
-                    error_log('Review submission error file: ' . $e->getFile());
-                    error_log('Review submission error line: ' . $e->getLine());
-                    error_log('Review submission error trace: ' . $e->getTraceAsString());
+                    error_log('=== REVIEW SUBMISSION FATAL ERROR ===');
+                    error_log('Error Message: ' . $error_message);
+                    error_log('Error File: ' . $e->getFile());
+                    error_log('Error Line: ' . $e->getLine());
+                    error_log('Error Trace: ' . $e->getTraceAsString());
+                    error_log('POST Data: ' . print_r($this->request->post, true));
+                    error_log('Product ID: ' . $product_id);
+                    error_log('===================================');
+                    
+                    $json['error'] = 'A fatal error occurred. Please contact the administrator.';
                 }
             }
         } else {
