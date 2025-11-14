@@ -12,6 +12,49 @@
 </section>
 <section class="product-categories">
     <div class="container">
+        
+        <?php if (isset($category_modules) && !empty($category_modules)) { ?>
+        <div class="category-modules-top" style="margin-bottom: 30px;">
+            <?php foreach ($category_modules as $module) { ?>
+            <div class="category-module-item" style="margin-bottom: 20px;">
+                <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
+                <div class="category-page-module">
+                    <?php echo $module['output']; ?>
+                </div>
+                <?php } ?>
+            </div>
+            <?php } ?>
+        </div>
+        <style>
+        /* Hide module titles and section headings when displayed on category pages */
+        .category-page-module .section-title,
+        .category-page-module .module-heading-wrapper,
+        .category-page-module .section-head,
+        .category-page-module h2.cosmetics-module-heading,
+        .category-page-module h2.unified-module-heading,
+        .category-page-module .cosmetics-module-heading,
+        .category-page-module .unified-module-heading,
+        .category-page-module .latest-products__title,
+        .category-page-module .popular-products__title,
+        .category-page-module .section-title h2,
+        .category-page-module .section-title h3,
+        .category-page-module .section-title .h3 {
+            display: none !important;
+        }
+        
+        /* Also hide section title containers */
+        .category-page-module .section-title > div:first-child > h2,
+        .category-page-module .section-title > div:first-child > h3 {
+            display: none !important;
+        }
+        
+        /* Adjust spacing when titles are hidden */
+        .category-page-module > div:first-child {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        </style>
+        <?php } ?>
 
         <div class="row"><?php echo $column_left; ?><?php if ($column_left && $column_right) { ?><?php $class = 'col-sm-12 col-md-6 product-listing'; ?><?php } elseif ($column_left || $column_right) { ?><?php $class = 'col-sm-12 col-md-9 product-listing'; ?><?php } else { ?><?php $class = 'col-sm-12'; ?><?php } ?>
             <div id="content" class="<?php echo $class; ?>">
@@ -52,30 +95,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <?php if (isset($category_modules) && !empty($category_modules)) { ?>
-                <div class="category-modules" style="margin-bottom: 30px;">
-                    <?php foreach ($category_modules as $module) { ?>
-                    <div class="category-module-item" style="margin-bottom: 20px;">
-                        <?php if (!empty($module['description'])) { ?>
-                        <div class="category-module-description" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-                            <?php echo html_entity_decode($module['description'], ENT_QUOTES, 'UTF-8'); ?>
-                        </div>
-                        <?php } ?>
-                        <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
-                        <?php echo $module['output']; ?>
-                        <?php } else { ?>
-                        <div style="padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; color: #856404;">
-                            <strong>Module Debug:</strong> Module "<?php echo isset($module['code']) ? htmlspecialchars($module['code']) : 'unknown'; ?>" loaded but produced no output.
-                            <?php if (empty($module['output'])) { ?>
-                            <br><small>Output is empty. Check module settings and ensure module has data to display.</small>
-                            <?php } ?>
-                        </div>
-                        <?php } ?>
-                    </div>
-                    <?php } ?>
-                </div>
-                <?php } ?>
                 
                 <div class="row main-content">
                     <?php foreach ($products as $product) { ?>
