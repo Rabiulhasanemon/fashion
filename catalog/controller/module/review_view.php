@@ -29,44 +29,44 @@ class ControllerModuleReviewView extends Controller {
 					$review_status = isset($review_info['status']) ? (int)$review_info['status'] : 1;
 					
 					if ($review_status == 1) {
-					// Get custom data for this review
-					$custom_data = isset($review_custom_data[$review_id]) ? $review_custom_data[$review_id] : array();
-					$author_image = '';
-					$designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
-					
-					if (!empty($custom_data['author_image'])) {
-						$author_image = $this->model_tool_image->resize($custom_data['author_image'], 60, 60);
-					}
-					
-					// Get product info
-					$product_info = $this->model_catalog_product->getProduct($review_info['product_id']);
-					
-					$product_image = '';
-					$product_href = '';
-					
-					if ($product_info) {
-						if ($product_info['image']) {
-							$product_image = $this->model_tool_image->resize($product_info['image'], 100, 100);
+						// Get custom data for this review
+						$custom_data = isset($review_custom_data[$review_id]) ? $review_custom_data[$review_id] : array();
+						$author_image = '';
+						$designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
+						
+						if (!empty($custom_data['author_image'])) {
+							$author_image = $this->model_tool_image->resize($custom_data['author_image'], 60, 60);
 						}
-						$product_href = $this->url->link('product/product', 'product_id=' . $product_info['product_id']);
-					}
+						
+						// Get product info
+						$product_info = $this->model_catalog_product->getProduct($review_info['product_id']);
+						
+						$product_image = '';
+						$product_href = '';
+						
+						if ($product_info) {
+							if ($product_info['image']) {
+								$product_image = $this->model_tool_image->resize($product_info['image'], 100, 100);
+							}
+							$product_href = $this->url->link('product/product', 'product_id=' . $product_info['product_id']);
+						}
 
-					$data['reviews'][] = array(
-						'review_id'   => $review_info['review_id'],
-						'author'      => $review_info['author'],
-						'text'        => strip_tags(html_entity_decode($review_info['text'], ENT_QUOTES, 'UTF-8')),
-						'rating'      => $review_info['rating'],
-						'date_added'  => date($this->language->get('date_format_short'), strtotime($review_info['date_added'])),
-						'product_name' => $review_info['product'] ? $review_info['product'] : 'N/A',
-						'product_image' => $product_image,
-						'product_href' => $product_href,
-						'author_image' => $author_image,
-						'designation' => $designation
-					);
-					
-					if (count($data['reviews']) >= $limit) {
-						break;
-					}
+						$data['reviews'][] = array(
+							'review_id'   => $review_info['review_id'],
+							'author'      => $review_info['author'],
+							'text'        => strip_tags(html_entity_decode($review_info['text'], ENT_QUOTES, 'UTF-8')),
+							'rating'      => $review_info['rating'],
+							'date_added'  => date($this->language->get('date_format_short'), strtotime($review_info['date_added'])),
+							'product_name' => $review_info['product'] ? $review_info['product'] : 'N/A',
+							'product_image' => $product_image,
+							'product_href' => $product_href,
+							'author_image' => $author_image,
+							'designation' => $designation
+						);
+						
+						if (count($data['reviews']) >= $limit) {
+							break;
+						}
 					}
 				}
 			}
