@@ -1442,6 +1442,8 @@ a:focus {
     justify-content: space-between;
     border-top: 1px solid var(--border-color);
     padding: 16px 0px;
+    flex-wrap: nowrap;
+    gap: 20px;
 }
 
 .footer.style-3 .f-copyight-text {
@@ -1450,6 +1452,8 @@ a:focus {
     line-height: 150%;
     color: #666;
     margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .footer.style-3 .f-copyight-text a {
@@ -1464,17 +1468,20 @@ a:focus {
 
 .footer.style-3 .footer-payment-img {
     max-width: 380px;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 .footer.style-3 .footer-payment-img img {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
 .footer.style-3 .getcommerce-copyright {
     display: block;
     line-height: 120%;
-    margin-top: 2px;
+    margin-top: 0;
 }
 
 .footer.style-3 .getcommerce-copyright a {
@@ -1529,17 +1536,23 @@ a:focus {
 
     .footer.style-3 .footer-bottom-widget {
         display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        flex-direction: column-reverse;
         padding-bottom: 80px;
+        gap: 16px;
     }
 
     .footer.style-3 .f-copyight-text {
-        margin-top: 8px;
+        margin-top: 0;
+        white-space: normal;
+        text-align: center;
     }
 
     .footer.style-3 .footer-payment-img {
         max-width: 100%;
+        margin-left: 0;
+        text-align: center;
     }
 }
 /*=============================================================================================
