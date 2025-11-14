@@ -291,6 +291,12 @@ class ModelCatalogReview extends Model {
 		$this->event->trigger('post.review.add', $review_id);
 	}
 
+	public function getReview($review_id) {
+		$query = $this->db->query("SELECT DISTINCT r.*, (SELECT pd.name FROM " . DB_PREFIX . "product_description pd WHERE pd.product_id = r.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "') AS product FROM " . DB_PREFIX . "review r WHERE r.review_id = '" . (int)$review_id . "'");
+
+		return $query->row;
+	}
+
 	public function getReviewsByProductId($product_id, $start = 0, $limit = 20) {
 		if ($start < 0) {
 			$start = 0;
