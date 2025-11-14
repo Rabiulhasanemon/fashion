@@ -27,6 +27,7 @@
           <?php 
           // Get first banner child for each banner
           $first_child = reset($banner['banner_children']);
+          $banner_tag = isset($banner['name']) ? $banner['name'] : ''; // Banner name as tag
           $banner_title = isset($first_child['title']) ? $first_child['title'] : '';
           $banner_blurb = isset($first_child['blurb']) ? $first_child['blurb'] : '';
           $banner_link = isset($first_child['link']) ? $first_child['link'] : '#';
@@ -44,11 +45,11 @@
             
             <!-- Content -->
             <div class="banner-content" style="position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-              <!-- Top Section - Tag (optional) -->
-              <?php if ($banner_title) { ?>
+              <!-- Top Section - Tag (Banner Name) -->
+              <?php if ($banner_tag) { ?>
               <div class="banner-tag" style="margin-bottom: 15px;">
                 <span style="background: rgba(255, 255, 255, 0.95); color: #333; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">
-                  <?php echo htmlspecialchars($banner_title); ?>
+                  <?php echo htmlspecialchars($banner_tag); ?>
                 </span>
               </div>
               <?php } ?>
