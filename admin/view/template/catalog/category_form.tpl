@@ -469,9 +469,26 @@ $(document).on('change', '.module-select', function() {
 $(document).ready(function() {
 	$('textarea.summernote').each(function() {
 		if (!$(this).next('.note-editor').length) {
-			$(this).summernote({
-				height: 150
+			var $textarea = $(this);
+			var content = $textarea.val();
+			$textarea.summernote({
+				height: 150,
+				toolbar: [
+					['style', ['style']],
+					['font', ['bold', 'italic', 'underline', 'clear']],
+					['fontname', ['fontname']],
+					['fontsize', ['fontsize']],
+					['color', ['color']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['table', ['table']],
+					['insert', ['link', 'picture', 'video']],
+					['view', ['fullscreen', 'codeview', 'help']]
+				]
 			});
+			// Set content after initialization
+			if (content) {
+				$textarea.summernote('code', content);
+			}
 		}
 	});
 });
