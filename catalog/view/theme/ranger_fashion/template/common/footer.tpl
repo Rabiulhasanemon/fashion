@@ -107,7 +107,7 @@
                 </div>
                 <div class="col-lg-7 col-xl-3 col-md-7 col-12">
                     <div class="footer-widget newsletter">
-                        <p class="footer-widget-title">Sign Up Newsletter</p>
+                        <p class="footer-widget-title" style="color: #666;">Sign Up Newsletter</p>
                         <p class="f-widget-text">Don't worry, we won't spam you!</p>
                         <form action="<?php echo isset($newsletter_action) ? $newsletter_action : $newsletter; ?>" method="POST" class="footer-newsletter needs-validation" id="newsletterForm" novalidate="">
                             <input type="email" name="email" class="form-control" placeholder="Type Your E-mail" required="">

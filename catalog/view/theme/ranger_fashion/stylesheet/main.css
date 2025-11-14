@@ -1304,7 +1304,7 @@ a:focus {
     font-size: 16px;
     font-weight: 500;
     line-height: 130%;
-    color: var(--title-color);
+    color: #666;
     margin-bottom: 16px;
 }
 
@@ -1370,13 +1370,18 @@ a:focus {
     right: 0;
     width: 48px;
     height: 48px;
-    background: var(--primary-color);
+    background: #f48721;
     border-radius: 0px 8px 8px 0px;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.footer.style-3 .footer-newsletter button:hover {
+    background: #e67a1a;
 }
 
 .footer.style-3 .footer-newsletter button svg {
@@ -1455,6 +1460,11 @@ a:focus {
     white-space: normal;
     flex-shrink: 0;
     display: inline-block;
+}
+
+.footer.style-3 .f-copyight-text .getcommerce-copyright {
+    display: inline;
+    margin-left: 4px;
 }
 
 .footer.style-3 .f-copyight-text a {

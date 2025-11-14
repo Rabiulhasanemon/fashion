@@ -32,17 +32,44 @@ class ControllerCommonFooter extends Controller {
 			}
 		}
 
-		// Get categories for footer
+		// Get categories for footer - Show 7 demo cosmetics categories if no categories exist
 		$data['categories'] = array();
 		if (isset($this->model_catalog_category)) {
 			$categories = $this->model_catalog_category->getCategories(0);
-			if ($categories) {
+			if ($categories && count($categories) > 0) {
+				$count = 0;
 				foreach ($categories as $category) {
-					$data['categories'][] = array(
-						'name' => isset($category['name']) ? $category['name'] : '',
-						'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
-					);
+					if ($count < 7) {
+						$data['categories'][] = array(
+							'name' => isset($category['name']) ? $category['name'] : '',
+							'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
+						);
+						$count++;
+					}
 				}
+			}
+		}
+		
+		// If no categories or less than 7, add demo cosmetics categories
+		if (count($data['categories']) < 7) {
+			$demo_categories = array(
+				'Skin Care',
+				'Makeup',
+				'Hair Care',
+				'Fragrance',
+				'Body Care',
+				'Beauty Tools',
+				'Men\'s Grooming'
+			);
+			
+			$demo_count = 0;
+			foreach ($demo_categories as $demo_name) {
+				if (count($data['categories']) >= 7) break;
+				$data['categories'][] = array(
+					'name' => $demo_name,
+					'href' => $this->url->link('product/category', 'category_id=0')
+				);
+				$demo_count++;
 			}
 		}
 
