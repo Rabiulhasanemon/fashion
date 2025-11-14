@@ -35,7 +35,8 @@ class ControllerExtensionModuleProductShowcaseTabs extends Controller {
 		}
 
 		// Generate unique ID for this module instance
-		$data['module_uid'] = 'pst-module-' . $module_id;
+		// Use module_id and a hash of the setting to ensure uniqueness even if same module is used multiple times
+		$data['module_uid'] = 'pst-module-' . $module_id . '-' . md5(serialize($setting));
 
 		// AJAX URL for loading tab products
 		$data['ajax_url'] = $this->url->link('extension/module/product_showcase_tabs/getTabProducts', '', true);

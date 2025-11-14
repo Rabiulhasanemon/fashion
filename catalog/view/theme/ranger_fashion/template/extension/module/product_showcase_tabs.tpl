@@ -19,12 +19,12 @@
                 <?php } ?>
             </div>
         </div>
-        <div class="popular_category_view d-none">
+        <div class="popular_category_view d-none" id="popular_category_view_<?php echo $module_uid; ?>">
             <img src="catalog/view/theme/ranger_fashion/image/ajax_loader.gif" alt="Loading..." onerror="this.style.display='none'">
         </div>
-        <div class="row" id="popular_category_view">
+        <div class="row" id="popular_category_view_content_<?php echo $module_uid; ?>">
             <div class="col-lg-12">
-                <div class="popular-category-slider owl-carousel">
+                <div class="popular-category-slider owl-carousel" id="popular-category-slider-<?php echo $module_uid; ?>">
                     <!-- Products will be loaded here via AJAX -->
                 </div>
             </div>
@@ -441,8 +441,8 @@
     var tabs = <?php echo json_encode($tabs); ?>;
     
     var tabItems = root.querySelectorAll('.pst-tab-item');
-    var sliderContainer = root.querySelector('.popular-category-slider');
-    var loadingEl = root.querySelector('.popular_category_view');
+    var sliderContainer = root.querySelector('#popular-category-slider-<?php echo $module_uid; ?>');
+    var loadingEl = root.querySelector('#popular_category_view_<?php echo $module_uid; ?>');
     var currentTabId = tabs.length > 0 ? tabs[0].id : null;
     var owlCarousel = null;
 
@@ -457,11 +457,16 @@
     }
 
     function loadTabProducts(tabId) {
+        if (!sliderContainer || !loadingEl) return;
+        
         showLoading();
         
         // Destroy existing carousel
-        if (owlCarousel && typeof jQuery !== 'undefined' && jQuery(sliderContainer).data('owl.carousel')) {
-            jQuery(sliderContainer).trigger('destroy.owl.carousel');
+        if (typeof jQuery !== 'undefined' && sliderContainer) {
+            var $slider = jQuery(sliderContainer);
+            if ($slider.data('owl.carousel')) {
+                $slider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+            }
             owlCarousel = null;
         }
 
@@ -511,16 +516,16 @@
             
             html += '<img class="lazy" alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" />';
             html += '<div class="product-button-group">';
-            html += '<a class="product-button wishlist_store" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>';
-            html += '<a class="product-button product_compare" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>';
-            html += '<a class="product-button add_to_single_cart" data-target="' + product.product_id + '" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>';
+            html += '<a class="product-button wishlist_store" onclick="wishlist.add(\'' + product.product_id + '\');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>';
+            html += '<a class="product-button product_compare" onclick="compare.add(\'' + product.product_id + '\');" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>';
+            html += '<a class="product-button add_to_single_cart" onclick="cart.add(\'' + product.product_id + '\');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>';
             html += '</div>';
             html += '</div>';
             html += '<div class="product-card-body">';
             
             // Category
             if (product.category_name) {
-                html += '<div class="product-category"><a href="javascript:;">' + product.category_name + '</a></div>';
+                html += '<div class="product-category"><a href="' + (product.category_href || '#') + '">' + product.category_name + '</a></div>';
             }
             
             // Product title
@@ -551,30 +556,45 @@
     }
 
     function initCarousel() {
+        if (!sliderContainer) return;
+        
+        // Destroy existing carousel if it exists
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
-            owlCarousel = jQuery(sliderContainer).owlCarousel({
-                loop: true,
+            var $slider = jQuery(sliderContainer);
+            if ($slider.data('owl.carousel')) {
+                $slider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+            }
+            
+            // Re-initialize with unique instance
+            owlCarousel = $slider.addClass('owl-carousel').owlCarousel({
+                loop: false,
                 margin: 15,
                 nav: true,
                 dots: false,
-                autoplay: true,
+                autoplay: false,
                 autoplayTimeout: 3000,
                 autoplayHoverPause: true,
+                navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
                 responsive: {
                     0: {
-                        items: 1
+                        items: 1,
+                        margin: 10
                     },
                     576: {
-                        items: 2
+                        items: 2,
+                        margin: 15
                     },
                     768: {
-                        items: 3
+                        items: 3,
+                        margin: 15
                     },
                     992: {
-                        items: 4
+                        items: 4,
+                        margin: 15
                     },
                     1200: {
-                        items: 5
+                        items: 5,
+                        margin: 15
                     }
                 }
             });
