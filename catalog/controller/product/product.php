@@ -674,12 +674,33 @@ class ControllerProductProduct extends Controller
             if (!isset($json['error'])) {
                 try {
                     $this->load->model('catalog/review');
-                    $this->model_catalog_review->addReview($product_id, $this->request->post);
+                    
+                    // Check if review status should be auto-approved
+                    $review_status = 0; // Default to pending (0)
+                    if ($this->config->get('config_review_status')) {
+                        $review_status = 1; // Auto-approve if enabled
+                    }
+                    
+                    // Add status to post data
+                    $review_data = $this->request->post;
+                    $review_data['status'] = $review_status;
+                    
+                    $this->model_catalog_review->addReview($product_id, $review_data);
+                    
+                    // Clear cache
+                    $this->cache->delete('product');
+                    
                     $json['success'] = $this->language->get('text_success');
                 } catch (Exception $e) {
                     $json['error'] = 'An error occurred while saving your review. Please try again.';
-                    // Log error for debugging (optional)
+                    // Log error for debugging
                     error_log('Review submission error: ' . $e->getMessage());
+                    error_log('Review submission error trace: ' . $e->getTraceAsString());
+                } catch (Error $e) {
+                    $json['error'] = 'An error occurred while saving your review. Please try again.';
+                    // Log error for debugging
+                    error_log('Review submission fatal error: ' . $e->getMessage());
+                    error_log('Review submission error trace: ' . $e->getTraceAsString());
                 }
             }
         } else {

@@ -3,49 +3,106 @@ class ModelCatalogReview extends Model {
 	public function addReview($product_id, $data) {
 		$this->event->trigger('pre.review.add', $data);
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET author = '" . $this->db->escape(isset($data['name']) ? $data['name'] :($this->customer->getFirstName() . ' ' . $this->customer->getLastName())) . "', customer_id = '" . (int)$this->customer->getId() . "', product_id = '" . (int)$product_id . "', text = '" . $this->db->escape($data['text']) . "', rating = '" . (int)$data['rating'] . "', date_added = NOW()");
+		// Get author name - use provided name or customer name if logged in
+		$author = '';
+		if (isset($data['name']) && !empty($data['name'])) {
+			$author = $data['name'];
+		} elseif ($this->customer->isLogged()) {
+			$first_name = $this->customer->getFirstName();
+			$last_name = $this->customer->getLastName();
+			$author = trim($first_name . ' ' . $last_name);
+			if (empty($author)) {
+				$author = $this->customer->getEmail();
+			}
+		} else {
+			$author = isset($data['name']) ? $data['name'] : 'Guest';
+		}
+
+		// Get customer ID - 0 if not logged in
+		$customer_id = 0;
+		if ($this->customer->isLogged()) {
+			$customer_id = (int)$this->customer->getId();
+		}
+
+		// Get review text
+		$text = isset($data['text']) ? $data['text'] : '';
+		
+		// Get rating
+		$rating = isset($data['rating']) ? (int)$data['rating'] : 0;
+		if ($rating < 1 || $rating > 5) {
+			$rating = 5; // Default to 5 if invalid
+		}
+
+		// Get review status (0 = pending, 1 = approved) - default to 0 for moderation
+		$status = isset($data['status']) ? (int)$data['status'] : 0;
+
+		// Insert review
+		$sql = "INSERT INTO " . DB_PREFIX . "review SET ";
+		$sql .= "author = '" . $this->db->escape($author) . "', ";
+		$sql .= "customer_id = '" . $customer_id . "', ";
+		$sql .= "product_id = '" . (int)$product_id . "', ";
+		$sql .= "text = '" . $this->db->escape($text) . "', ";
+		$sql .= "rating = '" . $rating . "', ";
+		$sql .= "status = '" . $status . "', ";
+		$sql .= "date_added = NOW()";
+
+		$this->db->query($sql);
 
 		$review_id = $this->db->getLastId();
 
+		// Send email notification if enabled
 		if ($this->config->get('config_review_mail')) {
-			$this->load->language('mail/review');
-			$this->load->model('catalog/product');
-			
-			$product_info = $this->model_catalog_product->getProduct($product_id);
+			try {
+				$this->load->language('mail/review');
+				$this->load->model('catalog/product');
+				
+				$product_info = $this->model_catalog_product->getProduct($product_id);
+				
+				if ($product_info) {
+					$subject = sprintf($this->language->get('text_subject'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
 
-			$subject = sprintf($this->language->get('text_subject'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
+					$message  = $this->language->get('text_waiting') . "\n";
+					$message .= sprintf($this->language->get('text_product'), html_entity_decode($product_info['name'], ENT_QUOTES, 'UTF-8')) . "\n";
+					$message .= sprintf($this->language->get('text_reviewer'), html_entity_decode($author, ENT_QUOTES, 'UTF-8')) . "\n";
+					$message .= sprintf($this->language->get('text_rating'), $rating) . "\n";
+					$message .= $this->language->get('text_review') . "\n";
+					$message .= html_entity_decode($text, ENT_QUOTES, 'UTF-8') . "\n\n";
 
-			$message  = $this->language->get('text_waiting') . "\n";
-			$message .= sprintf($this->language->get('text_product'), html_entity_decode($product_info['name'], ENT_QUOTES, 'UTF-8')) . "\n";
-			$message .= sprintf($this->language->get('text_reviewer'), html_entity_decode($data['name'], ENT_QUOTES, 'UTF-8')) . "\n";
-			$message .= sprintf($this->language->get('text_rating'), $data['rating']) . "\n";
-			$message .= $this->language->get('text_review') . "\n";
-			$message .= html_entity_decode($data['text'], ENT_QUOTES, 'UTF-8') . "\n\n";
+					$mail = new Mail();
+					$mail->protocol = $this->config->get('config_mail_protocol');
+					$mail->parameter = $this->config->get('config_mail_parameter');
+					$mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
+					$mail->smtp_username = $this->config->get('config_mail_smtp_username');
+					$mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
+					$mail->smtp_port = $this->config->get('config_mail_smtp_port');
+					$mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
 
-			$mail = new Mail();
-			$mail->protocol = $this->config->get('config_mail_protocol');
-			$mail->parameter = $this->config->get('config_mail_parameter');
-			$mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
-			$mail->smtp_username = $this->config->get('config_mail_smtp_username');
-			$mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
-			$mail->smtp_port = $this->config->get('config_mail_smtp_port');
-			$mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
+					$config_email = $this->config->get('config_email');
+					if ($config_email) {
+						$mail->setTo($config_email);
+						$mail->setFrom($config_email);
+						$mail->setSender(html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
+						$mail->setSubject($subject);
+						$mail->setText($message);
+						$mail->send();
 
-			$mail->setTo($this->config->get('config_email'));
-			$mail->setFrom($this->config->get('config_email'));
-			$mail->setSender(html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
-			$mail->setSubject($subject);
-			$mail->setText($message);
-			$mail->send();
-
-			// Send to additional alert emails
-			$emails = explode(',', $this->config->get('config_mail_alert'));
-
-			foreach ($emails as $email) {
-				if ($email && preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $email)) {
-					$mail->setTo($email);
-					$mail->send();
+						// Send to additional alert emails
+						$alert_emails = $this->config->get('config_mail_alert');
+						if ($alert_emails) {
+							$emails = explode(',', $alert_emails);
+							foreach ($emails as $email) {
+								$email = trim($email);
+								if ($email && preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $email)) {
+									$mail->setTo($email);
+									$mail->send();
+								}
+							}
+						}
+					}
 				}
+			} catch (Exception $e) {
+				// Log email error but don't fail the review submission
+				error_log('Review email error: ' . $e->getMessage());
 			}
 		}
 
