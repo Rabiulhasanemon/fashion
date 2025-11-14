@@ -1,34 +1,38 @@
 <?php if (!empty($reviews)) { ?>
-<section class="testimonial testimonial-style-1 section-padding" style="max-width: 80%; margin: 0 auto; padding: 40px 0;">
+<section class="rv-testimonial-section" style="max-width: 80%; margin: 0 auto; padding: 40px 0;">
   <?php if ($title) { ?>
-  <div class="module-heading-wrapper" style="margin-bottom: 30px;">
-    <h2 class="module-heading-title"><?php echo $title; ?></h2>
+  <div class="rv-module-heading" style="margin-bottom: 30px; text-align: center;">
+    <h2 class="rv-title"><?php echo $title; ?></h2>
   </div>
   <?php } ?>
   
-  <div class="container" style="max-width: 100%; padding: 0; position: relative;">
-    <div class="swiper testimonial-slider-1">
-      <div class="swiper-wrapper">
+  <div class="rv-container-wrapper">
+    <div class="rv-swiper-container" id="rv-testimonial-swiper-<?php echo $module; ?>">
+      <div class="rv-swiper-wrapper">
         <?php foreach ($reviews as $review) { ?>
-        <div class="swiper-slide">
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              <?php echo $review['text']; ?>
-            </p>
-            <div class="testimonial-author">
-              <div class="testimonial-author-thumbnail">
+        <div class="rv-swiper-slide">
+          <div class="rv-testimonial-card">
+            <div class="rv-testimonial-content">
+              <p class="rv-testimonial-text">
+                <?php echo $review['text']; ?>
+              </p>
+            </div>
+            <div class="rv-testimonial-footer">
+              <div class="rv-author-avatar">
                 <?php if (!empty($review['author_image'])) { ?>
                 <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>">
                 <?php } else { ?>
-                <img src="catalog/view/theme/ranger_fashion/image/placeholder-user.png" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Crect fill=\'%23ddd\' width=\'60\' height=\'60\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' font-size=\'20\'%3E<?php echo strtoupper(substr($review['author'], 0, 1)); ?>%3C/text%3E%3C/svg%3E'">
+                <div class="rv-avatar-placeholder">
+                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                </div>
                 <?php } ?>
               </div>
-              <div class="testimonial-info">
-                <h5><?php echo htmlspecialchars($review['author']); ?></h5>
+              <div class="rv-author-info">
+                <h6 class="rv-author-name"><?php echo htmlspecialchars($review['author']); ?></h6>
                 <?php if (!empty($review['designation'])) { ?>
-                <span><?php echo htmlspecialchars($review['designation']); ?></span>
+                <span class="rv-author-role"><?php echo htmlspecialchars($review['designation']); ?></span>
                 <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
-                <span><?php echo htmlspecialchars($review['product_name']); ?></span>
+                <span class="rv-author-role"><?php echo htmlspecialchars($review['product_name']); ?></span>
                 <?php } ?>
               </div>
             </div>
@@ -36,219 +40,273 @@
         </div>
         <?php } ?>
       </div>
-      <!-- Navigation arrows -->
-      <div class="swiper-button-next testimonial-nav-next"></div>
-      <div class="swiper-button-prev testimonial-nav-prev"></div>
-      <!-- Pagination -->
-      <div class="swiper-pagination testimonial-pagination-1"></div>
+      <div class="rv-swiper-nav rv-nav-prev"></div>
+      <div class="rv-swiper-nav rv-nav-next"></div>
+      <div class="rv-swiper-pagination"></div>
     </div>
   </div>
 </section>
 
 <style>
-/* Testimonial Style 1 - Premium Design */
-.testimonial-style-1 {
+/* Review View Testimonial - Unique Classes to Avoid Conflicts */
+.rv-testimonial-section {
   padding: 40px 0;
   position: relative;
 }
 
-.testimonial-style-1 .testimonial-card {
-  border: 1px solid var(--border-color, #e1e1e1);
-  border-radius: 16px;
-  padding: 24px;
-  min-height: 224px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.testimonial-style-1 .testimonial-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
-}
-
-.testimonial-style-1 .testimonial-text {
-  font-size: 14px;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 20px;
-  line-height: 1.6;
-  color: #666;
-  flex: 1;
-}
-
-.testimonial-style-1 .testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: auto;
-}
-
-.testimonial-style-1 .testimonial-author-thumbnail {
-  flex-shrink: 0;
-}
-
-.testimonial-style-1 .testimonial-author-thumbnail img {
-  width: 60px;
-  height: 60px;
-  border-radius: 100%;
-  object-fit: cover;
-  border: 2px solid #f0f0f0;
-  transition: all 0.3s ease;
-}
-
-.testimonial-style-1 .testimonial-card:hover .testimonial-author-thumbnail img {
-  border-color: var(--primary-color, #007bff);
-}
-
-.testimonial-style-1 .testimonial-info {
-  margin: 0;
-  flex: 1;
-}
-
-.testimonial-style-1 .testimonial-info h5 {
-  margin: 0;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 120%;
-  color: var(--title-color, #222);
-}
-
-.testimonial-style-1 .testimonial-info span {
-  font-size: 12px;
-  font-weight: 400;
-  display: block;
-  margin-top: 4px;
-  color: #999;
-}
-
-/* Swiper Premium Styles */
-.testimonial-slider-1 {
-  padding: 0 50px 50px;
+.rv-container-wrapper {
   position: relative;
-  overflow: visible;
+  padding: 0 60px;
 }
 
-.testimonial-slider-1 .swiper-wrapper {
+.rv-swiper-container {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 50px;
+}
+
+.rv-swiper-wrapper {
   display: flex;
   transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.testimonial-slider-1 .swiper-slide {
-  height: auto;
+.rv-swiper-slide {
   flex-shrink: 0;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
-/* Navigation Arrows - Premium Design */
-.testimonial-slider-1 .swiper-button-next,
-.testimonial-slider-1 .swiper-button-prev {
-  width: 40px;
-  height: 40px;
-  background: #fff;
+.rv-testimonial-card {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 30px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.rv-testimonial-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+  border-color: #d0d0d0;
+}
+
+.rv-testimonial-content {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.rv-testimonial-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rv-testimonial-footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.rv-author-avatar {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.rv-testimonial-card:hover .rv-author-avatar {
+  border-color: var(--primary-color, #007bff);
+  transform: scale(1.05);
+}
+
+.rv-author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rv-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.rv-author-info {
+  flex: 1;
+}
+
+.rv-author-name {
+  margin: 0 0 5px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.2;
+}
+
+.rv-author-role {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+}
+
+/* Navigation Arrows */
+.rv-swiper-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
   border: 2px solid #e1e1e1;
   border-radius: 50%;
-  color: var(--primary-color, #007bff);
-  font-size: 18px;
-  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
-  top: 50%;
-  margin-top: -20px;
-  z-index: 10;
 }
 
-.testimonial-slider-1 .swiper-button-next::after,
-.testimonial-slider-1 .swiper-button-prev::after {
-  font-size: 18px;
-  font-weight: bold;
+.rv-swiper-nav::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--primary-color, #007bff);
+  border-right: 2px solid var(--primary-color, #007bff);
+  transition: all 0.3s ease;
 }
 
-.testimonial-slider-1 .swiper-button-next:hover,
-.testimonial-slider-1 .swiper-button-prev:hover {
-  background: var(--primary-color, #007bff);
-  color: #fff;
-  border-color: var(--primary-color, #007bff);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transform: scale(1.1);
-}
-
-.testimonial-slider-1 .swiper-button-prev {
+.rv-nav-prev {
   left: 0;
 }
 
-.testimonial-slider-1 .swiper-button-next {
+.rv-nav-prev::before {
+  transform: rotate(-135deg);
+  margin-left: 2px;
+}
+
+.rv-nav-next {
   right: 0;
 }
 
-.testimonial-slider-1 .swiper-button-disabled {
-  opacity: 0.35;
+.rv-nav-next::before {
+  transform: rotate(45deg);
+  margin-right: 2px;
+}
+
+.rv-swiper-nav:hover {
+  background: var(--primary-color, #007bff);
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.rv-swiper-nav:hover::before {
+  border-color: #ffffff;
+}
+
+.rv-swiper-nav.swiper-button-disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-/* Pagination - Premium Design */
-.testimonial-slider-1 .swiper-pagination {
-  bottom: 0;
+/* Pagination */
+.rv-swiper-pagination {
   position: absolute;
-  line-height: 0;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, 0);
-  margin: 0;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
   z-index: 10;
-  width: auto;
 }
 
-.testimonial-slider-1 .swiper-pagination-bullet {
+.rv-swiper-pagination .swiper-pagination-bullet {
   width: 10px;
   height: 10px;
   background: #ddd;
-  opacity: 1;
-  margin: 0 5px;
-  transition: all 0.3s ease;
   border-radius: 50%;
+  opacity: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 !important;
 }
 
-.testimonial-slider-1 .swiper-pagination-bullet-active {
+.rv-swiper-pagination .swiper-pagination-bullet-active {
   background: var(--primary-color, #007bff);
-  width: 24px;
-  border-radius: 12px;
+  width: 30px;
+  border-radius: 5px;
 }
 
 /* Responsive */
+@media (min-width: 992px) {
+  .rv-swiper-slide {
+    width: 33.333%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .rv-swiper-slide {
+    width: 50%;
+  }
+  .rv-container-wrapper {
+    padding: 0 50px;
+  }
+}
+
 @media (max-width: 767px) {
-  .testimonial-style-1 {
+  .rv-testimonial-section {
     max-width: 100% !important;
     padding: 20px 15px;
   }
   
-  .testimonial-slider-1 {
-    padding: 0 40px 50px;
+  .rv-container-wrapper {
+    padding: 0 45px;
   }
   
-  .testimonial-slider-1 .swiper-button-next,
-  .testimonial-slider-1 .swiper-button-prev {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+  .rv-swiper-slide {
+    width: 100%;
   }
   
-  .testimonial-slider-1 .swiper-button-prev {
-    left: 5px;
+  .rv-swiper-nav {
+    width: 36px;
+    height: 36px;
   }
   
-  .testimonial-slider-1 .swiper-button-next {
-    right: 5px;
+  .rv-swiper-nav::before {
+    width: 6px;
+    height: 6px;
   }
   
-  .testimonial-style-1 .testimonial-card {
-    min-height: auto;
+  .rv-testimonial-card {
     padding: 20px;
   }
   
-  .testimonial-style-1 .testimonial-text {
+  .rv-testimonial-text {
     -webkit-line-clamp: 3;
   }
 }
@@ -256,76 +314,81 @@
 
 <script>
 (function() {
-  // Wait for Swiper to be available
-  function initTestimonialSlider() {
-    var testimonialSlider = document.querySelector('.testimonial-slider-1');
-    if (!testimonialSlider) return;
+  var moduleId = 'rv-testimonial-swiper-<?php echo $module; ?>';
+  var swiperEl = document.getElementById(moduleId);
+  
+  if (!swiperEl) return;
+  
+  function initRVSlider() {
+    if (typeof Swiper === 'undefined') {
+      setTimeout(initRVSlider, 100);
+      return;
+    }
     
-    if (typeof Swiper !== 'undefined') {
-      var swiperInstance = new Swiper('.testimonial-slider-1', {
-        slidesPerView: 1,
-        slidesPerGroup: 1,
-        spaceBetween: 20,
-        loop: <?php echo count($reviews) > 3 ? 'true' : 'false'; ?>,
-        speed: 800,
-        autoplay: {
-          delay: 4000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
+    var rvSwiper = new Swiper('#' + moduleId, {
+      slidesPerView: 1,
+      slidesPerGroup: 1,
+      spaceBetween: 20,
+      loop: <?php echo count($reviews) > 3 ? 'true' : 'false'; ?>,
+      speed: 800,
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      navigation: {
+        nextEl: swiperEl.querySelector('.rv-nav-next'),
+        prevEl: swiperEl.querySelector('.rv-nav-prev'),
+      },
+      pagination: {
+        el: swiperEl.querySelector('.rv-swiper-pagination'),
+        clickable: true,
+        dynamicBullets: true,
+        dynamicMainBullets: 3,
+      },
+      breakpoints: {
+        576: {
+          slidesPerView: 2,
+          slidesPerGroup: 1,
+          spaceBetween: 20,
         },
-        navigation: {
-          nextEl: '.testimonial-nav-next',
-          prevEl: '.testimonial-nav-prev',
+        768: {
+          slidesPerView: 2,
+          slidesPerGroup: 1,
+          spaceBetween: 20,
         },
-        pagination: {
-          el: '.testimonial-pagination-1',
-          clickable: true,
-          dynamicBullets: true,
+        992: {
+          slidesPerView: 3,
+          slidesPerGroup: 1,
+          spaceBetween: 20,
         },
-        breakpoints: {
-          576: {
-            slidesPerView: 2,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 2,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          992: {
-            slidesPerView: 3,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          1200: {
-            slidesPerView: 3,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          }
-        },
-        on: {
-          init: function() {
-            console.log('Testimonial slider initialized');
+        1200: {
+          slidesPerView: 3,
+          slidesPerGroup: 1,
+          spaceBetween: 20,
+        }
+      },
+      on: {
+        init: function() {
+          if (this.autoplay) {
+            this.autoplay.start();
           }
         }
-      });
-      
-      // Force autoplay start
-      if (swiperInstance.autoplay) {
-        swiperInstance.autoplay.start();
       }
-    } else {
-      // Retry if Swiper not loaded yet
-      setTimeout(initTestimonialSlider, 100);
-    }
+    });
+    
+    // Ensure autoplay starts
+    setTimeout(function() {
+      if (rvSwiper && rvSwiper.autoplay) {
+        rvSwiper.autoplay.start();
+      }
+    }, 500);
   }
   
-  // Initialize when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTestimonialSlider);
+    document.addEventListener('DOMContentLoaded', initRVSlider);
   } else {
-    initTestimonialSlider();
+    initRVSlider();
   }
 })();
 </script>
