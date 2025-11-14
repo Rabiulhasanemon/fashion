@@ -1,9 +1,9 @@
 <footer class="footer style-3">
     <div class="container">
         <!-- Footer Top  -->
-    <div class="footer-top">
+        <div class="footer-top">
             <div class="row">
-                <div class="col-lg-5 col-xl-3 col-md-5 col-12">
+                <div class="col-lg-3 col-xl-3 col-md-5 col-12">
                     <div class="footer-widget footer-about">
                         <!-- Logo  -->
                         <?php if (isset($logo) && $logo) { ?>
@@ -55,7 +55,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-3 col-xl-2 col-md-4 col-6">
+                <div class="col-lg-2 col-xl-2 col-md-4 col-6">
                     <div class="footer-widget quick-links">
                         <p class="footer-widget-title">Information</p>
                         <ul class="footer-widget-list">
@@ -70,7 +70,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-4 col-xl-2 col-md-3 col-6">
+                <div class="col-lg-2 col-xl-2 col-md-3 col-6">
                     <div class="footer-widget accounts">
                         <p class="footer-widget-title">Shop By Category</p>
                         <ul class="footer-widget-list">
@@ -86,7 +86,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-5 col-xl-2 col-md-5 col-6">
+                <div class="col-lg-2 col-xl-2 col-md-2 col-6">
                     <div class="footer-widget pages">
                         <p class="footer-widget-title">Support</p>
                         <ul class="footer-widget-list">
@@ -105,7 +105,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-7 col-xl-3 col-md-7 col-12">
+                <div class="col-lg-3 col-xl-3 col-md-7 col-12">
                     <div class="footer-widget newsletter">
                         <p class="footer-widget-title" style="color: #666;">Sign Up Newsletter</p>
                         <p class="f-widget-text">Don't worry, we won't spam you!</p>

@@ -1550,6 +1550,14 @@ a:focus {
     .footer.style-3 .footer-top {
         padding: 16px 0px 56px;
     }
+    
+    .footer.style-3 .footer-widget {
+        margin-top: 30px;
+    }
+    
+    .footer.style-3 .footer-widget:first-child {
+        margin-top: 0;
+    }
 
     .footer.style-3 .footer-bottom-widget {
         display: flex;
@@ -1570,6 +1578,16 @@ a:focus {
         max-width: 100%;
         margin-left: 0;
         text-align: center;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .footer.style-3 .footer-widget {
+        margin-top: 30px;
+    }
+    
+    .footer.style-3 .row > div[class*="col-"] {
+        margin-bottom: 20px;
     }
 }
 /*=============================================================================================
