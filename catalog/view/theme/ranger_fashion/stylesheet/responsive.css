@@ -639,7 +639,7 @@
   }
   .header-search input {
     padding: 10px 15px;
-    padding-left: 38px;
+    padding-right: 50px;
   }
   .main-nav .nav ul li.drop-open.c-1 {
     margin-right: 0;
