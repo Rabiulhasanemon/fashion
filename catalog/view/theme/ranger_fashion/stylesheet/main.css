@@ -1452,8 +1452,9 @@ a:focus {
     line-height: 150%;
     color: #666;
     margin: 0;
-    white-space: nowrap;
+    white-space: normal;
     flex-shrink: 0;
+    display: inline-block;
 }
 
 .footer.style-3 .f-copyight-text a {
