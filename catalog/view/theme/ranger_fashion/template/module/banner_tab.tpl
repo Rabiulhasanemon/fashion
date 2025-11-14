@@ -34,7 +34,7 @@
           $banner_image = isset($first_child['image']) ? $first_child['image'] : '';
           ?>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="padding: 0 10px; margin-bottom: 20px;">
-          <div class="promotional-banner" style="position: relative; overflow: hidden; border-radius: 8px; height: 500px; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 25px;">
+          <div class="promotional-banner" style="position: relative; overflow: hidden; border-radius: 8px; min-height: 300px; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
             <!-- Background Image -->
             <div class="banner-background" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1;">
               <img src="<?php echo $banner_image; ?>" alt="<?php echo htmlspecialchars($banner_title); ?>" style="width: 100%; height: 100%; object-fit: cover;" />
@@ -44,26 +44,26 @@
             <div class="banner-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%); z-index: 2;"></div>
             
             <!-- Content -->
-            <div class="banner-content" style="position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="banner-content" style="position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: space-between; min-height: 260px;">
               <!-- Top Section - Tag (Banner Name) -->
               <?php if ($banner_tag) { ?>
-              <div class="banner-tag" style="margin-bottom: 15px;">
-                <span style="background: rgba(255, 255, 255, 0.95); color: #333; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">
+              <div class="banner-tag" style="margin-bottom: 10px;">
+                <span style="background: rgba(255, 255, 255, 0.95); color: #333; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">
                   <?php echo htmlspecialchars($banner_tag); ?>
                 </span>
               </div>
               <?php } ?>
               
               <!-- Middle Section - Title and Description -->
-              <div class="banner-text" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <div class="banner-text" style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px 0;">
                 <?php if ($banner_title) { ?>
-                <h2 class="banner-headline" style="color: #fff; font-size: 32px; font-weight: 700; margin: 0 0 15px 0; line-height: 1.2; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                <h2 class="banner-headline" style="color: #fff; font-size: 24px; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                   <?php echo htmlspecialchars($banner_title); ?>
                 </h2>
                 <?php } ?>
                 
                 <?php if ($banner_blurb) { ?>
-                <p class="banner-description" style="color: #fff; font-size: 16px; line-height: 1.5; margin: 0 0 25px 0; text-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 90%;">
+                <p class="banner-description" style="color: #fff; font-size: 14px; line-height: 1.4; margin: 0 0 15px 0; text-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 95%;">
                   <?php echo htmlspecialchars($banner_blurb); ?>
                 </p>
                 <?php } ?>
@@ -71,7 +71,7 @@
               
               <!-- Bottom Section - Shop Now Button -->
               <div class="banner-action" style="margin-top: auto;">
-                <a href="<?php echo htmlspecialchars($banner_link); ?>" class="shop-now-btn" style="display: inline-block; background: #377dff; color: #fff; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(55, 125, 255, 0.3);">
+                <a href="<?php echo htmlspecialchars($banner_link); ?>" class="shop-now-btn" style="display: inline-block; background: #377dff; color: #fff; padding: 10px 24px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(55, 125, 255, 0.3);">
                   Shop Now
                 </a>
               </div>
@@ -111,53 +111,65 @@
 /* Responsive Styles */
 @media (max-width: 991px) {
   .promotional-banner {
-    height: 450px !important;
-    padding: 25px 20px !important;
+    min-height: 280px !important;
+    padding: 18px !important;
+  }
+  
+  .banner-content {
+    min-height: 240px !important;
   }
   
   .banner-headline {
-    font-size: 28px !important;
+    font-size: 22px !important;
   }
   
   .banner-description {
-    font-size: 15px !important;
+    font-size: 13px !important;
   }
 }
 
 @media (max-width: 767px) {
   .promotional-banner {
-    height: 400px !important;
-    padding: 20px 15px !important;
+    min-height: 260px !important;
+    padding: 15px !important;
     margin-bottom: 15px !important;
   }
   
+  .banner-content {
+    min-height: 230px !important;
+  }
+  
   .banner-headline {
-    font-size: 24px !important;
-    margin-bottom: 12px !important;
+    font-size: 20px !important;
+    margin-bottom: 8px !important;
   }
   
   .banner-description {
-    font-size: 14px !important;
-    margin-bottom: 20px !important;
+    font-size: 12px !important;
+    margin-bottom: 12px !important;
   }
   
   .shop-now-btn {
-    padding: 10px 24px !important;
-    font-size: 13px !important;
+    padding: 8px 20px !important;
+    font-size: 12px !important;
   }
 }
 
 @media (max-width: 575px) {
   .promotional-banner {
-    height: 350px !important;
+    min-height: 240px !important;
+  }
+  
+  .banner-content {
+    min-height: 210px !important;
   }
   
   .banner-headline {
-    font-size: 20px !important;
+    font-size: 18px !important;
   }
   
   .banner-description {
-    font-size: 13px !important;
+    font-size: 11px !important;
   }
 }
 </style>
