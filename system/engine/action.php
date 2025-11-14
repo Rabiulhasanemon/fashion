@@ -54,7 +54,7 @@ final class Action {
 			return false;
 		}
 
-		if (is_file($this->file)) {
+		if ($this->file !== null && is_file($this->file)) {
 			include_once($this->file);
 
 			$class = $this->class;
