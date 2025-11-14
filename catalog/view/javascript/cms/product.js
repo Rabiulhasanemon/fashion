@@ -177,7 +177,7 @@ app.onReady(window, "$", function () { $(function () {
         panel.removeClass('f-out').addClass("f-in")
     });
 
-    $('#review').load('product/product/review?product_id=' + product_id);
+    $('#review').load('index.php?route=product/product/review&product_id=' + product_id);
 
     $('#question').load('product/product/question?product_id=' + product_id);
 
