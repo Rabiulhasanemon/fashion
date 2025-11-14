@@ -146,7 +146,7 @@
                             <span class="getcommerce-copyright">Developed&nbsp;by <a href="https://getcommerce.xyz" target="_blank">Getcommerce</a></span>
                         </div>
                         <div class="footer-payment-img">
-                            <img src="catalog/view/theme/ranger_fashion/image/payment-methods.png" alt="payment-img" onerror="this.style.display='none'">
+                            <img src="image/catalog/faysy1756641916.png" alt="payment-img" onerror="this.style.display='none'">
                         </div>
                     </div>
                 </div>

@@ -1517,14 +1517,18 @@ a:focus {
 
 @media only screen and (min-width: 768px) and (max-width: 1199.99px) {
     .footer.style-3 .footer-bottom-widget {
-        text-align: center;
         display: flex;
-        flex-direction: column-reverse;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .footer.style-3 .f-copyight-text {
+        white-space: normal;
     }
 
     .footer.style-3 .footer-payment-img {
-        margin-bottom: 12px;
-        text-align: center;
+        margin-left: auto;
         max-width: 100%;
     }
 }
