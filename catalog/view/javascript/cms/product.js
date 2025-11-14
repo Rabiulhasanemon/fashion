@@ -182,6 +182,7 @@ app.onReady(window, "$", function () { $(function () {
     $('#question').load('product/product/question?product_id=' + product_id);
 
     $('#button-review, #button-question').on('click', function(e) {
+        e.preventDefault();
         var $this = $(this), form = $this.parents("form");
         var formDataObj = {};
         (new FormData(form.get(0))).forEach((value, key) => (formDataObj[key] = value));
@@ -189,6 +190,7 @@ app.onReady(window, "$", function () { $(function () {
             url: form.attr("action"),
             method: 'post',
             data: formDataObj,
+            dataType: 'json',
             beforeSend: function() {
                 $this.button('loading');
             },
@@ -196,17 +198,81 @@ app.onReady(window, "$", function () { $(function () {
                 $this.button('reset');
             },
             success: function(json) {
-                $('.alert-success, .alert-danger').remove();
+                // Remove existing alerts
+                $('.alert-success, .alert-danger, .premium-notification').remove();
+                
                 if (json['error']) {
                     form.before('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
                 }
+                
                 if (json['success']) {
-                    form.before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
-                    form.get(0).reset()
+                    // Show premium notification
+                    showPremiumNotification(json['success']);
+                    
+                    // Reset form
+                    form.get(0).reset();
+                    
+                    // Reload review list if it's a review submission
+                    if ($this.attr('id') === 'button-review') {
+                        setTimeout(function() {
+                            $('#review').load('index.php?route=product/product/review&product_id=' + product_id);
+                        }, 1000);
+                    }
                 }
+            },
+            error: function(xhr, status, error) {
+                $('.alert-success, .alert-danger, .premium-notification').remove();
+                var errorMsg = 'An error occurred. Please try again.';
+                try {
+                    var jsonResponse = JSON.parse(xhr.responseText);
+                    if (jsonResponse['error']) {
+                        errorMsg = jsonResponse['error'];
+                    }
+                } catch(e) {
+                    // Use default error message
+                }
+                form.before('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + errorMsg + '</div>');
             }
         });
     });
+    
+    // Premium Notification Function
+    function showPremiumNotification(message) {
+        // Remove any existing notifications
+        $('.premium-notification').remove();
+        
+        // Create premium notification
+        var notification = $('<div class="premium-notification">' +
+            '<div class="premium-notification-content">' +
+            '<div class="premium-notification-icon">' +
+            '<i class="fa fa-check-circle"></i>' +
+            '</div>' +
+            '<div class="premium-notification-text">' +
+            '<h4>Thank You!</h4>' +
+            '<p>' + message + '</p>' +
+            '</div>' +
+            '<button class="premium-notification-close" onclick="$(this).parent().parent().fadeOut(300, function(){$(this).remove()})">' +
+            '<i class="fa fa-times"></i>' +
+            '</button>' +
+            '</div>' +
+            '</div>');
+        
+        // Add to body
+        $('body').append(notification);
+        
+        // Show with animation
+        setTimeout(function() {
+            notification.addClass('show');
+        }, 100);
+        
+        // Auto hide after 5 seconds
+        setTimeout(function() {
+            notification.removeClass('show');
+            setTimeout(function() {
+                notification.remove();
+            }, 300);
+        }, 5000);
+    }
 
 
     $(".share-ico").on("click", function () {
