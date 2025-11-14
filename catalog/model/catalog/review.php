@@ -1,4 +1,6 @@
 <?php
+use ReflectionClass;
+
 class ModelCatalogReview extends Model {
 	public function addReview($product_id, $data) {
 		// Validate product_id
@@ -75,37 +77,53 @@ class ModelCatalogReview extends Model {
 		$sql .= ", date_added = NOW()";
 
 		// Execute query with error handling
-		// Suppress PHP errors and catch them manually
-		$old_error_handler = set_error_handler(function($errno, $errstr, $errfile, $errline) {
-			// Log the error but don't display it
-			error_log("Review INSERT PHP Error: [$errno] $errstr in $errfile on line $errline");
-			return true; // Suppress error
-		});
+		// Use output buffering to catch any trigger_error output
+		ob_start();
 		
 		$result = $this->db->query($sql);
 		
-		// Restore error handler
-		if ($old_error_handler !== null) {
-			set_error_handler($old_error_handler);
-		} else {
-			restore_error_handler();
-		}
+		$output = ob_get_clean();
 		
 		// Check if query failed
 		if ($result === false) {
 			$error_msg = 'Database query failed';
-			// Try to get database error if available
-			if (is_object($this->db) && property_exists($this->db, 'link') && isset($this->db->link->error)) {
-				$error_msg .= ': ' . $this->db->link->error;
+			
+			// Try to get database error if available (for MySQLi)
+			if (is_object($this->db)) {
+				try {
+					$reflection = new ReflectionClass($this->db);
+					if ($reflection->hasProperty('link')) {
+						$link_property = $reflection->getProperty('link');
+						$link_property->setAccessible(true);
+						$link = $link_property->getValue($this->db);
+						
+						if ($link instanceof mysqli && $link->error) {
+							$error_msg .= ': ' . $link->error . ' (Error No: ' . $link->errno . ')';
+						}
+					}
+				} catch (Exception $reflection_error) {
+					// Reflection failed, continue without it
+					error_log('Reflection error: ' . $reflection_error->getMessage());
+				}
 			}
-			error_log('Review INSERT SQL Error: ' . $error_msg);
-			error_log('Review INSERT SQL: ' . $sql);
+			
+			// Log captured output if any
+			if (!empty($output)) {
+				error_log('Review INSERT captured output: ' . $output);
+			}
+			
+			error_log('=== REVIEW INSERT SQL ERROR ===');
+			error_log('Error: ' . $error_msg);
+			error_log('SQL: ' . $sql);
 			error_log('Author: ' . $author);
 			error_log('Customer ID: ' . $customer_id);
 			error_log('Product ID: ' . $product_id);
 			error_log('Rating: ' . $rating);
 			error_log('Status: ' . $status);
 			error_log('Text length: ' . strlen($text));
+			error_log('Text preview: ' . substr($text, 0, 100));
+			error_log('===============================');
+			
 			throw new Exception($error_msg);
 		}
 		
