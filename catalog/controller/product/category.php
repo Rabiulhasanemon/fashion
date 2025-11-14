@@ -381,6 +381,20 @@ class ControllerProductCategory extends Controller {
 			$data['order'] = $order;
 			$data['limit'] = $limit;
 
+			// Language variables for template
+			$data['text_limit'] = $this->language->get('text_limit');
+			$data['text_sort'] = $this->language->get('text_sort');
+			$data['text_pagination'] = $this->language->get('text_pagination');
+			$data['text_default'] = $this->language->get('text_default');
+			$data['text_name_asc'] = $this->language->get('text_name_asc');
+			$data['text_name_desc'] = $this->language->get('text_name_desc');
+			$data['text_price_asc'] = $this->language->get('text_price_asc');
+			$data['text_price_desc'] = $this->language->get('text_price_desc');
+			$data['text_rating_asc'] = $this->language->get('text_rating_asc');
+			$data['text_rating_desc'] = $this->language->get('text_rating_desc');
+			$data['text_model_asc'] = $this->language->get('text_model_asc');
+			$data['text_model_desc'] = $this->language->get('text_model_desc');
+
 			$data['continue'] = $this->url->link('common/home');
 
 			// Load category modules
