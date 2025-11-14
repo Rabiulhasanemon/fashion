@@ -59,18 +59,18 @@ try {
 
     echo "<h2>Category Module Table Diagnostic</h2>";
 
-// Check if table exists
-echo "<h3>1. Table Existence Check</h3>";
-$table_name = DB_PREFIX . "category_module";
-try {
-    $table_check = $db->query("SHOW TABLES LIKE '" . $table_name . "'");
-    if ($table_check && $table_check->num_rows) {
-        echo "<p class='success'>✓ Table exists: " . htmlspecialchars($table_name) . "</p>";
-    } else {
-        echo "<p class='error'>✗ Table does NOT exist: " . htmlspecialchars($table_name) . "</p>";
-        echo "<div class='info'>";
-        echo "<h4>Create Table SQL:</h4>";
-        echo "<pre>CREATE TABLE IF NOT EXISTS `" . htmlspecialchars($table_name) . "` (
+    // Check if table exists
+    echo "<h3>1. Table Existence Check</h3>";
+    $table_name = DB_PREFIX . "category_module";
+    try {
+        $table_check = $db->query("SHOW TABLES LIKE '" . $table_name . "'");
+        if ($table_check && $table_check->num_rows) {
+            echo "<p class='success'>✓ Table exists: " . htmlspecialchars($table_name) . "</p>";
+        } else {
+            echo "<p class='error'>✗ Table does NOT exist: " . htmlspecialchars($table_name) . "</p>";
+            echo "<div class='info'>";
+            echo "<h4>Create Table SQL:</h4>";
+            echo "<pre>CREATE TABLE IF NOT EXISTS `" . htmlspecialchars($table_name) . "` (
   `category_module_id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) NOT NULL,
   `module_id` int(11) NOT NULL DEFAULT '0',
@@ -84,127 +84,127 @@ try {
   KEY `code` (`code`),
   KEY `status` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;</pre>";
-        echo "<p><strong>Run this SQL in phpMyAdmin or your MySQL client.</strong></p>";
-        echo "</div>";
+            echo "<p><strong>Run this SQL in phpMyAdmin or your MySQL client.</strong></p>";
+            echo "</div>";
+            echo "</div></body></html>";
+            exit;
+        }
+    } catch (Exception $e) {
+        echo "<p class='error'>✗ Error checking table: " . htmlspecialchars($e->getMessage()) . "</p>";
         echo "</div></body></html>";
         exit;
     }
-} catch (Exception $e) {
-    echo "<p class='error'>✗ Error checking table: " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "</div></body></html>";
-    exit;
-}
 
-// Check table structure
-echo "<h3>2. Table Structure</h3>";
-try {
-    $structure = $db->query("DESCRIBE " . $table_name);
-    if ($structure && $structure->rows) {
-        echo "<table>";
-        echo "<tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th></tr>";
-        foreach ($structure->rows as $field) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($field['Field']) . "</td>";
-            echo "<td>" . htmlspecialchars($field['Type']) . "</td>";
-            echo "<td>" . htmlspecialchars($field['Null']) . "</td>";
-            echo "<td>" . htmlspecialchars($field['Key']) . "</td>";
-            echo "<td>" . htmlspecialchars($field['Default'] ?? 'NULL') . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-    } else {
-        echo "<p class='error'>✗ Could not retrieve table structure</p>";
-    }
-} catch (Exception $e) {
-    echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-}
-
-// Check if description column exists
-echo "<h3>3. Description Column Check</h3>";
-$has_description = false;
-if (isset($structure) && $structure->rows) {
-    foreach ($structure->rows as $field) {
-        if ($field['Field'] == 'description') {
-            $has_description = true;
-            break;
-        }
-    }
-}
-if ($has_description) {
-    echo "<p class='success'>✓ Description column exists</p>";
-} else {
-    echo "<p class='error'>✗ Description column does NOT exist</p>";
-    echo "<div class='info'>";
-    echo "<h4>Add Description Column SQL:</h4>";
-    echo "<pre>ALTER TABLE `" . htmlspecialchars($table_name) . "` ADD COLUMN `description` TEXT NULL AFTER `setting`;</pre>";
-    echo "<p><strong>Run this SQL in phpMyAdmin or your MySQL client.</strong></p>";
-    echo "</div>";
-}
-
-// Test insert
-echo "<h3>4. Test Insert</h3>";
-try {
-    $test_category_id = 1;
-    $test_code = 'test_module';
-    $test_setting = json_encode(array('test' => 'value'));
-    
-    // Delete any existing test record
-    $db->query("DELETE FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
-    
-    if ($has_description) {
-        $sql = "INSERT INTO " . $table_name . " SET category_id = '" . (int)$test_category_id . "', module_id = '0', code = '" . $db->escape($test_code) . "', setting = '" . $db->escape($test_setting) . "', description = '', sort_order = '0', status = '1'";
-    } else {
-        $sql = "INSERT INTO " . $table_name . " SET category_id = '" . (int)$test_category_id . "', module_id = '0', code = '" . $db->escape($test_code) . "', setting = '" . $db->escape($test_setting) . "', sort_order = '0', status = '1'";
-    }
-    
-    $result = $db->query($sql);
-    if ($result) {
-        echo "<p class='success'>✓ Test insert successful</p>";
-        echo "<p><small>SQL: " . htmlspecialchars($sql) . "</small></p>";
-        
-        // Verify the insert
-        $verify = $db->query("SELECT * FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
-        if ($verify && $verify->num_rows > 0) {
-            echo "<p class='success'>✓ Record verified in database</p>";
-            // Clean up test record
-            $db->query("DELETE FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
-            echo "<p>Test record cleaned up.</p>";
+    // Check table structure
+    echo "<h3>2. Table Structure</h3>";
+    try {
+        $structure = $db->query("DESCRIBE " . $table_name);
+        if ($structure && $structure->rows) {
+            echo "<table>";
+            echo "<tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th></tr>";
+            foreach ($structure->rows as $field) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($field['Field']) . "</td>";
+                echo "<td>" . htmlspecialchars($field['Type']) . "</td>";
+                echo "<td>" . htmlspecialchars($field['Null']) . "</td>";
+                echo "<td>" . htmlspecialchars($field['Key']) . "</td>";
+                echo "<td>" . htmlspecialchars($field['Default'] ?? 'NULL') . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
         } else {
-            echo "<p class='error'>✗ Record not found after insert</p>";
+            echo "<p class='error'>✗ Could not retrieve table structure</p>";
         }
-    } else {
-        echo "<p class='error'>✗ Test insert failed</p>";
-        echo "<p><small>SQL: " . htmlspecialchars($sql) . "</small></p>";
+    } catch (Exception $e) {
+        echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     }
-} catch (Exception $e) {
-    echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-}
 
-// Show existing records
-echo "<h3>5. Existing Records</h3>";
-try {
-    $existing = $db->query("SELECT * FROM " . $table_name . " ORDER BY category_id, sort_order LIMIT 10");
-    if ($existing && $existing->num_rows > 0) {
-        echo "<p>Found " . $existing->num_rows . " record(s) (showing first 10):</p>";
-        echo "<table>";
-        echo "<tr><th>ID</th><th>Category ID</th><th>Module ID</th><th>Code</th><th>Sort Order</th><th>Status</th></tr>";
-        foreach ($existing->rows as $row) {
-            echo "<tr>";
-            echo "<td>" . (int)$row['category_module_id'] . "</td>";
-            echo "<td>" . (int)$row['category_id'] . "</td>";
-            echo "<td>" . (int)$row['module_id'] . "</td>";
-            echo "<td>" . htmlspecialchars($row['code']) . "</td>";
-            echo "<td>" . (int)$row['sort_order'] . "</td>";
-            echo "<td>" . ((int)$row['status'] ? 'Enabled' : 'Disabled') . "</td>";
-            echo "</tr>";
+    // Check if description column exists
+    echo "<h3>3. Description Column Check</h3>";
+    $has_description = false;
+    if (isset($structure) && $structure->rows) {
+        foreach ($structure->rows as $field) {
+            if ($field['Field'] == 'description') {
+                $has_description = true;
+                break;
+            }
         }
-        echo "</table>";
-    } else {
-        echo "<p>No records found in table.</p>";
     }
-} catch (Exception $e) {
-    echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-}
+    if ($has_description) {
+        echo "<p class='success'>✓ Description column exists</p>";
+    } else {
+        echo "<p class='error'>✗ Description column does NOT exist</p>";
+        echo "<div class='info'>";
+        echo "<h4>Add Description Column SQL:</h4>";
+        echo "<pre>ALTER TABLE `" . htmlspecialchars($table_name) . "` ADD COLUMN `description` TEXT NULL AFTER `setting`;</pre>";
+        echo "<p><strong>Run this SQL in phpMyAdmin or your MySQL client.</strong></p>";
+        echo "</div>";
+    }
+
+    // Test insert
+    echo "<h3>4. Test Insert</h3>";
+    try {
+        $test_category_id = 1;
+        $test_code = 'test_module';
+        $test_setting = json_encode(array('test' => 'value'));
+        
+        // Delete any existing test record
+        $db->query("DELETE FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
+        
+        if ($has_description) {
+            $sql = "INSERT INTO " . $table_name . " SET category_id = '" . (int)$test_category_id . "', module_id = '0', code = '" . $db->escape($test_code) . "', setting = '" . $db->escape($test_setting) . "', description = '', sort_order = '0', status = '1'";
+        } else {
+            $sql = "INSERT INTO " . $table_name . " SET category_id = '" . (int)$test_category_id . "', module_id = '0', code = '" . $db->escape($test_code) . "', setting = '" . $db->escape($test_setting) . "', sort_order = '0', status = '1'";
+        }
+        
+        $result = $db->query($sql);
+        if ($result) {
+            echo "<p class='success'>✓ Test insert successful</p>";
+            echo "<p><small>SQL: " . htmlspecialchars($sql) . "</small></p>";
+            
+            // Verify the insert
+            $verify = $db->query("SELECT * FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
+            if ($verify && $verify->num_rows > 0) {
+                echo "<p class='success'>✓ Record verified in database</p>";
+                // Clean up test record
+                $db->query("DELETE FROM " . $table_name . " WHERE category_id = '" . (int)$test_category_id . "' AND code = 'test_module'");
+                echo "<p>Test record cleaned up.</p>";
+            } else {
+                echo "<p class='error'>✗ Record not found after insert</p>";
+            }
+        } else {
+            echo "<p class='error'>✗ Test insert failed</p>";
+            echo "<p><small>SQL: " . htmlspecialchars($sql) . "</small></p>";
+        }
+    } catch (Exception $e) {
+        echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+
+    // Show existing records
+    echo "<h3>5. Existing Records</h3>";
+    try {
+        $existing = $db->query("SELECT * FROM " . $table_name . " ORDER BY category_id, sort_order LIMIT 10");
+        if ($existing && $existing->num_rows > 0) {
+            echo "<p>Found " . $existing->num_rows . " record(s) (showing first 10):</p>";
+            echo "<table>";
+            echo "<tr><th>ID</th><th>Category ID</th><th>Module ID</th><th>Code</th><th>Sort Order</th><th>Status</th></tr>";
+            foreach ($existing->rows as $row) {
+                echo "<tr>";
+                echo "<td>" . (int)$row['category_module_id'] . "</td>";
+                echo "<td>" . (int)$row['category_id'] . "</td>";
+                echo "<td>" . (int)$row['module_id'] . "</td>";
+                echo "<td>" . htmlspecialchars($row['code']) . "</td>";
+                echo "<td>" . (int)$row['sort_order'] . "</td>";
+                echo "<td>" . ((int)$row['status'] ? 'Enabled' : 'Disabled') . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "<p>No records found in table.</p>";
+        }
+    } catch (Exception $e) {
+        echo "<p class='error'>✗ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
 
     echo "<hr>";
     echo "<p><strong>Diagnostic Complete!</strong></p>";
