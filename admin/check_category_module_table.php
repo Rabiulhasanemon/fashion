@@ -2,8 +2,8 @@
 // Diagnostic script to check category_module table
 // Access via: http://yourdomain.com/admin/check_category_module_table.php
 
-// Enable error reporting
-error_reporting(E_ALL);
+// Suppress deprecation warnings from vendor libraries (Google API client)
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
@@ -34,10 +34,9 @@ try {
     // Registry
     $registry = new Registry();
 
-    // Config
+    // Config - Don't load config files, just create the object
+    // Config values will be loaded from database if needed
     $config = new Config();
-    $config->load('default');
-    $config->load('admin');
     $registry->set('config', $config);
 
     // Check database constants
