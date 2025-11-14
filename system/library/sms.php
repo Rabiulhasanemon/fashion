@@ -1,4 +1,5 @@
 <?php
+#[AllowDynamicProperties]
 class SMS {
     protected $sms;
 

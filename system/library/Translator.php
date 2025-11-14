@@ -1,4 +1,5 @@
 <?php
+#[AllowDynamicProperties]
 class  Translator {
 
     public function __construct($lang) {
