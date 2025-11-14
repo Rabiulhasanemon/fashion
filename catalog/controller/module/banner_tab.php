@@ -8,6 +8,14 @@ class ControllerModuleBannerTab extends Controller {
 		$data['blurb'] = isset($setting['blurb']) ? $setting['blurb'] : '';
         $data['see_all'] = isset($setting['url']) ? $setting['url'] : null;
         $data['class'] = isset($setting['class']) ? $setting['class'] : '';
+        
+        // Check if we're on a category page
+        if (isset($this->request->get['route'])) {
+            $route = (string)$this->request->get['route'];
+        } else {
+            $route = 'common/home';
+        }
+        $data['is_category_page'] = ($route == 'product/category');
 
 		$data['text_tax'] = $this->language->get('text_tax');
 

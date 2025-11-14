@@ -34,6 +34,8 @@
           $banner_image = isset($first_child['image']) ? $first_child['image'] : '';
           ?>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="padding: 0 10px; margin-bottom: 20px;">
+          <?php if (isset($is_category_page) && $is_category_page) { ?>
+          <!-- Promotional Banner Style (Category Pages Only) -->
           <div class="promotional-banner" style="position: relative; overflow: hidden; border-radius: 8px; min-height: 300px; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
             <!-- Background Image -->
             <div class="banner-background" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1;">
@@ -77,6 +79,18 @@
               </div>
             </div>
           </div>
+          <?php } else { ?>
+          <!-- Simple Banner Style (Home Page) -->
+          <div class="simple-banner" style="position: relative; overflow: hidden; border-radius: 8px;">
+            <?php if ($banner_link && $banner_link != '#') { ?>
+            <a href="<?php echo htmlspecialchars($banner_link); ?>" style="display: block;">
+            <?php } ?>
+            <img src="<?php echo $banner_image; ?>" alt="<?php echo htmlspecialchars($banner_title ? $banner_title : $banner_tag); ?>" style="width: 100%; height: auto; display: block; border-radius: 8px; transition: transform 0.3s ease;" />
+            <?php if ($banner_link && $banner_link != '#') { ?>
+            </a>
+            <?php } ?>
+          </div>
+          <?php } ?>
         </div>
         <?php } ?>
         <?php } ?>
@@ -92,7 +106,7 @@
 </div>
 
 <style>
-/* Promotional Banner Styles */
+/* Promotional Banner Styles (Category Pages Only) */
 .promotional-banner {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -106,6 +120,11 @@
   background: #2d6ae0 !important;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(55, 125, 255, 0.4) !important;
+}
+
+/* Simple Banner Styles (Home Page) */
+.simple-banner:hover img {
+  transform: scale(1.05);
 }
 
 /* Responsive Styles */
