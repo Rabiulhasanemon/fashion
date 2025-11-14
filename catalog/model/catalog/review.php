@@ -76,6 +76,30 @@ class ModelCatalogReview extends Model {
 		
 		$sql .= ", date_added = NOW()";
 
+		// Proactively fix AUTO_INCREMENT if needed (only check, don't always fix)
+		// Check if there's a review with review_id = 0 and remove it
+		$this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE review_id = 0");
+		
+		// Check current AUTO_INCREMENT value and fix if it's problematic
+		$table_status = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "review'");
+		if ($table_status && isset($table_status->row['Auto_increment'])) {
+			$current_auto_increment = (int)$table_status->row['Auto_increment'];
+			
+			// Get max review_id
+			$max_check = $this->db->query("SELECT MAX(review_id) as max_id FROM " . DB_PREFIX . "review");
+			$max_id = 0;
+			if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+				$max_id = (int)$max_check->row['max_id'];
+			}
+			
+			// If AUTO_INCREMENT is 0, 1, or less than max_id, fix it
+			if ($current_auto_increment <= 0 || $current_auto_increment <= $max_id) {
+				$next_id = max($max_id + 1, 1);
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "review AUTO_INCREMENT = " . $next_id);
+				error_log('Review AUTO_INCREMENT fixed from ' . $current_auto_increment . ' to ' . $next_id);
+			}
+		}
+
 		// Execute query with error handling
 		// Use output buffering to catch any trigger_error output
 		ob_start();
