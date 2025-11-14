@@ -439,11 +439,14 @@ function addModule() {
 	$('#category-modules tbody').append(html);
 
 	// Initialize Summernote for the newly added description field
-	$('#module-description-' + (module_row - 1)).summernote({
-		height: 150,
+	var $newTextarea = $('#module-description-' + module_row);
+	$newTextarea.addClass('summernote-initialized');
+	$newTextarea.summernote({
+		height: 300,
+		focus: false,
 		toolbar: [
 			['style', ['style']],
-			['font', ['bold', 'italic', 'underline', 'clear']],
+			['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
 			['fontname', ['fontname']],
 			['fontsize', ['fontsize']],
 			['color', ['color']],
@@ -467,30 +470,46 @@ $(document).on('change', '.module-select', function() {
 
 // Initialize Summernote for existing module description fields
 $(document).ready(function() {
-	$('textarea.summernote').each(function() {
-		if (!$(this).next('.note-editor').length) {
-			var $textarea = $(this);
-			var content = $textarea.val();
-			$textarea.summernote({
-				height: 150,
-				toolbar: [
-					['style', ['style']],
-					['font', ['bold', 'italic', 'underline', 'clear']],
-					['fontname', ['fontname']],
-					['fontsize', ['fontsize']],
-					['color', ['color']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['table', ['table']],
-					['insert', ['link', 'picture', 'video']],
-					['view', ['fullscreen', 'codeview', 'help']]
-				]
-			});
-			// Set content after initialization
-			if (content) {
-				$textarea.summernote('code', content);
+	// Wait a bit to ensure DOM is fully ready
+	setTimeout(function() {
+		$('textarea.summernote').each(function() {
+			if (!$(this).next('.note-editor').length && !$(this).hasClass('summernote-initialized')) {
+				var $textarea = $(this);
+				var content = $textarea.val();
+				
+				// Decode HTML entities if content is encoded
+				if (content) {
+					var tempDiv = $('<div>').html(content);
+					content = tempDiv.text() !== content ? tempDiv.html() : content;
+				}
+				
+				$textarea.addClass('summernote-initialized');
+				$textarea.summernote({
+					height: 300,
+					focus: false,
+					toolbar: [
+						['style', ['style']],
+						['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+						['fontname', ['fontname']],
+						['fontsize', ['fontsize']],
+						['color', ['color']],
+						['para', ['ul', 'ol', 'paragraph']],
+						['table', ['table']],
+						['insert', ['link', 'picture', 'video']],
+						['view', ['fullscreen', 'codeview', 'help']]
+					],
+					callbacks: {
+						onInit: function() {
+							// Set content after editor is fully initialized
+							if (content) {
+								$textarea.summernote('code', content);
+							}
+						}
+					}
+				});
 			}
-		}
-	});
+		});
+	}, 100);
 });
 
 // Sync Summernote content before form submission
