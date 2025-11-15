@@ -128,13 +128,16 @@
     width: 100%;
     border-radius: 10px;
     background-color: #fff;
-    overflow: hidden;
-    border: 1px solid #fff;
-    transition: 0.3s linear;
+    overflow: visible;
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .product-card:hover {
     border-color: #FF6A00;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
 }
 
 .product-card .product-thumb {
@@ -186,39 +189,59 @@
 
 .product-card .product-button-group {
     position: absolute;
-    left: 0;
-    bottom: -15px;
-    width: 100%;
-    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     opacity: 0;
     visibility: hidden;
-    z-index: 2;
-    transition: 0.3s linear;
+    z-index: 15;
+    transition: all 0.3s ease;
+    pointer-events: none;
 }
 
 .product-card:hover .product-button-group {
-    bottom: 10px;
+    bottom: 15px;
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .product-card .product-button-group .product-button {
-    height: 35px;
-    width: 35px;
-    line-height: 36px;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #fff;
     padding: 0;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     border-radius: 50%;
-    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.1);
-    margin: 0 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
     background: #FF6A00 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 16;
 }
 
 .product-card .product-button-group .product-button:hover {
     background: #ff8c00 !important;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4);
+}
+
+.product-card .product-button-group .product-button i {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 1;
+    display: block;
 }
 
 .product-card .product-card-body {

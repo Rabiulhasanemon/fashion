@@ -1431,9 +1431,9 @@ select option {
    --------- Module Spacing & Premium Styling ---------
    ==== */
 
-/* Remove padding from popular category section */
+/* Popular category section padding */
 .newproduct-section.popular-category-sec {
-  padding: 0;
+  padding: 10px 0;
 }
 
 /* Remove margin-top from mt-20 class */
@@ -1462,7 +1462,7 @@ section,
 .module-section,
 .module-wrapper,
 .standard-module-section {
-  padding-top: 10px !important;
+  padding-top: 0px !important;
   padding-bottom: 10px !important;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
@@ -1792,5 +1792,129 @@ section,
 }
 
 /* ==== 
-   --------- Additional Module Fixes End ---------
+   --------- Premium Product Card Shadows & Button Fixes ---------
+   ==== */
+
+/* Add premium shadows to product cards in Product Showcase, Flash Deal, and Tabbed Category */
+.newproduct-section.popular-category-sec .product-card,
+.product-showcase-tabs .product-card,
+.tabbed-category-slider-wrapper .product-card,
+.deal-of-day-section .product-card,
+.flash-sell-new-section .product-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid #f0f0f0 !important;
+}
+
+.newproduct-section.popular-category-sec .product-card:hover,
+.product-showcase-tabs .product-card:hover,
+.tabbed-category-slider-wrapper .product-card:hover,
+.deal-of-day-section .product-card:hover,
+.flash-sell-new-section .product-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-4px) !important;
+  border-color: #FF6A00 !important;
+}
+
+/* Fix product button group positioning and processing */
+.newproduct-section.popular-category-sec .product-card .product-button-group,
+.product-showcase-tabs .product-card .product-button-group,
+.tabbed-category-slider-wrapper .product-card .product-button-group,
+.deal-of-day-section .product-card .product-button-group,
+.flash-sell-new-section .product-card .product-button-group {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 15px !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  z-index: 15 !important;
+  transition: all 0.3s ease !important;
+  pointer-events: none !important;
+}
+
+/* Ensure product card allows buttons to be visible */
+.newproduct-section.popular-category-sec .product-card,
+.product-showcase-tabs .product-card,
+.tabbed-category-slider-wrapper .product-card,
+.deal-of-day-section .product-card {
+  overflow: visible !important;
+}
+
+.newproduct-section.popular-category-sec .product-card:hover .product-button-group,
+.product-showcase-tabs .product-card:hover .product-button-group,
+.tabbed-category-slider-wrapper .product-card:hover .product-button-group,
+.deal-of-day-section .product-card:hover .product-button-group,
+.flash-sell-new-section .product-card:hover .product-button-group {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  bottom: 15px !important;
+}
+
+/* Fix individual button styling and processing */
+.newproduct-section.popular-category-sec .product-card .product-button-group .product-button,
+.product-showcase-tabs .product-card .product-button-group .product-button,
+.tabbed-category-slider-wrapper .product-card .product-button-group .product-button,
+.deal-of-day-section .product-card .product-button-group .product-button,
+.flash-sell-new-section .product-card .product-button-group .product-button {
+  height: 40px !important;
+  width: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #FF6A00 !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-decoration: none !important;
+  position: relative !important;
+  z-index: 16 !important;
+}
+
+.newproduct-section.popular-category-sec .product-card .product-button-group .product-button:hover,
+.product-showcase-tabs .product-card .product-button-group .product-button:hover,
+.tabbed-category-slider-wrapper .product-card .product-button-group .product-button:hover,
+.deal-of-day-section .product-card .product-button-group .product-button:hover,
+.flash-sell-new-section .product-card .product-button-group .product-button:hover {
+  background: #ff8c00 !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4) !important;
+}
+
+/* Ensure icons are visible and properly sized */
+.newproduct-section.popular-category-sec .product-card .product-button-group .product-button i,
+.product-showcase-tabs .product-card .product-button-group .product-button i,
+.tabbed-category-slider-wrapper .product-card .product-button-group .product-button i,
+.deal-of-day-section .product-card .product-button-group .product-button i,
+.flash-sell-new-section .product-card .product-button-group .product-button i {
+  font-size: 16px !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure buttons are clickable */
+.newproduct-section.popular-category-sec .product-card .product-button-group .product-button,
+.product-showcase-tabs .product-card .product-button-group .product-button,
+.tabbed-category-slider-wrapper .product-card .product-button-group .product-button,
+.deal-of-day-section .product-card .product-button-group .product-button,
+.flash-sell-new-section .product-card .product-button-group .product-button {
+  pointer-events: auto !important;
+}
+
+/* ==== 
+   --------- Premium Product Card Shadows & Button Fixes End ---------
    ==== */
