@@ -57,8 +57,8 @@
                 </div>
                 <div class="col-lg-2 col-xl-2 col-md-4 col-6">
                     <div class="footer-widget quick-links">
-                        <p class="footer-widget-title">Information</p>
-                        <ul class="footer-widget-list">
+                        <p class="footer-widget-title footer-accordion-toggle">Information <span class="footer-accordion-icon">+</span></p>
+                        <ul class="footer-widget-list footer-accordion-content">
                             <?php if (isset($informations) && $informations) { ?>
                             <?php foreach ($informations as $information) { ?>
                             <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
@@ -72,8 +72,8 @@
                 </div>
                 <div class="col-lg-2 col-xl-2 col-md-3 col-6">
                     <div class="footer-widget accounts">
-                        <p class="footer-widget-title">Shop By Category</p>
-                        <ul class="footer-widget-list">
+                        <p class="footer-widget-title footer-accordion-toggle">Shop By Category <span class="footer-accordion-icon">+</span></p>
+                        <ul class="footer-widget-list footer-accordion-content">
                             <?php if (isset($categories) && $categories) { ?>
                             <?php $category_count = 0; ?>
                             <?php foreach ($categories as $category) { ?>
@@ -88,8 +88,8 @@
                 </div>
                 <div class="col-lg-2 col-xl-2 col-md-2 col-6">
                     <div class="footer-widget pages">
-                        <p class="footer-widget-title">Support</p>
-                        <ul class="footer-widget-list">
+                        <p class="footer-widget-title footer-accordion-toggle">Support <span class="footer-accordion-icon">+</span></p>
+                        <ul class="footer-widget-list footer-accordion-content">
                             <?php if (isset($account) && $account) { ?>
                             <li><a href="<?php echo $account; ?>"><?php echo isset($text_account) ? $text_account : 'My Account'; ?></a></li>
                             <?php } ?>
@@ -107,7 +107,8 @@
                 </div>
                 <div class="col-lg-3 col-xl-3 col-md-7 col-12">
                     <div class="footer-widget newsletter">
-                        <p class="footer-widget-title" style="color: #666;">Sign Up Newsletter</p>
+                        <p class="footer-widget-title footer-accordion-toggle" style="color: #666;">Sign Up Newsletter <span class="footer-accordion-icon">+</span></p>
+                        <div class="footer-accordion-content">
                         <p class="f-widget-text">Don't worry, we won't spam you!</p>
                         <form action="<?php echo isset($newsletter_action) ? $newsletter_action : $newsletter; ?>" method="POST" class="footer-newsletter needs-validation" id="newsletterForm" novalidate="">
                             <input type="email" name="email" class="form-control" placeholder="Type Your E-mail" required="">
@@ -132,6 +133,7 @@
                                 <a href="#" target="_blank"><img src="catalog/view/theme/ranger_fashion/image/app-store.svg" alt="app-store" onerror="this.style.display='none'"></a>
                             </div>
                         </div>
+                        </div>
                     </div>
                 </div>
                                 </div>
@@ -153,3 +155,122 @@
         </div>
     </div>
 </footer>
+
+<style>
+/* Footer Accordion for Mobile and Tablet */
+@media (max-width: 991px) {
+  .footer-widget-title.footer-accordion-toggle {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    padding-right: 30px;
+    margin-bottom: 0;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-widget-title.footer-accordion-toggle:hover {
+    color: #FF6A00;
+  }
+  
+  .footer-accordion-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1;
+    transition: transform 0.3s ease;
+    color: #666;
+  }
+  
+  .footer-widget-title.footer-accordion-toggle.active .footer-accordion-icon {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  
+  .footer-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer-widget-title.footer-accordion-toggle.active + .footer-accordion-content,
+  .footer-widget-title.footer-accordion-toggle.active ~ .footer-accordion-content,
+  .footer-widget-title.footer-accordion-toggle.active + div.footer-accordion-content {
+    max-height: 1000px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+  }
+}
+
+/* Desktop - Always show content */
+@media (min-width: 992px) {
+  .footer-accordion-icon {
+    display: none !important;
+  }
+  
+  .footer-accordion-content {
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  .footer-widget-title.footer-accordion-toggle {
+    cursor: default;
+    padding-right: 0;
+  }
+}
+</style>
+
+<script>
+jQuery(document).ready(function($) {
+  function initFooterAccordion() {
+    if ($(window).width() <= 991) {
+      // Mobile/Tablet view - accordion enabled
+      $('.footer-accordion-toggle').off('click.footerAccordion').on('click.footerAccordion', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var $content = $this.next('.footer-accordion-content');
+        
+        // If no next sibling, look for content in parent
+        if ($content.length === 0) {
+          $content = $this.parent().find('.footer-accordion-content').first();
+        }
+        
+        if ($content.length === 0) return;
+        
+        // Toggle active class
+        $this.toggleClass('active');
+        
+        // Smooth slide animation
+        if ($this.hasClass('active')) {
+          // Expand
+          $content.css('max-height', $content[0].scrollHeight + 'px');
+        } else {
+          // Collapse
+          $content.css('max-height', '0');
+        }
+      });
+    } else {
+      // Desktop view - always show content, remove accordion
+      $('.footer-accordion-toggle').off('click.footerAccordion');
+      $('.footer-accordion-toggle').removeClass('active');
+      $('.footer-accordion-content').css({
+        'max-height': 'none',
+        'padding-top': '',
+        'padding-bottom': ''
+      });
+    }
+  }
+  
+  // Initialize on page load
+  initFooterAccordion();
+  
+  // Handle window resize
+  $(window).on('resize', function() {
+    initFooterAccordion();
+  });
+});
+</script>
