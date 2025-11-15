@@ -371,12 +371,6 @@
 
 /* Responsive */
 @media (max-width: 991px) {
-    /* Hide header bottom navigation in mobile and tablet */
-    .sticky-content-wrapper,
-    .header-bottom-wrapper {
-        display: none !important;
-    }
-    
     .header-bottom .nav-toggler {
         display: block;
     }
