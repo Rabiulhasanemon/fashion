@@ -126,18 +126,18 @@
     display: block;
     position: relative;
     width: 100%;
-    border-radius: 12px;
+    border-radius: 10px;
     background-color: #fff;
     overflow: visible;
-    border: 1px solid #e8e8e8;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .product-card:hover {
     border-color: #FF6A00;
-    box-shadow: 0 10px 30px rgba(255, 106, 0, 0.15);
-    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
 }
 
 .product-card .product-thumb {
@@ -245,7 +245,7 @@
 }
 
 .product-card .product-card-body {
-    padding: 12px 12px 8px;
+    padding: 15px 15px 10px;
 }
 
 .product-card .product-category {
@@ -274,11 +274,11 @@
     transition: color 0.3s;
     color: #232323;
     text-decoration: none;
-    font-size: 13px;
-    height: 32px;
+    font-size: 14px;
+    height: 37px;
     display: block;
     font-weight: 500;
-    line-height: 16px;
+    line-height: 18px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -308,8 +308,8 @@
 
 .product-card .product-price {
     display: inline-block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 10px;
+    font-size: 15px;
     font-weight: 600;
     text-align: center;
     color: #FF6A00;
@@ -322,9 +322,9 @@
     font-size: 14px;
 }
 
-/* Slider Item - Premium compact design */
+/* Slider Item */
 .slider-item {
-    padding: 8px 4px;
+    padding: 10px 6px;
 }
 
 /* Popular Category View Loading */
@@ -449,6 +449,93 @@
         font-size: 13px;
         margin-right: 12px;
         padding-bottom: 10px;
+    }
+    
+    /* Premium mobile product card sizing */
+    .product-showcase-tabs .product-card,
+    .newproduct-section.popular-category-sec .product-card {
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .product-showcase-tabs .product-card .product-card-body,
+    .newproduct-section.popular-category-sec .product-card .product-card-body {
+        padding: 10px 8px 8px;
+    }
+    
+    .product-showcase-tabs .product-card .product-title > a,
+    .newproduct-section.popular-category-sec .product-card .product-title > a {
+        font-size: 12px;
+        line-height: 1.3;
+        height: auto;
+        min-height: 32px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .product-showcase-tabs .product-card .product-price,
+    .newproduct-section.popular-category-sec .product-card .product-price {
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+    
+    .product-showcase-tabs .product-card .product-category,
+    .newproduct-section.popular-category-sec .product-card .product-category {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .product-showcase-tabs .product-card .product-button-group .product-button,
+    .newproduct-section.popular-category-sec .product-card .product-button-group .product-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .product-showcase-tabs .product-card .product-button-group .product-button i,
+    .newproduct-section.popular-category-sec .product-card .product-button-group .product-button i {
+        font-size: 14px;
+    }
+    
+    /* Reduce slider item padding for mobile */
+    .slider-item {
+        padding: 5px 4px;
+    }
+}
+
+/* Tablet view - 4 products premium design */
+@media (min-width: 577px) and (max-width: 991px) {
+    .product-showcase-tabs .product-card,
+    .newproduct-section.popular-category-sec .product-card {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    
+    .product-showcase-tabs .product-card .product-card-body,
+    .newproduct-section.popular-category-sec .product-card .product-card-body {
+        padding: 12px 10px 10px;
+    }
+    
+    .product-showcase-tabs .product-card .product-title > a,
+    .newproduct-section.popular-category-sec .product-card .product-title > a {
+        font-size: 13px;
+        line-height: 1.4;
+        height: auto;
+        min-height: 36px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .product-showcase-tabs .product-card .product-price,
+    .newproduct-section.popular-category-sec .product-card .product-price {
+        font-size: 14px;
+    }
+    
+    .product-showcase-tabs .product-card .product-category,
+    .newproduct-section.popular-category-sec .product-card .product-category {
+        font-size: 12px;
+    }
+    
+    /* Reduce slider item padding for tablet */
+    .slider-item {
+        padding: 8px 5px;
     }
 }
 </style>
@@ -588,42 +675,39 @@
                 $slider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
             }
             
-            // Re-initialize with unique instance - Premium 2 products sliding
+            // Re-initialize with unique instance
             owlCarousel = $slider.addClass('owl-carousel').owlCarousel({
                 loop: false,
-                margin: 20,
+                margin: 15,
                 nav: false,
                 dots: false,
                 autoplay: false,
                 autoplayTimeout: 3000,
                 autoplayHoverPause: true,
-                slideBy: 2,
                 navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
                 responsive: {
                     0: {
-                        items: 1,
-                        margin: 10,
-                        slideBy: 1
+                        items: 2,
+                        margin: 8,
+                        slideBy: 2
                     },
                     576: {
                         items: 2,
-                        margin: 20,
+                        margin: 10,
                         slideBy: 2
                     },
                     768: {
-                        items: 2,
-                        margin: 20,
+                        items: 4,
+                        margin: 12,
                         slideBy: 2
                     },
                     992: {
-                        items: 2,
-                        margin: 20,
-                        slideBy: 2
+                        items: 4,
+                        margin: 15
                     },
                     1200: {
-                        items: 2,
-                        margin: 20,
-                        slideBy: 2
+                        items: 5,
+                        margin: 15
                     }
                 }
             });

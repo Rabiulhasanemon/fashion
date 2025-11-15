@@ -250,18 +250,18 @@ if (empty($tabs)) {
     display: block;
     position: relative;
     width: 100%;
-    border-radius: 12px;
+    border-radius: 10px;
     background-color: #fff;
     overflow: visible;
-    border: 1px solid #e8e8e8;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .product-card:hover {
     border-color: #FF6A00;
-    box-shadow: 0 10px 30px rgba(255, 106, 0, 0.15);
-    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
 }
 
 .product-card .product-thumb {
@@ -369,7 +369,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-card-body {
-    padding: 12px 12px 8px;
+    padding: 15px 15px 10px;
 }
 
 .product-card .product-category {
@@ -398,11 +398,11 @@ if (empty($tabs)) {
     transition: color 0.3s;
     color: #232323;
     text-decoration: none;
-    font-size: 13px;
-    height: 32px;
+    font-size: 14px;
+    height: 37px;
     display: block;
     font-weight: 500;
-    line-height: 16px;
+    line-height: 18px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -432,8 +432,8 @@ if (empty($tabs)) {
 
 .product-card .product-price {
     display: inline-block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 10px;
+    font-size: 15px;
     font-weight: 600;
     text-align: center;
     color: #FF6A00;
@@ -446,9 +446,23 @@ if (empty($tabs)) {
     font-size: 14px;
 }
 
-/* Slider Item - Premium compact design */
+/* Slider Item */
 .slider-item {
-    padding: 8px 4px;
+    padding: 10px 6px;
+}
+
+/* Mobile slider item - smaller padding */
+@media (max-width: 576px) {
+    .slider-item {
+        padding: 5px 4px;
+    }
+}
+
+/* Tablet slider item */
+@media (min-width: 577px) and (max-width: 991px) {
+    .slider-item {
+        padding: 8px 5px;
+    }
 }
 
 /* Owl Carousel Navigation */
@@ -597,6 +611,71 @@ if (empty($tabs)) {
         margin-bottom: 20px;
     }
     
+    /* Premium mobile product card sizing for Tabbed Category */
+    .tabbed-category-slider-wrapper .product-card {
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-card-body {
+        padding: 10px 8px 8px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-title > a {
+        font-size: 12px;
+        line-height: 1.3;
+        height: auto;
+        min-height: 32px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-price {
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-category {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-button-group .product-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-button-group .product-button i {
+        font-size: 14px;
+    }
+}
+
+/* Tablet view - 4 products premium design for Tabbed Category */
+@media (min-width: 577px) and (max-width: 991px) {
+    .tabbed-category-slider-wrapper .product-card {
+        padding: 10px;
+        border-radius: 10px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-card-body {
+        padding: 12px 10px 10px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-title > a {
+        font-size: 13px;
+        line-height: 1.4;
+        height: auto;
+        min-height: 36px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-price {
+        font-size: 14px;
+    }
+    
+    .tabbed-category-slider-wrapper .product-card .product-category {
+        font-size: 12px;
+    }
+    
     .section-title h2 {
         font-size: 16px;
     }
@@ -609,6 +688,11 @@ if (empty($tabs)) {
     .section-title .countdown span {
         font-size: 11px;
         margin-right: 4px;
+    }
+    
+    /* Reduce slider item padding for mobile */
+    .slider-item {
+        padding: 5px 4px;
     }
 }
 </style>
@@ -629,33 +713,35 @@ if (empty($tabs)) {
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
             var owl = jQuery(slider).owlCarousel({
                 loop: true,
-                margin: 20,
+                margin: 15,
                 nav: false,
                 dots: false,
                 autoplay: true,
                 autoplayTimeout: 3000,
                 autoplayHoverPause: true,
-                slideBy: 2,
                 responsive: {
                     0: {
-                        items: 1,
-                        slideBy: 1
+                        items: 2,
+                        margin: 8,
+                        slideBy: 2
                     },
                     576: {
                         items: 2,
+                        margin: 10,
                         slideBy: 2
                     },
                     768: {
-                        items: 2,
+                        items: 4,
+                        margin: 12,
                         slideBy: 2
                     },
                     992: {
-                        items: 2,
-                        slideBy: 2
+                        items: 4,
+                        margin: 15
                     },
                     1200: {
-                        items: 2,
-                        slideBy: 2
+                        items: 5,
+                        margin: 15
                     }
                 }
             });
