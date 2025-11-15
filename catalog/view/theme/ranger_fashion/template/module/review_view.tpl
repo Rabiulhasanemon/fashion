@@ -59,7 +59,7 @@
 
 .rv-container-wrapper {
   position: relative;
-  padding: 0 60px;
+  padding: 0;
 }
 
 .rv-swiper-container {
@@ -295,7 +295,7 @@
     width: 50%;
   }
   .rv-container-wrapper {
-    padding: 0 50px;
+    padding: 0;
   }
 }
 
@@ -306,7 +306,7 @@
   }
   
   .rv-container-wrapper {
-    padding: 0 45px;
+    padding: 0;
   }
   
   .rv-swiper-slide {
@@ -381,7 +381,7 @@
         autoplay: {
           delay: 3000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: true,
+          pauseOnMouseEnter: false,
           stopOnLastSlide: false,
         },
         navigation: {

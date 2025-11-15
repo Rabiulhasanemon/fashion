@@ -1545,6 +1545,13 @@ section,
 }
 
 /* 3. Fix icon button visibility on hover - ensure icons are visible */
+.product-card .product-button-group .product-button {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .product-card .product-button-group .product-button i,
 .product-card .product-button-group .product-button .icon-heart,
 .product-card .product-button-group .product-button .icon-repeat,
@@ -1552,9 +1559,50 @@ section,
   color: #ffffff !important;
   font-size: 16px !important;
   display: inline-block !important;
-  line-height: 35px !important;
+  line-height: 1 !important;
   opacity: 1 !important;
   visibility: visible !important;
+  font-family: "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome", "Material Icons", sans-serif !important;
+  font-weight: 900 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Ensure icons are visible - support both Font Awesome and custom icon fonts */
+.product-card .product-button-group .product-button i,
+.product-card .product-button-group .product-button .icon-heart,
+.product-card .product-button-group .product-button .icon-repeat,
+.product-card .product-button-group .product-button .icon-shopping-cart {
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Fallback: If icon font doesn't load, use Font Awesome unicode */
+.product-card .product-button-group .product-button i.icon-heart::before,
+.product-card .product-button-group .product-button .icon-heart::before {
+  content: "\f004" !important; /* Font Awesome heart icon */
+  font-family: "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+}
+
+.product-card .product-button-group .product-button i.icon-repeat::before,
+.product-card .product-button-group .product-button .icon-repeat::before {
+  content: "\f01e" !important; /* Font Awesome repeat icon */
+  font-family: "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+}
+
+.product-card .product-button-group .product-button i.icon-shopping-cart::before,
+.product-card .product-button-group .product-button .icon-shopping-cart::before {
+  content: "\f07a" !important; /* Font Awesome shopping cart icon */
+  font-family: "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
 }
 
 .product-card:hover .product-button-group .product-button i,
