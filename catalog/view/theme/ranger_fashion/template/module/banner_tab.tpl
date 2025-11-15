@@ -21,6 +21,10 @@
     padding: 0 !important;
   }
   
+  .banner-tab-section.home-page-banner .container {
+    max-width: 100% !important;
+  }
+  
   .banner-tab-wrapper {
     padding: 0 !important;
     margin: 0 !important;
