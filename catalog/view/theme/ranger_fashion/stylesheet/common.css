@@ -35,9 +35,9 @@
   --fontSize: 16px;
   --textColor: #000;
   --textColorTwo: #f3f3f3;
-  --sectionPadding: 120px 0;
-  --sectionPaddingTop: 120px;
-  --sectionPaddingBottom: 120px;
+  --sectionPadding: 0;
+  --sectionPaddingTop: 0;
+  --sectionPaddingBottom: 0;
 }
 /* ==== 
  --------- (1.1) Variable Styles End ---------
@@ -856,13 +856,13 @@ select option {
   background: var(--sectionBg);
 }
 .section-padding {
-  padding: var(--sectionPadding);
+  padding: 0 !important;
 }
 .section-padding-top {
-  padding-top: var(--sectionPaddingTop);
+  padding-top: 0 !important;
 }
 .section-padding-bottom {
-  padding-bottom: var(--sectionPaddingBottom);
+  padding-bottom: 0 !important;
 }
 .section-head {
   display: flex;

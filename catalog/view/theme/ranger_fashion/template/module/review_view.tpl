@@ -1,5 +1,5 @@
 <?php if (!empty($reviews)) { ?>
-<section class="rv-testimonial-section" style="max-width: 80%; margin: 0 auto; padding: 40px 0;">
+<section class="rv-testimonial-section" style="max-width: 80%; margin: 0 auto; padding: 0;">
   <?php if ($title) { ?>
   <div class="rv-module-heading" style="margin-bottom: 30px; text-align: center;">
     <h2 class="rv-title"><?php echo $title; ?></h2>
@@ -53,7 +53,7 @@
 <style>
 /* Review View Testimonial - Unique Classes to Avoid Conflicts */
 .rv-testimonial-section {
-  padding: 40px 0;
+  padding: 0;
   position: relative;
 }
 
@@ -286,7 +286,7 @@
 @media (max-width: 767px) {
   .rv-testimonial-section {
     max-width: 100% !important;
-    padding: 20px 15px;
+    padding: 0 15px;
   }
   
   .rv-container-wrapper {
