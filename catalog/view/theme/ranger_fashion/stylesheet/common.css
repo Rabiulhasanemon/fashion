@@ -1925,3 +1925,15 @@ section,
 /* ==== 
    --------- Premium Product Card Shadows & Button Fixes End ---------
    ==== */
+
+/* Hide header bottom navigation in mobile and tablet */
+@media (max-width: 991px) {
+  .sticky-content-wrapper,
+  .header-bottom-wrapper {
+    display: none !important;
+  }
+  
+  .header-bottom.sticky-content {
+    display: none !important;
+  }
+}
