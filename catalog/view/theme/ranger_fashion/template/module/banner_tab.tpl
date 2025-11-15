@@ -42,9 +42,16 @@
   .banner-tab-wrapper .col-sm-12,
   .banner-tab-wrapper .col-xs-12 {
     padding: 0 !important;
-    margin: 0 !important;
+    margin-bottom: 12px !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+  
+  .banner-tab-wrapper .col-lg-4:last-child,
+  .banner-tab-wrapper .col-md-4:last-child,
+  .banner-tab-wrapper .col-sm-12:last-child,
+  .banner-tab-wrapper .col-xs-12:last-child {
+    margin-bottom: 0 !important;
   }
   
   .promotional-banner,

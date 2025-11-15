@@ -516,8 +516,8 @@
     .flash-sell-new-section .product-card {
         flex-direction: column;
         height: auto;
-        min-height: 320px;
-        padding: 10px;
+        min-height: 260px;
+        padding: 8px;
         border-radius: 8px;
         margin: 0 4px;
         display: flex;
@@ -527,15 +527,15 @@
     
     .flash-sell-new-section .product-card .product-thumb {
         width: 100%;
-        height: 180px;
-        min-height: 180px;
+        height: 140px;
+        min-height: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #fff;
         border-radius: 6px;
         overflow: hidden;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .flash-sell-new-section .product-card .product-thumb > img {
@@ -565,21 +565,21 @@
     
     .flash-sell-new-section .product-card .product-category {
         font-size: 10px;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         text-align: center;
         color: #666;
     }
     
     .flash-sell-new-section .product-card .product-title {
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         text-align: center;
     }
     
     .flash-sell-new-section .product-card .product-title > a {
-        font-size: 13px;
-        line-height: 1.4;
+        font-size: 12px;
+        line-height: 1.3;
         height: auto;
-        min-height: 36px;
+        min-height: 32px;
         -webkit-line-clamp: 2;
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -590,33 +590,33 @@
     }
     
     .flash-sell-new-section .product-card .product-price {
-        font-size: 16px;
-        margin-bottom: 10px;
+        font-size: 15px;
+        margin-bottom: 8px;
         text-align: center;
         font-weight: 600;
         color: #FF6A00;
     }
     
     .flash-sell-new-section .product-card .product-price del {
-        font-size: 13px;
+        font-size: 12px;
         color: #999;
         margin-right: 6px;
     }
     
     .flash-sell-new-section .product-card .countdown {
         margin-top: 0;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         flex-wrap: wrap;
     }
     
     .flash-sell-new-section .product-card .countdown span {
-        min-width: 42px;
-        font-size: 11px;
-        padding: 6px 8px;
+        min-width: 38px;
+        font-size: 10px;
+        padding: 5px 6px;
         background: #f5f5f5;
         border-radius: 4px;
         text-align: center;
@@ -629,7 +629,7 @@
     }
     
     .flash-sell-new-section .product-card .countdown span small {
-        font-size: 9px;
+        font-size: 8px;
         margin-top: 2px;
         color: #666;
         font-weight: 400;
@@ -646,9 +646,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-        padding-top: 10px;
+        gap: 6px;
+        margin-top: 6px;
+        padding-top: 8px;
         border-top: 1px solid #f0f0f0;
     }
     
@@ -687,33 +687,46 @@
     }
     
     .flash-sell-new-section .product-card {
-        min-height: 300px;
-        padding: 8px;
+        min-height: 240px;
+        padding: 6px;
         margin: 0 3px;
     }
     
     .flash-sell-new-section .product-card .product-thumb {
-        height: 170px;
-        min-height: 170px;
+        height: 130px;
+        min-height: 130px;
+        margin-bottom: 6px;
     }
     
     .flash-sell-new-section .product-card .product-title > a {
-        font-size: 12px;
-        min-height: 32px;
+        font-size: 11px;
+        min-height: 28px;
     }
     
     .flash-sell-new-section .product-card .product-price {
-        font-size: 15px;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown {
+        margin-bottom: 6px;
+        gap: 4px;
     }
     
     .flash-sell-new-section .product-card .countdown span {
-        min-width: 38px;
-        font-size: 10px;
-        padding: 5px 6px;
+        min-width: 35px;
+        font-size: 9px;
+        padding: 4px 5px;
     }
     
     .flash-sell-new-section .product-card .countdown span small {
-        font-size: 8px;
+        font-size: 7px;
+    }
+    
+    .flash-sell-new-section .product-card .product-button-group {
+        margin-top: 4px;
+        padding-top: 6px;
+        gap: 5px;
     }
 }
 </style>
