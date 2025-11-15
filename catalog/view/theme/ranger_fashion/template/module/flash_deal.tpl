@@ -453,39 +453,118 @@
 }
 
 /* Responsive - Updated to work with percentage height */
+/* Premium Tablet Design */
 @media (max-width: 991px) {
     .flash-sell-new-section .product-card {
-        height: 220px;
+        height: 200px;
+        padding: 8px;
+        border-radius: 8px;
     }
     
     .flash-sell-new-section .product-card .product-thumb {
-        width: 200px;
-        height: 220px;
-    }
-    
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 40%;
-    }
-}
-
-@media (max-width: 767px) {
-    .flash-sell-new-section .product-card {
-        flex-direction: column;
-        height: auto;
-        min-height: 300px;
-    }
-    
-    .flash-sell-new-section .product-card .product-thumb {
-        width: 100%;
+        width: 180px;
         height: 200px;
     }
     
     .flash-sell-new-section .product-card .product-thumb > img {
-        height: 50%;
+        height: 38%;
+    }
+    
+    .flash-sell-new-section .product-card .product-card-body {
+        padding: 10px 8px;
+    }
+    
+    .flash-sell-new-section .product-card .product-title > a {
+        font-size: 13px;
+        line-height: 1.3;
+        height: auto;
+        min-height: 32px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .flash-sell-new-section .product-card .product-price {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .flash-sell-new-section .product-card .product-category {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span {
+        min-width: 35px;
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span small {
+        font-size: 9px;
+    }
+}
+
+/* Premium Mobile Design */
+@media (max-width: 767px) {
+    .flash-sell-new-section .product-card {
+        flex-direction: column;
+        height: auto;
+        min-height: 280px;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .flash-sell-new-section .product-card .product-thumb {
+        width: 100%;
+        height: 180px;
+    }
+    
+    .flash-sell-new-section .product-card .product-thumb > img {
+        height: 45%;
     }
     
     .flash-sell-new-section .product-card .product-card-inner {
         width: 100%;
+    }
+    
+    .flash-sell-new-section .product-card .product-card-body {
+        padding: 10px 8px 8px;
+    }
+    
+    .flash-sell-new-section .product-card .product-title > a {
+        font-size: 12px;
+        line-height: 1.3;
+        height: auto;
+        min-height: 30px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .flash-sell-new-section .product-card .product-price {
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+    
+    .flash-sell-new-section .product-card .product-category {
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span {
+        min-width: 32px;
+        font-size: 10px;
+        padding: 3px 5px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span small {
+        font-size: 8px;
+    }
+    
+    .flash-sell-new-section .product-card .product-button-group .product-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .flash-sell-new-section .product-card .product-button-group .product-button i {
+        font-size: 14px;
     }
     
     .flash-sell-new-section .flash-deal-slider .owl-nav {
@@ -506,21 +585,15 @@
 
 @media (max-width: 575px) {
     .flash-sell-new-section .section-title h2.h3 {
-        font-size: 20px;
+        font-size: 18px;
     }
     
-    .flash-sell-new-section .product-card .product-title > a {
-        font-size: 14px;
-        line-height: 18px;
+    .flash-sell-new-section .product-card {
+        min-height: 260px;
     }
     
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 40px;
-        font-size: 12px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 10px;
+    .flash-sell-new-section .product-card .product-thumb {
+        height: 160px;
     }
 }
 </style>

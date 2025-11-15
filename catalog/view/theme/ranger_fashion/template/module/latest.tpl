@@ -53,9 +53,14 @@
   </div>
   <div class="latest-products__wrapper content">
     <div class="latest-products__layout">
-      <ul class="list-unstyled latest-products__list content grid--6">
-        <?php foreach ($products as $product) { ?>
-        <li class="latest-products__item column-animation cart-content-center animate">
+      <ul class="list-unstyled latest-products__list content grid--6" id="latest-products-list-<?php echo isset($class) ? $class : 'default'; ?>">
+        <?php 
+        $product_count = 0;
+        foreach ($products as $product) { 
+          $product_count++;
+          $is_hidden = ($product_count > 4) ? 'latest-product-hidden' : '';
+        ?>
+        <li class="latest-products__item column-animation cart-content-center animate <?php echo $is_hidden; ?>" data-product-index="<?php echo $product_count; ?>">
           <div class="latest-card-wrapper color-background-1" data-product="<?php echo $product['product_id']; ?>">
             <span class="visually-hidden"><?php echo $product['name']; ?></span>
             <a href="<?php echo $product['href']; ?>" class="link link--overlay latest-card__link--overlay focus-inset" aria-label="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>"></a>
@@ -90,6 +95,153 @@
         </li>
         <?php } ?>
       </ul>
+      
+      <?php if (count($products) > 4) { ?>
+      <div class="latest-products__show-more-wrapper" id="latest-show-more-<?php echo isset($class) ? $class : 'default'; ?>" style="text-align: center; margin-top: 30px; display: none;">
+        <button class="latest-products__show-more-btn" style="background: #FF6A00; color: #fff; border: none; padding: 12px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);">
+          Show More Products
+        </button>
+      </div>
+      
+      <div class="latest-products__slider-wrapper" id="latest-slider-<?php echo isset($class) ? $class : 'default'; ?>" style="display: none; margin-top: 20px;">
+        <div class="latest-products-slider owl-carousel">
+          <!-- Remaining products will be loaded here -->
+        </div>
+      </div>
+      <?php } ?>
     </div>
   </div>
 </div>
+
+<style>
+/* Mobile and Tablet - Hide products beyond 4 */
+@media (max-width: 991px) {
+  .latest-product-hidden {
+    display: none !important;
+  }
+  
+  .latest-products__show-more-wrapper {
+    display: block !important;
+  }
+  
+  /* Premium small design for mobile/tablet */
+  .latest-products__item {
+    padding: 5px;
+  }
+  
+  .latest-card-wrapper {
+    padding: 8px;
+    border-radius: 8px;
+  }
+  
+  .latest-card__information {
+    padding: 8px 4px;
+  }
+  
+  .latest-card__vendor {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  
+  .latest-card__title {
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  
+  .latest-price-item {
+    font-size: 13px;
+  }
+  
+  .latest-price-item--regular {
+    font-size: 12px;
+  }
+}
+
+/* Desktop - Show all products */
+@media (min-width: 992px) {
+  .latest-product-hidden {
+    display: block !important;
+  }
+  
+  .latest-products__show-more-wrapper {
+    display: none !important;
+  }
+  
+  .latest-products__slider-wrapper {
+    display: none !important;
+  }
+}
+</style>
+
+<script>
+jQuery(document).ready(function($) {
+  var moduleId = '<?php echo isset($class) ? $class : 'default'; ?>';
+  var $list = $('#latest-products-list-' + moduleId);
+  var $showMoreBtn = $('#latest-show-more-' + moduleId);
+  var $sliderWrapper = $('#latest-slider-' + moduleId);
+  var $slider = $sliderWrapper.find('.latest-products-slider');
+  var hiddenProducts = [];
+  var sliderInitialized = false;
+  
+  // Collect hidden products
+  $list.find('.latest-product-hidden').each(function() {
+    hiddenProducts.push($(this).clone().removeClass('latest-product-hidden'));
+  });
+  
+  // Show More button click
+  $showMoreBtn.find('.latest-products__show-more-btn').on('click', function() {
+    if (hiddenProducts.length === 0) return;
+    
+    // Hide the button
+    $showMoreBtn.fadeOut(300);
+    
+    // Show slider wrapper
+    $sliderWrapper.fadeIn(300);
+    
+    // Initialize Owl Carousel if not already done
+    if (!sliderInitialized && typeof $.fn.owlCarousel !== 'undefined') {
+      // Clear any existing content
+      $slider.empty();
+      
+      // Add hidden products to slider
+      hiddenProducts.forEach(function($product) {
+        $slider.append($product);
+      });
+      
+      // Initialize carousel
+      $slider.addClass('owl-carousel').owlCarousel({
+        loop: false,
+        margin: 15,
+        nav: true,
+        dots: false,
+        autoplay: false,
+        responsive: {
+          0: {
+            items: 2,
+            margin: 8,
+            slideBy: 2
+          },
+          576: {
+            items: 2,
+            margin: 10,
+            slideBy: 2
+          },
+          768: {
+            items: 4,
+            margin: 12,
+            slideBy: 2
+          },
+          992: {
+            items: 4,
+            margin: 15
+          }
+        },
+        navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>']
+      });
+      
+      sliderInitialized = true;
+    }
+  });
+});
+</script>
