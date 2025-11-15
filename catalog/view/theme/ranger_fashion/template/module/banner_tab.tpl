@@ -2,24 +2,35 @@
 <div class="banner-tab-section banner-fullscreen <?php echo (isset($is_category_page) && $is_category_page) ? 'category-page-banner' : 'home-page-banner'; ?>">
   <div class="container" style="<?php echo (isset($is_category_page) && $is_category_page) ? 'width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0 20px; max-width: 100%;' : ''; ?>">
 <style>
-/* Full Screen Banners for Mobile and Tablet */
+/* Full Screen Banners for Mobile and Tablet - 100% Width */
 @media (max-width: 991px) {
-  .banner-tab-section .container {
+  .banner-tab-section {
     width: 100vw !important;
     max-width: 100vw !important;
-    margin-left: calc(-50vw + 50%) !important;
-    margin-right: calc(-50vw + 50%) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  .banner-tab-section .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     padding: 0 !important;
   }
   
   .banner-tab-wrapper {
     padding: 0 !important;
     margin: 0 !important;
+    width: 100% !important;
   }
   
   .banner-tab-wrapper .row {
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
   }
   
   .banner-tab-wrapper .col-lg-4,
@@ -27,21 +38,37 @@
   .banner-tab-wrapper .col-sm-12,
   .banner-tab-wrapper .col-xs-12 {
     padding: 0 !important;
-    margin-bottom: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   
   .promotional-banner,
   .simple-banner {
     border-radius: 0 !important;
-    margin-bottom: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   
   .promotional-banner img,
   .simple-banner img {
     border-radius: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     display: block !important;
+    object-fit: cover !important;
+  }
+  
+  .banner-background {
+    width: 100% !important;
+  }
+  
+  .banner-background img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 }
 </style>
