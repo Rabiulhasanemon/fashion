@@ -205,14 +205,31 @@
 
 .rv-swiper-nav.swiper-button-prev::after,
 .rv-swiper-nav.swiper-button-next::after {
-  display: none;
+  display: none !important;
+}
+
+.rv-swiper-nav {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 40px !important;
+  height: 40px !important;
+  background: #FF6A00 !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  border: none !important;
 }
 
 .rv-swiper-nav i {
-  font-size: 18px;
-  color: var(--primary-color, #007bff);
+  font-size: 20px !important;
+  color: #ffffff !important;
   transition: all 0.3s ease;
   line-height: 1;
+  display: block !important;
 }
 
 .rv-nav-prev.swiper-button-prev {
@@ -224,14 +241,13 @@
 }
 
 .rv-swiper-nav:hover {
-  background: var(--primary-color, #007bff);
-  border-color: var(--primary-color, #007bff);
-  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+  background: #ff8c00 !important;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3) !important;
   transform: translateY(-50%) scale(1.1);
 }
 
 .rv-swiper-nav:hover i {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .rv-swiper-nav.swiper-button-disabled {
@@ -365,7 +381,7 @@
         autoplay: {
           delay: 3000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: false,
+          pauseOnMouseEnter: true,
           stopOnLastSlide: false,
         },
         navigation: {

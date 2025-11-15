@@ -1,6 +1,6 @@
 <?php if (!empty($banners)) { ?>
-<div class="banner-tab-section banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
-  <div class="container" style="padding: 0; max-width: 80%;">
+<div class="banner-tab-section banner-fullscreen">
+  <div class="container">
 <style>
 @media (max-width: 767px) {
   .banner-tab-section .container {

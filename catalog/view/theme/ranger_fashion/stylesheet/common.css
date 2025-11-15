@@ -37,7 +37,7 @@
   --textColorTwo: #f3f3f3;
   --sectionPadding: 0;
   --sectionPaddingTop: 0;
-  --sectionPaddingBottom: 0;
+  --sectionPaddingBottom: 0;  
 }
 /* ==== 
  --------- (1.1) Variable Styles End ---------
@@ -1496,4 +1496,189 @@ section + section,
 
 /* ==== 
    --------- Module Spacing & Premium Styling End ---------
+   ==== */
+
+/* ==== 
+   --------- Additional Module Fixes ---------
+   ==== */
+
+/* 1. Apply white background to all modules */
+section,
+.newproduct-section,
+.deal-of-day-section,
+.flash-sell-new-section,
+.flashdeal-section,
+.featured-product-area,
+.banner-tab-section,
+.big-offer-module,
+.manufacturer-module-section,
+.customer-banner-area,
+.html-module-area,
+.rv-testimonial-section,
+.module-section,
+.module-wrapper,
+.standard-module-section,
+.latest-products-section {
+  background-color: #ffffff !important;
+}
+
+/* 2. Fix Banner Tab module alignment - match container width with other modules */
+.banner-tab-section.banner-fullscreen {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.banner-tab-section .container {
+  max-width: 80% !important;
+  margin: 0 auto !important;
+  padding: 0 20px !important;
+}
+
+@media (max-width: 767px) {
+  .banner-tab-section .container {
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+}
+
+/* 3. Fix icon button visibility on hover - ensure icons are visible */
+.product-card .product-button-group .product-button i,
+.product-card .product-button-group .product-button .icon-heart,
+.product-card .product-button-group .product-button .icon-repeat,
+.product-card .product-button-group .product-button .icon-shopping-cart {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  display: inline-block !important;
+  line-height: 35px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.product-card:hover .product-button-group .product-button i,
+.product-card:hover .product-button-group .product-button .icon-heart,
+.product-card:hover .product-button-group .product-button .icon-repeat,
+.product-card:hover .product-button-group .product-button .icon-shopping-cart {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure button group is visible on hover */
+.product-card .product-button-group {
+  z-index: 10 !important;
+}
+
+/* 4. Fix Flash Deal module - image display and reduce top gap */
+.flash-sell-new-section {
+  padding-top: 10px !important;
+  margin-top: 5px !important;
+}
+
+.flash-sell-new-section .product-card .product-thumb {
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+}
+
+.flash-sell-new-section .product-card .product-thumb > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center;
+  background: #fff;
+}
+
+/* 5. Reduce gaps in Latest module */
+.latest-products-section {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* 6. Fix Review View module - reduce gaps */
+.rv-testimonial-section {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Fix Review View navigation buttons visibility and functionality */
+.rv-swiper-nav {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #FF6A00 !important;
+  color: #ffffff !important;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.rv-swiper-nav i {
+  color: #ffffff !important;
+  font-size: 20px !important;
+}
+
+.rv-swiper-nav:hover {
+  background: #ff8c00 !important;
+}
+
+.rv-nav-prev {
+  left: 10px !important;
+}
+
+.rv-nav-next {
+  right: 10px !important;
+}
+
+/* 7. Fix category page product hover - prevent image from moving down */
+.product-img {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 100%;
+  background: #fff;
+}
+
+.product-img img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.product-item:hover .product-img img,
+.product-card:hover .product-img img {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* Ensure product image container doesn't move on hover */
+.product-item,
+.product-card {
+  position: relative;
+  overflow: visible;
+}
+
+.product-item .product-img,
+.product-card .product-img {
+  position: relative;
+  transform: none;
+}
+
+/* ==== 
+   --------- Additional Module Fixes End ---------
    ==== */

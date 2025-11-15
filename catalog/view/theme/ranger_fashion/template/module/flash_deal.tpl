@@ -1,5 +1,5 @@
 <?php if ($products) { ?>
-<div class="flash-sell-new-section mt-50">
+<div class="flash-sell-new-section">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -167,7 +167,9 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain !important;
+    object-position: center;
+    background: #fff;
     transform: scale(1);
     transition: 0.3s linear;
 }
