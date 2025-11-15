@@ -45,12 +45,20 @@
     aspect-ratio: inherit;
 }
 
-/* Hover effect for product images */
-.product-item:hover .product-img,
-.product-item:hover .product-image,
-.product-card:hover .product-img,
-.product-card:hover .product-image {
-    transform: scale(1.03);
+/* Hover effect for product images - only scale the image, not the container */
+.product-item:hover .product-img img,
+.product-item:hover .product-image img,
+.product-card:hover .product-img img,
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+/* Prevent container from moving on hover */
+.product-item .product-img,
+.product-item .product-image,
+.product-card .product-img,
+.product-card .product-image {
+    transform: none !important;
 }
 
 /* Product Listing Pages - Category, Search, Special, Manufacturer */
@@ -65,13 +73,15 @@
 
 .product-item .product-img img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     display: block;
+    transform: scale(1);
+    transition: transform 0.3s ease;
 }
 
 /* Featured Product Module */

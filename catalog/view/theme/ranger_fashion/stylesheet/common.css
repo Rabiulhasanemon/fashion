@@ -1525,7 +1525,7 @@ section,
 /* 2. Fix Banner Tab module alignment - match container width with other modules */
 .banner-tab-section.banner-fullscreen {
   padding-top: 5px !important;
-  padding-bottom: 5px !important;
+  padding-bottom: 0px !important;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
 }
@@ -1756,6 +1756,7 @@ section,
   padding-top: 100%;
   background: #fff;
   display: block;
+  transform: none !important;
 }
 
 .product-img img {
@@ -1786,9 +1787,15 @@ section,
 .product-item .product-img,
 .product-card .product-img {
   position: relative;
-  transform: none;
+  transform: none !important;
   top: 0;
   left: 0;
+}
+
+/* Prevent any transform on product-img container on hover */
+.product-item:hover .product-img,
+.product-card:hover .product-img {
+  transform: none !important;
 }
 
 /* ==== 

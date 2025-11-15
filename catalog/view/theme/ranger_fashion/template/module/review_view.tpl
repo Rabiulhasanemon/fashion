@@ -66,6 +66,8 @@
 .rv-owl-item {
   padding: 0 10px;
   box-sizing: border-box;
+  height: 100%;
+  display: flex;
 }
 
 .rv-testimonial-card {
@@ -74,6 +76,7 @@
   border-radius: 12px;
   padding: 30px;
   height: 100%;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
