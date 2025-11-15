@@ -503,81 +503,165 @@
     }
 }
 
-/* Premium Mobile Design */
+/* Premium Mobile Design - Full Image Display & Perfect Alignment */
 @media (max-width: 767px) {
     .flash-sell-new-section {
-        padding: 10px 5px !important;
+        padding: 10px 8px !important;
     }
     
     .flash-sell-new-section .container {
-        padding: 0 5px !important;
+        padding: 0 8px !important;
     }
     
     .flash-sell-new-section .product-card {
         flex-direction: column;
         height: auto;
-        min-height: 250px;
-        padding: 6px;
-        border-radius: 6px;
-        margin: 0 2px;
+        min-height: 320px;
+        padding: 10px;
+        border-radius: 8px;
+        margin: 0 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .flash-sell-new-section .product-card .product-thumb {
         width: 100%;
-        height: 160px;
+        height: 180px;
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 10px;
     }
     
     .flash-sell-new-section .product-card .product-thumb > img {
-        height: 45%;
+        width: 100%;
+        height: 100%;
+        object-fit: contain !important;
+        object-position: center;
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
     }
     
     .flash-sell-new-section .product-card .product-card-inner {
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
     }
     
     .flash-sell-new-section .product-card .product-card-body {
-        padding: 8px 6px 6px;
-    }
-    
-    .flash-sell-new-section .product-card .product-title > a {
-        font-size: 11px;
-        line-height: 1.2;
-        height: auto;
-        min-height: 26px;
-        -webkit-line-clamp: 2;
-    }
-    
-    .flash-sell-new-section .product-card .product-price {
-        font-size: 12px;
-        margin-bottom: 4px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
     }
     
     .flash-sell-new-section .product-card .product-category {
-        font-size: 9px;
-        margin-bottom: 3px;
+        font-size: 10px;
+        margin-bottom: 6px;
+        text-align: center;
+        color: #666;
+    }
+    
+    .flash-sell-new-section .product-card .product-title {
+        margin-bottom: 8px;
+        text-align: center;
+    }
+    
+    .flash-sell-new-section .product-card .product-title > a {
+        font-size: 13px;
+        line-height: 1.4;
+        height: auto;
+        min-height: 36px;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: center;
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .flash-sell-new-section .product-card .product-price {
+        font-size: 16px;
+        margin-bottom: 10px;
+        text-align: center;
+        font-weight: 600;
+        color: #FF6A00;
+    }
+    
+    .flash-sell-new-section .product-card .product-price del {
+        font-size: 13px;
+        color: #999;
+        margin-right: 6px;
     }
     
     .flash-sell-new-section .product-card .countdown {
-        margin-top: 3px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
     }
     
     .flash-sell-new-section .product-card .countdown span {
-        min-width: 28px;
-        font-size: 9px;
-        padding: 2px 4px;
+        min-width: 42px;
+        font-size: 11px;
+        padding: 6px 8px;
+        background: #f5f5f5;
+        border-radius: 4px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #333;
     }
     
     .flash-sell-new-section .product-card .countdown span small {
-        font-size: 7px;
+        font-size: 9px;
+        margin-top: 2px;
+        color: #666;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .flash-sell-new-section .product-card .product-button-group {
+        position: static;
+        transform: none;
+        bottom: auto;
+        opacity: 1;
+        visibility: visible;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #f0f0f0;
     }
     
     .flash-sell-new-section .product-card .product-button-group .product-button {
-        width: 28px;
-        height: 28px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .flash-sell-new-section .product-card .product-button-group .product-button i {
-        font-size: 12px;
+        font-size: 14px;
     }
     
     .flash-sell-new-section .flash-deal-slider .owl-nav {
@@ -598,16 +682,38 @@
 
 @media (max-width: 575px) {
     .flash-sell-new-section .section-title h2.h3 {
-        font-size: 16px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        margin-bottom: 12px;
     }
     
     .flash-sell-new-section .product-card {
-        min-height: 240px;
+        min-height: 300px;
+        padding: 8px;
+        margin: 0 3px;
     }
     
     .flash-sell-new-section .product-card .product-thumb {
-        height: 150px;
+        height: 170px;
+        min-height: 170px;
+    }
+    
+    .flash-sell-new-section .product-card .product-title > a {
+        font-size: 12px;
+        min-height: 32px;
+    }
+    
+    .flash-sell-new-section .product-card .product-price {
+        font-size: 15px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span {
+        min-width: 38px;
+        font-size: 10px;
+        padding: 5px 6px;
+    }
+    
+    .flash-sell-new-section .product-card .countdown span small {
+        font-size: 8px;
     }
 }
 </style>
