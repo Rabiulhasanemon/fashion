@@ -1,6 +1,6 @@
 <?php if (!empty($banners)) { ?>
-<div class="banner-tab-section banner-fullscreen">
-  <div class="container">
+<div class="banner-tab-section banner-fullscreen <?php echo (isset($is_category_page) && $is_category_page) ? 'category-page-banner' : 'home-page-banner'; ?>">
+  <div class="container" style="<?php echo (isset($is_category_page) && $is_category_page) ? 'width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0 20px; max-width: 100%;' : ''; ?>">
 <style>
 @media (max-width: 767px) {
   .banner-tab-section .container {

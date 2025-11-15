@@ -7,45 +7,40 @@
   <?php } ?>
   
    <div class="rv-container-wrapper">
-     <div class="swiper rv-swiper-container" id="rv-testimonial-swiper-<?php echo $module; ?>">
-       <div class="swiper-wrapper rv-swiper-wrapper">
+     <div class="rv-owl-carousel owl-carousel" id="rv-testimonial-owl-<?php echo $module; ?>">
          <?php foreach ($reviews as $review) { ?>
-         <div class="swiper-slide rv-swiper-slide">
-          <div class="rv-testimonial-card">
-            <div class="rv-testimonial-content">
-              <p class="rv-testimonial-text">
-                <?php echo $review['text']; ?>
-              </p>
-            </div>
-            <div class="rv-testimonial-footer">
-              <div class="rv-author-avatar">
-                <?php if (!empty($review['author_image'])) { ?>
-                <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="rv-avatar-placeholder" style="display: none;">
-                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
-                </div>
-                <?php } else { ?>
-                <div class="rv-avatar-placeholder">
-                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
-                </div>
-                <?php } ?>
-              </div>
-              <div class="rv-author-info">
-                <h6 class="rv-author-name"><?php echo htmlspecialchars($review['author']); ?></h6>
-                <?php if (!empty($review['designation'])) { ?>
-                <span class="rv-author-role"><?php echo htmlspecialchars($review['designation']); ?></span>
-                <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
-                <span class="rv-author-role"><?php echo htmlspecialchars($review['product_name']); ?></span>
-                <?php } ?>
-              </div>
-            </div>
-          </div>
-        </div>
-        <?php } ?>
-      </div>
-       <div class="swiper-button-prev rv-swiper-nav rv-nav-prev"><i class="fa fa-angle-left"></i></div>
-       <div class="swiper-button-next rv-swiper-nav rv-nav-next"><i class="fa fa-angle-right"></i></div>
-       <div class="swiper-pagination rv-swiper-pagination"></div>
+         <div class="rv-owl-item">
+           <div class="rv-testimonial-card">
+             <div class="rv-testimonial-content">
+               <p class="rv-testimonial-text">
+                 <?php echo $review['text']; ?>
+               </p>
+             </div>
+             <div class="rv-testimonial-footer">
+               <div class="rv-author-avatar">
+                 <?php if (!empty($review['author_image'])) { ?>
+                 <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                 <div class="rv-avatar-placeholder" style="display: none;">
+                   <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                 </div>
+                 <?php } else { ?>
+                 <div class="rv-avatar-placeholder">
+                   <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                 </div>
+                 <?php } ?>
+               </div>
+               <div class="rv-author-info">
+                 <h6 class="rv-author-name"><?php echo htmlspecialchars($review['author']); ?></h6>
+                 <?php if (!empty($review['designation'])) { ?>
+                 <span class="rv-author-role"><?php echo htmlspecialchars($review['designation']); ?></span>
+                 <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
+                 <span class="rv-author-role"><?php echo htmlspecialchars($review['product_name']); ?></span>
+                 <?php } ?>
+               </div>
+             </div>
+           </div>
+         </div>
+         <?php } ?>
     </div>
   </div>
 </section>
@@ -62,26 +57,13 @@
   padding: 0;
 }
 
-.rv-swiper-container {
+.rv-owl-carousel {
   position: relative;
   overflow: hidden;
   padding-bottom: 50px;
 }
 
-.rv-swiper-container.swiper {
-  position: relative;
-  overflow: hidden;
-  padding-bottom: 50px;
-}
-
-.rv-swiper-wrapper.swiper-wrapper {
-  display: flex;
-  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.rv-swiper-slide {
-  flex-shrink: 0;
-  width: 100%;
+.rv-owl-item {
   padding: 0 10px;
   box-sizing: border-box;
 }
@@ -181,39 +163,17 @@
   font-weight: 400;
 }
 
-/* Navigation Arrows */
-.rv-swiper-nav.swiper-button-prev,
-.rv-swiper-nav.swiper-button-next {
+/* Navigation Arrows - Owl Carousel */
+.rv-owl-carousel .owl-nav {
+  display: block !important;
+}
+
+.rv-owl-carousel .owl-nav button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  background: #ffffff;
-  border: 2px solid #e1e1e1;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  margin-top: 0;
-  text-align: center;
-}
-
-.rv-swiper-nav.swiper-button-prev::after,
-.rv-swiper-nav.swiper-button-next::after {
-  display: none !important;
-}
-
-.rv-swiper-nav {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 40px !important;
-  height: 40px !important;
+  width: 40px;
+  height: 40px;
   background: #FF6A00 !important;
   color: #ffffff !important;
   border-radius: 50% !important;
@@ -222,51 +182,49 @@
   opacity: 1 !important;
   visibility: visible !important;
   border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease;
 }
 
-.rv-swiper-nav i {
+.rv-owl-carousel .owl-nav button i {
   font-size: 20px !important;
   color: #ffffff !important;
-  transition: all 0.3s ease;
   line-height: 1;
-  display: block !important;
 }
 
-.rv-nav-prev.swiper-button-prev {
-  left: 0;
+.rv-owl-carousel .owl-nav .owl-prev {
+  left: 10px;
 }
 
-.rv-nav-next.swiper-button-next {
-  right: 0;
+.rv-owl-carousel .owl-nav .owl-next {
+  right: 10px;
 }
 
-.rv-swiper-nav:hover {
+.rv-owl-carousel .owl-nav button:hover {
   background: #ff8c00 !important;
   box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3) !important;
   transform: translateY(-50%) scale(1.1);
 }
 
-.rv-swiper-nav:hover i {
-  color: #ffffff !important;
-}
-
-.rv-swiper-nav.swiper-button-disabled {
+.rv-owl-carousel .owl-nav button.disabled {
   opacity: 0.3;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-/* Pagination */
-.rv-swiper-pagination.swiper-pagination {
+/* Pagination - Owl Carousel */
+.rv-owl-carousel .owl-dots {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  width: auto;
+  text-align: center;
 }
 
-.rv-swiper-pagination .swiper-pagination-bullet {
+.rv-owl-carousel .owl-dots .owl-dot {
   width: 10px;
   height: 10px;
   background: #ddd;
@@ -274,31 +232,17 @@
   opacity: 1;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin: 0 5px !important;
+  margin: 0 5px;
+  display: inline-block;
 }
 
-.rv-swiper-pagination .swiper-pagination-bullet-active {
-  background: var(--primary-color, #007bff);
+.rv-owl-carousel .owl-dots .owl-dot.active {
+  background: #FF6A00;
   width: 30px;
   border-radius: 5px;
 }
 
 /* Responsive */
-@media (min-width: 992px) {
-  .rv-swiper-slide {
-    width: 33.333%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .rv-swiper-slide {
-    width: 50%;
-  }
-  .rv-container-wrapper {
-    padding: 0;
-  }
-}
-
 @media (max-width: 767px) {
   .rv-testimonial-section {
     max-width: 100% !important;
@@ -309,18 +253,9 @@
     padding: 0;
   }
   
-  .rv-swiper-slide {
-    width: 100%;
-  }
-  
-  .rv-swiper-nav {
+  .rv-owl-carousel .owl-nav button {
     width: 36px;
     height: 36px;
-  }
-  
-  .rv-swiper-nav::before {
-    width: 6px;
-    height: 6px;
   }
   
   .rv-testimonial-card {
@@ -334,130 +269,61 @@
 </style>
 
 <script>
-(function() {
-  var moduleId = 'rv-testimonial-swiper-<?php echo $module; ?>';
-  var swiperEl = document.getElementById(moduleId);
+jQuery(document).ready(function($) {
+  var moduleId = 'rv-testimonial-owl-<?php echo $module; ?>';
+  var $carousel = $('#' + moduleId);
   
-  if (!swiperEl) {
+  if (!$carousel.length || typeof $.fn.owlCarousel === 'undefined') {
     return;
   }
   
-  var initCount = 0;
-  var maxInitAttempts = 100;
-  var rvSwiper = null;
+  var reviewCount = <?php echo count($reviews); ?>;
+  var enableLoop = reviewCount > 3;
   
-  function initRVSlider() {
-    initCount++;
-    
-    // Check if Swiper is loaded
-    if (typeof Swiper === 'undefined') {
-      if (initCount < maxInitAttempts) {
-        setTimeout(initRVSlider, 100);
+  // Destroy existing carousel if it exists
+  if ($carousel.data('owl.carousel')) {
+    $carousel.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+  }
+  
+  // Initialize Owl Carousel
+  $carousel.addClass('owl-carousel').owlCarousel({
+    loop: enableLoop,
+    margin: 20,
+    nav: true,
+    dots: true,
+    autoplay: true,
+    autoplayTimeout: 3000,
+    autoplayHoverPause: false,
+    smartSpeed: 600,
+    navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+    responsive: {
+      0: {
+        items: 1,
+        margin: 15
+      },
+      576: {
+        items: 2,
+        margin: 20
+      },
+      768: {
+        items: 2,
+        margin: 20
+      },
+      992: {
+        items: 3,
+        margin: 20
+      },
+      1200: {
+        items: 3,
+        margin: 20
       }
-      return;
-    }
-    
-    // Prevent multiple initializations
-    if (rvSwiper) {
-      return;
-    }
-    
-    try {
-      var reviewCount = <?php echo count($reviews); ?>;
-      var enableLoop = reviewCount > 3;
-      
-      // Get navigation elements
-      var nextBtn = swiperEl.querySelector('.rv-nav-next');
-      var prevBtn = swiperEl.querySelector('.rv-nav-prev');
-      var paginationEl = swiperEl.querySelector('.rv-swiper-pagination');
-      
-      // Initialize Swiper
-      rvSwiper = new Swiper('#' + moduleId, {
-        slidesPerView: 1,
-        slidesPerGroup: 1,
-        spaceBetween: 20,
-        loop: enableLoop,
-        speed: 600,
-        autoplay: {
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: false,
-          stopOnLastSlide: false,
-        },
-        navigation: {
-          nextEl: nextBtn,
-          prevEl: prevBtn,
-        },
-        pagination: {
-          el: paginationEl,
-          clickable: true,
-          dynamicBullets: true,
-          dynamicMainBullets: 3,
-        },
-        breakpoints: {
-          576: {
-            slidesPerView: 2,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 2,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          992: {
-            slidesPerView: 3,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          },
-          1200: {
-            slidesPerView: 3,
-            slidesPerGroup: 1,
-            spaceBetween: 20,
-          }
-        },
-        on: {
-          init: function() {
-            // Force start autoplay
-            if (this.autoplay && this.autoplay.running === false) {
-              this.autoplay.start();
-            }
-          }
-        }
-      });
-      
-      // Ensure autoplay starts
-      setTimeout(function() {
-        if (rvSwiper && rvSwiper.autoplay) {
-          if (!rvSwiper.autoplay.running) {
-            rvSwiper.autoplay.start();
-          }
-        }
-      }, 500);
-      
-      // Store instance globally
-      window['rvSwiperInstance_' + moduleId] = rvSwiper;
-      
-    } catch (error) {
-      console.error('RV Slider error:', error);
-    }
-  }
-  
-  // Initialize when ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(initRVSlider, 300);
-    });
-  } else {
-    setTimeout(initRVSlider, 300);
-  }
-  
-  // Fallback on window load
-  window.addEventListener('load', function() {
-    if (!rvSwiper) {
-      setTimeout(initRVSlider, 200);
     }
   });
-})();
+  
+  // Ensure autoplay continues
+  $carousel.on('mouseleave', function() {
+    $carousel.trigger('play.owl.autoplay', [3000]);
+  });
+});
 </script>
 <?php } ?>

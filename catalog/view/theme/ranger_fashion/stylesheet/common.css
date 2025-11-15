@@ -1524,9 +1524,6 @@ section,
 
 /* 2. Fix Banner Tab module alignment - match container width with other modules */
 .banner-tab-section.banner-fullscreen {
-  width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
   padding-top: 5px !important;
   padding-bottom: 5px !important;
   margin-top: 5px !important;
@@ -1543,7 +1540,26 @@ section,
   display: none !important;
 }
 
-.banner-tab-section .container {
+/* Category page - restore original full width banner */
+.banner-tab-section.category-page-banner {
+  width: 95vw !important;
+  margin-left: calc(-47.5vw + 50%) !important;
+  margin-right: calc(-47.5vw + 50%) !important;
+}
+
+.banner-tab-section.category-page-banner .container {
+  max-width: 100% !important;
+  padding: 0 20px !important;
+}
+
+/* Home page - use standard container width */
+.banner-tab-section.home-page-banner {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.banner-tab-section.home-page-banner .container {
   max-width: 80% !important;
   margin: 0 auto !important;
   padding: 0 20px !important;
@@ -1553,6 +1569,18 @@ section,
   .banner-tab-section .container {
     max-width: 100% !important;
     padding: 0 15px !important;
+  }
+  
+  .banner-tab-section.category-page-banner {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .banner-tab-section.category-page-banner .container {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 
@@ -1718,38 +1746,7 @@ section,
   margin-bottom: 5px !important;
 }
 
-/* Fix Review View navigation buttons visibility and functionality */
-.rv-swiper-nav {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: #FF6A00 !important;
-  color: #ffffff !important;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.rv-swiper-nav i {
-  color: #ffffff !important;
-  font-size: 20px !important;
-}
-
-.rv-swiper-nav:hover {
-  background: #ff8c00 !important;
-}
-
-.rv-nav-prev {
-  left: 10px !important;
-}
-
-.rv-nav-next {
-  right: 10px !important;
-}
+/* Review View now uses Owl Carousel - styles in review_view.tpl */
 
 /* 7. Fix category page product hover - prevent image from moving down */
 .product-img {
@@ -1758,23 +1755,25 @@ section,
   width: 100%;
   padding-top: 100%;
   background: #fff;
+  display: block;
 }
 
 .product-img img {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: center;
   transition: transform 0.3s ease;
   will-change: transform;
+  transform: scale(1);
 }
 
 .product-item:hover .product-img img,
 .product-card:hover .product-img img {
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: scale(1.05);
 }
 
 /* Ensure product image container doesn't move on hover */
@@ -1788,6 +1787,8 @@ section,
 .product-card .product-img {
   position: relative;
   transform: none;
+  top: 0;
+  left: 0;
 }
 
 /* ==== 
