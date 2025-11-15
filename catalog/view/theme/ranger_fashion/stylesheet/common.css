@@ -1426,3 +1426,74 @@ select option {
 /* ==== 
    --------- (3.2) Preloader Styles End ---------
    ==== */
+
+/* ==== 
+   --------- Module Spacing & Premium Styling ---------
+   ==== */
+
+/* Remove padding from popular category section */
+.newproduct-section.popular-category-sec {
+  padding: 0;
+}
+
+/* Remove margin-top from mt-20 class */
+.mt-20 {
+  margin-top: 0px !important;
+}
+
+/* Hide owl carousel navigation buttons */
+.owl-nav {
+  display: none !important;
+}
+
+/* Premium module spacing - minimal equal padding for all modules */
+section,
+.newproduct-section,
+.deal-of-day-section,
+.flash-sell-new-section,
+.flashdeal-section,
+.featured-product-area,
+.banner-tab-section,
+.big-offer-module,
+.manufacturer-module-section,
+.customer-banner-area,
+.html-module-area,
+.rv-testimonial-section,
+.module-section,
+.module-wrapper,
+.standard-module-section {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Ensure all modules have consistent minimal gaps */
+.module-container,
+.module-wrapper {
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Remove extra spacing from module headings */
+.section-head,
+.section-title,
+.module-heading-wrapper {
+  margin-top: 0 !important;
+  margin-bottom: 15px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Consistent small gaps between all modules */
+section + section,
+.newproduct-section + section,
+.deal-of-day-section + section,
+.flash-sell-new-section + section,
+.module-section + section {
+  margin-top: 5px !important;
+}
+
+/* ==== 
+   --------- Module Spacing & Premium Styling End ---------
+   ==== */

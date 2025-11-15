@@ -474,7 +474,7 @@ jQuery(document).ready(function($) {
         $('.flash-sell-new-section .flash-deal-slider').owlCarousel({
             loop: false,
             margin: 15,
-            nav: true,
+            nav: false,
             dots: false,
             responsive: {
                 0: {

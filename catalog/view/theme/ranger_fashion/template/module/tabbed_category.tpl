@@ -607,7 +607,7 @@ if (empty($tabs)) {
             var owl = jQuery(slider).owlCarousel({
                 loop: true,
                 margin: 15,
-                nav: true,
+                nav: false,
                 dots: false,
                 autoplay: true,
                 autoplayTimeout: 3000,

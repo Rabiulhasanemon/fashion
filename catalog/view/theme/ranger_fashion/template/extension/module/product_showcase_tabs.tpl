@@ -569,7 +569,7 @@
             owlCarousel = $slider.addClass('owl-carousel').owlCarousel({
                 loop: false,
                 margin: 15,
-                nav: true,
+                nav: false,
                 dots: false,
                 autoplay: false,
                 autoplayTimeout: 3000,
