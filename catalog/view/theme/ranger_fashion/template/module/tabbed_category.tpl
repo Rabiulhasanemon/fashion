@@ -250,18 +250,18 @@ if (empty($tabs)) {
     display: block;
     position: relative;
     width: 100%;
-    border-radius: 10px;
+    border-radius: 12px;
     background-color: #fff;
     overflow: visible;
-    border: 1px solid #f0f0f0;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8e8e8;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .product-card:hover {
     border-color: #FF6A00;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(255, 106, 0, 0.15);
+    transform: translateY(-6px);
 }
 
 .product-card .product-thumb {
@@ -369,7 +369,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-card-body {
-    padding: 15px 15px 10px;
+    padding: 12px 12px 8px;
 }
 
 .product-card .product-category {
@@ -398,11 +398,11 @@ if (empty($tabs)) {
     transition: color 0.3s;
     color: #232323;
     text-decoration: none;
-    font-size: 14px;
-    height: 37px;
+    font-size: 13px;
+    height: 32px;
     display: block;
     font-weight: 500;
-    line-height: 18px;
+    line-height: 16px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -432,8 +432,8 @@ if (empty($tabs)) {
 
 .product-card .product-price {
     display: inline-block;
-    margin-bottom: 10px;
-    font-size: 15px;
+    margin-bottom: 8px;
+    font-size: 14px;
     font-weight: 600;
     text-align: center;
     color: #FF6A00;
@@ -446,9 +446,9 @@ if (empty($tabs)) {
     font-size: 14px;
 }
 
-/* Slider Item */
+/* Slider Item - Premium compact design */
 .slider-item {
-    padding: 10px 6px;
+    padding: 8px 4px;
 }
 
 /* Owl Carousel Navigation */
@@ -629,27 +629,33 @@ if (empty($tabs)) {
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
             var owl = jQuery(slider).owlCarousel({
                 loop: true,
-                margin: 15,
+                margin: 20,
                 nav: false,
                 dots: false,
                 autoplay: true,
                 autoplayTimeout: 3000,
                 autoplayHoverPause: true,
+                slideBy: 2,
                 responsive: {
                     0: {
-                        items: 1
+                        items: 1,
+                        slideBy: 1
                     },
                     576: {
-                        items: 2
+                        items: 2,
+                        slideBy: 2
                     },
                     768: {
-                        items: 3
+                        items: 2,
+                        slideBy: 2
                     },
                     992: {
-                        items: 4
+                        items: 2,
+                        slideBy: 2
                     },
                     1200: {
-                        items: 5
+                        items: 2,
+                        slideBy: 2
                     }
                 }
             });
