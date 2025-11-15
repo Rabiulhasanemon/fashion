@@ -1527,8 +1527,20 @@ section,
   width: 100% !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Hide banner title/name on home page - show only banners */
+.banner-tab-section .section-head {
+  display: none;
+}
+
+.banner-tab-section[data-is-category="false"] .section-head,
+.banner-tab-section:not([data-is-category]) .section-head {
+  display: none !important;
 }
 
 .banner-tab-section .container {
@@ -1700,8 +1712,8 @@ section,
 
 /* 6. Fix Review View module - reduce gaps */
 .rv-testimonial-section {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
 }

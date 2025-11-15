@@ -102,7 +102,7 @@
 .section-title .links a::before {
     position: absolute;
     content: "";
-    bottom: -18px;
+    bottom: -10px;
     left: 0;
     width: 100%;
     height: 2px;

@@ -9,13 +9,13 @@
   }
 }
 </style>
-    <?php if (isset($name) && $name) { ?>
+    <?php if (isset($name) && $name && isset($is_category_page) && $is_category_page) { ?>
     <div class="section-head" style="padding: 20px 15px 0;">
       <h3 class="title"><?php echo $name; ?></h3>
     </div>
     <?php } ?>
 
-    <div class="banner-tab-wrapper" style="margin: 0; padding: 20px 10px;">
+    <div class="banner-tab-wrapper" style="margin: 0; padding: 10px;">
       <div class="row" style="margin: 0; padding: 0;">
         <?php 
         $banner_count = 0;
@@ -97,7 +97,7 @@
       </div>
     </div>
 
-    <?php if (isset($blurb) && $blurb) { ?>
+    <?php if (isset($blurb) && $blurb && isset($is_category_page) && $is_category_page) { ?>
     <p class="banner-tab-note" style="padding: 15px;">
       <?php echo $blurb; ?>
     </p>
