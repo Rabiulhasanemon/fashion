@@ -50,17 +50,34 @@
 .rv-testimonial-section {
   padding: 0;
   position: relative;
+  background: transparent !important;
+}
+
+/* Remove any unwanted background text or pseudo-elements */
+.rv-testimonial-section::before,
+.rv-testimonial-section::after,
+.rv-container-wrapper::before,
+.rv-container-wrapper::after,
+.rv-owl-carousel::before,
+.rv-owl-carousel::after,
+.rv-testimonial-card::before,
+.rv-testimonial-card::after {
+  display: none !important;
+  content: none !important;
 }
 
 .rv-container-wrapper {
   position: relative;
   padding: 0;
+  background: transparent !important;
+  overflow: visible;
 }
 
 .rv-owl-carousel {
   position: relative;
   overflow: hidden;
   padding-bottom: 50px;
+  background: transparent !important;
 }
 
 .rv-owl-item {
@@ -81,6 +98,9 @@
   flex-direction: column;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
 .rv-testimonial-card:hover {
