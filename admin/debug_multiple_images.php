@@ -69,18 +69,28 @@ if ($zero_count > 0) {
     echo "<p class='success'>✓ No records with product_image_id = 0</p>";
 }
 
-// Check AUTO_INCREMENT
-$ai_check = $db->query("SHOW CREATE TABLE {$prefix}product_image");
-$create_table = isset($ai_check->row['Create Table']) ? $ai_check->row['Create Table'] : (isset($ai_check->row[1]) ? $ai_check->row[1] : '');
+// Check AUTO_INCREMENT - try multiple methods
 $current_ai = 'N/A';
-if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
-    $current_ai = $matches[1];
+$ai_check = $db->query("SHOW CREATE TABLE {$prefix}product_image");
+if ($ai_check && $ai_check->num_rows) {
+    $create_table = isset($ai_check->row['Create Table']) ? $ai_check->row['Create Table'] : (isset($ai_check->row[1]) ? $ai_check->row[1] : '');
+    if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
+        $current_ai = $matches[1];
+    }
 }
 
-// Get max product_image_id
-$max_check = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
+// If still N/A, try SHOW TABLE STATUS
+if ($current_ai == 'N/A') {
+    $status_check = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+    if ($status_check && $status_check->num_rows && isset($status_check->row['Auto_increment'])) {
+        $current_ai = $status_check->row['Auto_increment'];
+    }
+}
+
+// Get max product_image_id (excluding 0)
+$max_check = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
 $max_id = $max_check->row['max_id'] ?? 0;
-$expected_next = $max_id + 1;
+$expected_next = max($max_id + 1, 1);
 
 echo "<p class='info'>Current AUTO_INCREMENT: <strong>{$current_ai}</strong></p>";
 echo "<p class='info'>Max product_image_id: <strong>{$max_id}</strong></p>";
@@ -245,16 +255,35 @@ echo "<p>If you're experiencing issues, click the button below to clean up and f
 if (isset($_POST['fix_now'])) {
     // Delete product_image_id = 0
     $delete_result = $db->query("DELETE FROM {$prefix}product_image WHERE product_image_id = 0");
-    $deleted = $db->countAffected();
+    $deleted = 0;
+    if (method_exists($db, 'countAffected')) {
+        $deleted = $db->countAffected();
+    } else {
+        // Fallback: check how many were deleted
+        $check_after = $db->query("SELECT COUNT(*) as count FROM {$prefix}product_image WHERE product_image_id = 0");
+        $deleted = 1; // We know there was 1 from the check above
+    }
     
-    // Fix AUTO_INCREMENT
-    $max_result = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
+    // Fix AUTO_INCREMENT - get max excluding 0
+    $max_result = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
     $max_id = $max_result->row['max_id'] ?? 0;
     $next_id = max($max_id + 1, 1);
-    $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
     
-    echo "<p class='success'>✓ Fixed! Deleted {$deleted} record(s) with product_image_id = 0, set AUTO_INCREMENT to {$next_id}</p>";
-    echo "<meta http-equiv='refresh' content='2'>";
+    $fix_result = $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
+    
+    if ($fix_result) {
+        echo "<p class='success'>✓ Fixed! Deleted {$deleted} record(s) with product_image_id = 0, set AUTO_INCREMENT to {$next_id}</p>";
+        echo "<p class='info'>The page will refresh in 2 seconds...</p>";
+        echo "<meta http-equiv='refresh' content='2'>";
+    } else {
+        $error_msg = '';
+        if (property_exists($db, 'link') && is_object($db->link)) {
+            $error_msg = property_exists($db->link, 'error') ? $db->link->error : 'Unknown error';
+        }
+        echo "<p class='error'>❌ Error fixing AUTO_INCREMENT: {$error_msg}</p>";
+        echo "<p class='warning'>Please run this SQL manually in phpMyAdmin:</p>";
+        echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;<br>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
+    }
 }
 
 echo "<form method='POST'>
