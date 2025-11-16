@@ -695,11 +695,21 @@ class ModelCatalogProduct extends Model {
 			$log_file = DIR_LOGS . 'product_insert_debug.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting to insert ' . count($data['product_image']) . ' product images for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 			
-			// Clean up any orphaned product_image records with product_id = 0
+			// CRITICAL: Clean up any orphaned product_image records with product_id = 0
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
 			
-			// Also clean up any product_image records with product_image_id = 0
+			// CRITICAL: Clean up any product_image records with product_image_id = 0 (this is the main issue)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+			
+			// CRITICAL: Fix AUTO_INCREMENT before starting image insertion
+			$max_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+			$max_id = 0;
+			if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+				$max_id = (int)$max_check->row['max_id'];
+			}
+			$next_id = max($max_id + 1, 1);
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Fixed AUTO_INCREMENT to ' . $next_id . ' before starting image insertion' . PHP_EOL, FILE_APPEND);
 			
 			// Verify product exists before inserting images
 			$verify_product = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "' LIMIT 1");
