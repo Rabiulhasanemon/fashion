@@ -111,10 +111,14 @@ if ($zero_count > 0) {
         echo "<form method='POST' style='margin: 15px 0;'>";
         echo "<button type='submit' name='auto_fix' style='background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;'>🔧 Auto-Fix Now</button>";
         echo "</form>";
-        echo "<p>Or run this SQL manually in phpMyAdmin (replace X with MAX(product_image_id) + 1):</p>";
-        echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;
-SELECT MAX(product_image_id) + 1 as next_id FROM {$prefix}product_image;
-ALTER TABLE {$prefix}product_image AUTO_INCREMENT = X;</div>";
+        echo "<p>Or run this SQL manually in phpMyAdmin:</p>";
+        echo "<div class='code'>";
+        echo "DELETE FROM {$prefix}product_image WHERE product_image_id = 0;<br>";
+        echo "SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image;<br>";
+        echo "-- Then run (replace X with max_id + 1):<br>";
+        echo "ALTER TABLE {$prefix}product_image AUTO_INCREMENT = X;";
+        echo "</div>";
+        echo "<p><strong>Example:</strong> If MAX(product_image_id) is 10, then run: <code>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = 11;</code></p>";
     }
 } else {
     echo "<p class='success'>✓ No records with product_image_id = 0</p>";
