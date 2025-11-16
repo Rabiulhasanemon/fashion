@@ -856,6 +856,7 @@ class ModelCatalogProduct extends Model {
 						
 						// Handle successful insert (either first try or after retry)
 						if (isset($inserted_id) && $inserted_id > 0) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Processing successful insert for image #' . ($index + 1) . ' with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 							
 							// Verify the inserted record exists
 							if ($inserted_id > 0) {
