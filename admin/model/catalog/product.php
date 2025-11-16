@@ -992,12 +992,43 @@ class ModelCatalogProduct extends Model {
 		// Update product images
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
 		if (isset($data['product_image']) && is_array($data['product_image'])) {
-			foreach ($data['product_image'] as $product_image) {
+			// CRITICAL: Clean up any product_image records with product_image_id = 0
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+			
+			// CRITICAL: Fix AUTO_INCREMENT before starting image insertion
+			$max_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+			$max_id = 0;
+			if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+				$max_id = (int)$max_check->row['max_id'];
+			}
+			$next_id = max($max_id + 1, 1);
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id);
+			
+			foreach ($data['product_image'] as $index => $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
 				// Only insert if image path is not empty
 				if ($image_path && $image_path !== '') {
+					// Delete product_image_id = 0 before each insert (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+					
+					// Update AUTO_INCREMENT before each insert (important for multiple images)
+					$max_before = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+					$max_before_id = 0;
+					if ($max_before && $max_before->num_rows && isset($max_before->row['max_id']) && $max_before->row['max_id'] !== null) {
+						$max_before_id = (int)$max_before->row['max_id'];
+					}
+					$next_before = max($max_before_id + 1, 1);
+					$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_before);
+					
 					$this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . $product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'");
+					
+					// Update AUTO_INCREMENT after each insert for next image
+					$max_after = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+					if ($max_after && $max_after->num_rows && isset($max_after->row['max_id']) && $max_after->row['max_id'] !== null) {
+						$next_after = (int)$max_after->row['max_id'] + 1;
+						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
+					}
 				}
 			}
 		}
