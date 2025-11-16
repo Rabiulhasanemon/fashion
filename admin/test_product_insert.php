@@ -23,6 +23,31 @@ $registry->set('config', $config);
 $db = new \DB\MySQLi(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
 $registry->set('db', $db);
 
+// Handle automatic fix request
+if (isset($_POST['fix_auto_increment']) && $_POST['fix_auto_increment'] == '1') {
+    // Get next product_id
+    $max_query = $db->query("SELECT MAX(product_id) AS max_id FROM " . DB_PREFIX . "product");
+    $next_product_id = 1;
+    if ($max_query && $max_query->num_rows && isset($max_query->row['max_id']) && $max_query->row['max_id'] !== null) {
+        $next_product_id = (int)$max_query->row['max_id'] + 1;
+    }
+    
+    // Try to fix AUTO_INCREMENT
+    $fix_sql = "ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_product_id;
+    $fix_result = $db->query($fix_sql);
+    
+    if ($fix_result) {
+        echo "<div style='background:#d4edda;color:#155724;padding:15px;margin:15px 0;border:1px solid #c3e6cb;border-radius:4px;'>";
+        echo "<strong>✓ SUCCESS!</strong> AUTO_INCREMENT has been set to " . $next_product_id . ".";
+        echo "</div>";
+    } else {
+        echo "<div style='background:#f8d7da;color:#721c24;padding:15px;margin:15px 0;border:1px solid #f5c6cb;border-radius:4px;'>";
+        echo "<strong>✗ ERROR:</strong> Could not automatically fix AUTO_INCREMENT. Please run the SQL command manually in phpMyAdmin.";
+        echo "</div>";
+    }
+    echo "<hr>";
+}
+
 // Check for product_id = 0
 echo "<h2>Product Insert Debug Report</h2>";
 echo "<hr>";
@@ -66,8 +91,23 @@ if ($auto_inc && $auto_inc->num_rows) {
         // If still N/A, this is a problem
         if ($auto_increment == 'N/A' || $auto_increment == null || $auto_increment == '') {
             echo "<p style='color:red;'><strong>⚠️ CRITICAL:</strong> Cannot determine AUTO_INCREMENT value. This may cause insert errors!</p>";
+            
+            // Get next_id from max_check (defined later, but we need it here)
+            $max_for_ai = $db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product");
+            $next_id_for_ai = 1;
+            if ($max_for_ai && $max_for_ai->num_rows && isset($max_for_ai->row['max_id']) && $max_for_ai->row['max_id'] !== null) {
+                $next_id_for_ai = (int)$max_for_ai->row['max_id'] + 1;
+            }
+            
             echo "<p><strong>Fix:</strong> Run this SQL command in phpMyAdmin:</p>";
-            echo "<code>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . ($next_id) . ";</code>";
+            echo "<code style='background:#f5f5f5;padding:10px;display:block;'>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_id_for_ai . ";</code>";
+            
+            // Try to fix it automatically if possible
+            echo "<p><strong>Or try automatic fix:</strong></p>";
+            echo "<form method='post' style='margin:10px 0;'>";
+            echo "<input type='hidden' name='fix_auto_increment' value='1'>";
+            echo "<button type='submit' style='background:#28a745;color:white;padding:10px 20px;border:none;cursor:pointer;border-radius:4px;'>Fix AUTO_INCREMENT Automatically</button>";
+            echo "</form>";
         }
     } else {
         // Check if AUTO_INCREMENT is correct
