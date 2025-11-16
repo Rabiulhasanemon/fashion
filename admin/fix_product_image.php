@@ -25,15 +25,32 @@ if ($check_zero && $check_zero->num_rows) {
     echo "<p style='color:red;'><strong>FOUND:</strong> product_image with product_image_id = 0!</p>";
     
     if (isset($_POST['fix_image_id_zero']) && $_POST['fix_image_id_zero'] == '1') {
+        // First, try to delete
         $delete_result = $db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
         if ($delete_result) {
             echo "<p style='color:green;'><strong>✓ FIXED:</strong> Deleted product_image records with product_image_id = 0</p>";
+            
+            // Now fix AUTO_INCREMENT
+            $max_pi_after = $db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+            $next_id_after = 1;
+            if ($max_pi_after && $max_pi_after->num_rows && isset($max_pi_after->row['max_id']) && $max_pi_after->row['max_id'] !== null) {
+                $next_id_after = (int)$max_pi_after->row['max_id'] + 1;
+            }
+            
+            $fix_ai = $db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id_after);
+            if ($fix_ai) {
+                echo "<p style='color:green;'><strong>✓ FIXED:</strong> AUTO_INCREMENT set to " . $next_id_after . "</p>";
+            } else {
+                echo "<p style='color:orange;'><strong>⚠ WARNING:</strong> Could not auto-fix AUTO_INCREMENT. Run manually: <code>ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id_after . ";</code></p>";
+            }
         } else {
-            echo "<p style='color:red;'><strong>✗ ERROR:</strong> Could not delete. Try manually: <code>DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0;</code></p>";
+            echo "<p style='color:red;'><strong>✗ ERROR:</strong> Could not delete. Try manually in phpMyAdmin:</p>";
+            echo "<code>DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0;</code><br>";
+            echo "<code>ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = 1;</code>";
         }
     } else {
         echo "<form method='post'><input type='hidden' name='fix_image_id_zero' value='1'>";
-        echo "<button type='submit' style='background:#dc3545;color:white;padding:10px 20px;border:none;cursor:pointer;border-radius:4px;'>Delete product_image_id = 0</button></form>";
+        echo "<button type='submit' style='background:#dc3545;color:white;padding:10px 20px;border:none;cursor:pointer;border-radius:4px;font-size:16px;'>🔧 Fix All Issues (Delete product_image_id = 0 & Fix AUTO_INCREMENT)</button></form>";
     }
 } else {
     echo "<p style='color:green;'>✓ No product_image with product_image_id = 0</p>";
