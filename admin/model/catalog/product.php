@@ -807,6 +807,26 @@ class ModelCatalogProduct extends Model {
 						} else {
 							$inserted_id = $this->db->getLastId();
 							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
+							
+							// Verify the inserted record exists
+							if ($inserted_id > 0) {
+								$verify_insert = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_image_id = '" . (int)$inserted_id . "' LIMIT 1");
+								if ($verify_insert && $verify_insert->num_rows) {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Verified: product_image_id ' . $inserted_id . ' exists in database' . PHP_EOL, FILE_APPEND);
+								} else {
+									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: Insert reported success but product_image_id ' . $inserted_id . ' not found in database!' . PHP_EOL, FILE_APPEND);
+								}
+							} else {
+								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: Insert reported success but getLastId() returned 0 for image #' . ($index + 1) . PHP_EOL, FILE_APPEND);
+							}
+							
+							// Update AUTO_INCREMENT for next image (important for multiple images)
+							$max_after_insert = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+							if ($max_after_insert && $max_after_insert->num_rows && isset($max_after_insert->row['max_id']) && $max_after_insert->row['max_id'] !== null) {
+								$next_after = (int)$max_after_insert->row['max_id'] + 1;
+								$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Updated AUTO_INCREMENT to ' . $next_after . ' for next image' . PHP_EOL, FILE_APPEND);
+							}
 						}
 					}
 				}
