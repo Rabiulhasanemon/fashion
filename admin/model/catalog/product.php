@@ -720,15 +720,24 @@ class ModelCatalogProduct extends Model {
 			}
 			
 			// Process all images in a loop
+			$total_images = count($data['product_image']);
+			$successful_images = 0;
+			$failed_images = 0;
+			
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Starting to process ' . $total_images . ' images' . PHP_EOL, FILE_APPEND);
+			
 			foreach ($data['product_image'] as $index => $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Processing image #' . ($index + 1) . '/' . $total_images . ': path=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
 				
 				// Validate product_id again (double check)
 				if ($product_id <= 0) {
 					$error_msg = "Cannot insert product image #" . ($index + 1) . ": Invalid product_id (" . $product_id . ")";
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-					throw new Exception($error_msg);
+					$failed_images++;
+					continue; // Skip this image and continue with next
 				}
 				
 				if ($image_path && $image_path !== '') {
@@ -830,14 +839,25 @@ class ModelCatalogProduct extends Model {
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully after retry' . PHP_EOL, FILE_APPEND);
 									// Continue to success handling below
 									$inserted_id = $this->db->getLastId();
+									$successful_images++;
 								}
 							} else {
 								// For other errors, just log and continue to next image
 								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Skipping image #' . ($index + 1) . ' due to error, continuing with next image' . PHP_EOL, FILE_APPEND);
+								$failed_images++;
 								continue; // Skip to next image
 							}
+						}
+						
+						// If we get here, the insert was successful (either first try or after retry)
+						if (isset($inserted_id) && $inserted_id > 0) {
+							// Success path - handle inserted image
 						} else {
 							$inserted_id = $this->db->getLastId();
+							$successful_images++;
+						}
+						
+						if (isset($inserted_id) && $inserted_id > 0) {
 							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 							
 							// Verify the inserted record exists
@@ -894,9 +914,25 @@ class ModelCatalogProduct extends Model {
 							if ($verified_ai_after != 'N/A' && $verified_ai_after != $next_after) {
 								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: AUTO_INCREMENT mismatch after update! Expected: ' . $next_after . ', Got: ' . $verified_ai_after . PHP_EOL, FILE_APPEND);
 							}
+						} else {
+							// Image path was empty, skip
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' skipped: empty image path' . PHP_EOL, FILE_APPEND);
 						}
+					} else {
+						// Image already exists, skip
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' skipped: already exists in database' . PHP_EOL, FILE_APPEND);
 					}
+				} else {
+					// Empty image path
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' skipped: empty image path' . PHP_EOL, FILE_APPEND);
 				}
+			}
+			
+			// Log final summary
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image processing complete: ' . $successful_images . ' successful, ' . $failed_images . ' failed out of ' . $total_images . ' total' . PHP_EOL, FILE_APPEND);
+			
+			if ($failed_images > 0) {
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: ' . $failed_images . ' image(s) failed to insert for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 			}
 		} elseif ($product_id <= 0) {
 			// Log error if product_id is invalid
