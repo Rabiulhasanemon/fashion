@@ -40,6 +40,24 @@ if (isset($_POST['fix_auto_increment']) && $_POST['fix_auto_increment'] == '1') 
         echo "<div style='background:#d4edda;color:#155724;padding:15px;margin:15px 0;border:1px solid #c3e6cb;border-radius:4px;'>";
         echo "<strong>✓ SUCCESS!</strong> AUTO_INCREMENT has been set to " . $next_product_id . ".";
         echo "</div>";
+        
+        // Verify the fix by checking table structure
+        $verify = $db->query("SHOW CREATE TABLE " . DB_PREFIX . "product");
+        if ($verify && $verify->num_rows) {
+            $create_table = isset($verify->row['Create Table']) ? $verify->row['Create Table'] : (isset($verify->row[1]) ? $verify->row[1] : '');
+            if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
+                $actual_ai = $matches[1];
+                if ($actual_ai == $next_product_id) {
+                    echo "<div style='background:#d1ecf1;color:#0c5460;padding:10px;margin:10px 0;border:1px solid #bee5eb;border-radius:4px;'>";
+                    echo "<strong>✓ Verified:</strong> AUTO_INCREMENT is confirmed to be " . $actual_ai . " in table structure.";
+                    echo "</div>";
+                } else {
+                    echo "<div style='background:#fff3cd;color:#856404;padding:10px;margin:10px 0;border:1px solid #ffeaa7;border-radius:4px;'>";
+                    echo "<strong>⚠ Note:</strong> AUTO_INCREMENT shows as " . $actual_ai . " (expected " . $next_product_id . "). This may be due to caching.";
+                    echo "</div>";
+                }
+            }
+        }
     } else {
         echo "<div style='background:#f8d7da;color:#721c24;padding:15px;margin:15px 0;border:1px solid #f5c6cb;border-radius:4px;'>";
         echo "<strong>✗ ERROR:</strong> Could not automatically fix AUTO_INCREMENT. Please run the SQL command manually in phpMyAdmin.";
@@ -201,8 +219,8 @@ if (file_exists($error_log)) {
     echo "<p style='color:green;'>✓ No error log found (no errors yet)</p>";
 }
 
-// Check 7: Verify product table structure
-echo "<h3>7. Checking product table structure:</h3>";
+// Check 7: Verify product table structure (this is the most reliable method)
+echo "<h3>7. Checking product table structure (Most Reliable Method):</h3>";
 $structure = $db->query("SHOW CREATE TABLE " . DB_PREFIX . "product");
 if ($structure && $structure->num_rows) {
     $create_table = isset($structure->row['Create Table']) ? $structure->row['Create Table'] : (isset($structure->row[1]) ? $structure->row[1] : '');
@@ -212,15 +230,22 @@ if ($structure && $structure->num_rows) {
             preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches);
             if (isset($matches[1])) {
                 $ai_from_structure = $matches[1];
-                echo "<p>AUTO_INCREMENT from table structure: <strong>" . $ai_from_structure . "</strong></p>";
+                echo "<p style='color:green;'><strong>✓ AUTO_INCREMENT from table structure: " . $ai_from_structure . "</strong></p>";
                 if ($ai_from_structure < $next_product_id) {
                     echo "<p style='color:red;'><strong>⚠️ PROBLEM FOUND:</strong> AUTO_INCREMENT in table structure (" . $ai_from_structure . ") is less than next expected ID (" . $next_product_id . ")!</p>";
+                    echo "<p><strong>Fix: <code>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_product_id . ";</code></strong></p>";
+                } elseif ($ai_from_structure == $next_product_id) {
+                    echo "<p style='color:green;'>✓ AUTO_INCREMENT is correctly set to " . $ai_from_structure . " (matches next expected ID).</p>";
+                } else {
+                    echo "<p style='color:blue;'>ℹ AUTO_INCREMENT is " . $ai_from_structure . " (higher than next expected ID " . $next_product_id . "). This is fine.</p>";
                 }
             }
         } else {
             echo "<p style='color:orange;'>⚠️ AUTO_INCREMENT not found in CREATE TABLE statement. This is unusual.</p>";
         }
     }
+} else {
+    echo "<p style='color:orange;'>⚠️ Could not retrieve table structure.</p>";
 }
 
 // Recommendations
