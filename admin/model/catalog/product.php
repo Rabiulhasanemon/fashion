@@ -719,6 +719,7 @@ class ModelCatalogProduct extends Model {
 				throw new Exception($error_msg);
 			}
 			
+			// Process all images in a loop
 			foreach ($data['product_image'] as $index => $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
@@ -739,19 +740,19 @@ class ModelCatalogProduct extends Model {
 					// Now insert - check if it already exists first
 					$check_existing = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' LIMIT 1");
 					if (!$check_existing || !$check_existing->num_rows) {
-						// CRITICAL: Delete any product_image_id = 0 before fixing AUTO_INCREMENT
+						// CRITICAL: Delete any product_image_id = 0 before each insert
 						$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
 						
 						// Before inserting, ensure AUTO_INCREMENT is correct
-						// Get current max product_image_id
-						$max_pi_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+						// Get current max product_image_id (excluding 0)
+						$max_pi_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
 						$next_pi_id = 1;
 						if ($max_pi_check && $max_pi_check->num_rows && isset($max_pi_check->row['max_id']) && $max_pi_check->row['max_id'] !== null) {
 							$next_pi_id = (int)$max_pi_check->row['max_id'] + 1;
 						}
 						
-						// Ensure AUTO_INCREMENT is at least next_pi_id (add 1 to be safe)
-						$safe_next_id = max($next_pi_id + 1, 2); // At least 2 to avoid 0 or 1 conflicts
+						// Ensure AUTO_INCREMENT is at least next_pi_id
+						$safe_next_id = max($next_pi_id, 1);
 						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $safe_next_id);
 						
 						// Verify AUTO_INCREMENT was set correctly
