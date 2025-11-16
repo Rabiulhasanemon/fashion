@@ -121,6 +121,10 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/product');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Log the request for debugging
+			$log_file = DIR_LOGS . 'product_insert_debug.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== PRODUCT EDIT REQUEST ==========' . PHP_EOL, FILE_APPEND);
+			
 			// Validate product_id
 			if (!isset($this->request->get['product_id']) || empty($this->request->get['product_id']) || (int)$this->request->get['product_id'] <= 0) {
 				$this->session->data['error_warning'] = 'Invalid product ID. Cannot update product.';
@@ -129,6 +133,24 @@ class ControllerCatalogProduct extends Controller {
 			}
 
 			$product_id = (int)$this->request->get['product_id'];
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product ID: ' . $product_id . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
+			
+			if (isset($this->request->post['product_image'])) {
+				$img_count = is_array($this->request->post['product_image']) ? count($this->request->post['product_image']) : 'not array';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image count: ' . $img_count . PHP_EOL, FILE_APPEND);
+				if (is_array($this->request->post['product_image'])) {
+					foreach ($this->request->post['product_image'] as $idx => $img) {
+						$img_path = isset($img['image']) ? $img['image'] : 'no image key';
+						$img_sort = isset($img['sort_order']) ? $img['sort_order'] : 'no sort_order';
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image[' . $idx . ']: path=' . substr($img_path, 0, 50) . '..., sort=' . $img_sort . PHP_EOL, FILE_APPEND);
+					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: product_image is not an array! Type: ' . gettype($this->request->post['product_image']) . PHP_EOL, FILE_APPEND);
+				}
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: product_image not set in POST data!' . PHP_EOL, FILE_APPEND);
+			}
 
 			// Verify product exists
 			$product_info = $this->model_catalog_product->getProduct($product_id);
@@ -140,6 +162,7 @@ class ControllerCatalogProduct extends Controller {
 
 			try {
 				$this->model_catalog_product->editProduct($product_id, $this->request->post);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - editProduct completed successfully' . PHP_EOL, FILE_APPEND);
 
 				$this->session->data['success'] = $this->language->get('text_success');
 
