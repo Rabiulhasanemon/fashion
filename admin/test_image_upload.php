@@ -50,8 +50,46 @@ $zero_count = $check_zero->row['count'] ?? 0;
 
 if ($zero_count > 0) {
     echo "<p class='error'>❌ Found {$zero_count} record(s) with product_image_id = 0</p>";
-    echo "<p><strong>FIX REQUIRED:</strong> Run this SQL first:</p>";
-    echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;<br>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = 1;</div>";
+    echo "<p><strong>FIX REQUIRED:</strong></p>";
+    
+    // Auto-fix button
+    if (isset($_POST['auto_fix'])) {
+        echo "<div class='info'>";
+        echo "<h3>Fixing...</h3>";
+        
+        // Delete product_image_id = 0
+        $delete_result = $db->query("DELETE FROM {$prefix}product_image WHERE product_image_id = 0");
+        $check_after = $db->query("SELECT COUNT(*) as count FROM {$prefix}product_image WHERE product_image_id = 0");
+        $count_after = $check_after->row['count'] ?? 0;
+        $deleted = $zero_count - $count_after;
+        
+        if ($deleted > 0) {
+            echo "<p class='success'>✓ Deleted {$deleted} record(s) with product_image_id = 0</p>";
+        }
+        
+        // Fix AUTO_INCREMENT
+        $max_result = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
+        $max_id = $max_result->row['max_id'] ?? 0;
+        $next_id = max($max_id + 1, 1);
+        
+        $fix_result = $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
+        
+        if ($fix_result !== false) {
+            echo "<p class='success'>✓ Set AUTO_INCREMENT to {$next_id}</p>";
+            echo "<p class='success'><strong>✅ FIXED! Page will refresh in 2 seconds...</strong></p>";
+            echo "<meta http-equiv='refresh' content='2'>";
+        } else {
+            echo "<p class='error'>❌ Error setting AUTO_INCREMENT. Please run SQL manually.</p>";
+        }
+        
+        echo "</div>";
+    } else {
+        echo "<form method='POST' style='margin: 15px 0;'>";
+        echo "<button type='submit' name='auto_fix' style='background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;'>🔧 Auto-Fix Now</button>";
+        echo "</form>";
+        echo "<p>Or run this SQL manually in phpMyAdmin:</p>";
+        echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;<br>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = 1;</div>";
+    }
 } else {
     echo "<p class='success'>✓ No records with product_image_id = 0</p>";
 }
