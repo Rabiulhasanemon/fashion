@@ -7,6 +7,12 @@
     display: flex;
     gap: 15px;
     align-items: flex-start;
+    min-height: 400px;
+}
+
+/* If no thumbnails, make main image full width */
+.product-image-wrapper:not(:has(.product-thumbnails-left .thumbnail-item)) .product-main-image {
+    width: 100%;
 }
 
 /* Thumbnails on the left side */
@@ -19,6 +25,11 @@
     max-height: 500px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* If no thumbnails, hide the thumbnails container */
+.product-image-wrapper:not(:has(.product-thumbnails-left .thumbnail-item)) .product-thumbnails-left {
+    display: none;
 }
 
 .product-thumbnails-left .thumbnail-item {

@@ -28,43 +28,48 @@
                     <div class="images product-images">
                         <div class="product-image-wrapper">
                             <?php 
-                            // Check if we have additional images or just main image
-                            $has_additional_images = ($images && count($images) > 0);
-                            $total_images = $has_additional_images ? count($images) + 1 : 1; // +1 for main image
+                            // Check if we have additional images
+                            $has_additional_images = (isset($images) && is_array($images) && count($images) > 0);
+                            $show_thumbnails = ($thumb && $has_additional_images) || ($has_additional_images && count($images) > 0);
                             ?>
                             
-                            <?php if ($has_additional_images || $thumb) { ?>
-                            <!-- Thumbnails on the left -->
+                            <!-- Thumbnails on the left - only show if we have multiple images -->
+                            <?php if ($show_thumbnails) { ?>
                             <div class="product-thumbnails-left">
                                 <?php if ($thumb) { ?>
-                                <a class="thumbnail-item active" href="javascript:void(0);" data-image="<?php echo $thumb; ?>" data-popup="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>">
+                                <a class="thumbnail-item active" href="javascript:void(0);" data-image="<?php echo $thumb; ?>" data-popup="<?php echo isset($popup) ? $popup : $thumb; ?>" title="<?php echo $heading_title; ?>">
                                     <img class="thumb-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                 </a>
                                 <?php } ?>
                                 <?php if ($has_additional_images) { ?>
                                 <?php foreach ($images as $image) { ?>
-                                <a class="thumbnail-item" href="javascript:void(0);" data-image="<?php echo $image['thumb']; ?>" data-popup="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>">
-                                    <img class="thumb-image" src="<?php echo $image['thumb']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                <a class="thumbnail-item" href="javascript:void(0);" data-image="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>" data-popup="<?php echo isset($image['popup']) ? $image['popup'] : ''; ?>" title="<?php echo $heading_title; ?>">
+                                    <img class="thumb-image" src="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                 </a>
-                                <meta itemprop="image" content="<?php echo $image['thumb']; ?>"/>
+                                <meta itemprop="image" content="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>"/>
                                 <?php } ?>
                                 <?php } ?>
                             </div>
                             <?php } ?>
                             
-                            <!-- Main image on the right -->
+                            <!-- Main image - ALWAYS SHOW -->
                             <div class="product-main-image">
-                                <?php if ($thumb) { ?>
+                                <?php if (isset($thumb) && $thumb) { ?>
                                 <div class="featured-image">
-                                    <a class="thumbnail" href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" id="main-image-link">
+                                    <a class="thumbnail" href="<?php echo isset($popup) ? $popup : $thumb; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" id="main-image-link">
                                         <img class="main-image main-img" id="main-product-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                     </a>
                                     <meta itemprop="image" content="<?php echo $thumb; ?>"/>
                                     <?php if ($has_additional_images) { ?>
                                     <?php foreach ($images as $image) { ?>
-                                    <a class="thumbnail" href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" style="display: none;"></a>
+                                    <a class="thumbnail" href="<?php echo isset($image['popup']) ? $image['popup'] : ''; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" style="display: none;"></a>
                                     <?php } ?>
                                     <?php } ?>
+                                </div>
+                                <?php } else { ?>
+                                <!-- Fallback if no thumb -->
+                                <div class="featured-image">
+                                    <img class="main-image main-img" src="image/placeholder.png" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                 </div>
                                 <?php } ?>
                             </div>
@@ -322,7 +327,10 @@
     </section>
     
     <!-- Related Products Section -->
-    <?php if (isset($products) && !empty($products)) { ?>
+    <?php 
+    // Debug: Check if products exist
+    // Uncomment to debug: var_dump(isset($products), !empty($products), count($products ?? []));
+    if (isset($products) && is_array($products) && count($products) > 0) { ?>
     <section class="related-products-section" style="padding: 60px 0; background: #f9f9f9;">
         <div class="container">
             <div class="section-head" style="margin-bottom: 40px;">
