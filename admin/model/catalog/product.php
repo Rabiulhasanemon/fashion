@@ -729,8 +729,19 @@ class ModelCatalogProduct extends Model {
 					// Now insert - check if it already exists first
 					$check_existing = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' LIMIT 1");
 					if (!$check_existing || !$check_existing->num_rows) {
+						// Before inserting, ensure AUTO_INCREMENT is correct
+						// Get current max product_image_id
+						$max_pi_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+						$next_pi_id = 1;
+						if ($max_pi_check && $max_pi_check->num_rows && isset($max_pi_check->row['max_id']) && $max_pi_check->row['max_id'] !== null) {
+							$next_pi_id = (int)$max_pi_check->row['max_id'] + 1;
+						}
+						
+						// Ensure AUTO_INCREMENT is at least next_pi_id
+						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . max($next_pi_id, 1));
+						
 						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'";
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image #' . ($index + 1) . ': product_id=' . $product_id . ', image=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image #' . ($index + 1) . ': product_id=' . $product_id . ', expected product_image_id=' . $next_pi_id . ', image=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
 						
 						$result = $this->db->query($insert_sql);
 						
@@ -755,15 +766,47 @@ class ModelCatalogProduct extends Model {
 							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
 							
-							// If it's a duplicate key error for PRIMARY key, throw exception
+							// If it's a duplicate key error for PRIMARY key, try to fix and retry
 							if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'product_image_id') !== false)) {
-								$error_msg = "Duplicate entry '0' for key 'PRIMARY' in product_image table. This means product_image_id = 0 exists or AUTO_INCREMENT is broken.";
-								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - CRITICAL: ' . $error_msg . PHP_EOL, FILE_APPEND);
-								throw new Exception($error_msg);
+								// Clean up product_image_id = 0 again (in case it was created)
+								$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+								
+								// Get new max and fix AUTO_INCREMENT
+								$max_pi_retry = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+								$next_pi_id_retry = 1;
+								if ($max_pi_retry && $max_pi_retry->num_rows && isset($max_pi_retry->row['max_id']) && $max_pi_retry->row['max_id'] !== null) {
+									$next_pi_id_retry = (int)$max_pi_retry->row['max_id'] + 1;
+								}
+								$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_pi_id_retry);
+								
+								// Retry the insert
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrying image #' . ($index + 1) . ' insert after fixing AUTO_INCREMENT to ' . $next_pi_id_retry . PHP_EOL, FILE_APPEND);
+								$result = $this->db->query($insert_sql);
+								
+								if (!$result) {
+									// Get error again
+									$db_error_retry = '';
+									$db_errno_retry = 0;
+									if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+										if (property_exists($this->db->link, 'error')) {
+											$db_error_retry = $this->db->link->error;
+										}
+										if (property_exists($this->db->link, 'errno')) {
+											$db_errno_retry = $this->db->link->errno;
+										}
+									}
+									
+									$error_msg = "Duplicate entry '0' for key 'PRIMARY' in product_image table. Failed even after fixing AUTO_INCREMENT. Error: " . $db_error_retry;
+									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - CRITICAL: ' . $error_msg . PHP_EOL, FILE_APPEND);
+									throw new Exception($error_msg);
+								} else {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully after retry' . PHP_EOL, FILE_APPEND);
+								}
 							}
 							// For other errors, just log and continue
 						} else {
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully' . PHP_EOL, FILE_APPEND);
+							$inserted_id = $this->db->getLastId();
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 						}
 					}
 				}
