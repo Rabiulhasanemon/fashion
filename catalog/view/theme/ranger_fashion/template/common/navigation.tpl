@@ -182,7 +182,7 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, #A68A6A 0%, #8b6f4f 100%);
+    background: linear-gradient(180deg, #A68A6A 0%, #8B6F47 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -225,7 +225,7 @@
 .header-bottom .main-nav .menu .submenu li.active > a,
 .header-bottom .main-nav .menu .submenu li:hover > a {
     color: #A68A6A;
-    background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
+    background: linear-gradient(90deg, rgba(166, 138, 106, 0.05) 0%, rgba(166, 138, 106, 0.02) 100%);
     padding-left: 2.1rem;
     font-weight: 500;
 }

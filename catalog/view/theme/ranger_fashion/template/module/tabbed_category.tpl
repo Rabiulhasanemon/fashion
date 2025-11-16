@@ -356,9 +356,9 @@ if (empty($tabs)) {
 }
 
 .product-card .product-button-group .product-button:hover {
-    background: #ff8c00 !important;
+    background: #A68A6A !important;
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(166, 138, 106, 0.4);
 }
 
 .product-card .product-button-group .product-button i {
@@ -491,7 +491,7 @@ if (empty($tabs)) {
 }
 
 .popular-category-slider.owl-carousel .owl-nav div:hover {
-    background: #ff8c00 !important;
+    background: #A68A6A !important;
 }
 
 .popular-category-slider.owl-carousel .owl-nav div.disabled {

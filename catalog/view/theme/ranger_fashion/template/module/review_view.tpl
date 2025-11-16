@@ -226,8 +226,8 @@
 }
 
 .rv-owl-carousel .owl-nav button:hover {
-  background: #ff8c00 !important;
-  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3) !important;
+  background: #A68A6A !important;
+  box-shadow: 0 4px 12px rgba(166, 138, 106, 0.3) !important;
   transform: translateY(-50%) scale(1.1);
 }
 
