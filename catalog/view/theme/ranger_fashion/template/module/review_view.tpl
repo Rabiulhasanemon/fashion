@@ -197,7 +197,7 @@
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  background: #FF6A00 !important;
+  background: #A68A6A !important;
   color: #ffffff !important;
   border-radius: 50% !important;
   cursor: pointer !important;
@@ -260,7 +260,7 @@
 }
 
 .rv-owl-carousel .owl-dots .owl-dot.active {
-  background: #FF6A00;
+  background: #A68A6A;
   width: 30px;
   border-radius: 5px;
 }

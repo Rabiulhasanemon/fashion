@@ -99,7 +99,7 @@
       
       <?php if (count($products) > 4) { ?>
       <div class="latest-products__show-more-wrapper" id="latest-show-more-<?php echo $latest_module_id; ?>" style="text-align: center; margin-top: 30px; display: none;">
-        <button class="latest-products__show-more-btn" style="background: #FF6A00; color: #fff; border: none; padding: 12px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);">
+        <button class="latest-products__show-more-btn" style="background: #A68A6A; color: #fff; border: none; padding: 12px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(166, 138, 106, 0.3);">
           Show More Products
         </button>
       </div>

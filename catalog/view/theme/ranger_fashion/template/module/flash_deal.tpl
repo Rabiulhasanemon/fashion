@@ -149,7 +149,7 @@
 }
 
 .flash-sell-new-section .product-card:hover {
-    border-color: #FF6A00;
+    border-color: #A68A6A;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     transform: translateY(-4px);
 }
@@ -260,7 +260,7 @@
 }
 
 .flash-sell-new-section .product-card .product-title > a:hover {
-    color: #FF6A00;
+    color: #A68A6A;
 }
 
 .flash-sell-new-section .product-card .rating-stars {
@@ -366,7 +366,7 @@
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin: 0;
-    background: #FF6A00 !important;
+    background: #A68A6A !important;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -462,7 +462,7 @@
 }
 
 .flash-sell-new-section .flash-deal-slider .owl-nav div:hover {
-    background: #FF6A00;
+    background: #A68A6A;
     color: #fff;
 }
 
@@ -688,7 +688,7 @@
         margin-bottom: 6px;
         text-align: center;
         font-weight: 600;
-        color: #FF6A00;
+        color: #A68A6A;
     }
     
     .flash-sell-new-section .product-card .product-price del {

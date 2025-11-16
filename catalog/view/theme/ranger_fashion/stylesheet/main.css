@@ -1878,7 +1878,7 @@ a:focus {
     line-height: 120%;
     letter-spacing: 0.7px;
     text-transform: uppercase;
-    color: var(--primary-color, #FF6A00) !important;
+    color: var(--primary-color, #A68A6A) !important;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -1912,7 +1912,7 @@ a:focus {
 
 .header-bottom.sticky-content.fixed .main-nav .menu > li > a:hover,
 .header-bottom.sticky-content.fixed .main-nav .menu > li.active > a {
-    color: var(--primary-color, #FF6A00) !important;
+    color: var(--primary-color, #A68A6A) !important;
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn {
