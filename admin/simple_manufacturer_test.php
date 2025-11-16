@@ -46,9 +46,16 @@ try {
             $db->query("DELETE FROM {$prefix}manufacturer WHERE manufacturer_id = 0");
             $db->query("DELETE FROM {$prefix}manufacturer_description WHERE manufacturer_id = 0");
             $db->query("DELETE FROM {$prefix}manufacturer_to_store WHERE manufacturer_id = 0");
-            echo "<p class='success'>✓ Cleaned up. <a href='?'>Refresh</a></p>";
+            $db->query("DELETE FROM {$prefix}manufacturer_to_layout WHERE manufacturer_id = 0");
+            $db->query("DELETE FROM {$prefix}url_alias WHERE query = 'manufacturer_id=0'");
+            
+            // Also fix AUTO_INCREMENT after cleanup
+            $next_ai = max($max_id + 1, 1);
+            $db->query("ALTER TABLE {$prefix}manufacturer AUTO_INCREMENT = {$next_ai}");
+            
+            echo "<p class='success'>✓ Cleaned up and fixed AUTO_INCREMENT to {$next_ai}. <a href='?'>Refresh</a></p>";
         } else {
-            echo "<p><a href='?cleanup=1'><button>Clean Up Now</button></a></p>";
+            echo "<p><a href='?cleanup=1'><button style='background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;'>Clean Up Now</button></a></p>";
         }
     } else {
         echo "<p class='success'>✓ No manufacturer_id = 0 records</p>";
@@ -60,13 +67,41 @@ try {
     $ai_value = 'N/A';
     if ($ai_check && $ai_check->num_rows) {
         $row = $ai_check->row;
+        // Try different possible column names
         if (isset($row['Auto_increment'])) {
             $ai_value = $row['Auto_increment'];
         } elseif (isset($row['AUTO_INCREMENT'])) {
             $ai_value = $row['AUTO_INCREMENT'];
+        } elseif (isset($row['auto_increment'])) {
+            $ai_value = $row['auto_increment'];
+        } else {
+            // Try SHOW CREATE TABLE as fallback
+            $create_check = $db->query("SHOW CREATE TABLE {$prefix}manufacturer");
+            if ($create_check && $create_check->num_rows) {
+                $create_sql = isset($create_check->row['Create Table']) ? $create_check->row['Create Table'] : (isset($create_check->row[1]) ? $create_check->row[1] : '');
+                if (preg_match('/AUTO_INCREMENT=(\d+)/i', $create_sql, $matches)) {
+                    $ai_value = $matches[1];
+                }
+            }
         }
     }
     echo "<p class='info'>Current AUTO_INCREMENT: {$ai_value}</p>";
+    
+    // If AUTO_INCREMENT is N/A or 0, we need to fix it
+    if ($ai_value == 'N/A' || $ai_value == 0 || $ai_value == '0') {
+        echo "<p class='error'>⚠️ AUTO_INCREMENT is not set correctly!</p>";
+        if (isset($_GET['fix_ai'])) {
+            $next_ai = max($max_id + 1, 1);
+            $fix_result = $db->query("ALTER TABLE {$prefix}manufacturer AUTO_INCREMENT = {$next_ai}");
+            if ($fix_result) {
+                echo "<p class='success'>✓ AUTO_INCREMENT fixed to {$next_ai}. <a href='?'>Refresh</a></p>";
+            } else {
+                echo "<p class='error'>❌ Failed to fix AUTO_INCREMENT</p>";
+            }
+        } else {
+            echo "<p><a href='?fix_ai=1'><button>Fix AUTO_INCREMENT</button></a></p>";
+        }
+    }
     
     $max_check = $db->query("SELECT MAX(manufacturer_id) as max_id FROM {$prefix}manufacturer WHERE manufacturer_id > 0");
     $max_id = 0;
