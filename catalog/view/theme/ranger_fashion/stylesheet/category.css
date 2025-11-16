@@ -87,7 +87,7 @@
     padding: 0 20px 20px;
 }
 .price-filter .noUi-handle {
-    background: #000;
+    background: #10503D;
     box-shadow: none;
     border: 0;
     width: 12px;
@@ -176,11 +176,11 @@ input#range-to {
 }
 
 .panel .filters .noUi-connect {
-    background: black;
-    background: -moz-linear-gradient(left, black 0%, #000 100%);
-    background: -webkit-linear-gradient(left, black 0%, #000 100%);
-    background: linear-gradient(to right, black 0%, #000 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='black', endColorstr='#000',GradientType=1 );
+    background: #10503D;
+    background: -moz-linear-gradient(left, #10503D 0%, #0a3d2e 100%);
+    background: -webkit-linear-gradient(left, #10503D 0%, #0a3d2e 100%);
+    background: linear-gradient(to right, #10503D 0%, #0a3d2e 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#10503D', endColorstr='#0a3d2e',GradientType=1 );
 }
 .bottom-bar {
     padding: 30px;
@@ -197,7 +197,7 @@ input#range-to {
 }
 
 .pagination li.active {
-    background-color: #000;
+    background-color: #10503D;
     color: #fff
 }
 .product-btn-wrap {
