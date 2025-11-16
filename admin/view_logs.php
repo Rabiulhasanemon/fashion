@@ -9,13 +9,24 @@
 require_once('config.php');
 require_once(DIR_SYSTEM . 'startup.php');
 
-// Try multiple possible log directory locations
-$logs_dir = DIR_SYSTEM . 'storage/logs/';
+// Use DIR_LOGS constant (defined in config.php)
+$logs_dir = defined('DIR_LOGS') ? DIR_LOGS : (DIR_SYSTEM . 'logs/');
 if (!is_dir($logs_dir)) {
-    $logs_dir = 'system/storage/logs/';
-}
-if (!is_dir($logs_dir)) {
-    $logs_dir = '../system/storage/logs/';
+    // Try alternative locations
+    $alt_dirs = [
+        DIR_SYSTEM . 'storage/logs/',
+        'system/storage/logs/',
+        '../system/storage/logs/',
+        DIR_SYSTEM . 'logs/',
+        'system/logs/',
+        '../system/logs/'
+    ];
+    foreach ($alt_dirs as $alt_dir) {
+        if (is_dir($alt_dir)) {
+            $logs_dir = $alt_dir;
+            break;
+        }
+    }
 }
 
 $debug_log = $logs_dir . 'product_insert_debug.log';
