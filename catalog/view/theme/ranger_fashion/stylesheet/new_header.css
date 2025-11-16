@@ -6,7 +6,7 @@
 @media (min-width: 992px) {
     /* Top Announcement Bar */
     .header-top-announcement {
-        background-color: #61baf3;
+        background-color: #A68A6A;
         color: #fff;
         padding: 10px 0;
         text-align: center;
@@ -106,7 +106,7 @@
     }
 
     .header-search-container #search input[type="text"]:focus {
-        border-color: #61baf3;
+        border-color: #A68A6A;
         background-color: #fff;
         box-shadow: 0 0 5px rgba(97, 186, 243, 0.5);
     }
@@ -137,7 +137,7 @@
     /* Only make button clickable when hovering directly over it */
     .header-search-container #search button:hover {
         background-color: rgba(97, 186, 243, 0.1);
-        color: #61baf3;
+        color: #A68A6A;
     }
     
     .header-search-container #search button:active {
@@ -177,7 +177,7 @@
     }
 
     .header-icon-item:hover {
-        color: #61baf3;
+        color: #A68A6A;
     }
 
     .header-icon-item .icon {
@@ -202,7 +202,7 @@
         position: absolute;
         top: -8px;
         right: -8px;
-        background-color: #ff6b6b;
+        background-color: #10503d;
         color: white;
         border-radius: 50%;
         width: 18px;
@@ -240,14 +240,14 @@
     }
 
     .more-icon:hover .icon span {
-        background-color: #61baf3;
+        background-color: #A68A6A;
     }
     
     /* Desktop Navigation Bar (below new header) */
     .desktop-navigation-bar {
         width: 100%;
         background: #10503D;
-        border-bottom: 3px solid var(--primaryColor, #61baf3);
+        border-bottom: 3px solid var(--primaryColor, #A68A6A);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         position: relative;
         z-index: 999;
@@ -277,7 +277,7 @@
     }
     
     .desktop-navigation-bar .main-nav .nav li a:hover {
-        color: var(--primaryColor, #61baf3);
+        color: var(--primaryColor, #A68A6A);
     }
 }
 
@@ -339,7 +339,7 @@
 @media (min-width: 992px) {
     /* Top Announcement Bar */
     .header-top-announcement {
-        background-color: #61baf3;
+        background-color: #A68A6A;
         color: #fff;
         padding: 10px 0;
         text-align: center;
@@ -439,7 +439,7 @@
     }
 
     .header-search-container #search input[type="text"]:focus {
-        border-color: #61baf3;
+        border-color: #A68A6A;
         background-color: #fff;
         box-shadow: 0 0 5px rgba(97, 186, 243, 0.5);
     }
@@ -470,7 +470,7 @@
     /* Only make button clickable when hovering directly over it */
     .header-search-container #search button:hover {
         background-color: rgba(97, 186, 243, 0.1);
-        color: #61baf3;
+        color: #A68A6A;
     }
     
     .header-search-container #search button:active {
@@ -510,7 +510,7 @@
     }
 
     .header-icon-item:hover {
-        color: #61baf3;
+        color: #A68A6A;
     }
 
     .header-icon-item .icon {
@@ -535,7 +535,7 @@
         position: absolute;
         top: -8px;
         right: -8px;
-        background-color: #ff6b6b;
+        background-color: #10503d;
         color: white;
         border-radius: 50%;
         width: 18px;
@@ -573,14 +573,14 @@
     }
 
     .more-icon:hover .icon span {
-        background-color: #61baf3;
+        background-color: #A68A6A;
     }
     
     /* Desktop Navigation Bar (below new header) */
     .desktop-navigation-bar {
         width: 100%;
         background: #10503D;
-        border-bottom: 3px solid var(--primaryColor, #61baf3);
+        border-bottom: 3px solid var(--primaryColor, #A68A6A);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         position: relative;
         z-index: 999;
@@ -610,7 +610,7 @@
     }
     
     .desktop-navigation-bar .main-nav .nav li a:hover {
-        color: var(--primaryColor, #61baf3);
+        color: var(--primaryColor, #A68A6A);
     }
 }
 

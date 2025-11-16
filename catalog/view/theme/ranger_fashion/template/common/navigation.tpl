@@ -53,13 +53,13 @@
 
 .header-bottom {
     padding: 0;
-    background: var(--secondary-color, #041f1e);
+    background: #10503D;
     position: relative;
     z-index: 1000;
 }
 
 .header-bottom .container {
-    max-width: 80%;
+    max-width: 100%;
     margin: 0 auto;
     padding: 0 20px;
 }
