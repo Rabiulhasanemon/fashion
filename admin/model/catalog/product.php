@@ -671,22 +671,65 @@ class ModelCatalogProduct extends Model {
 		// Insert product images - delete existing first, then insert
 		// IMPORTANT: Only insert images if we have a valid product_id > 0
 		if ($product_id > 0 && isset($data['product_image']) && is_array($data['product_image'])) {
+			// Log image insertion attempt
+			$log_file = DIR_LOGS . 'product_insert_debug.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting to insert ' . count($data['product_image']) . ' product images for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+			
+			// Clean up any orphaned product_image records with product_id = 0
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
+			
 			foreach ($data['product_image'] as $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
+				
+				// Validate product_id again (double check)
+				if ($product_id <= 0) {
+					$error_msg = "Cannot insert product image: Invalid product_id (" . $product_id . ")";
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+					throw new Exception($error_msg);
+				}
+				
 				if ($image_path && $image_path !== '') {
 					// Delete ALL existing records for this product/image combination first
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "'");
 					// Also delete any records with empty image for this product
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND (image = '' OR image IS NULL)");
+					
 					// Now insert - check if it already exists first
 					$check_existing = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' LIMIT 1");
 					if (!$check_existing || !$check_existing->num_rows) {
-						$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'");
-						// If insert failed due to duplicate key, it's okay - record already exists
+						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'";
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image: ' . substr($insert_sql, 0, 200) . '...' . PHP_EOL, FILE_APPEND);
+						
+						$result = $this->db->query($insert_sql);
+						
+						if (!$result) {
+							// Get database error
+							$db_error = '';
+							if (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
+								$db_error = $this->db->link->error;
+							}
+							
+							$error_msg = "Failed to insert product image. Product ID: " . $product_id . ", Image: " . $image_path;
+							if ($db_error) {
+								$error_msg .= ", Database error: " . $db_error;
+							}
+							
+							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
+							
+							// Don't throw exception for image insertion failure, just log it
+							// Continue with other images
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image inserted successfully' . PHP_EOL, FILE_APPEND);
+						}
 					}
 				}
 			}
+		} elseif ($product_id <= 0) {
+			// Log error if product_id is invalid
+			$error_msg = "Cannot insert product images: Invalid product_id (" . $product_id . ")";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert keyword if provided - delete existing first, then insert
