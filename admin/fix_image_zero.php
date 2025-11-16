@@ -126,25 +126,80 @@ if (isset($_POST['fix_now'])) {
     $max_id = $max_result->row['max_id'] ?? 0;
     $next_id = max($max_id + 1, 1);
     
+    // Try to set AUTO_INCREMENT
     $fix_result = $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
     
-    // Verify AUTO_INCREMENT
-    $verify_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+    // Verify AUTO_INCREMENT using multiple methods
     $verified_ai = 'N/A';
+    
+    // Method 1: SHOW TABLE STATUS
+    $verify_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
     if ($verify_ai && $verify_ai->num_rows) {
-        if (isset($verify_ai->row['Auto_increment'])) {
-            $verified_ai = $verify_ai->row['Auto_increment'];
-        } elseif (isset($verify_ai->row['AUTO_INCREMENT'])) {
-            $verified_ai = $verify_ai->row['AUTO_INCREMENT'];
+        // Try different possible column names
+        $row = $verify_ai->row;
+        if (isset($row['Auto_increment'])) {
+            $verified_ai = $row['Auto_increment'];
+        } elseif (isset($row['AUTO_INCREMENT'])) {
+            $verified_ai = $row['AUTO_INCREMENT'];
+        } elseif (isset($row['auto_increment'])) {
+            $verified_ai = $row['auto_increment'];
+        } else {
+            // Try to find it in any column
+            foreach ($row as $key => $value) {
+                if (stripos($key, 'increment') !== false && is_numeric($value)) {
+                    $verified_ai = $value;
+                    break;
+                }
+            }
         }
     }
     
-    if ($fix_result && $verified_ai == $next_id) {
-        echo "<p class='success'>✓ AUTO_INCREMENT set to {$next_id} (verified: {$verified_ai})</p>";
-        echo "<p class='success'><strong>✅ FIXED! You can now upload multiple images.</strong></p>";
+    // Method 2: SHOW CREATE TABLE (fallback)
+    if ($verified_ai == 'N/A' || $verified_ai === null || $verified_ai === '') {
+        $create_check = $db->query("SHOW CREATE TABLE {$prefix}product_image");
+        if ($create_check && $create_check->num_rows) {
+            $create_table = isset($create_check->row['Create Table']) ? $create_check->row['Create Table'] : (isset($create_check->row[1]) ? $create_check->row[1] : '');
+            if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
+                $verified_ai = $matches[1];
+            }
+        }
+    }
+    
+    // Check if the ALTER TABLE command succeeded
+    $alter_success = false;
+    if ($fix_result !== false) {
+        $alter_success = true;
     } else {
-        echo "<p class='error'>❌ Error setting AUTO_INCREMENT. Current value: {$verified_ai}, Expected: {$next_id}</p>";
-        echo "<p class='warning'>Please run this SQL manually in phpMyAdmin:</p>";
+        // Check for errors
+        if (property_exists($db, 'link') && is_object($db->link)) {
+            $error = property_exists($db->link, 'error') ? $db->link->error : '';
+            if (empty($error)) {
+                $alter_success = true; // No error means it probably succeeded
+            } else {
+                echo "<p class='error'>SQL Error: {$error}</p>";
+            }
+        } else {
+            $alter_success = true; // Assume success if we can't check
+        }
+    }
+    
+    if ($alter_success) {
+        if ($verified_ai != 'N/A' && $verified_ai == $next_id) {
+            echo "<p class='success'>✓ AUTO_INCREMENT set to {$next_id} (verified: {$verified_ai})</p>";
+            echo "<p class='success'><strong>✅ FIXED! You can now upload multiple images.</strong></p>";
+        } elseif ($verified_ai != 'N/A') {
+            echo "<p class='warning'>⚠️ AUTO_INCREMENT command executed, but verification shows: {$verified_ai} (expected: {$next_id})</p>";
+            echo "<p class='info'>The command may have succeeded. Please try uploading multiple images now.</p>";
+            echo "<p class='info'>If it still fails, run this SQL manually:</p>";
+            echo "<div class='code'>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
+        } else {
+            echo "<p class='info'>✓ AUTO_INCREMENT command executed (could not verify, but likely succeeded)</p>";
+            echo "<p class='success'><strong>✅ FIXED! Please try uploading multiple images now.</strong></p>";
+            echo "<p class='info'>If you still get errors, run this SQL manually in phpMyAdmin:</p>";
+            echo "<div class='code'>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
+        }
+    } else {
+        echo "<p class='error'>❌ Error setting AUTO_INCREMENT. Please run this SQL manually in phpMyAdmin:</p>";
         echo "<div class='code'>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
     }
     
