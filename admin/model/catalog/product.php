@@ -796,8 +796,8 @@ class ModelCatalogProduct extends Model {
 								// Clean up product_image_id = 0 again (in case it was created)
 								$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
 								
-								// Get new max and fix AUTO_INCREMENT
-								$max_pi_retry = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+								// Get new max and fix AUTO_INCREMENT (excluding 0)
+								$max_pi_retry = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
 								$next_pi_id_retry = 1;
 								if ($max_pi_retry && $max_pi_retry->num_rows && isset($max_pi_retry->row['max_id']) && $max_pi_retry->row['max_id'] !== null) {
 									$next_pi_id_retry = (int)$max_pi_retry->row['max_id'] + 1;
@@ -821,14 +821,21 @@ class ModelCatalogProduct extends Model {
 										}
 									}
 									
-									$error_msg = "Duplicate entry '0' for key 'PRIMARY' in product_image table. Failed even after fixing AUTO_INCREMENT. Error: " . $db_error_retry;
-									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - CRITICAL: ' . $error_msg . PHP_EOL, FILE_APPEND);
-									throw new Exception($error_msg);
+									$error_msg = "Failed to insert image #" . ($index + 1) . " even after retry. Error: " . $db_error_retry . " (" . $db_errno_retry . ")";
+									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+									// Don't throw exception - continue with next image
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Skipping image #' . ($index + 1) . ' due to insert failure, continuing with next image' . PHP_EOL, FILE_APPEND);
+									continue; // Skip to next image instead of throwing exception
 								} else {
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully after retry' . PHP_EOL, FILE_APPEND);
+									// Continue to success handling below
+									$inserted_id = $this->db->getLastId();
 								}
+							} else {
+								// For other errors, just log and continue to next image
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Skipping image #' . ($index + 1) . ' due to error, continuing with next image' . PHP_EOL, FILE_APPEND);
+								continue; // Skip to next image
 							}
-							// For other errors, just log and continue
 						} else {
 							$inserted_id = $this->db->getLastId();
 							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
