@@ -435,8 +435,29 @@ class ModelCatalogProduct extends Model {
 		}
 		
 		// Insert the product - DO NOT suppress errors, we need to know if it fails
+		// Log the SQL for debugging
+		$log_file = DIR_LOGS . 'product_insert_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting to insert product. Next expected product_id: ' . $next_product_id . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . substr($sql, 0, 500) . '...' . PHP_EOL, FILE_APPEND);
+		
 		$insert_result = $this->db->query($sql);
 		$product_id = $this->db->getLastId();
+		
+		// Log result
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Insert result: ' . ($insert_result ? 'SUCCESS' : 'FAILED') . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - getLastId() returned: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Get database error if insert failed
+		if (!$insert_result) {
+			$db_error = '';
+			// Try to get MySQL error
+			if (is_object($this->db) && method_exists($this->db, 'getError')) {
+				$db_error = $this->db->getError();
+			} elseif (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
+				$db_error = $this->db->link->error;
+			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . PHP_EOL, FILE_APPEND);
+		}
 		
 		// If insert failed or product_id is 0, try to recover
 		if (!$product_id || $product_id == 0) {
@@ -540,14 +561,47 @@ class ModelCatalogProduct extends Model {
 					$product_id = $final_id;
 				}
 			} else {
-				throw new Exception("Failed to insert product: Duplicate entry or database error. Please check your database.");
+				// Get the actual database error
+				$db_error = '';
+				if (method_exists($this->db, 'getError')) {
+					$db_error = $this->db->getError();
+				} elseif (isset($this->db->error)) {
+					$db_error = $this->db->error;
+				}
+				
+				$error_msg = "Failed to insert product: Duplicate entry or database error.";
+				if ($db_error) {
+					$error_msg .= " Database error: " . $db_error;
+				}
+				$error_msg .= " Please check your database. Try running admin/test_product_insert.php for diagnostics.";
+				
+				// Log detailed error
+				$error_log_file = DIR_LOGS . 'product_insert_error.log';
+				file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - CRITICAL ERROR: ' . $error_msg . PHP_EOL, FILE_APPEND);
+				file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - SQL: ' . substr($sql_with_id, 0, 500) . '...' . PHP_EOL, FILE_APPEND);
+				file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - Attempted product_id: ' . $final_id . PHP_EOL, FILE_APPEND);
+				if ($db_error) {
+					file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . PHP_EOL, FILE_APPEND);
+				}
+				
+				throw new Exception($error_msg);
 			}
 		}
 		
 		// Final check - product_id must be > 0
 		if ($product_id <= 0) {
-			throw new Exception("Invalid product_id after insertion: " . $product_id);
+			$error_msg = "Invalid product_id after insertion: " . $product_id . ". Please check your database. Try running admin/test_product_insert.php for diagnostics.";
+			
+			// Log error
+			$error_log_file = DIR_LOGS . 'product_insert_error.log';
+			file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - CRITICAL ERROR: ' . $error_msg . PHP_EOL, FILE_APPEND);
+			file_put_contents($error_log_file, date('Y-m-d H:i:s') . ' - Final product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+			
+			throw new Exception($error_msg);
 		}
+		
+		// Log success
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SUCCESS: Product inserted with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 
 		// Insert product descriptions
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
