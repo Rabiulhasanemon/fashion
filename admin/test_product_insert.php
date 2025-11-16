@@ -40,8 +40,45 @@ if ($check_zero && $check_zero->num_rows) {
 echo "<h3>2. Checking AUTO_INCREMENT value:</h3>";
 $auto_inc = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "product'");
 if ($auto_inc && $auto_inc->num_rows) {
-    $auto_increment = isset($auto_inc->row['Auto_increment']) ? $auto_inc->row['Auto_increment'] : 'N/A';
+    // Try different possible field names
+    $auto_increment = 'N/A';
+    if (isset($auto_inc->row['Auto_increment'])) {
+        $auto_increment = $auto_inc->row['Auto_increment'];
+    } elseif (isset($auto_inc->row['AUTO_INCREMENT'])) {
+        $auto_increment = $auto_inc->row['AUTO_INCREMENT'];
+    } elseif (isset($auto_inc->row['auto_increment'])) {
+        $auto_increment = $auto_inc->row['auto_increment'];
+    }
+    
     echo "<p>Current AUTO_INCREMENT: <strong>" . $auto_increment . "</strong></p>";
+    
+    // If N/A, try alternative method
+    if ($auto_increment == 'N/A' || $auto_increment == null || $auto_increment == '') {
+        echo "<p style='color:orange;'>⚠️ Could not read AUTO_INCREMENT using SHOW TABLE STATUS. Trying alternative method...</p>";
+        
+        // Alternative: Get next auto increment value
+        $next_ai_query = $db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" . DB_DATABASE . "' AND TABLE_NAME = '" . DB_PREFIX . "product'");
+        if ($next_ai_query && $next_ai_query->num_rows) {
+            $auto_increment = isset($next_ai_query->row['AUTO_INCREMENT']) ? $next_ai_query->row['AUTO_INCREMENT'] : 'N/A';
+            echo "<p>Alternative method - AUTO_INCREMENT: <strong>" . $auto_increment . "</strong></p>";
+        }
+        
+        // If still N/A, this is a problem
+        if ($auto_increment == 'N/A' || $auto_increment == null || $auto_increment == '') {
+            echo "<p style='color:red;'><strong>⚠️ CRITICAL:</strong> Cannot determine AUTO_INCREMENT value. This may cause insert errors!</p>";
+            echo "<p><strong>Fix:</strong> Run this SQL command in phpMyAdmin:</p>";
+            echo "<code>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . ($next_id) . ";</code>";
+        }
+    } else {
+        // Check if AUTO_INCREMENT is correct
+        if ($auto_increment < $next_id) {
+            echo "<p style='color:red;'><strong>⚠️ WARNING:</strong> AUTO_INCREMENT (" . $auto_increment . ") is less than next expected ID (" . $next_id . ")!</p>";
+            echo "<p>This will cause duplicate key errors. <strong>Fix:</strong></p>";
+            echo "<code>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . ($next_id) . ";</code>";
+        } elseif ($auto_increment == $next_id) {
+            echo "<p style='color:green;'>✓ AUTO_INCREMENT is correct.</p>";
+        }
+    }
 }
 
 // Check 3: Get max product_id
@@ -124,13 +161,35 @@ if (file_exists($error_log)) {
     echo "<p style='color:green;'>✓ No error log found (no errors yet)</p>";
 }
 
+// Check 7: Verify product table structure
+echo "<h3>7. Checking product table structure:</h3>";
+$structure = $db->query("SHOW CREATE TABLE " . DB_PREFIX . "product");
+if ($structure && $structure->num_rows) {
+    $create_table = isset($structure->row['Create Table']) ? $structure->row['Create Table'] : (isset($structure->row[1]) ? $structure->row[1] : '');
+    if ($create_table) {
+        // Check if AUTO_INCREMENT is in the CREATE TABLE statement
+        if (stripos($create_table, 'AUTO_INCREMENT') !== false) {
+            preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches);
+            if (isset($matches[1])) {
+                $ai_from_structure = $matches[1];
+                echo "<p>AUTO_INCREMENT from table structure: <strong>" . $ai_from_structure . "</strong></p>";
+                if ($ai_from_structure < $next_product_id) {
+                    echo "<p style='color:red;'><strong>⚠️ PROBLEM FOUND:</strong> AUTO_INCREMENT in table structure (" . $ai_from_structure . ") is less than next expected ID (" . $next_product_id . ")!</p>";
+                }
+            }
+        } else {
+            echo "<p style='color:orange;'>⚠️ AUTO_INCREMENT not found in CREATE TABLE statement. This is unusual.</p>";
+        }
+    }
+}
+
 // Recommendations
 echo "<hr>";
 echo "<h3>How to Fix:</h3>";
 echo "<ol>";
 echo "<li><strong>If product_id = 0 exists:</strong><br>";
 echo "<code>DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0;</code></li>";
-echo "<li><strong>Fix AUTO_INCREMENT:</strong><br>";
+echo "<li><strong>Fix AUTO_INCREMENT (IMPORTANT - Run this first):</strong><br>";
 echo "<code>ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . ($next_product_id) . ";</code></li>";
 echo "<li><strong>Delete orphaned records:</strong><br>";
 echo "<code>DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0;<br>";
