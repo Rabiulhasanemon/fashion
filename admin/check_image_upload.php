@@ -75,19 +75,34 @@ if ($zero_count > 0) {
             echo "<p class='success'>✓ Deleted {$deleted} record(s) with product_image_id = 0</p>";
         }
         
-        // Fix AUTO_INCREMENT
+        // Fix AUTO_INCREMENT - MUST be MAX + 1, not just 1
         $max_result = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
         $max_id = $max_result->row['max_id'] ?? 0;
         $next_id = max($max_id + 1, 1);
         
+        echo "<p class='info'>Max product_image_id found: {$max_id}, Setting AUTO_INCREMENT to: {$next_id}</p>";
+        
         $fix_result = $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
         
         if ($fix_result !== false) {
-            echo "<p class='success'>✓ Set AUTO_INCREMENT to {$next_id}</p>";
+            // Verify it was set correctly
+            $verify_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+            $verified_value = 'N/A';
+            if ($verify_ai && $verify_ai->num_rows) {
+                $row = $verify_ai->row;
+                if (isset($row['Auto_increment'])) {
+                    $verified_value = $row['Auto_increment'];
+                } elseif (isset($row['AUTO_INCREMENT'])) {
+                    $verified_value = $row['AUTO_INCREMENT'];
+                }
+            }
+            
+            echo "<p class='success'>✓ Set AUTO_INCREMENT to {$next_id} (Verified: {$verified_value})</p>";
             echo "<p class='success'><strong>✅ FIXED! Page will refresh in 2 seconds...</strong></p>";
             echo "<meta http-equiv='refresh' content='2'>";
         } else {
-            echo "<p class='error'>❌ Error setting AUTO_INCREMENT. Please run SQL manually.</p>";
+            echo "<p class='error'>❌ Error setting AUTO_INCREMENT. Please run SQL manually:</p>";
+            echo "<div class='code'>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
         }
         
         echo "</div>";
@@ -96,9 +111,10 @@ if ($zero_count > 0) {
         echo "<form method='POST' style='margin: 15px 0;'>";
         echo "<button type='submit' name='auto_fix' style='background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;'>🔧 Auto-Fix Now</button>";
         echo "</form>";
-        echo "<p>Or run this SQL manually in phpMyAdmin:</p>";
+        echo "<p>Or run this SQL manually in phpMyAdmin (replace X with MAX(product_image_id) + 1):</p>";
         echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;
-ALTER TABLE {$prefix}product_image AUTO_INCREMENT = 1;</div>";
+SELECT MAX(product_image_id) + 1 as next_id FROM {$prefix}product_image;
+ALTER TABLE {$prefix}product_image AUTO_INCREMENT = X;</div>";
     }
 } else {
     echo "<p class='success'>✓ No records with product_image_id = 0</p>";

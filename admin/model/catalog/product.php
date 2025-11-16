@@ -1156,6 +1156,22 @@ class ModelCatalogProduct extends Model {
 					
 					if ($result) {
 						$inserted_id = $this->db->getLastId();
+						
+						// Verify the insert actually worked
+						if ($inserted_id > 0) {
+							$verify = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_image_id = '" . (int)$inserted_id . "' AND product_id = '" . (int)$product_id . "' LIMIT 1");
+							if (!$verify || !$verify->num_rows) {
+								// Insert reported success but record not found - try to find it
+								$find = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' ORDER BY product_image_id DESC LIMIT 1");
+								if ($find && $find->num_rows) {
+									$inserted_id = $find->row['product_image_id'];
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Found actual product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
+								} else {
+									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] CRITICAL: Insert reported success but record not found! Image: ' . substr($image_path, 0, 50) . PHP_EOL, FILE_APPEND);
+								}
+							}
+						}
+						
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 						$successful_images++;
 						
