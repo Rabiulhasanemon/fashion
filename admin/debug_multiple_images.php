@@ -1,52 +1,24 @@
 <?php
-// Security check
-define('HTTP_SERVER', 'http://localhost/');
-define('DIR_APPLICATION', dirname(__FILE__) . '/');
-define('DIR_SYSTEM', dirname(__FILE__) . '/../system/');
-define('DIR_IMAGE', dirname(__FILE__) . '/../image/');
-define('DIR_STORAGE', DIR_SYSTEM . 'storage/');
-define('DIR_LANGUAGE', DIR_APPLICATION . 'language/');
-define('DIR_TEMPLATE', DIR_APPLICATION . 'view/template/');
-define('DIR_CONFIG', DIR_SYSTEM . 'config/');
-define('DIR_CACHE', DIR_SYSTEM . 'storage/cache/');
-define('DIR_DOWNLOAD', DIR_SYSTEM . 'storage/download/');
-define('DIR_LOGS', DIR_SYSTEM . 'storage/logs/');
-define('DIR_MODIFICATION', DIR_SYSTEM . 'storage/modification/');
-define('DIR_UPLOAD', DIR_SYSTEM . 'storage/upload/');
+/**
+ * Debug Multiple Image Upload Script
+ * 
+ * This script helps diagnose issues with multiple image uploads
+ * Run from: admin/debug_multiple_images.php
+ * 
+ * SECURITY: Delete this file after use!
+ */
 
-// Startup
+// Start output buffering
+if (!ob_get_level()) {
+    ob_start();
+}
+
+// Load OpenCart
+require_once('config.php');
 require_once(DIR_SYSTEM . 'startup.php');
 
-// Registry
-$registry = new Registry();
-
-// Config
-$config = new Config();
-$registry->set('config', $config);
-
-// Database
-$db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
-$registry->set('db', $db);
-
-// Request
-$request = new Request();
-$registry->set('request', $request);
-
-// Response
-$response = new Response();
-$response->addHeader('Content-Type: text/html; charset=utf-8');
-$registry->set('response', $response);
-
-// Session
-$session = new Session();
-$registry->set('session', $session);
-
-// User
-$registry->set('user', new Cart\User($registry));
-
-// Logging
-$log = new Log('debug_multiple_images.log');
-$registry->set('log', $log);
+// Database - use the same pattern as fix_product_image.php
+$db = new \DB\MySQLi(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
 
 echo "<!DOCTYPE html>
 <html>
@@ -76,6 +48,7 @@ echo "<!DOCTYPE html>
     <h1>🔍 Debug Multiple Image Upload Issue</h1>";
 
 $prefix = DB_PREFIX;
+$logs_dir = DIR_SYSTEM . 'storage/logs/';
 
 // Check current state
 echo "<div class='section'>";
@@ -250,7 +223,7 @@ $log_files = [
 ];
 
 foreach ($log_files as $log_file) {
-    $log_path = DIR_LOGS . $log_file;
+    $log_path = $logs_dir . $log_file;
     if (file_exists($log_path)) {
         $log_content = file_get_contents($log_path);
         $lines = explode("\n", $log_content);
