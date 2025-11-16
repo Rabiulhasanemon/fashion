@@ -729,6 +729,9 @@ class ModelCatalogProduct extends Model {
 					// Now insert - check if it already exists first
 					$check_existing = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' LIMIT 1");
 					if (!$check_existing || !$check_existing->num_rows) {
+						// CRITICAL: Delete any product_image_id = 0 before fixing AUTO_INCREMENT
+						$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+						
 						// Before inserting, ensure AUTO_INCREMENT is correct
 						// Get current max product_image_id
 						$max_pi_check = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
@@ -737,11 +740,22 @@ class ModelCatalogProduct extends Model {
 							$next_pi_id = (int)$max_pi_check->row['max_id'] + 1;
 						}
 						
-						// Ensure AUTO_INCREMENT is at least next_pi_id
-						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . max($next_pi_id, 1));
+						// Ensure AUTO_INCREMENT is at least next_pi_id (add 1 to be safe)
+						$safe_next_id = max($next_pi_id + 1, 2); // At least 2 to avoid 0 or 1 conflicts
+						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $safe_next_id);
+						
+						// Verify AUTO_INCREMENT was set correctly
+						$verify_ai = $this->db->query("SHOW CREATE TABLE " . DB_PREFIX . "product_image");
+						if ($verify_ai && $verify_ai->num_rows) {
+							$create_table = isset($verify_ai->row['Create Table']) ? $verify_ai->row['Create Table'] : (isset($verify_ai->row[1]) ? $verify_ai->row[1] : '');
+							if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $ai_matches)) {
+								$actual_ai = $ai_matches[1];
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT verified: ' . $actual_ai . ' (expected: ' . $safe_next_id . ')' . PHP_EOL, FILE_APPEND);
+							}
+						}
 						
 						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'";
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image #' . ($index + 1) . ': product_id=' . $product_id . ', expected product_image_id=' . $next_pi_id . ', image=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image #' . ($index + 1) . ': product_id=' . $product_id . ', expected product_image_id=' . $safe_next_id . ', image=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
 						
 						$result = $this->db->query($insert_sql);
 						
