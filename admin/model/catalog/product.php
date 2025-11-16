@@ -847,18 +847,15 @@ class ModelCatalogProduct extends Model {
 								$failed_images++;
 								continue; // Skip to next image
 							}
-						}
-						
-						// If we get here, the insert was successful (either first try or after retry)
-						if (isset($inserted_id) && $inserted_id > 0) {
-							// Success path - handle inserted image
 						} else {
+							// First insert succeeded
 							$inserted_id = $this->db->getLastId();
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully on first try with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 							$successful_images++;
 						}
 						
+						// Handle successful insert (either first try or after retry)
 						if (isset($inserted_id) && $inserted_id > 0) {
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
 							
 							// Verify the inserted record exists
 							if ($inserted_id > 0) {
