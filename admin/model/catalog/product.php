@@ -602,6 +602,13 @@ class ModelCatalogProduct extends Model {
 		
 		// Log success
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SUCCESS: Product inserted with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// CRITICAL: Verify product_id is valid before proceeding with related data
+		if ($product_id <= 0) {
+			$error_msg = "CRITICAL: Product was inserted but product_id is invalid (" . $product_id . "). Cannot proceed with related data insertion.";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
 
 		// Insert product descriptions
 		if (isset($data['product_description']) && is_array($data['product_description'])) {

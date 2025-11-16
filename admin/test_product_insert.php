@@ -158,8 +158,44 @@ foreach ($tables as $table) {
         $count = isset($check->row['count']) ? $check->row['count'] : 0;
         if ($count > 0) {
             echo "<p style='color:orange;'>⚠ Found <strong>" . $count . "</strong> orphaned records in " . $table . " with product_id = 0</p>";
+            echo "<p><strong>Fix:</strong> <code>DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0;</code></p>";
         } else {
             echo "<p style='color:green;'>✓ No orphaned records in " . $table . "</p>";
+        }
+    }
+}
+
+// Check 4b: Check product_image table AUTO_INCREMENT
+echo "<h3>4b. Checking product_image table AUTO_INCREMENT:</h3>";
+$pi_auto_inc = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "product_image'");
+if ($pi_auto_inc && $pi_auto_inc->num_rows) {
+    $pi_ai = 'N/A';
+    if (isset($pi_auto_inc->row['Auto_increment'])) {
+        $pi_ai = $pi_auto_inc->row['Auto_increment'];
+    } elseif (isset($pi_auto_inc->row['AUTO_INCREMENT'])) {
+        $pi_ai = $pi_auto_inc->row['AUTO_INCREMENT'];
+    }
+    
+    // Check for product_image_id = 0
+    $pi_zero_check = $db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0 LIMIT 1");
+    if ($pi_zero_check && $pi_zero_check->num_rows) {
+        echo "<p style='color:red;'><strong>ERROR:</strong> Found product_image with product_image_id = 0!</p>";
+        echo "<p><strong>Fix:</strong> <code>DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0;</code></p>";
+    } else {
+        echo "<p style='color:green;'>✓ No product_image with product_image_id = 0</p>";
+    }
+    
+    // Get max product_image_id
+    $pi_max = $db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+    if ($pi_max && $pi_max->num_rows) {
+        $pi_max_id = isset($pi_max->row['max_id']) ? $pi_max->row['max_id'] : 0;
+        $pi_next_id = $pi_max_id + 1;
+        echo "<p>Max product_image_id: <strong>" . $pi_max_id . "</strong>, Next: <strong>" . $pi_next_id . "</strong></p>";
+        if ($pi_ai != 'N/A' && $pi_ai < $pi_next_id) {
+            echo "<p style='color:red;'><strong>⚠️ WARNING:</strong> product_image AUTO_INCREMENT (" . $pi_ai . ") is less than next expected ID (" . $pi_next_id . ")!</p>";
+            echo "<p><strong>Fix:</strong> <code>ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $pi_next_id . ";</code></p>";
+        } elseif ($pi_ai != 'N/A') {
+            echo "<p style='color:green;'>✓ product_image AUTO_INCREMENT is OK</p>";
         }
     }
 }
