@@ -10,37 +10,37 @@
      <div class="rv-owl-carousel owl-carousel" id="rv-testimonial-owl-<?php echo $module; ?>">
          <?php foreach ($reviews as $review) { ?>
          <div class="rv-owl-item">
-           <div class="rv-testimonial-card">
-             <div class="rv-testimonial-content">
-               <p class="rv-testimonial-text">
-                 <?php echo $review['text']; ?>
-               </p>
-             </div>
-             <div class="rv-testimonial-footer">
-               <div class="rv-author-avatar">
-                 <?php if (!empty($review['author_image'])) { ?>
-                 <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                 <div class="rv-avatar-placeholder" style="display: none;">
-                   <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
-                 </div>
-                 <?php } else { ?>
-                 <div class="rv-avatar-placeholder">
-                   <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
-                 </div>
-                 <?php } ?>
-               </div>
-               <div class="rv-author-info">
-                 <h6 class="rv-author-name"><?php echo htmlspecialchars($review['author']); ?></h6>
-                 <?php if (!empty($review['designation'])) { ?>
-                 <span class="rv-author-role"><?php echo htmlspecialchars($review['designation']); ?></span>
-                 <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
-                 <span class="rv-author-role"><?php echo htmlspecialchars($review['product_name']); ?></span>
-                 <?php } ?>
-               </div>
-             </div>
-           </div>
-         </div>
-         <?php } ?>
+          <div class="rv-testimonial-card">
+            <div class="rv-testimonial-content">
+              <p class="rv-testimonial-text">
+                <?php echo $review['text']; ?>
+              </p>
+            </div>
+            <div class="rv-testimonial-footer">
+              <div class="rv-author-avatar">
+                <?php if (!empty($review['author_image'])) { ?>
+                <img src="<?php echo $review['author_image']; ?>" alt="<?php echo htmlspecialchars($review['author']); ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="rv-avatar-placeholder" style="display: none;">
+                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                </div>
+                <?php } else { ?>
+                <div class="rv-avatar-placeholder">
+                  <?php echo strtoupper(substr($review['author'], 0, 1)); ?>
+                </div>
+                <?php } ?>
+              </div>
+              <div class="rv-author-info">
+                <h6 class="rv-author-name"><?php echo htmlspecialchars($review['author']); ?></h6>
+                <?php if (!empty($review['designation'])) { ?>
+                <span class="rv-author-role"><?php echo htmlspecialchars($review['designation']); ?></span>
+                <?php } elseif ($show_product && !empty($review['product_name'])) { ?>
+                <span class="rv-author-role"><?php echo htmlspecialchars($review['product_name']); ?></span>
+                <?php } ?>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php } ?>
     </div>
   </div>
 </section>
@@ -300,9 +300,9 @@ jQuery(document).ready(function($) {
     return;
   }
   
-  var reviewCount = <?php echo count($reviews); ?>;
-  var enableLoop = reviewCount > 3;
-  
+      var reviewCount = <?php echo count($reviews); ?>;
+      var enableLoop = reviewCount > 3;
+      
   // Destroy existing carousel if it exists
   if ($carousel.data('owl.carousel')) {
     $carousel.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
@@ -310,7 +310,7 @@ jQuery(document).ready(function($) {
   
   // Initialize Owl Carousel
   $carousel.addClass('owl-carousel').owlCarousel({
-    loop: enableLoop,
+        loop: enableLoop,
     margin: 20,
     nav: true,
     dots: true,
@@ -324,25 +324,25 @@ jQuery(document).ready(function($) {
         items: 1,
         margin: 15
       },
-      576: {
+          576: {
         items: 2,
         margin: 20
-      },
-      768: {
+          },
+          768: {
         items: 2,
         margin: 20
-      },
-      992: {
+          },
+          992: {
         items: 3,
         margin: 20
-      },
-      1200: {
+          },
+          1200: {
         items: 3,
         margin: 20
-      }
-    }
-  });
-  
+          }
+        }
+      });
+      
   // Ensure autoplay continues
   $carousel.on('mouseleave', function() {
     $carousel.trigger('play.owl.autoplay', [3000]);
