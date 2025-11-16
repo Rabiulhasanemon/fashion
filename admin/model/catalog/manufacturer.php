@@ -92,6 +92,11 @@ class ModelCatalogManufacturer extends Model {
 			$manufacturer_id = (int)$next_id;
 		}
 
+		// CRITICAL: Delete any existing records for this manufacturer_id first (in case of retry or orphaned data)
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . $manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . $manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = '" . $manufacturer_id . "'");
+
 		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
 			foreach ($data['manufacturer_description'] as $language_id => $value) {
 				$language_id = (int)$language_id;
@@ -108,14 +113,18 @@ class ModelCatalogManufacturer extends Model {
 					$default_language_id = (int)$config_lang_id;
 				}
 			}
-			$desc_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
-			if (!$desc_result) {
-				// Log but don't fail - description is optional
-				$error = '';
-				if (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
-					$error = $this->db->link->error;
+			// Check if exists first
+			$check_default = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . $manufacturer_id . "' AND language_id = '" . (int)$default_language_id . "' LIMIT 1");
+			if (!$check_default || !$check_default->num_rows) {
+				$desc_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
+				if (!$desc_result) {
+					// Log but don't fail - description is optional
+					$error = '';
+					if (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
+						$error = $this->db->link->error;
+					}
+					error_log('Warning: Failed to insert manufacturer description: ' . $error);
 				}
-				error_log('Warning: Failed to insert manufacturer description: ' . $error);
 			}
 		}
 
@@ -123,12 +132,19 @@ class ModelCatalogManufacturer extends Model {
 			foreach ($data['manufacturer_store'] as $store_id) {
 				$store_id = (int)$store_id;
 				if ($store_id >= 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "'");
+					// Check if exists first
+					$check_store = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . $manufacturer_id . "' AND store_id = '" . $store_id . "' LIMIT 1");
+					if (!$check_store || !$check_store->num_rows) {
+						$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '" . $store_id . "'");
+					}
 				}
 			}
 		} else {
 			// Default to store 0 if none specified
-			$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '0'");
+			$check_store_default = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . $manufacturer_id . "' AND store_id = '0' LIMIT 1");
+			if (!$check_store_default || !$check_store_default->num_rows) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_to_store SET manufacturer_id = '" . $manufacturer_id . "', store_id = '0'");
+			}
 		}
 
 		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
