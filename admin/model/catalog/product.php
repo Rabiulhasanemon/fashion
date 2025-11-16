@@ -1067,8 +1067,15 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Update product images
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
+		// Log image update attempt
+		$log_file = DIR_LOGS . 'product_insert_debug.log';
 		if (isset($data['product_image']) && is_array($data['product_image'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Attempting to update ' . count($data['product_image']) . ' product images for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		}
+		
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
+		
+		if (isset($data['product_image']) && is_array($data['product_image']) && count($data['product_image']) > 0) {
 			// CRITICAL: Clean up any product_image records with product_image_id = 0
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
 			
@@ -1080,10 +1087,18 @@ class ModelCatalogProduct extends Model {
 			}
 			$next_id = max($max_id + 1, 1);
 			$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Fixed AUTO_INCREMENT to ' . $next_id . ' before starting image insertion' . PHP_EOL, FILE_APPEND);
+			
+			$total_images = count($data['product_image']);
+			$successful_images = 0;
+			$failed_images = 0;
 			
 			foreach ($data['product_image'] as $index => $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing image #' . ($index + 1) . '/' . $total_images . ': path=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
+				
 				// Only insert if image path is not empty
 				if ($image_path && $image_path !== '') {
 					// Delete product_image_id = 0 before each insert (safety)
@@ -1098,16 +1113,82 @@ class ModelCatalogProduct extends Model {
 					$next_before = max($max_before_id + 1, 1);
 					$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_before);
 					
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . $product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'");
+					$insert_sql = "INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . $product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'";
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserting image #' . ($index + 1) . ': ' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
 					
-					// Update AUTO_INCREMENT after each insert for next image
-					$max_after = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
-					if ($max_after && $max_after->num_rows && isset($max_after->row['max_id']) && $max_after->row['max_id'] !== null) {
-						$next_after = (int)$max_after->row['max_id'] + 1;
-						$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
+					$result = $this->db->query($insert_sql);
+					
+					if ($result) {
+						$inserted_id = $this->db->getLastId();
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Image #' . ($index + 1) . ' inserted successfully with product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
+						$successful_images++;
+						
+						// Update AUTO_INCREMENT after each insert for next image
+						$max_after = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+						if ($max_after && $max_after->num_rows && isset($max_after->row['max_id']) && $max_after->row['max_id'] !== null) {
+							$next_after = (int)$max_after->row['max_id'] + 1;
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Updated AUTO_INCREMENT to ' . $next_after . ' for next image' . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						// Get error
+						$db_error = '';
+						$db_errno = 0;
+						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+							if (property_exists($this->db->link, 'error')) {
+								$db_error = $this->db->link->error;
+							}
+							if (property_exists($this->db->link, 'errno')) {
+								$db_errno = $this->db->link->errno;
+							}
+						}
+						
+						$error_msg = "Failed to insert image #" . ($index + 1) . " for product_id: " . $product_id . ". Error: " . $db_error . " (" . $db_errno . ")";
+						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] ' . $error_msg . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] WARNING: Failed to insert image #' . ($index + 1) . ', continuing with next image' . PHP_EOL, FILE_APPEND);
+						$failed_images++;
+						
+						// If duplicate key error, try to fix and retry
+						if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'product_image_id') !== false)) {
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+							$max_retry = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+							$next_retry = 1;
+							if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
+								$next_retry = (int)$max_retry->row['max_id'] + 1;
+							}
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_retry);
+							
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Retrying image #' . ($index + 1) . ' after fixing AUTO_INCREMENT to ' . $next_retry . PHP_EOL, FILE_APPEND);
+							$result_retry = $this->db->query($insert_sql);
+							
+							if ($result_retry) {
+								$inserted_id_retry = $this->db->getLastId();
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Image #' . ($index + 1) . ' inserted successfully after retry with product_image_id: ' . $inserted_id_retry . PHP_EOL, FILE_APPEND);
+								$successful_images++;
+								$failed_images--; // Adjust count
+								
+								// Update AUTO_INCREMENT after retry
+								$max_after_retry = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+								if ($max_after_retry && $max_after_retry->num_rows && isset($max_after_retry->row['max_id']) && $max_after_retry->row['max_id'] !== null) {
+									$next_after_retry = (int)$max_after_retry->row['max_id'] + 1;
+									$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after_retry);
+								}
+							}
+						}
 					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Image #' . ($index + 1) . ' skipped: empty image path' . PHP_EOL, FILE_APPEND);
 				}
 			}
+			
+			// Log final summary
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Image update complete: ' . $successful_images . ' successful, ' . $failed_images . ' failed out of ' . $total_images . ' total' . PHP_EOL, FILE_APPEND);
+			
+			if ($failed_images > 0) {
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] WARNING: ' . $failed_images . ' image(s) failed to insert for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product images to insert (empty array or not set)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Update keyword
