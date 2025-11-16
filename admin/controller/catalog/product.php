@@ -20,21 +20,50 @@ class ControllerCatalogProduct extends Controller {
 		$this->load->model('catalog/product');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			// Log the request for debugging
+			$log_file = DIR_LOGS . 'product_insert_debug.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== NEW PRODUCT ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
+			if (isset($this->request->post['product_image'])) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image count: ' . (is_array($this->request->post['product_image']) ? count($this->request->post['product_image']) : 'not array') . PHP_EOL, FILE_APPEND);
+			}
+			
+			try {
+				$product_id = $this->model_catalog_product->addProduct($this->request->post);
+				
+				// Verify product_id is valid
+				if (!$product_id || $product_id <= 0) {
+					$error_msg = "Error updating product: addProduct returned invalid product_id (" . $product_id . ")";
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+					$this->session->data['error_warning'] = $error_msg;
+					$this->getForm();
+					return;
+				}
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product added successfully with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 
-            $product_id = $this->model_catalog_product->addProduct($this->request->post);
+				// Add to activity log
+				$this->load->model('user/user');
 
-            // Add to activity log
-            $this->load->model('user/user');
+				$activity_data = array(
+					'%user_id' => $this->user->getId(),
+					'%product_id' => $product_id,
+					'%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+				);
 
-            $activity_data = array(
-                '%user_id' => $this->user->getId(),
-                '%product_id' => $product_id,
-                '%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-            );
+				$this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
 
-            $this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
-
-			$this->session->data['success'] = $this->language->get('text_success');
+				$this->session->data['success'] = $this->language->get('text_success');
+			} catch (Exception $e) {
+				$error_message = $e->getMessage();
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+				
+				$this->session->data['error_warning'] = "Error updating product: " . $error_message;
+				$this->getForm();
+				return;
+			}
 
 			$url = '';
 

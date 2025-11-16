@@ -450,13 +450,26 @@ class ModelCatalogProduct extends Model {
 		// Get database error if insert failed
 		if (!$insert_result) {
 			$db_error = '';
+			$db_errno = 0;
 			// Try to get MySQL error
 			if (is_object($this->db) && method_exists($this->db, 'getError')) {
 				$db_error = $this->db->getError();
-			} elseif (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
-				$db_error = $this->db->link->error;
+			} elseif (property_exists($this->db, 'link') && is_object($this->db->link)) {
+				if (property_exists($this->db->link, 'error')) {
+					$db_error = $this->db->link->error;
+				}
+				if (property_exists($this->db->link, 'errno')) {
+					$db_errno = $this->db->link->errno;
+				}
 			}
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . ' (Error No: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
+			
+			// If it's a duplicate key error, throw exception with details
+			if ($db_errno == 1062 || stripos($db_error, 'duplicate') !== false || stripos($db_error, 'primary') !== false) {
+				$error_msg = "Duplicate entry error: " . $db_error . ". This usually means product_id = 0 exists or AUTO_INCREMENT is broken.";
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+				throw new Exception($error_msg);
+			}
 		}
 		
 		// If insert failed or product_id is 0, try to recover
@@ -685,13 +698,24 @@ class ModelCatalogProduct extends Model {
 			// Clean up any orphaned product_image records with product_id = 0
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
 			
-			foreach ($data['product_image'] as $product_image) {
+			// Also clean up any product_image records with product_image_id = 0
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+			
+			// Verify product exists before inserting images
+			$verify_product = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "' LIMIT 1");
+			if (!$verify_product || !$verify_product->num_rows) {
+				$error_msg = "Cannot insert product images: Product with ID " . $product_id . " does not exist in database!";
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+				throw new Exception($error_msg);
+			}
+			
+			foreach ($data['product_image'] as $index => $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
 				
 				// Validate product_id again (double check)
 				if ($product_id <= 0) {
-					$error_msg = "Cannot insert product image: Invalid product_id (" . $product_id . ")";
+					$error_msg = "Cannot insert product image #" . ($index + 1) . ": Invalid product_id (" . $product_id . ")";
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 					throw new Exception($error_msg);
 				}
@@ -706,29 +730,40 @@ class ModelCatalogProduct extends Model {
 					$check_existing = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' LIMIT 1");
 					if (!$check_existing || !$check_existing->num_rows) {
 						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($image_path) . "', sort_order = '" . $sort_order . "'";
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image: ' . substr($insert_sql, 0, 200) . '...' . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting image #' . ($index + 1) . ': product_id=' . $product_id . ', image=' . substr($image_path, 0, 50) . '...' . PHP_EOL, FILE_APPEND);
 						
 						$result = $this->db->query($insert_sql);
 						
 						if (!$result) {
 							// Get database error
 							$db_error = '';
-							if (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
-								$db_error = $this->db->link->error;
+							$db_errno = 0;
+							if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+								if (property_exists($this->db->link, 'error')) {
+									$db_error = $this->db->link->error;
+								}
+								if (property_exists($this->db->link, 'errno')) {
+									$db_errno = $this->db->link->errno;
+								}
 							}
 							
-							$error_msg = "Failed to insert product image. Product ID: " . $product_id . ", Image: " . $image_path;
+							$error_msg = "Failed to insert product image #" . ($index + 1) . ". Product ID: " . $product_id . ", Image: " . substr($image_path, 0, 50);
 							if ($db_error) {
-								$error_msg .= ", Database error: " . $db_error;
+								$error_msg .= ", Database error: " . $db_error . " (Error No: " . $db_errno . ")";
 							}
 							
 							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
 							
-							// Don't throw exception for image insertion failure, just log it
-							// Continue with other images
+							// If it's a duplicate key error for PRIMARY key, throw exception
+							if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'product_image_id') !== false)) {
+								$error_msg = "Duplicate entry '0' for key 'PRIMARY' in product_image table. This means product_image_id = 0 exists or AUTO_INCREMENT is broken.";
+								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - CRITICAL: ' . $error_msg . PHP_EOL, FILE_APPEND);
+								throw new Exception($error_msg);
+							}
+							// For other errors, just log and continue
 						} else {
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image inserted successfully' . PHP_EOL, FILE_APPEND);
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image #' . ($index + 1) . ' inserted successfully' . PHP_EOL, FILE_APPEND);
 						}
 					}
 				}
@@ -737,6 +772,7 @@ class ModelCatalogProduct extends Model {
 			// Log error if product_id is invalid
 			$error_msg = "Cannot insert product images: Invalid product_id (" . $product_id . ")";
 			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
 		}
 
 		// Insert keyword if provided - delete existing first, then insert
