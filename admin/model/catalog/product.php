@@ -1073,10 +1073,28 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Attempting to update ' . count($data['product_image']) . ' product images for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		}
 		
+		// CRITICAL: ALWAYS fix product_image_id = 0 and AUTO_INCREMENT BEFORE any operations
+		$zero_check = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+		$zero_count = $zero_check && $zero_check->num_rows ? (int)$zero_check->row['count'] : 0;
+		if ($zero_count > 0) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] WARNING: Found ' . $zero_count . ' record(s) with product_image_id = 0. Deleting...' . PHP_EOL, FILE_APPEND);
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+		}
+		
+		// Fix AUTO_INCREMENT to ensure it's correct
+		$max_check_initial = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+		$max_id_initial = 0;
+		if ($max_check_initial && $max_check_initial->num_rows && isset($max_check_initial->row['max_id']) && $max_check_initial->row['max_id'] !== null) {
+			$max_id_initial = (int)$max_check_initial->row['max_id'];
+		}
+		$next_id_initial = max($max_id_initial + 1, 1);
+		$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id_initial);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Set AUTO_INCREMENT to ' . $next_id_initial . ' before starting' . PHP_EOL, FILE_APPEND);
+		
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
 		
 		if (isset($data['product_image']) && is_array($data['product_image']) && count($data['product_image']) > 0) {
-			// CRITICAL: Clean up any product_image records with product_image_id = 0
+			// CRITICAL: Clean up any product_image records with product_image_id = 0 (double-check)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
 			
 			// CRITICAL: Fix AUTO_INCREMENT before starting image insertion
