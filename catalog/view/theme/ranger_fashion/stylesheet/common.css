@@ -27,14 +27,16 @@
  --------- (1.1) Variable Styles Start ---------
  ==== */
 :root {
-  --primaryColor: #f4a950;
-  --secondaryColor: #4b4b4b;
-  --sectionBg: #f3f3f3;
-  --borderColor: #e8e8e8;
+  /* Premium Color Scheme - Only 3 colors allowed */
+  --primaryColor: #10503D;        /* Dark Green - Primary actions, buttons, links */
+  --secondaryColor: #A68A6A;     /* Tan/Beige - Accents, highlights, secondary elements */
+  --whiteColor: #ffffff;          /* White - Backgrounds, text on dark */
+  --sectionBg: #ffffff;           /* White background */
+  --borderColor: #A68A6A;        /* Tan borders */
   --fontFamily: "Jost", sans-serif;
   --fontSize: 16px;
-  --textColor: #000;
-  --textColorTwo: #f3f3f3;
+  --textColor: #10503D;          /* Dark green text */
+  --textColorTwo: #ffffff;       /* White text */
   --sectionPadding: 0;
   --sectionPaddingTop: 0;
   --sectionPaddingBottom: 0;  
@@ -67,12 +69,12 @@ html {
 
 *::-moz-selection {
   color: #ffffff;
-  background-color: #f4a950;
+  background-color: #10503D;
 }
 
 *::selection {
   color: #ffffff;
-  background-color: #f4a950;
+  background-color: #10503D;
 }
 
 body {
@@ -90,13 +92,13 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-track {
-  background-color: #f4a950;
+  background-color: #A68A6A;
   border-radius: 5px;
 }
 
 body::-webkit-scrollbar-button,
 body::-webkit-scrollbar-thumb {
-  background-color: var(--textColor);
+  background-color: #10503D;
   border-radius: 20px;
 }
 
@@ -898,7 +900,7 @@ select option {
   left: 0;
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+  background: linear-gradient(90deg, #10503D, #A68A6A);
   border-radius: 2px;
 }
 
@@ -952,8 +954,8 @@ select option {
   align-items: center;
   gap: 8px;
   font-weight: 500;
-  background: #000;
-  color: #fff;
+  background: #10503D;
+  color: #ffffff;
   cursor: pointer;
   outline: none;
   -webkit-transition: all 300ms linear;
@@ -962,7 +964,21 @@ select option {
   -o-transition: all 300ms linear;
   transition: all 300ms linear;
 }
-.btn-outline {background: transparent;border: 1px solid var(--borderColor);color: black;  font-weight: 600;}
+.btn:hover {
+  background: #0a3d2e;
+  color: #ffffff;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #A68A6A;
+  color: #10503D;
+  font-weight: 600;
+}
+.btn-outline:hover {
+  background: #A68A6A;
+  color: #ffffff;
+  border-color: #A68A6A;
+}
 
 .mark {
   text-align: center;
@@ -980,7 +996,7 @@ select option {
 }
 /*region mini-cart-item*/
 .header-title {
-  background: #000;
+  background: #10503D;
   display: flex;
   padding: 6px 7px 9px 7px;
   align-items: center;
@@ -1073,7 +1089,7 @@ select option {
   display: inline-block;
   text-align: center;
   line-height: 25px;
-  color: #000;
+  color: #10503D;
   font-size: 20px;
   padding-bottom: 0px;
   cursor: pointer;
@@ -1087,7 +1103,7 @@ select option {
   border-bottom: 1px solid var(--borderColor);
   border-radius: 0;
   height: 26px;
-  color: black;
+  color: #10503D;
   padding: 0;
 }
 .quantity-btn span.add-up.value {
@@ -1138,7 +1154,7 @@ select option {
   font-weight: 700;
   line-height: normal;
   height: 45.2px;
-  background: #000;
+  background: #10503D;
   color: #fff;
 }
 .mini-cart .total {
@@ -1253,7 +1269,7 @@ select option {
 }
 .lb-footer {
   color: #fff;
-  background: black;
+  background: #10503D;
   padding: 8px 10px;
   display: flex;
   justify-content: space-between;
@@ -1311,7 +1327,7 @@ select option {
   height: 2px;
   width: 16px;
   border-radius: 30px;
-  background: #000;
+  background: #10503D;
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg)
 }
@@ -1411,7 +1427,7 @@ select option {
 }
 .dropdown-menu::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color:#000;
+  background-color: #10503D;
 }
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
   background-color:  var(--primaryColor);;
@@ -1820,7 +1836,7 @@ section,
 .flash-sell-new-section .product-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-4px) !important;
-  border-color: #FF6A00 !important;
+  border-color: #A68A6A !important;
 }
 
 /* Fix product button group positioning and processing */
@@ -1875,7 +1891,7 @@ section,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #FF6A00 !important;
+  background: #10503D !important;
   color: #ffffff !important;
   border-radius: 50% !important;
   border: none !important;
@@ -1894,7 +1910,7 @@ section,
 .tabbed-category-slider-wrapper .product-card .product-button-group .product-button:hover,
 .deal-of-day-section .product-card .product-button-group .product-button:hover,
 .flash-sell-new-section .product-card .product-button-group .product-button:hover {
-  background: #ff8c00 !important;
+  background: #A68A6A !important;
   transform: scale(1.1) !important;
   box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4) !important;
 }

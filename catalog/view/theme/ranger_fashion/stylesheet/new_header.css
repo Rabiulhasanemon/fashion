@@ -22,7 +22,7 @@
 
     .header-top-announcement .best-offer-badge {
         background-color: #fff;
-        color: #000;
+        color: #10503D;
         padding: 4px 12px;
         border-radius: 12px;
         font-weight: 600;
@@ -246,7 +246,7 @@
     /* Desktop Navigation Bar (below new header) */
     .desktop-navigation-bar {
         width: 100%;
-        background: #000000;
+        background: #10503D;
         border-bottom: 3px solid var(--primaryColor, #61baf3);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         position: relative;
@@ -314,12 +314,12 @@
     
     /* Ensure mobile navigation has black background */
     header:not(.new-desktop-header) .header-menu {
-        background: #000000;
+        background: #10503D;
         width: 100%;
     }
     
     header:not(.new-desktop-header) .header-menu .main-nav {
-        background: #000000;
+        background: #10503D;
     }
 }
 
@@ -355,7 +355,7 @@
 
     .header-top-announcement .best-offer-badge {
         background-color: #fff;
-        color: #000;
+        color: #10503D;
         padding: 4px 12px;
         border-radius: 12px;
         font-weight: 600;
@@ -579,7 +579,7 @@
     /* Desktop Navigation Bar (below new header) */
     .desktop-navigation-bar {
         width: 100%;
-        background: #000000;
+        background: #10503D;
         border-bottom: 3px solid var(--primaryColor, #61baf3);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         position: relative;
@@ -647,12 +647,12 @@
     
     /* Ensure mobile navigation has black background */
     header:not(.new-desktop-header) .header-menu {
-        background: #000000;
+        background: #10503D;
         width: 100%;
     }
     
     header:not(.new-desktop-header) .header-menu .main-nav {
-        background: #000000;
+        background: #10503D;
     }
 }
 

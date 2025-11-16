@@ -108,7 +108,7 @@
   color: var(--textColor);
 }
 .main-nav .nav .drop-menu-1 li:hover {
-  background: #000;
+  background: #10503D;
 }
 
 .main-nav .nav .drop-menu-1 li:hover > a {
@@ -349,7 +349,7 @@ a:focus {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  border: 1px solid #000;
+  border: 1px solid #A68A6A;
 }
 
 .header-links .link-item .text {
@@ -364,7 +364,7 @@ a:focus {
 }
 
 .header-links .link-item.cart {
-  background: #000;
+  background: #10503D;
 }
 
 .header-links .link-item.cart > a {
@@ -1255,7 +1255,7 @@ a:focus {
   border: none;
 }
 .footer-top {
-  background: #000;
+  background: #10503D;
   color: #fff;
   padding: 60px 0;
 }
@@ -1854,7 +1854,7 @@ a:focus {
 .header-bottom .main-nav .menu .submenu li a {
     display: block;
     padding: 0.7rem 0 0.8rem 0;
-    color: var(--primary-color, #FF6A00);
+    color: var(--primary-color, #10503D);
     font-weight: 500;
     font-size: 15px;
     text-decoration: none;
@@ -1916,7 +1916,7 @@ a:focus {
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn {
-    background: var(--primary-color, #FF6A00);
+    background: var(--primary-color, #10503D);
     color: var(--white-color, #fff) !important;
 }
 

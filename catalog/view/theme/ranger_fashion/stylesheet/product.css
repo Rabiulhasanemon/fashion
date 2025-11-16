@@ -46,12 +46,12 @@
 }
 
 .product-thumbnails-left .thumbnail-item:hover {
-    border-color: #FF6A00;
+    border-color: #A68A6A;
     transform: scale(1.05);
 }
 
 .product-thumbnails-left .thumbnail-item.active {
-    border-color: #FF6A00;
+    border-color: #A68A6A;
     border-width: 3px;
 }
 
@@ -151,7 +151,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #FF6A00;
+    background: #10503D;
     color: #fff;
     padding: 4px 8px;
     border-radius: 4px;
@@ -187,7 +187,7 @@
 .related-product-card .price-special {
     font-size: 18px;
     font-weight: 600;
-    color: #FF6A00;
+    color: #10503D;
 }
 
 .related-product-card .price-old {
@@ -231,7 +231,7 @@
 }
 
 .product-head-info .short-info ul b {
-    color: #000;
+    color: #10503D;
 }
 
 .product-head-info {
@@ -264,12 +264,12 @@
 }
 
 .p-opt-vals label:hover {
-    box-shadow: 0 0 0 1px #000 inset
+    box-shadow: 0 0 0 1px #10503D inset
 }
 
 .p-opt-vals label:has(:checked) {
-    box-shadow: 0 0 0 1px black inset;
-    background: black;
+    box-shadow: 0 0 0 1px #10503D inset;
+    background: #10503D;
     color: #fff
 }
 .p-opt .p-opt-lbl {
@@ -323,7 +323,7 @@
 
 .control-options .quantity input {
     border: 0;
-    color: black;
+    color: #10503D;
     width: 20px;
     text-align: center;
     padding: 0;
@@ -368,7 +368,7 @@
 .copy-message {
     position: absolute;
     top: -25px;
-    background: black;
+    background: #10503D;
     color: white;
     padding: 1px 8px;
     left: 40%;
@@ -378,7 +378,7 @@
 
 .copy-message:before {
     content: "";
-    background: #000000;
+    background: #10503D;
     width: 10px;
     height: 10px;
     left: 20px;
@@ -445,7 +445,7 @@
     position: absolute;
     width: 100%;
     height: 3px;
-    background: #FF6A00;
+    background: #10503D;
     bottom: -1px;
     left: 0;
     opacity: 0;
@@ -458,7 +458,7 @@
     opacity: 1;
 }
 .product-info-details .nav-tab-bars li.active {
-    color: #FF6A00;
+    color: #10503D;
     font-weight: 500;
 }
 .related-products-head {
