@@ -1862,7 +1862,7 @@ a:focus {
 }
 
 .header-bottom .main-nav .menu .submenu li a:hover {
-    color: var(--secondary-color, #A68A6A);
+    color: var(--secondary-color, #ff8c42);
 }
 
 .header-bottom .h-flash-btn {
@@ -1885,7 +1885,7 @@ a:focus {
 }
 
 .header-bottom .h-flash-btn:hover {
-    background: var(--secondary-color, #A68A6A);
+    background: var(--secondary-color, #ff8c42);
     color: var(--white-color, #fff) !important;
 }
 
@@ -1921,7 +1921,7 @@ a:focus {
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn:hover {
-    background: var(--secondary-color, #A68A6A);
+    background: var(--secondary-color, #ff8c42);
 }
 
 /* Responsive */

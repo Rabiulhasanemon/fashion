@@ -121,7 +121,7 @@
 
 .header-bottom .main-nav .menu > li.active > a:not(.menu-title),
 .header-bottom .main-nav .menu > li:hover > a:not(.menu-title) {
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
 }
 
 .header-bottom .main-nav .menu > li.has-submenu > a::after {
@@ -182,7 +182,7 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, #A68A6A 0%, #8B6F47 100%);
+    background: linear-gradient(180deg, #FF6A00 0%, #ff8c42 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -224,8 +224,8 @@
 
 .header-bottom .main-nav .menu .submenu li.active > a,
 .header-bottom .main-nav .menu .submenu li:hover > a {
-    color: #A68A6A;
-    background: linear-gradient(90deg, rgba(166, 138, 106, 0.05) 0%, rgba(166, 138, 106, 0.02) 100%);
+    color: #FF6A00;
+    background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
     padding-left: 2.1rem;
     font-weight: 500;
 }
@@ -247,7 +247,7 @@
     line-height: 1.2;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -256,13 +256,13 @@
 
 .header-bottom .h-flash-btn:hover {
     background: var(--white-color, #fff);
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .header-bottom .h-flash-btn i {
     font-size: 1.6rem;
-    color: var(--primary-color, #A68A6A);
+    color: var(--primary-color, #FF6A00);
 }
 
 /* Sticky Header */
@@ -299,23 +299,23 @@
 
 .header-bottom.sticky-content.fixed .main-nav .menu > li.active > a:not(.menu-title),
 .header-bottom.sticky-content.fixed .main-nav .menu > li:hover > a:not(.menu-title) {
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn {
     background: var(--white-color, #fff);
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn:hover {
     background: var(--white-color, #fff);
-    color: var(--primary-color, #A68A6A) !important;
+    color: var(--primary-color, #FF6A00) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .header-bottom.sticky-content.fixed .h-flash-btn i {
-    color: var(--primary-color, #A68A6A);
+    color: var(--primary-color, #FF6A00);
 }
 
 /* Mobile Navigation Toggle */
@@ -381,7 +381,7 @@
         top: 100%;
         left: 0;
         right: 0;
-        background: var(--primary-color, #A68A6A);
+        background: var(--primary-color, #FF6A00);
         width: 100%;
         z-index: 1001;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);

@@ -191,7 +191,7 @@ if (empty($tabs)) {
 }
 
 .section-title .right_link:hover {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .section-title .right_link i {
@@ -230,14 +230,14 @@ if (empty($tabs)) {
     left: 0;
     width: 100%;
     height: 2px;
-    background: #A68A6A;
+    background: #FF6A00;
     opacity: 0;
     transition: 0.3s linear;
 }
 
 .section-title .links a:hover,
 .section-title .links a.active {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .section-title .links a:hover::before,
@@ -259,7 +259,7 @@ if (empty($tabs)) {
 }
 
 .product-card:hover {
-    border-color: #A68A6A;
+    border-color: #FF6A00;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     transform: translateY(-4px);
 }
@@ -348,7 +348,7 @@ if (empty($tabs)) {
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin: 0;
-    background: #A68A6A !important;
+    background: #FF6A00 !important;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -356,9 +356,9 @@ if (empty($tabs)) {
 }
 
 .product-card .product-button-group .product-button:hover {
-    background: #A68A6A !important;
+    background: #ff8c00 !important;
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(166, 138, 106, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4);
 }
 
 .product-card .product-button-group .product-button i {
@@ -385,7 +385,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-category > a:hover {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .product-card .product-title {
@@ -411,7 +411,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-title > a:hover {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .product-card .rating-stars {
@@ -436,7 +436,7 @@ if (empty($tabs)) {
     font-size: 15px;
     font-weight: 600;
     text-align: center;
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .product-card .product-price > del {
@@ -473,7 +473,7 @@ if (empty($tabs)) {
     border: 0;
     border-radius: 50px;
     box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
-    background: #A68A6A !important;
+    background: #FF6A00 !important;
     color: #fff !important;
     opacity: 1 !important;
     top: 50%;
@@ -491,7 +491,7 @@ if (empty($tabs)) {
 }
 
 .popular-category-slider.owl-carousel .owl-nav div:hover {
-    background: #A68A6A !important;
+    background: #ff8c00 !important;
 }
 
 .popular-category-slider.owl-carousel .owl-nav div.disabled {
@@ -526,14 +526,14 @@ if (empty($tabs)) {
     left: 0;
     width: 100%;
     height: 2px;
-    background: #A68A6A;
+    background: #FF6A00;
     opacity: 0;
     transition: 0.3s linear;
 }
 
 .tabbed-category-tabs li:hover,
 .tabbed-category-tabs li.active {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 .tabbed-category-tabs li:hover::before,

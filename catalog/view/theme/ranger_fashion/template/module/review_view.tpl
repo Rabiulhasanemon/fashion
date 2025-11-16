@@ -197,7 +197,7 @@
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  background: #A68A6A !important;
+  background: #FF6A00 !important;
   color: #ffffff !important;
   border-radius: 50% !important;
   cursor: pointer !important;
@@ -226,8 +226,8 @@
 }
 
 .rv-owl-carousel .owl-nav button:hover {
-  background: #A68A6A !important;
-  box-shadow: 0 4px 12px rgba(166, 138, 106, 0.3) !important;
+  background: #ff8c00 !important;
+  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3) !important;
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -260,7 +260,7 @@
 }
 
 .rv-owl-carousel .owl-dots .owl-dot.active {
-  background: #A68A6A;
+  background: #FF6A00;
   width: 30px;
   border-radius: 5px;
 }

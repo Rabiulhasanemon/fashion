@@ -196,7 +196,7 @@
     }
     
     .footer-accordion-toggle:hover {
-        color: #A68A6A;
+        color: #FF6A00;
     }
     
     .footer-accordion-icon {
@@ -212,7 +212,7 @@
     }
     
     .footer-accordion-item.active .footer-accordion-icon {
-        color: #A68A6A;
+        color: #FF6A00;
         font-weight: 400;
     }
     
@@ -248,7 +248,7 @@
     }
     
     .footer-accordion-content .footer-widget-list li a:hover {
-        color: #A68A6A;
+        color: #FF6A00;
         padding-left: 5px;
     }
     
