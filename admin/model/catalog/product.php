@@ -839,17 +839,52 @@ class ModelCatalogProduct extends Model {
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Verified: product_image_id ' . $inserted_id . ' exists in database' . PHP_EOL, FILE_APPEND);
 								} else {
 									file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: Insert reported success but product_image_id ' . $inserted_id . ' not found in database!' . PHP_EOL, FILE_APPEND);
+									// Try to get the actual ID from the database
+									$find_insert = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' ORDER BY product_image_id DESC LIMIT 1");
+									if ($find_insert && $find_insert->num_rows) {
+										$inserted_id = $find_insert->row['product_image_id'];
+										file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Found actual product_image_id: ' . $inserted_id . PHP_EOL, FILE_APPEND);
+									}
 								}
 							} else {
 								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: Insert reported success but getLastId() returned 0 for image #' . ($index + 1) . PHP_EOL, FILE_APPEND);
+								// Try to get the actual ID from the database
+								$find_insert = $this->db->query("SELECT product_image_id FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' AND image = '" . $this->db->escape($image_path) . "' ORDER BY product_image_id DESC LIMIT 1");
+								if ($find_insert && $find_insert->num_rows) {
+									$inserted_id = $find_insert->row['product_image_id'];
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Found actual product_image_id from database: ' . $inserted_id . PHP_EOL, FILE_APPEND);
+								}
 							}
 							
-							// Update AUTO_INCREMENT for next image (important for multiple images)
-							$max_after_insert = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image");
+							// CRITICAL: Update AUTO_INCREMENT for next image (important for multiple images)
+							// Delete any product_image_id = 0 that might have been created
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_image_id = 0");
+							
+							// Get max excluding 0
+							$max_after_insert = $this->db->query("SELECT MAX(product_image_id) as max_id FROM " . DB_PREFIX . "product_image WHERE product_image_id > 0");
+							$next_after = 1;
 							if ($max_after_insert && $max_after_insert->num_rows && isset($max_after_insert->row['max_id']) && $max_after_insert->row['max_id'] !== null) {
 								$next_after = (int)$max_after_insert->row['max_id'] + 1;
-								$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
-								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Updated AUTO_INCREMENT to ' . $next_after . ' for next image' . PHP_EOL, FILE_APPEND);
+							}
+							
+							// Set AUTO_INCREMENT to next value
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_after);
+							
+							// Verify AUTO_INCREMENT was set
+							$verify_ai_after = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "product_image'");
+							$verified_ai_after = 'N/A';
+							if ($verify_ai_after && $verify_ai_after->num_rows) {
+								if (isset($verify_ai_after->row['Auto_increment'])) {
+									$verified_ai_after = $verify_ai_after->row['Auto_increment'];
+								} elseif (isset($verify_ai_after->row['AUTO_INCREMENT'])) {
+									$verified_ai_after = $verify_ai_after->row['AUTO_INCREMENT'];
+								}
+							}
+							
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Updated AUTO_INCREMENT to ' . $next_after . ' for next image (verified: ' . $verified_ai_after . ')' . PHP_EOL, FILE_APPEND);
+							
+							if ($verified_ai_after != 'N/A' && $verified_ai_after != $next_after) {
+								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - WARNING: AUTO_INCREMENT mismatch after update! Expected: ' . $next_after . ', Got: ' . $verified_ai_after . PHP_EOL, FILE_APPEND);
 							}
 						}
 					}
