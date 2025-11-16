@@ -69,21 +69,28 @@ if ($zero_count > 0) {
     echo "<p class='success'>✓ No records with product_image_id = 0</p>";
 }
 
-// Check AUTO_INCREMENT - try multiple methods
+// Check AUTO_INCREMENT - try multiple methods (SHOW TABLE STATUS is most reliable)
 $current_ai = 'N/A';
-$ai_check = $db->query("SHOW CREATE TABLE {$prefix}product_image");
-if ($ai_check && $ai_check->num_rows) {
-    $create_table = isset($ai_check->row['Create Table']) ? $ai_check->row['Create Table'] : (isset($ai_check->row[1]) ? $ai_check->row[1] : '');
-    if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
-        $current_ai = $matches[1];
+$status_check = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+if ($status_check && $status_check->num_rows) {
+    // Try different possible column names
+    if (isset($status_check->row['Auto_increment'])) {
+        $current_ai = $status_check->row['Auto_increment'];
+    } elseif (isset($status_check->row['AUTO_INCREMENT'])) {
+        $current_ai = $status_check->row['AUTO_INCREMENT'];
+    } elseif (isset($status_check->row['auto_increment'])) {
+        $current_ai = $status_check->row['auto_increment'];
     }
 }
 
-// If still N/A, try SHOW TABLE STATUS
-if ($current_ai == 'N/A') {
-    $status_check = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
-    if ($status_check && $status_check->num_rows && isset($status_check->row['Auto_increment'])) {
-        $current_ai = $status_check->row['Auto_increment'];
+// If still N/A, try SHOW CREATE TABLE as fallback
+if ($current_ai == 'N/A' || $current_ai === null || $current_ai === '') {
+    $ai_check = $db->query("SHOW CREATE TABLE {$prefix}product_image");
+    if ($ai_check && $ai_check->num_rows) {
+        $create_table = isset($ai_check->row['Create Table']) ? $ai_check->row['Create Table'] : (isset($ai_check->row[1]) ? $ai_check->row[1] : '');
+        if ($create_table && preg_match('/AUTO_INCREMENT=(\d+)/i', $create_table, $matches)) {
+            $current_ai = $matches[1];
+        }
     }
 }
 
@@ -277,34 +284,56 @@ echo "<h2>4. Quick Fix</h2>";
 echo "<p>If you're experiencing issues, click the button below to clean up and fix AUTO_INCREMENT:</p>";
 
 if (isset($_POST['fix_now'])) {
+    // Count how many records with product_image_id = 0 before deletion
+    $check_before = $db->query("SELECT COUNT(*) as count FROM {$prefix}product_image WHERE product_image_id = 0");
+    $count_before = $check_before->row['count'] ?? 0;
+    
     // Delete product_image_id = 0
     $delete_result = $db->query("DELETE FROM {$prefix}product_image WHERE product_image_id = 0");
-    $deleted = 0;
-    if (method_exists($db, 'countAffected')) {
-        $deleted = $db->countAffected();
-    } else {
-        // Fallback: check how many were deleted
-        $check_after = $db->query("SELECT COUNT(*) as count FROM {$prefix}product_image WHERE product_image_id = 0");
-        $deleted = 1; // We know there was 1 from the check above
-    }
+    
+    // Verify deletion
+    $check_after = $db->query("SELECT COUNT(*) as count FROM {$prefix}product_image WHERE product_image_id = 0");
+    $count_after = $check_after->row['count'] ?? 0;
+    $deleted = $count_before - $count_after;
     
     // Fix AUTO_INCREMENT - get max excluding 0
     $max_result = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
     $max_id = $max_result->row['max_id'] ?? 0;
     $next_id = max($max_id + 1, 1);
     
+    // Set AUTO_INCREMENT
     $fix_result = $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
     
-    if ($fix_result) {
-        echo "<p class='success'>✓ Fixed! Deleted {$deleted} record(s) with product_image_id = 0, set AUTO_INCREMENT to {$next_id}</p>";
-        echo "<p class='info'>The page will refresh in 2 seconds...</p>";
-        echo "<meta http-equiv='refresh' content='2'>";
+    // Verify AUTO_INCREMENT was set
+    $verify_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+    $verified_ai = 'N/A';
+    if ($verify_ai && $verify_ai->num_rows) {
+        if (isset($verify_ai->row['Auto_increment'])) {
+            $verified_ai = $verify_ai->row['Auto_increment'];
+        } elseif (isset($verify_ai->row['AUTO_INCREMENT'])) {
+            $verified_ai = $verify_ai->row['AUTO_INCREMENT'];
+        }
+    }
+    
+    if ($fix_result && $deleted > 0) {
+        echo "<p class='success'>✓ Fixed! Deleted {$deleted} record(s) with product_image_id = 0</p>";
+        echo "<p class='success'>✓ Set AUTO_INCREMENT to {$next_id} (verified: {$verified_ai})</p>";
+        echo "<p class='info'>The page will refresh in 3 seconds...</p>";
+        echo "<meta http-equiv='refresh' content='3'>";
+    } elseif ($deleted > 0 && $verified_ai == $next_id) {
+        echo "<p class='success'>✓ Fixed! Deleted {$deleted} record(s) with product_image_id = 0</p>";
+        echo "<p class='success'>✓ AUTO_INCREMENT set to {$next_id} (verified: {$verified_ai})</p>";
+        echo "<p class='info'>The page will refresh in 3 seconds...</p>";
+        echo "<meta http-equiv='refresh' content='3'>";
     } else {
         $error_msg = '';
         if (property_exists($db, 'link') && is_object($db->link)) {
             $error_msg = property_exists($db->link, 'error') ? $db->link->error : 'Unknown error';
         }
         echo "<p class='error'>❌ Error fixing AUTO_INCREMENT: {$error_msg}</p>";
+        if ($deleted > 0) {
+            echo "<p class='warning'>Note: Deleted {$deleted} record(s) but AUTO_INCREMENT fix may have failed.</p>";
+        }
         echo "<p class='warning'>Please run this SQL manually in phpMyAdmin:</p>";
         echo "<div class='code'>DELETE FROM {$prefix}product_image WHERE product_image_id = 0;<br>ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id};</div>";
     }
