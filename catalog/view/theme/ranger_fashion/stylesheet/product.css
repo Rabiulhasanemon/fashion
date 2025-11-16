@@ -2,15 +2,90 @@
     position: relative;
 }
 
-.images.product-images .thumbnails {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
+/* Product Image Wrapper - Flexbox layout */
+.product-image-wrapper {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+/* Thumbnails on the left side */
+.product-thumbnails-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80px;
+    flex-shrink: 0;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.product-thumbnails-left .thumbnail-item {
+    display: block;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+    position: relative;
+}
+
+.product-thumbnails-left .thumbnail-item:hover {
+    border-color: #FF6A00;
+    transform: scale(1.05);
+}
+
+.product-thumbnails-left .thumbnail-item.active {
+    border-color: #FF6A00;
+    border-width: 3px;
+}
+
+.product-thumbnails-left .thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Main image on the right */
+.product-main-image {
+    flex: 1;
+    position: relative;
+}
+
+.product-main-image .featured-image {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.product-main-image .featured-image a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.product-main-image .main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Hide old thumbnails if they exist */
+.images.product-images .thumbnails {
+    display: none;
 }
 
 .product-head-info .name {
@@ -395,5 +470,28 @@
 
     .related-product-list-wrapper {
         gap: 15px;
+    }
+    
+    /* Mobile: Stack thumbnails horizontally or hide them */
+    .product-image-wrapper {
+        flex-direction: column;
+    }
+    
+    .product-thumbnails-left {
+        flex-direction: row;
+        width: 100%;
+        max-height: 100px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .product-thumbnails-left .thumbnail-item {
+        flex-shrink: 0;
+    }
+    
+    .product-main-image {
+        width: 100%;
     }
 }

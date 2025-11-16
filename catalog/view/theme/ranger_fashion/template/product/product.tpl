@@ -26,24 +26,49 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <div class="images product-images">
-                        <?php if ($thumb) { ?>
-                        <div class="featured-image">
-                            <a class="thumbnail" href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>">
-                                <img class="main-image main-img" src="<?php echo $thumb; ?>" width="645" height="645" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
-                            </a>
-                            <meta itemprop="image"  content="<?php echo $thumb; ?>"/>
-                        </div>
-                        <?php } ?>
-                        <?php if ($images) { ?>
-                        <div class="thumbnails">
-                            <?php foreach ($images as $image) { ?>
-                            <a class="thumbnail" href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>">
-                                <img class="thumb-image" src="<?php echo $image['thumb']; ?>" width="70" height="70" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
-                            </a>
-                            <meta itemprop="image"  content="<?php echo $image['thumb']; ?>"/>
+                        <div class="product-image-wrapper">
+                            <?php 
+                            // Check if we have additional images or just main image
+                            $has_additional_images = ($images && count($images) > 0);
+                            $total_images = $has_additional_images ? count($images) + 1 : 1; // +1 for main image
+                            ?>
+                            
+                            <?php if ($has_additional_images || $thumb) { ?>
+                            <!-- Thumbnails on the left -->
+                            <div class="product-thumbnails-left">
+                                <?php if ($thumb) { ?>
+                                <a class="thumbnail-item active" href="javascript:void(0);" data-image="<?php echo $thumb; ?>" data-popup="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>">
+                                    <img class="thumb-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                </a>
+                                <?php } ?>
+                                <?php if ($has_additional_images) { ?>
+                                <?php foreach ($images as $image) { ?>
+                                <a class="thumbnail-item" href="javascript:void(0);" data-image="<?php echo $image['thumb']; ?>" data-popup="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>">
+                                    <img class="thumb-image" src="<?php echo $image['thumb']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                </a>
+                                <meta itemprop="image" content="<?php echo $image['thumb']; ?>"/>
+                                <?php } ?>
+                                <?php } ?>
+                            </div>
                             <?php } ?>
+                            
+                            <!-- Main image on the right -->
+                            <div class="product-main-image">
+                                <?php if ($thumb) { ?>
+                                <div class="featured-image">
+                                    <a class="thumbnail" href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" id="main-image-link">
+                                        <img class="main-image main-img" id="main-product-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                    </a>
+                                    <meta itemprop="image" content="<?php echo $thumb; ?>"/>
+                                    <?php if ($has_additional_images) { ?>
+                                    <?php foreach ($images as $image) { ?>
+                                    <a class="thumbnail" href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" style="display: none;"></a>
+                                    <?php } ?>
+                                    <?php } ?>
+                                </div>
+                                <?php } ?>
+                            </div>
                         </div>
-                        <?php } ?>
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-12">
@@ -295,6 +320,53 @@
             </div>
         </div>
     </section>
+    
+    <!-- Related Products Section -->
+    <?php if (isset($products) && !empty($products)) { ?>
+    <section class="related-products-section" style="padding: 60px 0; background: #f9f9f9;">
+        <div class="container">
+            <div class="section-head" style="margin-bottom: 40px;">
+                <h2 class="section-title" style="font-size: 32px; font-weight: 600; margin-bottom: 10px; text-align: center;">Related Products</h2>
+                <p class="section-subtitle" style="text-align: center; color: #666; margin: 0;">You may also like these products</p>
+            </div>
+            <div class="related-products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                <?php foreach ($products as $product) { ?>
+                <div class="related-product-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                    <a href="<?php echo $product['href']; ?>" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="related-product-image" style="position: relative; width: 100%; padding-top: 100%; background: #fff; overflow: hidden;">
+                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px;">
+                            <?php if ($product['special']) { ?>
+                            <div class="discount-badge" style="position: absolute; top: 10px; right: 10px; background: #FF6A00; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                <?php
+                                $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                $discountAmount = $price - $special;
+                                $mark = ($discountAmount / $price) * 100;
+                                echo round($mark, 0) . '% OFF';
+                                ?>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        <div class="related-product-info" style="padding: 15px;">
+                            <h5 class="related-product-name" style="font-size: 16px; font-weight: 500; margin: 0 0 10px 0; color: #333; line-height: 1.4; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                <?php echo $product['name']; ?>
+                            </h5>
+                            <div class="related-product-price" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <?php if ($product['special']) { ?>
+                                <span class="price-special" style="font-size: 18px; font-weight: 600; color: #FF6A00;"><?php echo $product['special']; ?></span>
+                                <span class="price-old" style="font-size: 14px; color: #999; text-decoration: line-through;"><?php echo $product['price']; ?></span>
+                                <?php } else { ?>
+                                <span class="price" style="font-size: 18px; font-weight: 600; color: #333;"><?php echo $product['price']; ?></span>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
 </div>
 <section class="content-bottom">
     <div class="container">
@@ -337,22 +409,57 @@ fbq && fbq('track', 'ViewContent', {
 
     const copyLinkElement = document.querySelector('.copy-link');
 
-    copyLinkElement.addEventListener('click', () => {
-        const currentUrl = window.location.href;
-        navigator.clipboard.writeText(currentUrl)
-            .then(() => {
-                const copyMessage = document.createElement('div');
-                copyMessage.classList.add('copy-message');
-                copyMessage.textContent = 'Copied!';
-                copyLinkElement.appendChild(copyMessage);
+    if (copyLinkElement) {
+        copyLinkElement.addEventListener('click', () => {
+            const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                    const copyMessage = document.createElement('div');
+                    copyMessage.classList.add('copy-message');
+                    copyMessage.textContent = 'Copied!';
+                    copyLinkElement.appendChild(copyMessage);
 
-                setTimeout(() => {
-                    copyLinkElement.removeChild(copyMessage);
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Failed to copy:', err);
+                    setTimeout(() => {
+                        copyLinkElement.removeChild(copyMessage);
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+        });
+    }
+
+    // Product Image Thumbnail Click Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const thumbnailItems = document.querySelectorAll('.product-thumbnails-left .thumbnail-item');
+        const mainImage = document.getElementById('main-product-image');
+        const mainImageLink = document.getElementById('main-image-link');
+        
+        thumbnailItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all thumbnails
+                thumbnailItems.forEach(function(thumb) {
+                    thumb.classList.remove('active');
+                });
+                
+                // Add active class to clicked thumbnail
+                this.classList.add('active');
+                
+                // Update main image
+                const newImageSrc = this.getAttribute('data-image');
+                const newPopupSrc = this.getAttribute('data-popup');
+                
+                if (mainImage && newImageSrc) {
+                    mainImage.src = newImageSrc;
+                }
+                
+                if (mainImageLink && newPopupSrc) {
+                    mainImageLink.href = newPopupSrc;
+                }
             });
+        });
     });
 
 </script>
