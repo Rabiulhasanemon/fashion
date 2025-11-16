@@ -20,9 +20,70 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== MANUFACTURER ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
+			
+			try {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Calling addManufacturer()...' . PHP_EOL, FILE_APPEND);
+				$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - addManufacturer() returned: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 
-			if ($manufacturer_id > 0) {
+				if ($manufacturer_id > 0) {
+					$this->session->data['success'] = $this->language->get('text_success');
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Success! Redirecting...' . PHP_EOL, FILE_APPEND);
+
+					$url = '';
+
+					if (isset($this->request->get['sort'])) {
+						$url .= '&sort=' . $this->request->get['sort'];
+					}
+
+					if (isset($this->request->get['order'])) {
+						$url .= '&order=' . $this->request->get['order'];
+					}
+
+					if (isset($this->request->get['page'])) {
+						$url .= '&page=' . $this->request->get['page'];
+					}
+
+					$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: manufacturer_id is 0 or negative' . PHP_EOL, FILE_APPEND);
+					$this->error['warning'] = $this->language->get('error_insert_failed');
+				}
+			} catch (Exception $e) {
+				// Log the error with full details
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - EXCEPTION: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ' Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . PHP_EOL . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data: ' . print_r($this->request->post, true) . PHP_EOL, FILE_APPEND);
+				
+				$this->error['warning'] = 'Error adding manufacturer: ' . $e->getMessage();
+			} catch (Error $e) {
+				// Catch PHP 7+ errors
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - PHP ERROR: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ' Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . PHP_EOL . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+				
+				$this->error['warning'] = 'PHP Error: ' . $e->getMessage();
+			}
+		}
+
+		$this->getForm();
+	}
+
+	public function edit() {
+		$this->load->language('catalog/manufacturer');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('catalog/manufacturer');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			try {
+				$this->model_catalog_manufacturer->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
+
 				$this->session->data['success'] = $this->language->get('text_success');
 
 				$url = '';
@@ -40,41 +101,14 @@ class ControllerCatalogManufacturer extends Controller {
 				}
 
 				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
-			} else {
-				$this->error['warning'] = $this->language->get('error_insert_failed');
+			} catch (Exception $e) {
+				// Log the error
+				$log_file = DIR_LOGS . 'manufacturer_error.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error editing manufacturer ID ' . (isset($this->request->get['manufacturer_id']) ? $this->request->get['manufacturer_id'] : 'unknown') . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data: ' . print_r($this->request->post, true) . PHP_EOL, FILE_APPEND);
+				
+				$this->error['warning'] = 'Error editing manufacturer: ' . $e->getMessage();
 			}
-		}
-
-		$this->getForm();
-	}
-
-	public function edit() {
-		$this->load->language('catalog/manufacturer');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/manufacturer');
-
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_manufacturer->editManufacturer($this->request->get['manufacturer_id'], $this->request->post);
-
-			$this->session->data['success'] = $this->language->get('text_success');
-
-			$url = '';
-
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-
-			$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		}
 
 		$this->getForm();

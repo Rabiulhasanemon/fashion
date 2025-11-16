@@ -6,12 +6,90 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception('Manufacturer name is required');
 		}
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+		// CRITICAL: Clean up any manufacturer with manufacturer_id = 0 before inserting
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
+		
+		// Calculate next manufacturer_id explicitly
+		$max_check = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
+		$max_id = 0;
+		if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+			$max_id = (int)$max_check->row['max_id'];
+		}
+		$next_id = max($max_id + 1, 1);
+		
+		// Set AUTO_INCREMENT for consistency
+		$alter_result = $this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+		if (!$alter_result) {
+			$error = '';
+			if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+				if (property_exists($this->db->link, 'error')) {
+					$error = $this->db->link->error;
+				}
+			}
+			throw new Exception('Failed to set AUTO_INCREMENT: ' . $error);
+		}
 
-		$manufacturer_id = $this->db->getLastId();
-
-		if (!$manufacturer_id || $manufacturer_id <= 0) {
-			throw new Exception('Failed to insert manufacturer - manufacturer_id was not returned');
+		// Try to insert with explicit manufacturer_id first
+		$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+		
+		if (!$insert_result) {
+			// Get error details
+			$error = '';
+			$errno = 0;
+			if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+				if (property_exists($this->db->link, 'error')) {
+					$error = $this->db->link->error;
+				}
+				if (property_exists($this->db->link, 'errno')) {
+					$errno = $this->db->link->errno;
+				}
+			}
+			
+			// If explicit ID failed, try without it (let AUTO_INCREMENT handle it)
+			// This handles cases where explicit ID insertion is not allowed
+			if ($errno == 1062 || stripos($error, 'Duplicate') !== false || stripos($error, 'PRIMARY') !== false) {
+				// Duplicate key - try without explicit ID
+				$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+				
+				if ($insert_result) {
+					// Get the actual inserted ID
+					$manufacturer_id = $this->db->getLastId();
+					if (!$manufacturer_id || $manufacturer_id <= 0) {
+						// Query database directly to get the ID
+						$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
+						if ($find && $find->num_rows) {
+							$manufacturer_id = (int)$find->row['manufacturer_id'];
+						} else {
+							throw new Exception('Failed to insert manufacturer - could not retrieve manufacturer_id after insert');
+						}
+					}
+				} else {
+					// Get new error
+					$error2 = '';
+					$errno2 = 0;
+					if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+						if (property_exists($this->db->link, 'error')) {
+							$error2 = $this->db->link->error;
+						}
+						if (property_exists($this->db->link, 'errno')) {
+							$errno2 = $this->db->link->errno;
+						}
+					}
+					throw new Exception('Failed to insert manufacturer (both explicit and auto methods): ' . $error2 . ' (Error Code: ' . $errno2 . ')');
+				}
+			} else {
+				throw new Exception('Failed to insert manufacturer: ' . $error . ' (Error Code: ' . $errno . ')');
+			}
+		} else {
+			// Explicit ID insert succeeded - verify it
+			$verify = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$next_id . "' LIMIT 1");
+			if (!$verify || !$verify->num_rows) {
+				throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $next_id . ')');
+			}
+			$manufacturer_id = (int)$next_id;
 		}
 
 		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
@@ -23,9 +101,21 @@ class ModelCatalogManufacturer extends Model {
 			}
 		} else {
 			// Insert default description if none provided
-			$default_language_id = $this->config->get('config_language_id');
-			if ($default_language_id) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
+			$default_language_id = 1; // Default to 1 if config not available
+			if (isset($this->config) && method_exists($this->config, 'get')) {
+				$config_lang_id = $this->config->get('config_language_id');
+				if ($config_lang_id) {
+					$default_language_id = (int)$config_lang_id;
+				}
+			}
+			$desc_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . (int)$default_language_id . "', description = '', meta_title = '" . $this->db->escape($data['name']) . "', meta_description = '', meta_keyword = ''");
+			if (!$desc_result) {
+				// Log but don't fail - description is optional
+				$error = '';
+				if (property_exists($this->db, 'link') && is_object($this->db->link) && property_exists($this->db->link, 'error')) {
+					$error = $this->db->link->error;
+				}
+				error_log('Warning: Failed to insert manufacturer description: ' . $error);
 			}
 		}
 
