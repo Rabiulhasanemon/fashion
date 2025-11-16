@@ -130,50 +130,71 @@ if (isset($_POST['test_inserts'])) {
             echo "<table><tr><th>Image #</th><th>Before Insert</th><th>Insert Result</th><th>Inserted ID</th><th>After Insert</th><th>Status</th></tr>";
             
             for ($i = 1; $i <= $num_images; $i++) {
-                // Get state before insert
-                $before_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
-                $before_ai = $db->query("SHOW CREATE TABLE {$prefix}product_image");
+                // Get state before insert (excluding 0)
+                $before_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
+                $before_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
                 $before_ai_val = 'N/A';
-                if ($before_ai->row) {
-                    $bt = isset($before_ai->row['Create Table']) ? $before_ai->row['Create Table'] : (isset($before_ai->row[1]) ? $before_ai->row[1] : '');
-                    if ($bt && preg_match('/AUTO_INCREMENT=(\d+)/i', $bt, $bm)) {
-                        $before_ai_val = $bm[1];
+                if ($before_ai && $before_ai->num_rows && isset($before_ai->row['Auto_increment'])) {
+                    $before_ai_val = $before_ai->row['Auto_increment'];
+                } else {
+                    // Fallback to SHOW CREATE TABLE
+                    $before_ai2 = $db->query("SHOW CREATE TABLE {$prefix}product_image");
+                    if ($before_ai2 && $before_ai2->num_rows) {
+                        $bt = isset($before_ai2->row['Create Table']) ? $before_ai2->row['Create Table'] : (isset($before_ai2->row[1]) ? $before_ai2->row[1] : '');
+                        if ($bt && preg_match('/AUTO_INCREMENT=(\d+)/i', $bt, $bm)) {
+                            $before_ai_val = $bm[1];
+                        }
                     }
                 }
                 $before_max_val = $before_max->row['max_id'] ?? 0;
                 
-                // Delete product_image_id = 0 before insert
+                // CRITICAL: Delete product_image_id = 0 before insert
                 $db->query("DELETE FROM {$prefix}product_image WHERE product_image_id = 0");
                 
-                // Fix AUTO_INCREMENT
-                $fix_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
+                // Fix AUTO_INCREMENT - get max excluding 0
+                $fix_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
                 $fix_max_val = $fix_max->row['max_id'] ?? 0;
-                $next_id = max($fix_max_val + 1, 2);
+                $next_id = max($fix_max_val + 1, 1);
                 $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_id}");
+                
+                // Verify AUTO_INCREMENT was set
+                $verify_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+                $verified_ai = 'N/A';
+                if ($verify_ai && $verify_ai->num_rows && isset($verify_ai->row['Auto_increment'])) {
+                    $verified_ai = $verify_ai->row['Auto_increment'];
+                }
                 
                 // Insert
                 $image_path = "test_image_{$test_product_id}_{$i}.jpg";
                 $insert_sql = "INSERT INTO {$prefix}product_image SET product_id = '{$test_product_id}', image = '{$image_path}', sort_order = '{$i}'";
                 $result = $db->query($insert_sql);
                 
-                $inserted_id = $db->getLastId();
-                
-                // Get state after insert
-                $after_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
-                $after_ai = $db->query("SHOW CREATE TABLE {$prefix}product_image");
-                $after_ai_val = 'N/A';
-                if ($after_ai->row) {
-                    $at = isset($after_ai->row['Create Table']) ? $after_ai->row['Create Table'] : (isset($after_ai->row[1]) ? $after_ai->row[1] : '');
-                    if ($at && preg_match('/AUTO_INCREMENT=(\d+)/i', $at, $am)) {
-                        $after_ai_val = $am[1];
+                $inserted_id = 0;
+                if ($result) {
+                    $inserted_id = $db->getLastId();
+                    // Verify inserted_id is valid
+                    if ($inserted_id <= 0) {
+                        // Try to get it from the database
+                        $check_insert = $db->query("SELECT product_image_id FROM {$prefix}product_image WHERE product_id = '{$test_product_id}' AND image = '{$image_path}' ORDER BY product_image_id DESC LIMIT 1");
+                        if ($check_insert && $check_insert->num_rows) {
+                            $inserted_id = $check_insert->row['product_image_id'];
+                        }
                     }
+                }
+                
+                // Get state after insert (excluding 0)
+                $after_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
+                $after_ai = $db->query("SHOW TABLE STATUS LIKE '{$prefix}product_image'");
+                $after_ai_val = 'N/A';
+                if ($after_ai && $after_ai->num_rows && isset($after_ai->row['Auto_increment'])) {
+                    $after_ai_val = $after_ai->row['Auto_increment'];
                 }
                 $after_max_val = $after_max->row['max_id'] ?? 0;
                 
-                // Update AUTO_INCREMENT for next insert
-                $update_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image");
+                // Update AUTO_INCREMENT for next insert (important for multiple images)
+                $update_max = $db->query("SELECT MAX(product_image_id) as max_id FROM {$prefix}product_image WHERE product_image_id > 0");
                 $update_max_val = $update_max->row['max_id'] ?? 0;
-                $next_after = $update_max_val + 1;
+                $next_after = max($update_max_val + 1, 1);
                 $db->query("ALTER TABLE {$prefix}product_image AUTO_INCREMENT = {$next_after}");
                 
                 $status = '';
@@ -187,6 +208,9 @@ if (isset($_POST['test_inserts'])) {
                         $error = property_exists($db->link, 'error') ? $db->link->error : 'Unknown error';
                         $errno = property_exists($db->link, 'errno') ? $db->link->errno : 0;
                         $status .= "<br><small>Error: {$error} ({$errno})</small>";
+                    }
+                    if ($inserted_id == 0) {
+                        $status .= "<br><small>Warning: Inserted ID is 0!</small>";
                     }
                 }
                 
