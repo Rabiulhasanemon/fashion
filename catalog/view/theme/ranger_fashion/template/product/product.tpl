@@ -276,7 +276,7 @@
                 </div>
                 <div class="col-lg-4">
                     <?php
-                    if ($products) {
+                    if (isset($products) && is_array($products) && count($products) > 0) {
                     ?>
 
                    <div class="related-products-head mb-3" style="display: flex; align-items: center; justify-content: space-between;">
