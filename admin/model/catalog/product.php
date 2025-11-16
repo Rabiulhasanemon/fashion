@@ -434,17 +434,21 @@ class ModelCatalogProduct extends Model {
 			return $existing_product_id;
 		}
 		
-		// Insert the product
-		@$this->db->query($sql);
+		// Insert the product - DO NOT suppress errors, we need to know if it fails
+		$insert_result = $this->db->query($sql);
 		$product_id = $this->db->getLastId();
 		
-		// Try multiple methods to get a valid product_id
+		// If insert failed or product_id is 0, try to recover
 		if (!$product_id || $product_id == 0) {
-			// Method 1: Try to find by model
+			// Method 1: Try to find by model (in case insert succeeded but getLastId failed)
 			if ($model) {
 				$find_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape($model) . "' ORDER BY product_id DESC LIMIT 1");
 				if ($find_query && $find_query->num_rows) {
-					$product_id = (int)$find_query->row['product_id'];
+					$found_id = (int)$find_query->row['product_id'];
+					// Only use if it's a new product (>= next_product_id)
+					if ($found_id >= $next_product_id) {
+						$product_id = $found_id;
+					}
 				}
 			}
 			
@@ -452,7 +456,11 @@ class ModelCatalogProduct extends Model {
 			if ((!$product_id || $product_id == 0) && $sku) {
 				$find_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE sku = '" . $this->db->escape($sku) . "' ORDER BY product_id DESC LIMIT 1");
 				if ($find_query && $find_query->num_rows) {
-					$product_id = (int)$find_query->row['product_id'];
+					$found_id = (int)$find_query->row['product_id'];
+					// Only use if it's a new product (>= next_product_id)
+					if ($found_id >= $next_product_id) {
+						$product_id = $found_id;
+					}
 				}
 			}
 			
@@ -468,27 +476,77 @@ class ModelCatalogProduct extends Model {
 				}
 			}
 			
-			// Method 4: Use the calculated next_product_id and try to insert with explicit ID
+			// Method 4: Try inserting with explicit product_id (but check if it exists first)
 			if (!$product_id || $product_id == 0) {
-				// Try inserting with explicit product_id
-				$sql_with_id = str_replace("INSERT INTO " . DB_PREFIX . "product SET ", "INSERT INTO " . DB_PREFIX . "product SET product_id = '" . (int)$next_product_id . "', ", $sql);
-				@$this->db->query($sql_with_id);
-				$product_id = $this->db->getLastId();
-				if (!$product_id || $product_id == 0) {
-					$product_id = $next_product_id;
+				// Check if next_product_id already exists
+				$check_id = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$next_product_id . "' LIMIT 1");
+				if (!$check_id || !$check_id->num_rows) {
+					// ID doesn't exist, safe to insert
+					$sql_with_id = str_replace("INSERT INTO " . DB_PREFIX . "product SET ", "INSERT INTO " . DB_PREFIX . "product SET product_id = '" . (int)$next_product_id . "', ", $sql);
+					$insert_result = $this->db->query($sql_with_id);
+					if ($insert_result) {
+						$product_id = $this->db->getLastId();
+						if (!$product_id || $product_id == 0) {
+							$product_id = $next_product_id;
+						}
+					} else {
+						// Insert failed, try to get the ID that was actually inserted
+						$product_id = $this->db->getLastId();
+					}
+				} else {
+					// ID exists, find next available
+					$max_final = $this->db->query("SELECT MAX(product_id) AS max_id FROM " . DB_PREFIX . "product");
+					if ($max_final && $max_final->num_rows && isset($max_final->row['max_id'])) {
+						$next_product_id = (int)$max_final->row['max_id'] + 1;
+					} else {
+						$next_product_id = 1;
+					}
+					// Try again with new ID
+					$sql_with_id = str_replace("INSERT INTO " . DB_PREFIX . "product SET ", "INSERT INTO " . DB_PREFIX . "product SET product_id = '" . (int)$next_product_id . "', ", $sql);
+					$insert_result = $this->db->query($sql_with_id);
+					if ($insert_result) {
+						$product_id = $this->db->getLastId();
+						if (!$product_id || $product_id == 0) {
+							$product_id = $next_product_id;
+						}
+					}
 				}
 			}
 		}
 		
-		// Final verification - ensure we have a valid product_id
-		if (!$product_id || $product_id == 0) {
-			// Absolute last resort: get max and add 1
+		// Final verification - ensure we have a valid product_id (must be > 0)
+		if (!$product_id || $product_id <= 0) {
+			// Absolute last resort: get max and add 1, then verify it doesn't exist
 			$max_final = $this->db->query("SELECT MAX(product_id) AS max_id FROM " . DB_PREFIX . "product");
+			$final_id = 1;
 			if ($max_final && $max_final->num_rows && isset($max_final->row['max_id'])) {
-				$product_id = (int)$max_final->row['max_id'] + 1;
-			} else {
-				$product_id = 1;
+				$final_id = (int)$max_final->row['max_id'] + 1;
 			}
+			// Verify this ID doesn't exist
+			$verify_id = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$final_id . "' LIMIT 1");
+			if ($verify_id && $verify_id->num_rows) {
+				// ID exists, keep incrementing until we find one that doesn't
+				while ($verify_id && $verify_id->num_rows) {
+					$final_id++;
+					$verify_id = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$final_id . "' LIMIT 1");
+				}
+			}
+			// Now insert with this verified ID
+			$sql_with_id = str_replace("INSERT INTO " . DB_PREFIX . "product SET ", "INSERT INTO " . DB_PREFIX . "product SET product_id = '" . (int)$final_id . "', ", $sql);
+			$insert_result = $this->db->query($sql_with_id);
+			if ($insert_result) {
+				$product_id = $this->db->getLastId();
+				if (!$product_id || $product_id <= 0) {
+					$product_id = $final_id;
+				}
+			} else {
+				throw new Exception("Failed to insert product: Duplicate entry or database error. Please check your database.");
+			}
+		}
+		
+		// Final check - product_id must be > 0
+		if ($product_id <= 0) {
+			throw new Exception("Invalid product_id after insertion: " . $product_id);
 		}
 
 		// Insert product descriptions
@@ -557,7 +615,8 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Insert product images - delete existing first, then insert
-		if (isset($data['product_image']) && is_array($data['product_image'])) {
+		// IMPORTANT: Only insert images if we have a valid product_id > 0
+		if ($product_id > 0 && isset($data['product_image']) && is_array($data['product_image'])) {
 			foreach ($data['product_image'] as $product_image) {
 				$image_path = isset($product_image['image']) ? trim($product_image['image']) : '';
 				$sort_order = isset($product_image['sort_order']) ? (int)$product_image['sort_order'] : 0;
