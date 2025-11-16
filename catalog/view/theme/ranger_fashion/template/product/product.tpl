@@ -22,257 +22,350 @@
     <meta itemprop="productID" content="<?php echo $product_id; ?>">
     <meta itemprop="sku" content="<?php echo $product_id; ?>">
     <section class="basic">
-        <div class="container"  id="product">
-            <div class="row">
-                <div class="col-md-6 col-sm-12">
-                    <div class="images product-images">
-                        <?php if ($thumb) { ?>
-                        <div class="featured-image">
-                            <a class="thumbnail" href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>">
-                                <img class="main-image main-img" src="<?php echo $thumb; ?>" width="645" height="645" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
-                            </a>
-                            <meta itemprop="image"  content="<?php echo $thumb; ?>"/>
-                        </div>
-                        <?php } ?>
-                        <?php if ($images) { ?>
-                        <div class="thumbnails">
-                            <?php foreach ($images as $image) { ?>
-                            <a class="thumbnail" href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>">
-                                <img class="thumb-image" src="<?php echo $image['thumb']; ?>" width="70" height="70" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
-                            </a>
-                            <meta itemprop="image"  content="<?php echo $image['thumb']; ?>"/>
-                            <?php } ?>
-                        </div>
-                        <?php } ?>
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="product-info-all">
-                        <div class="product-head-info">
-                            <h1 itemprop="name" class="name"><?php echo $heading_title; ?></h1>
-
-                            <div class="short-info">
-                                <ul>
-                                    <li> <b>Status:</b>  <span><?php echo $stock; ?></span></li>
-                                    <li><b>Rating:</b>  <span><?php echo $rating; ?>/5.0 </span> <?php echo $reviews; ?></li>
-                                    <?php if ($sku) { ?>
-                                    <li> <b>SKU: </b><?php echo $sku; ?></li>
+        <div class="container" id="product">
+            <div class="row gutter-lg">
+                <div class="main-content">
+                    <div class="product product-single row">
+                        <div class="col-xl-6 col-12">
+                            <div class="pd-details-gallery product-gallery product-gallery-sticky">
+                                <div class="pd-vertical-slider-container">
+                                    <?php if ($images && count($images) > 0) { ?>
+                                    <div class="p-thumb-img-slider swiper p-details-slider vertical-thumbs swiper-thumbs">
+                                        <div class="swiper-wrapper">
+                                            <?php if ($thumb) { ?>
+                                            <div class="swiper-slide single-swiper-thumbs swiper-slide-thumb-active">
+                                                <img src="<?php echo $thumb; ?>" alt="product-img">
+                                            </div>
+                                            <?php } ?>
+                                            <?php foreach ($images as $image) { ?>
+                                            <div class="swiper-slide single-swiper-thumbs">
+                                                <img src="<?php echo $image['thumb']; ?>" alt="product-img">
+                                            </div>
+                                            <?php } ?>
+                                        </div>
+                                        <div class="swiper-button-next"></div>
+                                        <div class="swiper-button-prev"></div>
+                                    </div>
                                     <?php } ?>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <?php if ($options) { ?>
-                        <div class="p-opt-wrap">
-                            <?php foreach ($options as $option) { ?>
-                            <?php if($option['type'] === 'select'){ ?>
-                            <div class="p-opt color required">
-                                <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>">  <?php echo $option['name']; ?>:  <b></b></div>
-                                <div class="p-opt-vals">
-                                    <?php foreach ($option['product_option_value'] as $option_value) { ?>
-                                    <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
-                                    <?php } ?>
+                                    <div class="p-details-big-img swiper p-details-slider-2">
+                                        <div class="swiper-wrapper">
+                                            <?php if ($thumb) { ?>
+                                            <div class="swiper-slide single-slider-img zoom zoomSingleImage" href="<?php echo $popup; ?>" data-fancybox="photo">
+                                                <img src="<?php echo $thumb; ?>" alt="product-img">
+                                                <meta itemprop="image" content="<?php echo $thumb; ?>"/>
+                                            </div>
+                                            <?php } ?>
+                                            <?php if ($images) { ?>
+                                            <?php foreach ($images as $image) { ?>
+                                            <div class="swiper-slide single-slider-img zoom zoomSingleImage" href="<?php echo $image['popup']; ?>" data-fancybox="photo">
+                                                <img src="<?php echo $image['popup']; ?>" alt="product-img">
+                                                <meta itemprop="image" content="<?php echo $image['thumb']; ?>"/>
+                                            </div>
+                                            <?php } ?>
+                                            <?php } ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <?php } else { ?>
-                            <div class="p-opt required">
-                                <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>">Select <?php echo $option['name']; ?>:  <b></b></div>
-                                <div class="p-opt-vals">
-                                    <?php foreach ($option['product_option_value'] as $option_value) { ?>
-                                    <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                            <?php }  ?>
-
-                            <?php } ?>
                         </div>
-                        <?php } ?>
-
-                        <div class="cart-option" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                            <link itemprop="availability" href="http://schema.org/<?php echo $stock_meta; ?>"/><link itemprop="itemCondition" href="http://schema.org/NewCondition">
-                            <meta itemprop="priceCurrency" content="BDT" /><meta itemprop="price" content="<?php echo $raw_price; ?>" />
-
-                            <div class="price-wrap">
-                                <input type="hidden" name="enable_emi" checked value="0"/>
-
-                                <?php if ($disablePurchase || !$special) { ?>
-                                <span class="price product-price"><span><?php echo $price; ?></span></span>
-                                <?php } else { ?>
-                                <span class="price product-price"><span> <ins style="text-decoration: none;"><?php echo $special; ?></ins> </span></span>
-                                <span class="price-old product-price"><span> <del><?php echo $price; ?></del> </span></span>
-                                <?php
-                                  $p = floatval(str_replace(['৳', ','], '', $price));
-                                  $s = floatval(str_replace(['৳', ','], '', $special));
-                                  $discountAmount = $p - $s;
-                                ?>
-                                <span class="save">Save <?php echo $discountAmount; ?> TK.</span>
-                                <?php } ?>
-                            </div>
-                            <div class="control-options">
-                                <div class="quantity">
-                                    <span><i class="material-icons">remove</i></span>
-                                    <span class="qty"><input type="text" name="quantity" id="input-quantity" value="<?php echo $minimum; ?>" size="2"></span>
-                                    <span  class="increment"><i class="material-icons">add</i></span>
-                                    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
-                                </div>
-                                <button id="button-cart" class="btn" <?php echo $disablePurchase ? "disabled" : ""; ?>> Buy Now</button>
-                            </div>
-
-                        </div>
-
-                        <div class="save-and-share-wrap">
-                            <button class="btn btn-outline" onclick="wishlist.add('<?php echo $product_id; ?>');" type="button"><span class="material-icons">favorite_border</span> Add To Wishlist </button>
-
-                            <div class="social-share">
-                                <div class="share-on">
-                                    <span class="share" >Share:</span>
-                                    <span class="share-ico" data-type="facebook">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                          <path d="M8.00016 1.35999C4.3335 1.35999 1.3335 4.35332 1.3335 8.03999C1.3335 11.3733 3.7735 14.14 6.96016 14.64V9.97332H5.26683V8.03999H6.96016V6.56665C6.96016 4.89332 7.9535 3.97332 9.48016 3.97332C10.2068 3.97332 10.9668 4.09999 10.9668 4.09999V5.74665H10.1268C9.30016 5.74665 9.04016 6.25999 9.04016 6.78665V8.03999H10.8935L10.5935 9.97332H9.04016V14.64C10.6111 14.3919 12.0416 13.5903 13.0734 12.38C14.1053 11.1697 14.6704 9.63041 14.6668 8.03999C14.6668 4.35332 11.6668 1.35999 8.00016 1.35999Z" fill="#5E5E5E"/>
-                                        </svg>
-                                    </span>
-                                    <span class="share-ico" data-type="whatsapp">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                          <path d="M8.00066 1.33331C11.6827 1.33331 14.6673 4.31798 14.6673 7.99998C14.6673 11.682 11.6827 14.6666 8.00066 14.6666C6.8225 14.6687 5.66505 14.3569 4.64733 13.7633L1.33666 14.6666L2.23799 11.3546C1.64397 10.3366 1.33193 9.17866 1.33399 7.99998C1.33399 4.31798 4.31866 1.33331 8.00066 1.33331ZM5.72866 4.86665L5.59533 4.87198C5.50912 4.87792 5.42489 4.90056 5.34733 4.93865C5.27504 4.97965 5.20904 5.03084 5.15133 5.09065C5.07133 5.16598 5.02599 5.23131 4.97733 5.29465C4.73074 5.61525 4.59798 6.00886 4.59999 6.41331C4.60133 6.73998 4.68666 7.05798 4.81999 7.35531C5.09266 7.95665 5.54133 8.59331 6.13333 9.18331C6.27599 9.32531 6.416 9.46798 6.56666 9.60065C7.30228 10.2482 8.17885 10.7153 9.12666 10.9646L9.50533 11.0226C9.62866 11.0293 9.752 11.02 9.876 11.014C10.0701 11.0037 10.2597 10.9512 10.4313 10.86C10.5186 10.8149 10.6038 10.7659 10.6867 10.7133C10.6867 10.7133 10.7149 10.6942 10.77 10.6533C10.86 10.5866 10.9153 10.5393 10.99 10.4613C11.046 10.4035 11.0927 10.3364 11.13 10.26C11.182 10.1513 11.234 9.94398 11.2553 9.77131C11.2713 9.63931 11.2667 9.56731 11.2647 9.52265C11.262 9.45131 11.2027 9.37731 11.138 9.34598L10.75 9.17198C10.75 9.17198 10.17 8.91931 9.81533 8.75798C9.7782 8.74182 9.73844 8.73256 9.698 8.73065C9.65238 8.72587 9.60627 8.73096 9.56279 8.74557C9.51931 8.76018 9.47948 8.78396 9.446 8.81531C9.44266 8.81398 9.39799 8.85198 8.91599 9.43598C8.88833 9.47315 8.85022 9.50125 8.80653 9.51668C8.76284 9.53212 8.71554 9.53419 8.67066 9.52265C8.62721 9.51107 8.58466 9.49636 8.54333 9.47865C8.46066 9.44398 8.43199 9.43065 8.37533 9.40665C7.99258 9.23992 7.63829 9.0143 7.32533 8.73798C7.24133 8.66465 7.16333 8.58465 7.08333 8.50731C6.82107 8.25612 6.5925 7.97197 6.40333 7.66198L6.36399 7.59865C6.33617 7.55584 6.31335 7.50999 6.29599 7.46198C6.27066 7.36398 6.33666 7.28531 6.33666 7.28531C6.33666 7.28531 6.49866 7.10798 6.57399 7.01198C6.64733 6.91865 6.70933 6.82798 6.74933 6.76331C6.82799 6.63665 6.85266 6.50665 6.81133 6.40598C6.62466 5.94998 6.43177 5.49642 6.23266 5.04531C6.19333 4.95598 6.07666 4.89198 5.97066 4.87931C5.93466 4.87487 5.89866 4.87131 5.86266 4.86865C5.77315 4.86351 5.68339 4.8644 5.59399 4.87131L5.72866 4.86665Z" fill="#5E5E5E"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div class="copy-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M12.6667 1.33331C13.0203 1.33331 13.3594 1.47379 13.6095 1.72384C13.8595 1.97389 14 2.31302 14 2.66665V10.6666C14 11.0203 13.8595 11.3594 13.6095 11.6095C13.3594 11.8595 13.0203 12 12.6667 12H11.3333V13.3333C11.3333 13.6869 11.1929 14.0261 10.9428 14.2761C10.6928 14.5262 10.3536 14.6666 10 14.6666H3.33333C2.97971 14.6666 2.64057 14.5262 2.39052 14.2761C2.14048 14.0261 2 13.6869 2 13.3333V5.33331C2 4.97969 2.14048 4.64055 2.39052 4.3905C2.64057 4.14046 2.97971 3.99998 3.33333 3.99998H4.66667V2.66665C4.66667 2.31302 4.80714 1.97389 5.05719 1.72384C5.30724 1.47379 5.64638 1.33331 6 1.33331H12.6667ZM6.66667 9.99998H5.33333C5.16341 10.0002 4.99998 10.0652 4.87642 10.1819C4.75286 10.2985 4.67851 10.4579 4.66855 10.6276C4.65859 10.7972 4.71378 10.9642 4.82284 11.0945C4.9319 11.2248 5.0866 11.3086 5.25533 11.3286L5.33333 11.3333H6.66667C6.83659 11.3331 7.00002 11.2681 7.12358 11.1514C7.24714 11.0348 7.32149 10.8753 7.33145 10.7057C7.34141 10.5361 7.28622 10.3691 7.17716 10.2388C7.0681 10.1085 6.9134 10.0247 6.74467 10.0046L6.66667 9.99998ZM12.6667 2.66665H6V3.99998H10C10.3536 3.99998 10.6928 4.14046 10.9428 4.3905C11.1929 4.64055 11.3333 4.97969 11.3333 5.33331V10.6666H12.6667V2.66665ZM8 7.33331H5.33333C5.15652 7.33331 4.98695 7.40355 4.86193 7.52858C4.7369 7.6536 4.66667 7.82317 4.66667 7.99998C4.66667 8.17679 4.7369 8.34636 4.86193 8.47138C4.98695 8.59641 5.15652 8.66665 5.33333 8.66665H8C8.17681 8.66665 8.34638 8.59641 8.4714 8.47138C8.59643 8.34636 8.66667 8.17679 8.66667 7.99998C8.66667 7.82317 8.59643 7.6536 8.4714 7.52858C8.34638 7.40355 8.17681 7.33331 8 7.33331Z" fill="#5E5E5E"/>
-                                    </svg>
-                                     Copy Link
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="product-info-details">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-12">
-                    <ul class="nav-tab-bars mb-3">
-                        <li class="nav-tab"  onclick="openTab(event, 'description')">Description</li>
-                        <li class="nav-tab" onclick="openTab(event, 'ask-question')">FAQs</li>
-                        <li  class="nav-tab" onclick="openTab(event, 'write-review')"><?php echo $tab_review; ?></li>
-                    </ul>
-
-                    <div class="single-tab-details product-description" id="description">
-                        <div itemprop="description" class="seo-description"><?php echo $description ?></div>
-                    </div>
-
-                    <div class="single-tab-details ask-question" id="ask-question">
-                        <div class="section-head">
-                            <div class="title-n-action">
-                                <p class="section-blurb"><?php echo $text_question_help; ?></p>
-                            </div>
-                        </div>
-                        <div id="question"><?php echo $question; ?></div>
-                    </div>
-                    <div class="single-tab-details review" id="write-review">
-                        <?php if ($no_of_review) { ?>
-                        <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
-                            <meta itemprop="ratingValue" content="<?php echo $rating ; ?>"/>
-                            <meta itemprop="reviewCount" content="<?php echo $no_of_review ; ?>"/>
-                        </div>
-                        <?php } ?>
-                        <div class="section-head">
-                            <div class="title-n-action">
-                                <p class="section-blurb"><?php echo $text_review_help; ?></p>
-                                <?php if ($no_of_review) { ?>
-                                <div class="average-rating">
-                                    <span class="count"><b><?php echo $rating; ?></b><span> out of 5</span></span>
-                                    <span class="rating">
-                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                        <?php if ($rating < $i) { ?>
-                                        <i class="fa-regular fa-star"></i>
+                        <div class="col-xl-6 col-12">
+                            <div class="product-details" data-sticky-options="{'minWidth': 767}">
+                                <h1 class="product-title"><?php echo $heading_title; ?></h1>
+                                <div class="pd-details-info-top">
+                                    <div class="product-price">
+                                        <?php if ($disablePurchase || !$special) { ?>
+                                        <ins class="new-price new-price-filter"><?php echo $price; ?></ins>
+                                        <small class="mr-0 old-price-filter"><del class="old-price"></del></small>
                                         <?php } else { ?>
-                                        <i class="fa-solid fa-star"></i>
+                                        <ins class="new-price new-price-filter"><?php echo $special; ?></ins>
+                                        <small class="mr-0 old-price-filter"><del class="old-price"><?php echo $price; ?></del></small>
+                                        <?php } ?>
+                                        <input type="hidden" name="product_price" id="product_discount_price" value="<?php echo $special ? str_replace(['৳', ','], '', $special) : '0'; ?>">
+                                        <input type="hidden" name="product_price" id="product_price" value="<?php echo str_replace(['৳', ','], '', $price); ?>">
+                                    </div>
+                                </div>
+                                <hr class="product-divider">
+                                <input type="hidden" name="product_id" id="product_id" value="<?php echo $product_id; ?>">
+                                <input type="hidden" value="0" id="selectedVariantId" name="selected_variant">
+                                
+                                <div id="product_details_add_to_cart_section">
+                                    <?php if ($options) { ?>
+                                    <div class="p-opt-wrap">
+                                        <?php foreach ($options as $option) { ?>
+                                        <?php if($option['type'] === 'select'){ ?>
+                                        <div class="p-opt color required">
+                                            <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>"><?php echo $option['name']; ?>: <b></b></div>
+                                            <div class="p-opt-vals">
+                                                <?php foreach ($option['product_option_value'] as $option_value) { ?>
+                                                <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>" name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <?php } else { ?>
+                                        <div class="p-opt required">
+                                            <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>">Select <?php echo $option['name']; ?>: <b></b></div>
+                                            <div class="p-opt-vals">
+                                                <?php foreach ($option['product_option_value'] as $option_value) { ?>
+                                                <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>" name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
                                         <?php } ?>
                                         <?php } ?>
-                                    </span>
+                                    </div>
+                                    <?php } ?>
+                                    
+                                    <div class="product-qty-form">
+                                        <span>Quantity:</span>
+                                        <div class="input-group">
+                                            <button class="w-icon-plus quantity__value_details decrease" data-id="<?php echo $product_id; ?>"></button>
+                                            <input class="form-control" id="product_details_cart_qty" value="<?php echo $minimum; ?>" type="number" min="1" max="100">
+                                            <button class="w-icon-minus quantity__value_details increase" data-id="<?php echo $product_id; ?>"></button>
+                                        </div>
+                                    </div>
+                                    <div class="pd-action-order-btns">
+                                        <button class="btn btn-primary cart-qty-<?php echo $product_id; ?> addToCartWithQty" data-id="<?php echo $product_id; ?>" data-color="0" data-size="0" type="button"><i class="w-icon-cart"></i><span> Add to Cart</span></button>
+                                        <button class="product-btn shake-btn btn btn-primary theme-btn buyNow-btn cart-buynow-qty-<?php echo $product_id; ?> addToBuyNowWithQty rsi-shake" data-id="<?php echo $product_id; ?>" data-color="0" data-size="0" type="button">Buy Now</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="product-details-action-group">
+                                    <a href="https://wa.me/8801321208940?text=Hello%21+I%27m+interested+in%3A%0AProduct%3A+<?php echo urlencode($heading_title); ?>%0APrice%3A+<?php echo urlencode($price); ?>%0AProduct+URL%3A+<?php echo urlencode($current_url ?? ''); ?>" class="btn btn-primary whatsapp-order-btn">
+                                        <i class="fi fi-brands-whatsapp"></i>
+                                        Order on WhatsApp
+                                    </a>
+                                    <a href="tel:09642922922" class="btn btn-primary call-for-order-btn" title="Call for price"><i class="w-icon-phone"></i> Call for order</a>
+                                </div>
+                                
+                                <?php if (isset($manufacturer) && $manufacturer) { ?>
+                                <div class="pd-brand-group">
+                                    <div class="product-brand">
+                                        <span>Brand:</span>
+                                        <a href="<?php echo $manufacturer['href']; ?>" style="text-decoration: none;">
+                                            <?php if (isset($manufacturer['image']) && $manufacturer['image']) { ?>
+                                            <img src="<?php echo $manufacturer['image']; ?>" alt="<?php echo $manufacturer['name']; ?>">
+                                            <?php } else { ?>
+                                            <span><?php echo $manufacturer['name']; ?></span>
+                                            <?php } ?>
+                                        </a>
+                                    </div>
                                 </div>
                                 <?php } ?>
                             </div>
                         </div>
-                        <div id="review" class="mb-3"><?php echo $review; ?></div>
-                        <form method="post" enctype="multipart/form-data" id="form-review" action="index.php?route=product/product/write&product_id=<?php echo $product_id; ?>">
-
-                            <h4 class="write-reivew-title mb-3"><?php echo $text_write_review; ?></h4>
-
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
-                                    <input name="name" placeholder="<?php echo $entry_name; ?>*" type="text" class="form-input">
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
-                                    <input name="email" placeholder="<?php echo $entry_email; ?>" type="text" class="form-input">
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
-                                    <textarea name="text" rows="5" placeholder="<?php echo $entry_review; ?>*" class="form-input"></textarea>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
-                                    <label class="control-label"><?php echo $entry_rating; ?>:</label>
-                                    &nbsp;<?php echo $entry_bad; ?> &nbsp; <input type="radio" name="rating" value="1" /> &nbsp; <input type="radio" name="rating" value="2" /> &nbsp; <input type="radio" name="rating" value="3" /> &nbsp; <input type="radio" name="rating" value="4" /> &nbsp; <input type="radio" name="rating" value="5" /> <?php echo $entry_good; ?>
-                                    <br><br>
-                                    <button type="button" id="button-review" data-loading-text="<?php echo $text_loading; ?>" class="btn submit-btn"><?php echo $button_continue; ?></button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
-
-                    <div class="content-bottom">
-                        <?php echo $content_bottom; ?>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <?php
-                    if ($products) {
-                    ?>
-
-                   <div class="related-products-head mb-3">
-                       <h4 class="related-product-title">Related Product</h4>
-                   </div>
-                    <div class="related-product-list-wrapper">
-                        <?php foreach ($products as $product) { ?>
-                        <a href="<?php echo $product['href']; ?>" class="special-product-item">
-                            <div class="img">
-                                <img
-                                        src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>"
-                                        width="120"
-                                        height="120"
-                                />
-                            </div>
-                            <div class="info">
-                                <?php if ($product['special']) { ?>
-                                <?php
-                                  $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                  $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                  $discountAmount = $price - $special;
-                                  $mark = ($discountAmount / $price) * 100;
-                                ?>
-                                <div class="mark"><?php echo round($mark, 1); ?>% OFF </div>
-                                <?php } ?>
-                                <h5 class="name"><?php echo $product['name']; ?></h5>
-                                <div class="product-price-wrap">
-                                    <?php if ($product['special']) { ?>
-                                    <span class="price"><?php echo $product['special']; ?></span>
-                                    <span class="price old"><?php echo $product['price']; ?></span>
-                                    <?php } else { ?>
-                                    <span class="price"><?php echo $product['price']; ?></span>
-                                    <?php } ?>
-
+                    
+                    <!-- Product Features Section -->
+                    <div class="pd-features">
+                        <section class="feature-section style-1">
+                            <div class="feature-wrapper">
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fi fi-rr-wheat"></i></div>
+                                    <div class="feature-label"><span>100% Natural food</span></div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fi fi-rr-tachometer-fastest"></i></div>
+                                    <div class="feature-label">Fastest Delivery</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fi-rr-shield-check"></i></div>
+                                    <div class="feature-label">Secure Payment</div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fi-rr-shipping-fast"></i></div>
+                                    <div class="feature-label"><span>Delivery all over the country</span></div>
                                 </div>
                             </div>
-                        </a>
+                        </section>
+                    </div>
+                    
+                    <!-- Product Tabs -->
+                    <div class="product-tabs">
+                        <div class="jump-spec">
+                            <button class="btn active" data-target="pd-menu-1">Description</button>
+                            <?php if (isset($video) && $video) { ?>
+                            <button class="btn" data-target="pd-menu-3">Product Video</button>
+                            <?php } ?>
+                            <button class="btn" data-target="pd-menu-6">Customer Reviews (<?php echo $no_of_review ?? 0; ?>)</button>
+                        </div>
+                        
+                        <div class="section pd-menu-1">
+                            <div class="tab-pane">
+                                <p class="title tab-pane-title font-weight-bold mb-2">Product Details</p>
+                                <div class="product-tabs-content">
+                                    <div itemprop="description" class="seo-description"><?php echo $description; ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <?php if (isset($video) && $video) { ?>
+                        <div class="section pd-menu-3">
+                            <div class="tab-pane">
+                                <p class="title tab-pane-title font-weight-bold mb-2">Video</p>
+                                <div class="product-video">
+                                    <div class="product-video-overview">
+                                        <div class="product-video-thumb-img">
+                                            <iframe src="<?php echo $video; ?>" frameborder="0" allowfullscreen=""></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <?php } ?>
+                        
+                        <div class="section pd-menu-6">
+                            <div class="tab-pane" id="product-tab-reviews">
+                                <?php if ($no_of_review) { ?>
+                                <div class="row mb-4">
+                                    <div class="col-xl-4 col-lg-5 mb-4">
+                                        <div class="ratings-wrapper">
+                                            <div class="avg-rating-container">
+                                                <p class="avg-mark font-weight-bolder ls-50"><?php echo number_format($rating, 1); ?></p>
+                                                <div class="avg-rating">
+                                                    <p class="text-dark mb-1">Average Rating</p>
+                                                    <div class="ratings-container">
+                                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                                        <i class="far fa-star" style="color: <?php echo $i <= $rating ? '#f93' : 'gray'; ?>;"></i>
+                                                        <?php } ?>
+                                                        &nbsp;&nbsp;<a href="javascript:void(0)" class="rating-reviews">(<?php echo $no_of_review; ?> Reviews)</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-8 col-lg-7 mb-4">
+                                        <div class="review-form-wrapper">
+                                            <span class="title tab-pane-title font-weight-bold mb-1">Submit Your Review</span>
+                                            <p class="mb-3">Your email address will not be published. Required fields are marked *</p>
+                                            <form action="<?php echo $action; ?>" method="post" class="review-form">
+                                                <div class="form-group mb-1">
+                                                    <label for="review" class="d-block pl-0 mb-1">Write your opinion about the product</label>
+                                                    <textarea cols="30" rows="6" name="review" placeholder="Write Your Review Here..." class="form-control" id="review"></textarea>
+                                                </div>
+                                                <div class="row gutter-md">
+                                                    <div class="col-md-6">
+                                                        <label for="review" class="d-block pl-0 mb-1">Your Rating: </label>
+                                                        <select name="rarting" class="form-control" required="">
+                                                            <option value="">Select One</option>
+                                                            <option value="5">Perfect</option>
+                                                            <option value="4">Good</option>
+                                                            <option value="3">Average</option>
+                                                            <option value="2">Not that bad</option>
+                                                            <option value="1">Very poor</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 text-right">
+                                                        <label for="review" class="d-block pl-0 mb-1">&nbsp;</label>
+                                                        <button type="submit" style="padding: 0.75em 1.98em;" class="btn btn-dark">Submit Review</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                                <div id="review" class="mb-3"><?php echo $review; ?></div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <!-- Related Products Section -->
+                    <?php if ($products) { ?>
+                    <section class="related-product-section">
+                        <div class="title-link-wrapper mb-4">
+                            <span class="title p-0">Related Products</span>
+                            <a href="<?php echo $shop_url ?? '#'; ?>" class="btn btn-dark btn-link btn-slide-right btn-icon-right">More Products<i class="w-icon-long-arrow-right"></i></a>
+                        </div>
+                        <div class="swiper-container swiper-theme" data-swiper-options='{"spaceBetween": 20, "slidesPerView": 2, "breakpoints": {"576": {"slidesPerView": 3}, "768": {"slidesPerView": 4}, "992": {"slidesPerView": 4}}}'>
+                            <div class="swiper-wrapper">
+                                <?php foreach ($products as $product) { ?>
+                                <div class="swiper-slide">
+                                    <div class="product style-6">
+                                        <figure class="product-media">
+                                            <a href="<?php echo $product['href']; ?>">
+                                                <img class="lazy" src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>">
+                                            </a>
+                                        </figure>
+                                        <div class="product-details">
+                                            <h4 class="product-name">
+                                                <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                                            </h4>
+                                            <div class="product-price">
+                                                <?php if ($product['special']) { ?>
+                                                <ins class="new-price"><?php echo $product['special']; ?></ins>
+                                                <del class="old-price"><?php echo $product['price']; ?></del>
+                                                <?php } else { ?>
+                                                <ins class="new-price"><?php echo $product['price']; ?></ins>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <div class="product-card-action">
+                                            <div class="quantity-container">
+                                                <button class="open-quantity-btn" data-id="<?php echo $product['product_id']; ?>-0-0">
+                                                    <i class="fi-rr-shopping-cart"></i> Add To Cart
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </section>
                     <?php } ?>
                 </div>
+                
+                <!-- Sidebar -->
+                <?php if ($products) { ?>
+                <aside class="sidebar product-sidebar sidebar-fixed right-sidebar sticky-sidebar-wrapper">
+                    <div class="sidebar-overlay"></div>
+                    <a class="sidebar-close" href="#"><i class="close-icon"></i></a>
+                    <a href="#" class="sidebar-toggle d-flex d-lg-none"><i class="fas fa-chevron-left"></i></a>
+                    <div class="sidebar-content scrollable">
+                        <div class="pin-wrapper">
+                            <div class="sticky-sidebar">
+                                <div class="widget widget-products">
+                                    <div class="title-link-wrapper mb-2">
+                                        <span class="title title-link font-weight-bold">More Products</span>
+                                    </div>
+                                    <div class="swiper nav-top">
+                                        <div class="swiper-container swiper-theme nav-top" data-swiper-options='{"slidesPerView": 1, "spaceBetween": 20, "navigation": {"prevEl": ".swiper-button-prev", "nextEl": ".swiper-button-next"}}'>
+                                            <div class="swiper-wrapper">
+                                                <div class="widget-col swiper-slide">
+                                                    <?php foreach (array_slice($products, 0, 2) as $product) { ?>
+                                                    <div class="product product-widget">
+                                                        <figure class="product-media">
+                                                            <a href="<?php echo $product['href']; ?>">
+                                                                <img class="" src="<?php echo $product['thumb']; ?>" alt="" style="width: 100%; max-height: 113px">
+                                                            </a>
+                                                        </figure>
+                                                        <div class="product-details">
+                                                            <h4 class="product-name">
+                                                                <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                                                            </h4>
+                                                            <div class="product-price">
+                                                                <?php if ($product['special']) { ?>
+                                                                <ins class="new-price"><?php echo $product['special']; ?></ins>
+                                                                <del class="old-price"><?php echo $product['price']; ?></del>
+                                                                <?php } else { ?>
+                                                                <ins class="new-price"><?php echo $product['price']; ?></ins>
+                                                                <?php } ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <?php } ?>
+                                                </div>
+                                            </div>
+                                            <button class="swiper-button-next"></button>
+                                            <button class="swiper-button-prev"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                <?php } ?>
             </div>
         </div>
     </section>
@@ -294,43 +387,103 @@ fbq && fbq('track', 'ViewContent', {
 </script>
 
 <script>
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("single-tab-details");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
+jQuery(document).ready(function($) {
+    // Product Gallery Swiper Initialization
+    if (typeof Swiper !== 'undefined') {
+        // Thumbnail Slider (Vertical) - only if thumbnails exist
+        if ($('.p-thumb-img-slider').length && $('.p-thumb-img-slider .swiper-slide').length > 0) {
+            var thumbSlider = new Swiper('.p-thumb-img-slider', {
+                direction: 'vertical',
+                slidesPerView: 'auto',
+                spaceBetween: 10,
+                freeMode: true,
+                watchSlidesProgress: true,
+                navigation: {
+                    nextEl: '.p-thumb-img-slider .swiper-button-next',
+                    prevEl: '.p-thumb-img-slider .swiper-button-prev',
+                },
+            });
+
+            // Main Image Slider with thumbs
+            var mainSlider = new Swiper('.p-details-big-img', {
+                spaceBetween: 10,
+                thumbs: {
+                    swiper: thumbSlider,
+                },
+            });
+        } else {
+            // Main Image Slider without thumbs (single image or no thumbnails)
+            var mainSlider = new Swiper('.p-details-big-img', {
+                spaceBetween: 10,
+            });
         }
-        tablinks = document.getElementsByClassName("nav-tab");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
+
+        // Related Products Swiper
+        if ($('.related-product-section .swiper-container').length) {
+            var relatedSwiper = new Swiper('.related-product-section .swiper-container', {
+                spaceBetween: 20,
+                slidesPerView: 2,
+                breakpoints: {
+                    576: {
+                        slidesPerView: 3
+                    },
+                    768: {
+                        slidesPerView: 4
+                    },
+                    992: {
+                        slidesPerView: 4
+                    }
+                }
+            });
         }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
+
+        // Sidebar Products Swiper
+        if ($('.product-sidebar .swiper-container').length) {
+            var sidebarSwiper = new Swiper('.product-sidebar .swiper-container', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.product-sidebar .swiper-button-next',
+                    prevEl: '.product-sidebar .swiper-button-prev',
+                },
+            });
+        }
     }
 
-    tablinks = document.getElementsByClassName("nav-tab");
-    acitve_tab = tablinks[0].setAttribute("id", "defaultOpen");
-    document.getElementById("defaultOpen").click();
-
-
-    const copyLinkElement = document.querySelector('.copy-link');
-
-    copyLinkElement.addEventListener('click', () => {
-        const currentUrl = window.location.href;
-        navigator.clipboard.writeText(currentUrl)
-            .then(() => {
-                const copyMessage = document.createElement('div');
-                copyMessage.classList.add('copy-message');
-                copyMessage.textContent = 'Copied!';
-                copyLinkElement.appendChild(copyMessage);
-
-                setTimeout(() => {
-                    copyLinkElement.removeChild(copyMessage);
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Failed to copy:', err);
-            });
+    // Tab Switching
+    $('.jump-spec .btn').on('click', function() {
+        var target = $(this).data('target');
+        $('.jump-spec .btn').removeClass('active');
+        $(this).addClass('active');
+        $('.product-tabs .section').hide();
+        $('.product-tabs .' + target).show();
     });
 
+    // Show first tab by default
+    $('.jump-spec .btn.active').trigger('click');
+
+    // Copy Link Functionality
+    const copyLinkElement = document.querySelector('.copy-link');
+    if (copyLinkElement) {
+        copyLinkElement.addEventListener('click', () => {
+            const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                    const copyMessage = document.createElement('div');
+                    copyMessage.classList.add('copy-message');
+                    copyMessage.textContent = 'Copied!';
+                    copyLinkElement.appendChild(copyMessage);
+
+                    setTimeout(() => {
+                        if (copyLinkElement.contains(copyMessage)) {
+                            copyLinkElement.removeChild(copyMessage);
+                        }
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+        });
+    }
+});
 </script>
