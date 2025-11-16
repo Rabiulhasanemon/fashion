@@ -9,9 +9,20 @@
 require_once('config.php');
 require_once(DIR_SYSTEM . 'startup.php');
 
+// Try multiple possible log directory locations
 $logs_dir = DIR_SYSTEM . 'storage/logs/';
+if (!is_dir($logs_dir)) {
+    $logs_dir = 'system/storage/logs/';
+}
+if (!is_dir($logs_dir)) {
+    $logs_dir = '../system/storage/logs/';
+}
+
 $debug_log = $logs_dir . 'product_insert_debug.log';
 $error_log = $logs_dir . 'product_insert_error.log';
+
+// Check if directory is writable
+$dir_writable = is_writable($logs_dir);
 
 echo "<!DOCTYPE html>
 <html>
@@ -37,6 +48,18 @@ echo "<!DOCTYPE html>
     <div class='container'>
         <h1>📋 Product Image Upload Logs</h1>
         <p><a href='check_image_upload.php'>← Back to Image Upload Check</a></p>";
+
+// Show log directory info
+echo "<div class='info'>";
+echo "<p><strong>Log Directory:</strong> " . htmlspecialchars($logs_dir) . "</p>";
+echo "<p><strong>Directory Exists:</strong> " . (is_dir($logs_dir) ? "<span class='success'>Yes</span>" : "<span class='error'>No</span>") . "</p>";
+echo "<p><strong>Directory Writable:</strong> " . ($dir_writable ? "<span class='success'>Yes</span>" : "<span class='error'>No - Logs cannot be written!</span>") . "</p>";
+if (!is_dir($logs_dir)) {
+    echo "<p class='error'><strong>ERROR:</strong> Log directory does not exist. Please create it: <code>" . htmlspecialchars($logs_dir) . "</code></p>";
+} elseif (!$dir_writable) {
+    echo "<p class='error'><strong>ERROR:</strong> Log directory is not writable. Please set permissions: <code>chmod 755 " . htmlspecialchars($logs_dir) . "</code></p>";
+}
+echo "</div>";
 
 // Show Debug Log
 echo "<h2>Debug Log (product_insert_debug.log)</h2>";
