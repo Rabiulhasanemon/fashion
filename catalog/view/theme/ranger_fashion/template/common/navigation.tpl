@@ -331,6 +331,7 @@
 
 .mobile-nav-container {
     position: relative;
+    display: none;
 }
 
 .mobile-nav-overlay {
@@ -346,7 +347,16 @@ body.mobile-menu-open {
 
 /* Mobile Navigation Styles - Only for Mobile View */
 @media only screen and (max-width: 991.98px) {
-    /* Toggle Button */
+    /* Hide desktop navigation on mobile */
+    .header-bottom .main-nav .menu {
+        display: none !important;
+    }
+    
+    .header-bottom .main-nav {
+        display: none !important;
+    }
+    
+    /* Show mobile toggle button */
     .mobile-menu-toggle-btn {
         width: 30px;
         height: 30px;
@@ -407,7 +417,7 @@ body.mobile-menu-open {
         transform: rotate(-45deg) translate(5px, -5px);
     }
 
-    /* Navigation Container */
+    /* Navigation Container - Show on mobile */
     .mobile-nav-container {
         position: fixed;
         top: 0;
@@ -418,6 +428,7 @@ body.mobile-menu-open {
         opacity: 0;
         transition: visibility 0.3s, opacity 0.3s;
         z-index: 99998;
+        display: block !important;
     }
 
     .mobile-nav-container.menu-open {
@@ -435,11 +446,12 @@ body.mobile-menu-open {
         overflow-y: auto;
         background: #ffffff;
         margin: 0;
-        padding: 0;
+        padding: 20px 0 0 0;
         list-style: none;
         transition: left 0.3s ease;
         z-index: 99999;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        display: block !important;
     }
 
     .mobile-nav-container.menu-open .mobile-nav-list {
@@ -524,11 +536,23 @@ body.mobile-menu-open {
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
         z-index: 99997;
+        display: block !important;
     }
 
     .mobile-nav-container.menu-open .mobile-nav-overlay {
         opacity: 1;
         visibility: visible;
+    }
+    
+    /* Ensure header-bottom is visible on mobile */
+    .header-bottom {
+        display: block !important;
+    }
+    
+    /* Make sure inner-wrap shows toggle button */
+    .header-bottom .inner-wrap {
+        display: flex !important;
+        align-items: center;
     }
 }
 
@@ -564,10 +588,17 @@ body.mobile-menu-open {
         mobileNav = document.getElementById('mobile-nav-menu');
         mobileOverlay = document.querySelector('.mobile-nav-overlay');
         
-        if (!mobileToggle || !mobileNav) {
-            console.log('Mobile navigation elements not found');
+        if (!mobileToggle) {
+            console.log('Mobile toggle button not found');
             return false;
         }
+        
+        if (!mobileNav) {
+            console.log('Mobile nav menu not found');
+            return false;
+        }
+        
+        console.log('Mobile navigation initialized successfully');
         
         // Toggle menu function
         function toggleMobileMenu() {
