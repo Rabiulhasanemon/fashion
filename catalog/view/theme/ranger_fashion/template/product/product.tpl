@@ -375,6 +375,54 @@
         </div>
     </section>
     <?php } ?>
+
+    <!-- Compatible Products Section -->
+    <?php 
+    if (isset($compatible_products) && is_array($compatible_products) && count($compatible_products) > 0) { ?>
+    <section class="compatible-products-section" style="padding: 60px 0; background: #f9f9f9;">
+        <div class="container">
+            <div class="section-head" style="margin-bottom: 40px;">
+                <h2 class="section-title" style="font-size: 32px; font-weight: 600; margin-bottom: 10px; text-align: center;">Compatible Products</h2>
+                <p class="section-subtitle" style="text-align: center; color: #A68A6A; margin: 0;">Products that work well with this item</p>
+            </div>
+            <div class="compatible-products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                <?php foreach ($compatible_products as $product) { ?>
+                <div class="compatible-product-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                    <a href="<?php echo $product['href']; ?>" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="compatible-product-image" style="position: relative; width: 100%; padding-top: 100%; background: #fff; overflow: hidden;">
+                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px;">
+                            <?php if ($product['special']) { ?>
+                            <div class="discount-badge" style="position: absolute; top: 10px; right: 10px; background: #10503D; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                <?php
+                                $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                $discountAmount = $price - $special;
+                                $mark = ($discountAmount / $price) * 100;
+                                echo round($mark, 0) . '% OFF';
+                                ?>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        <div class="compatible-product-info" style="padding: 15px;">
+                            <h5 class="compatible-product-name" style="font-size: 16px; font-weight: 500; margin: 0 0 10px 0; color: #333; line-height: 1.4; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                <?php echo $product['name']; ?>
+                            </h5>
+                            <div class="compatible-product-price" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <?php if ($product['special']) { ?>
+                                <span class="price-special" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['special']; ?></span>
+                                <span class="price-old" style="font-size: 14px; color: #A68A6A; text-decoration: line-through;"><?php echo $product['price']; ?></span>
+                                <?php } else { ?>
+                                <span class="price" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['price']; ?></span>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
 </div>
 <section class="content-bottom">
     <div class="container">

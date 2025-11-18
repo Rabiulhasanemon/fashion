@@ -1037,6 +1037,28 @@ class ModelCatalogProduct extends Model {
 			}
 		}
 
+		// Insert product related
+		if (isset($data['product_related']) && is_array($data['product_related'])) {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_related WHERE product_id = '" . (int)$product_id . "'");
+			foreach ($data['product_related'] as $related_id) {
+				$related_id = (int)$related_id;
+				if ($related_id > 0 && $related_id != $product_id) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_related SET product_id = '" . (int)$product_id . "', related_id = '" . $related_id . "'");
+				}
+			}
+		}
+
+		// Insert product compatible
+		if (isset($data['product_compatible']) && is_array($data['product_compatible'])) {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_compatible WHERE product_id = '" . (int)$product_id . "'");
+			foreach ($data['product_compatible'] as $compatible_id) {
+				$compatible_id = (int)$compatible_id;
+				if ($compatible_id > 0 && $compatible_id != $product_id) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_compatible SET product_id = '" . (int)$product_id . "', compatible_id = '" . $compatible_id . "'");
+				}
+			}
+		}
+
 		return $product_id;
 	}
 
@@ -1396,6 +1418,28 @@ class ModelCatalogProduct extends Model {
 			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . $product_id . "' LIMIT 1");
 			if (!$existing->num_rows) {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . $product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}
+		}
+
+		// Update product related
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_related WHERE product_id = '" . (int)$product_id . "'");
+		if (isset($data['product_related']) && is_array($data['product_related'])) {
+			foreach ($data['product_related'] as $related_id) {
+				$related_id = (int)$related_id;
+				if ($related_id > 0 && $related_id != $product_id) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_related SET product_id = '" . (int)$product_id . "', related_id = '" . $related_id . "'");
+				}
+			}
+		}
+
+		// Update product compatible
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_compatible WHERE product_id = '" . (int)$product_id . "'");
+		if (isset($data['product_compatible']) && is_array($data['product_compatible'])) {
+			foreach ($data['product_compatible'] as $compatible_id) {
+				$compatible_id = (int)$compatible_id;
+				if ($compatible_id > 0 && $compatible_id != $product_id) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_compatible SET product_id = '" . (int)$product_id . "', compatible_id = '" . $compatible_id . "'");
+				}
 			}
 		}
 	}

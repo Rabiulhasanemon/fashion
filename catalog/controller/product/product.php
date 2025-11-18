@@ -366,6 +366,63 @@ class ControllerProductProduct extends Controller
                 );
             }
 
+            $data['compatible_products'] = array();
+
+            $compatible_results = $this->model_catalog_product->getProductCompatible($this->request->get['product_id'], (float)$product_info['price']);
+
+            foreach ($compatible_results as $result) {
+                if ($result['image']) {
+                    $image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
+                } else {
+                    $image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
+                }
+                if ($result['featured_image']) {
+                    $featured_image = $this->model_tool_image->resize($result['featured_image'], $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
+                } else {
+                    $featured_image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
+                }
+
+                $disablePurchase = false;
+                if ($result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
+                    $disablePurchase = true;
+                }
+
+                if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+                    $price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+                } else {
+                    $price = false;
+                }
+
+                if ((float)$result['special']) {
+                    $special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+                } else {
+                    $special = false;
+                }
+
+                if ($this->config->get('config_tax')) {
+                    $tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+                } else {
+                    $tax = false;
+                }
+
+                $data['compatible_products'][] = array(
+                    'product_id'  => $result['product_id'],
+                    'thumb'       => $image,
+                    'featured_image'       => $featured_image,
+                    'name'        => $result['name'],
+                    'sub_name'        => $result['sub_name'],
+                    'short_description' => $result['short_description'],
+                    'price'       => $price,
+                    'disablePurchase' => $disablePurchase,
+                    'stock_status' => $result['stock_status'],
+                    'special'     => $special,
+                    'tax'         => $tax,
+                    'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
+                    'rating'      => $result['rating'],
+                    'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
+                );
+            }
+
 
             if(isset($this->session->data["recent"])) {
                 $recent_products = $this->session->data["recent"];
