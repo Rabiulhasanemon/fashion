@@ -28,6 +28,23 @@
                     <div class="images product-images">
                         <div class="product-image-wrapper">
                             <?php 
+                            // DEBUG: Check what we have
+                            $debug_output = '';
+                            if (isset($_GET['debug_images'])) {
+                                $debug_output .= "<!-- DEBUG INFO:\n";
+                                $debug_output .= "thumb: " . (isset($thumb) ? $thumb : 'NOT SET') . "\n";
+                                $debug_output .= "popup: " . (isset($popup) ? $popup : 'NOT SET') . "\n";
+                                $debug_output .= "images count: " . (isset($images) && is_array($images) ? count($images) : 'NOT ARRAY') . "\n";
+                                if (isset($images) && is_array($images)) {
+                                    foreach ($images as $idx => $img) {
+                                        $debug_output .= "  images[" . $idx . "]: " . print_r($img, true) . "\n";
+                                    }
+                                }
+                                $debug_output .= "featured_image: " . (isset($featured_image) ? $featured_image : 'NOT SET') . "\n";
+                                $debug_output .= "-->\n";
+                            }
+                            echo $debug_output;
+                            
                             // Get all images for thumbnails
                             $all_thumbnails = array();
                             

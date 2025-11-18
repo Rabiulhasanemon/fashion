@@ -169,21 +169,35 @@ class ControllerProductProduct extends Controller
 
             $this->load->model('tool/image');
             
+            // DEBUG: Log product image info
+            $debug_log = DIR_LOGS . 'product_image_debug.log';
+            $debug_info = "\n=== PRODUCT IMAGE DEBUG - Product ID: " . $this->request->get['product_id'] . " ===\n";
+            $debug_info .= "Main product image field: " . (isset($product_info['image']) ? $product_info['image'] : 'NOT SET') . "\n";
+            $debug_info .= "Featured image field: " . (isset($product_info['featured_image']) ? $product_info['featured_image'] : 'NOT SET') . "\n";
+            
             // Get additional images first
             $data['images'] = array();
             $results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
-            $first_additional_image = '';
+            $debug_info .= "Additional images count from DB: " . count($results) . "\n";
             
-            foreach ($results as $result) {
+            $first_additional_image = '';
+            foreach ($results as $index => $result) {
+                $debug_info .= "  Image #" . ($index + 1) . ": " . (isset($result['image']) ? $result['image'] : 'EMPTY') . "\n";
                 if (!empty($result['image'])) {
                     // Store first additional image for fallback
                     if (empty($first_additional_image)) {
                         $first_additional_image = $result['image'];
                     }
                     
+                    $resized_popup = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
+                    $resized_thumb = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'));
+                    
+                    $debug_info .= "    Resized popup: " . $resized_popup . "\n";
+                    $debug_info .= "    Resized thumb: " . $resized_thumb . "\n";
+                    
                     $data['images'][] = array(
-                        'popup' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height')),
-                        'thumb' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'))
+                        'popup' => $resized_popup,
+                        'thumb' => $resized_thumb
                     );
                 }
             }
@@ -192,18 +206,25 @@ class ControllerProductProduct extends Controller
             $main_image = '';
             if (!empty($product_info['image'])) {
                 $main_image = $product_info['image'];
+                $debug_info .= "Using main product image: " . $main_image . "\n";
             } elseif (!empty($first_additional_image)) {
                 // Fallback to first additional image if main image is empty
                 $main_image = $first_additional_image;
+                $debug_info .= "Using first additional image as main: " . $main_image . "\n";
+            } else {
+                $debug_info .= "WARNING: No images found! Main image and additional images are both empty.\n";
             }
             
             // Set popup and thumb based on main image
             if ($main_image) {
                 $data['popup'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
                 $data['thumb'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+                $debug_info .= "Final thumb: " . $data['thumb'] . "\n";
+                $debug_info .= "Final popup: " . $data['popup'] . "\n";
             } else {
                 $data['popup'] = '';
                 $data['thumb'] = '';
+                $debug_info .= "ERROR: No main image set - thumb and popup are empty!\n";
             }
             
             // Set featured image
@@ -215,6 +236,10 @@ class ControllerProductProduct extends Controller
             } else {
                 $data['featured_image'] = '';
             }
+            
+            $debug_info .= "Final images array count: " . count($data['images']) . "\n";
+            $debug_info .= "=== END DEBUG ===\n\n";
+            file_put_contents($debug_log, date('Y-m-d H:i:s') . $debug_info, FILE_APPEND);
 
             $data["disablePurchase"] = false;
             $data['raw_price'] = $product_info['special'] ?: $product_info['price'];
