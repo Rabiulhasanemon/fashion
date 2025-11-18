@@ -48,6 +48,21 @@
               </select>
             </div>
           </div>
+          <style>
+            #images .img-thumbnail img {
+              width: 100px !important;
+              height: 100px !important;
+              object-fit: cover;
+              display: block;
+            }
+            #images .img-thumbnail {
+              width: 100px;
+              height: 100px;
+              padding: 0;
+              display: inline-block;
+              overflow: hidden;
+            }
+          </style>
           <table id="images" class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
