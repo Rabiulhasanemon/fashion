@@ -328,47 +328,86 @@
     
     <!-- Related Products Section -->
     <?php 
-    // Debug: Check if products exist
-    // Uncomment to debug: var_dump(isset($products), !empty($products), count($products ?? []));
     if (isset($products) && is_array($products) && count($products) > 0) { ?>
-    <section class="related-products-section" style="padding: 60px 0; background: #f9f9f9;">
+    <section class="related-products-section premium-product-section">
         <div class="container">
-            <div class="section-head" style="margin-bottom: 40px;">
-                <h2 class="section-title" style="font-size: 32px; font-weight: 600; margin-bottom: 10px; text-align: center;">Related Products</h2>
-                <p class="section-subtitle" style="text-align: center; color: #A68A6A; margin: 0;">You may also like these products</p>
+            <div class="section-header-modern">
+                <h2 class="section-title-modern">Related Products</h2>
+                <p class="section-subtitle-modern">You may also like these products</p>
             </div>
-            <div class="related-products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            <div class="premium-products-grid">
                 <?php foreach ($products as $product) { ?>
-                <div class="related-product-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
-                    <a href="<?php echo $product['href']; ?>" style="text-decoration: none; color: inherit; display: block;">
-                        <div class="related-product-image" style="position: relative; width: 100%; padding-top: 100%; background: #fff; overflow: hidden;">
-                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px;">
-                            <?php if ($product['special']) { ?>
-                            <div class="discount-badge" style="position: absolute; top: 10px; right: 10px; background: #10503D; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
-                                <?php
-                                $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                $discountAmount = $price - $special;
-                                $mark = ($discountAmount / $price) * 100;
-                                echo round($mark, 0) . '% OFF';
-                                ?>
-                            </div>
-                            <?php } ?>
-                        </div>
-                        <div class="related-product-info" style="padding: 15px;">
-                            <h5 class="related-product-name" style="font-size: 16px; font-weight: 500; margin: 0 0 10px 0; color: #333; line-height: 1.4; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                <?php echo $product['name']; ?>
-                            </h5>
-                            <div class="related-product-price" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                <?php if ($product['special']) { ?>
-                                <span class="price-special" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['special']; ?></span>
-                                <span class="price-old" style="font-size: 14px; color: #A68A6A; text-decoration: line-through;"><?php echo $product['price']; ?></span>
+                <div class="premium-product-card">
+                    <div class="product-card-inner">
+                        <a href="<?php echo $product['href']; ?>" class="product-link">
+                            <div class="product-image-wrapper">
+                                <?php if ($product['featured_image']) { ?>
+                                <img src="<?php echo $product['featured_image']; ?>" alt="<?php echo $product['name']; ?>" class="product-main-image">
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" class="product-hover-image">
                                 <?php } else { ?>
-                                <span class="price" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['price']; ?></span>
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" class="product-main-image">
                                 <?php } ?>
+                                
+                                <?php if ($product['special']) { ?>
+                                <div class="discount-badge-modern">
+                                    <?php
+                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                    if ($price > 0) {
+                                        $discountAmount = $price - $special;
+                                        $mark = ($discountAmount / $price) * 100;
+                                        echo round($mark, 0) . '% OFF';
+                                    }
+                                    ?>
+                                </div>
+                                <?php } ?>
+                                
+                                <?php if ($product['disablePurchase']) { ?>
+                                <div class="out-of-stock-badge">Out of Stock</div>
+                                <?php } ?>
+                                
+                                <div class="product-actions-overlay">
+                                    <div class="product-action-buttons">
+                                        <a href="<?php echo $product['href']; ?>" class="action-btn quick-view-btn" title="Quick View">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <?php if (!$product['disablePurchase']) { ?>
+                                        <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="action-btn add-to-cart-btn" title="Add to Cart">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                        <?php } ?>
+                                        <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="action-btn wishlist-btn" title="Add to Wishlist">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                            
+                            <div class="product-info-modern">
+                                <h5 class="product-name-modern"><?php echo $product['name']; ?></h5>
+                                <?php if (isset($product['sub_name']) && $product['sub_name']) { ?>
+                                <p class="product-sub-name"><?php echo $product['sub_name']; ?></p>
+                                <?php } ?>
+                                
+                                <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
+                                <div class="product-rating-modern">
+                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                    <i class="fa fa-star<?php echo $i <= $product['rating'] ? '' : '-o'; ?>"></i>
+                                    <?php } ?>
+                                </div>
+                                <?php } ?>
+                                
+                                <div class="product-price-modern">
+                                    <?php if ($product['special']) { ?>
+                                    <span class="price-current"><?php echo $product['special']; ?></span>
+                                    <span class="price-old"><?php echo $product['price']; ?></span>
+                                    <?php } else { ?>
+                                    <span class="price-current"><?php echo $product['price']; ?></span>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
                 <?php } ?>
             </div>
@@ -379,44 +418,85 @@
     <!-- Compatible Products Section -->
     <?php 
     if (isset($compatible_products) && is_array($compatible_products) && count($compatible_products) > 0) { ?>
-    <section class="compatible-products-section" style="padding: 60px 0; background: #f9f9f9;">
+    <section class="compatible-products-section premium-product-section">
         <div class="container">
-            <div class="section-head" style="margin-bottom: 40px;">
-                <h2 class="section-title" style="font-size: 32px; font-weight: 600; margin-bottom: 10px; text-align: center;">Compatible Products</h2>
-                <p class="section-subtitle" style="text-align: center; color: #A68A6A; margin: 0;">Products that work well with this item</p>
+            <div class="section-header-modern">
+                <h2 class="section-title-modern">Compatible Products</h2>
+                <p class="section-subtitle-modern">Products that work well with this item</p>
             </div>
-            <div class="compatible-products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            <div class="premium-products-grid">
                 <?php foreach ($compatible_products as $product) { ?>
-                <div class="compatible-product-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
-                    <a href="<?php echo $product['href']; ?>" style="text-decoration: none; color: inherit; display: block;">
-                        <div class="compatible-product-image" style="position: relative; width: 100%; padding-top: 100%; background: #fff; overflow: hidden;">
-                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px;">
-                            <?php if ($product['special']) { ?>
-                            <div class="discount-badge" style="position: absolute; top: 10px; right: 10px; background: #10503D; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
-                                <?php
-                                $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                $discountAmount = $price - $special;
-                                $mark = ($discountAmount / $price) * 100;
-                                echo round($mark, 0) . '% OFF';
-                                ?>
-                            </div>
-                            <?php } ?>
-                        </div>
-                        <div class="compatible-product-info" style="padding: 15px;">
-                            <h5 class="compatible-product-name" style="font-size: 16px; font-weight: 500; margin: 0 0 10px 0; color: #333; line-height: 1.4; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                <?php echo $product['name']; ?>
-                            </h5>
-                            <div class="compatible-product-price" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                <?php if ($product['special']) { ?>
-                                <span class="price-special" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['special']; ?></span>
-                                <span class="price-old" style="font-size: 14px; color: #A68A6A; text-decoration: line-through;"><?php echo $product['price']; ?></span>
+                <div class="premium-product-card">
+                    <div class="product-card-inner">
+                        <a href="<?php echo $product['href']; ?>" class="product-link">
+                            <div class="product-image-wrapper">
+                                <?php if ($product['featured_image']) { ?>
+                                <img src="<?php echo $product['featured_image']; ?>" alt="<?php echo $product['name']; ?>" class="product-main-image">
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" class="product-hover-image">
                                 <?php } else { ?>
-                                <span class="price" style="font-size: 18px; font-weight: 600; color: #10503D;"><?php echo $product['price']; ?></span>
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" class="product-main-image">
                                 <?php } ?>
+                                
+                                <?php if ($product['special']) { ?>
+                                <div class="discount-badge-modern">
+                                    <?php
+                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                    if ($price > 0) {
+                                        $discountAmount = $price - $special;
+                                        $mark = ($discountAmount / $price) * 100;
+                                        echo round($mark, 0) . '% OFF';
+                                    }
+                                    ?>
+                                </div>
+                                <?php } ?>
+                                
+                                <?php if ($product['disablePurchase']) { ?>
+                                <div class="out-of-stock-badge">Out of Stock</div>
+                                <?php } ?>
+                                
+                                <div class="product-actions-overlay">
+                                    <div class="product-action-buttons">
+                                        <a href="<?php echo $product['href']; ?>" class="action-btn quick-view-btn" title="Quick View">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <?php if (!$product['disablePurchase']) { ?>
+                                        <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="action-btn add-to-cart-btn" title="Add to Cart">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                        <?php } ?>
+                                        <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="action-btn wishlist-btn" title="Add to Wishlist">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                            
+                            <div class="product-info-modern">
+                                <h5 class="product-name-modern"><?php echo $product['name']; ?></h5>
+                                <?php if (isset($product['sub_name']) && $product['sub_name']) { ?>
+                                <p class="product-sub-name"><?php echo $product['sub_name']; ?></p>
+                                <?php } ?>
+                                
+                                <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
+                                <div class="product-rating-modern">
+                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                    <i class="fa fa-star<?php echo $i <= $product['rating'] ? '' : '-o'; ?>"></i>
+                                    <?php } ?>
+                                </div>
+                                <?php } ?>
+                                
+                                <div class="product-price-modern">
+                                    <?php if ($product['special']) { ?>
+                                    <span class="price-current"><?php echo $product['special']; ?></span>
+                                    <span class="price-old"><?php echo $product['price']; ?></span>
+                                    <?php } else { ?>
+                                    <span class="price-current"><?php echo $product['price']; ?></span>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
                 <?php } ?>
             </div>
@@ -430,6 +510,388 @@
     </div>
 </section>
 <?php echo $footer; ?>
+
+<style>
+/* Premium Product Section Styles */
+.premium-product-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-product-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+}
+
+.section-header-modern {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.section-title-modern {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 15px 0;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title-modern::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #10503D, #A68A6A);
+    border-radius: 2px;
+}
+
+.section-subtitle-modern {
+    font-size: 16px;
+    color: #666;
+    margin: 20px 0 0 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* Premium Products Grid */
+.premium-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+    padding: 0 15px;
+}
+
+@media (max-width: 1200px) {
+    .premium-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .premium-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+        padding: 0 10px;
+    }
+    
+    .section-title-modern {
+        font-size: 32px;
+    }
+    
+    .premium-product-section {
+        padding: 50px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .premium-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+/* Premium Product Card */
+.premium-product-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f0f0f0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.premium-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: #10503D;
+}
+
+.product-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Product Image Wrapper */
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: #ffffff;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+}
+
+.product-main-image,
+.product-hover-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-hover-image {
+    opacity: 0;
+    transform: scale(1.1);
+}
+
+.premium-product-card:hover .product-main-image {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.premium-product-card:hover .product-hover-image {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Discount Badge */
+.discount-badge-modern {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #10503D 0%, #0d3d2a 100%);
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.3);
+    text-transform: uppercase;
+}
+
+.out-of-stock-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 0, 0, 0.9);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 10;
+    text-transform: uppercase;
+}
+
+/* Product Actions Overlay */
+.product-actions-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    padding: 20px 15px 15px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 15;
+}
+
+.premium-product-card:hover .product-actions-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.product-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+.action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff;
+    color: #10503D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.action-btn:hover {
+    background: #10503D;
+    color: #ffffff;
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(16, 80, 61, 0.4);
+}
+
+.action-btn.add-to-cart-btn:hover {
+    background: #A68A6A;
+    transform: scale(1.15);
+}
+
+.action-btn.wishlist-btn:hover {
+    background: #e74c3c;
+    transform: scale(1.15);
+}
+
+/* Product Info */
+.product-info-modern {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+.product-name-modern {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    min-height: 44px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+}
+
+.premium-product-card:hover .product-name-modern {
+    color: #10503D;
+}
+
+.product-sub-name {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 10px 0;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+/* Product Rating */
+.product-rating-modern {
+    display: flex;
+    gap: 3px;
+    margin: 8px 0 12px 0;
+    align-items: center;
+}
+
+.product-rating-modern .fa-star {
+    color: #ffc107;
+    font-size: 14px;
+}
+
+.product-rating-modern .fa-star-o {
+    color: #ddd;
+    font-size: 14px;
+}
+
+/* Product Price */
+.product-price-modern {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.price-current {
+    font-size: 20px;
+    font-weight: 700;
+    color: #10503D;
+    line-height: 1.2;
+}
+
+.price-old {
+    font-size: 15px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 500;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .product-info-modern {
+        padding: 15px;
+    }
+    
+    .product-name-modern {
+        font-size: 14px;
+        min-height: 40px;
+    }
+    
+    .price-current {
+        font-size: 18px;
+    }
+    
+    .action-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+    
+    .discount-badge-modern {
+        padding: 6px 12px;
+        font-size: 11px;
+        top: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-name-modern {
+        font-size: 13px;
+        min-height: 36px;
+    }
+    
+    .price-current {
+        font-size: 16px;
+    }
+    
+    .price-old {
+        font-size: 13px;
+    }
+    
+    .product-rating-modern .fa-star,
+    .product-rating-modern .fa-star-o {
+        font-size: 12px;
+    }
+}
+</style>
+
 <script>
 var product_id = <?php echo $product_id; ?>;
 fbq && fbq('track', 'ViewContent', {
