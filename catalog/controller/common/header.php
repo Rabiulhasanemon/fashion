@@ -131,233 +131,235 @@ class ControllerCommonHeader extends Controller {
 
 		// Menu
 		// Always regenerate navigation to ensure categories are fresh (cache cleared)
-		$this->cacheManger->deleteCache("html", "main_nav");
+		if (method_exists($this->cacheManger, 'deleteCache')) {
+			$this->cacheManger->deleteCache("html", "main_nav");
+		}
 		
 		$navViewData['text_category'] = $this->language->get('text_category');
 		$navViewData['text_all'] = $this->language->get('text_all');
 		$navViewData['domain'] = $this->config->get('config_url');
-        $navViewData['item_count'] = $data['item_count'];
+		$navViewData['item_count'] = $data['item_count'];
 		$navViewData['categories'] = array();
-        $navViewData['logo'] = $data['logo'];
-        $navViewData['name'] = $this->config->get('config_name');
+		$navViewData['logo'] = $data['logo'];
+		$navViewData['name'] = $this->config->get('config_name');
 
-            $navViewData['navigations'] = array();
+		$navViewData['navigations'] = array();
 
-            if($this->config->get('config_navigation_type') === 'navigation') {
-                $this->load->model('catalog/navigation');
-                $navigations = $this->model_catalog_navigation->getNavigations(0);
-                foreach ($navigations as $navigation) {
-                    if ($navigation['top']) {
-                        // Level 2
-                        $children_data_1 = array();
+		if($this->config->get('config_navigation_type') === 'navigation') {
+			$this->load->model('catalog/navigation');
+			$navigations = $this->model_catalog_navigation->getNavigations(0);
+			foreach ($navigations as $navigation) {
+				if ($navigation['top']) {
+					// Level 2
+					$children_data_1 = array();
 
-                        $children_level_1 = $this->model_catalog_navigation->getNavigations($navigation['navigation_id']);
+					$children_level_1 = $this->model_catalog_navigation->getNavigations($navigation['navigation_id']);
 
-                        foreach ($children_level_1 as $child) {
-                            if(!$child['top']) { continue; }
-                            $children_level_2 = $this->model_catalog_navigation->getNavigations($child['navigation_id']);
-                            //Level 3
-                            $children_data_2 = array();
-                            foreach ($children_level_2 as $child_2) {
-                                if(!$child_2['top']) { continue; }
+					foreach ($children_level_1 as $child) {
+						if(!$child['top']) { continue; }
+						$children_level_2 = $this->model_catalog_navigation->getNavigations($child['navigation_id']);
+						//Level 3
+						$children_data_2 = array();
+						foreach ($children_level_2 as $child_2) {
+							if(!$child_2['top']) { continue; }
 
-                                $children_level_3 = $this->model_catalog_navigation->getNavigations($child_2['navigation_id']);
-                                //Level 4
-                                $children_data_3 = array();
+							$children_level_3 = $this->model_catalog_navigation->getNavigations($child_2['navigation_id']);
+							//Level 4
+							$children_data_3 = array();
 
-                                foreach ($children_level_3 as $child_3) {
-                                    if(!$child_3['top']) { continue; }
+							foreach ($children_level_3 as $child_3) {
+								if(!$child_3['top']) { continue; }
 
-                                    $children_data_3[] = array(
-                                        'name'  => $child_3['name'],
-                                        'href'  => $child_3['url'],
-                                    );
+								$children_data_3[] = array(
+									'name'  => $child_3['name'],
+									'href'  => $child_3['url'],
+								);
 
-                                }
+							}
 
-                                $children_data_2[] = array(
-                                    'name'  => $child_2['name'],
-                                    'href'  => $child_2['url'],
-                                    'icon'  => $child_2['image'] ? $this->config->get('config_ssl') . '/image/' . $child_2['image'] : "",
-                                    'children' => $children_data_3
-                                );
+							$children_data_2[] = array(
+								'name'  => $child_2['name'],
+								'href'  => $child_2['url'],
+								'icon'  => $child_2['image'] ? $this->config->get('config_ssl') . '/image/' . $child_2['image'] : "",
+								'children' => $children_data_3
+							);
 
-                            }
-
-
-                            $children_data_1[] = array(
-                                'name'  => $child['name'],
-                                'href'  => $child['url'],
-                                'children' => $children_data_2
-                            );
-                        }
+						}
 
 
-                        // Level 1
-                        $navViewData['navigations'][] = array(
-                            'name'     => $navigation['name'],
-                            'icon'     => $navigation['image'] ? $this->config->get('config_ssl') . '/image/' . $navigation['image'] : "",
-                            'children' => $children_data_1,
-                            'column'   => $navigation['column'] ? $navigation['column'] : 1,
-                            'href'     => $navigation['url'],
-                        );
-                    }
-                }
-
-            } else {
-                $this->load->model('catalog/category');
-                $this->load->model('blog/category');
-                $this->load->model('catalog/category_manufacturer');
-                $this->load->model('catalog/product');
-
-                $categories = $this->model_catalog_category->getCategories(0);
-                foreach ($categories as $category) {
-                    if ($category['top']) {
-                        // Level 2
-                        $children_data_1 = array();
-
-                        $children_level_1 = $this->model_catalog_category->getCategories($category['category_id']);
-
-                        foreach ($children_level_1 as $child) {
-                            if(!$child['top']) { continue; }
-                            $children_level_2 = $this->model_catalog_category->getCategories($child['category_id']);
-                            //Level 3
-                            $children_data_2 = array();
-                            foreach ($children_level_2 as $child_2) {
-                                if(!$child_2['top']) { continue; }
-
-                                $children_level_3 = $this->model_catalog_category->getCategories($child_2['category_id']);
-                                //Level 4
-                                $children_data_3 = array();
-
-                                foreach ($children_level_3 as $child_3) {
-                                    if(!$child_3['top']) { continue; }
-                                    $filter_data = array(
-                                        'filter_category_id'  => $child_3['category_id'],
-                                        'filter_sub_category' => true
-                                    );
-
-                                    $children_data_3[] = array(
-                                        'name'  => $child_3['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-                                        'href'  => $this->url->link('product/category', 'category_id=' . $child_3['category_id'])
-                                    );
-
-                                }
-                                $filter_data = array(
-                                    'filter_category_id'  => $child_2['category_id'],
-                                    'filter_sub_category' => true
-                                );
-
-                                $children_data_2[] = array(
-                                    'name'  => $child_2['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-                                    'icon'  => $child_2['icon'] ? $this->config->get('config_ssl') . '/image/' . $child_2['icon'] : "",
-                                    'href'  => $this->url->link('product/category', 'category_id=' . $child_2['category_id']),
-                                    'children' => $children_data_3
-                                );
-
-                            }
-                            if(!$children_level_2) {
-                                $brands_level_2 = $this->model_catalog_category_manufacturer->getCategoryManufacturers(array('filter_category_id' => $child['category_id']));
-                                foreach ($brands_level_2 as $child_2) {
-                                    if(!$child_2['top']) { continue; }
-                                    $children_data_2[] = array(
-                                        'name'  => $child_2['manufacturer_name'],
-                                        'icon'  => $child_2['icon'] ? $this->config->get('config_ssl') . '/image/' . $child_2['icon'] : "",
-                                        'href'  => $this->url->link('product/category', 'category_id=' . $child['category_id'] . '&manufacturer_id=' . $child_2['manufacturer_id']),
-                                        'children' => array()
-                                    );
-                                }
-                            }
-
-                            $filter_data = array(
-                                'filter_category_id'  => $child['category_id'],
-                                'filter_sub_category' => true
-                            );
-
-                            $children_data_1[] = array(
-                                'name'  => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-                                'href'  => $this->url->link('product/category', 'category_id=' . $child['category_id']),
-                                'children' => $children_data_2
-                            );
-                        }
-
-                        if(!$children_level_1) {
-                            $brands_level_1 = $this->model_catalog_category_manufacturer->getCategoryManufacturers(array('filter_category_id' => $category['category_id']));
-                            foreach ($brands_level_1 as $child) {
-                                if(!$child['top']) { continue; }
-                                $children_data_1[] = array(
-                                    'name'  => $child['manufacturer_name'],
-                                    'href'  => $this->url->link('product/category', 'category_id=' . $category['category_id'] . '&manufacturer_id=' . $child['manufacturer_id']),
-                                    'children' => array()
-                                );
-                            }
-                        }
-
-                        // Level 1
-                        $navViewData['categories'][] = array(
-                            'name'     => $category['name'],
-                            'icon'     => $category['icon'] ? $this->config->get('config_ssl') . '/image/' . $category['icon'] : "",
-                            'children' => $children_data_1,
-                            'column'   => $category['column'] ? $category['column'] : 1,
-                            'href'     => $this->url->link('product/category', 'category_id=' . $category['category_id'])
-                        );
-                    }
-                }
-
-                $navViewData['manufacturers'] = array();
-
-                if ($this->config->get('config_include_brand_navigation')) {
-                    $this->load->model('catalog/manufacturer');
-                    $manufacturers = $this->model_catalog_manufacturer->getManufacturers();
-                    foreach ($manufacturers as $manufacturer) {
-                        $navViewData['manufacturers'][] = array(
-                            'name'     => $manufacturer['name'],
-                            'sort_order'     => $manufacturer['sort_order'],
-                            'href'     => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer['manufacturer_id'])
-                        );
-                    }
-                }
-
-                $categories = $this->model_blog_category->getCategories(0);
-                foreach ($categories as $category) {
-                    if(!$category['top']) continue;
-
-                    $children_data_1 = array();
-
-                    $children_level_1 = $this->model_blog_category->getCategories($category['category_id']);
-
-                    foreach ($children_level_1 as $child) {
-                        if(!$child['top']) continue;
-
-                        $children_level_2 = $this->model_blog_category->getCategories($child['category_id']);
-                        //Level 3
-                        $children_data_2 = array();
-                        foreach ($children_level_2 as $child_2) {
-                            if(!$child_2['top']) continue;
-
-                            $children_data_2[] = array(
-                                'name'  => $child_2['name'],
-                                'href'  => $this->url->link('blog/category', 'blog_category_id=' .$child_2['category_id'])
-                            );
-
-                        }
-
-                        $children_data_1[] = array(
-                            'name'  => $child['name'],
-                            'href'  => $this->url->link('blog/category', 'blog_category_id=' . $child['category_id']),
-                            'children' => $children_data_2
-                        );
-                    }
+						$children_data_1[] = array(
+							'name'  => $child['name'],
+							'href'  => $child['url'],
+							'children' => $children_data_2
+						);
+					}
 
 
-                    // Level 1
-                    $navViewData['categories'][] = array(
-                        'name'     => $category['name'],
-                        'children' => $children_data_1,
-                        'href'     => $this->url->link('blog/category', 'blog_category_id=' . $category['category_id'])
-                    );
-                }
-            }
+					// Level 1
+					$navViewData['navigations'][] = array(
+						'name'     => $navigation['name'],
+						'icon'     => $navigation['image'] ? $this->config->get('config_ssl') . '/image/' . $navigation['image'] : "",
+						'children' => $children_data_1,
+						'column'   => $navigation['column'] ? $navigation['column'] : 1,
+						'href'     => $navigation['url'],
+					);
+				}
+			}
+
+		} else {
+			$this->load->model('catalog/category');
+			$this->load->model('blog/category');
+			$this->load->model('catalog/category_manufacturer');
+			$this->load->model('catalog/product');
+
+			$categories = $this->model_catalog_category->getCategories(0);
+			foreach ($categories as $category) {
+				if ($category['top']) {
+					// Level 2
+					$children_data_1 = array();
+
+					$children_level_1 = $this->model_catalog_category->getCategories($category['category_id']);
+
+					foreach ($children_level_1 as $child) {
+						if(!$child['top']) { continue; }
+						$children_level_2 = $this->model_catalog_category->getCategories($child['category_id']);
+						//Level 3
+						$children_data_2 = array();
+						foreach ($children_level_2 as $child_2) {
+							if(!$child_2['top']) { continue; }
+
+							$children_level_3 = $this->model_catalog_category->getCategories($child_2['category_id']);
+							//Level 4
+							$children_data_3 = array();
+
+							foreach ($children_level_3 as $child_3) {
+								if(!$child_3['top']) { continue; }
+								$filter_data = array(
+									'filter_category_id'  => $child_3['category_id'],
+									'filter_sub_category' => true
+								);
+
+								$children_data_3[] = array(
+									'name'  => $child_3['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+									'href'  => $this->url->link('product/category', 'category_id=' . $child_3['category_id'])
+								);
+
+							}
+							$filter_data = array(
+								'filter_category_id'  => $child_2['category_id'],
+								'filter_sub_category' => true
+							);
+
+							$children_data_2[] = array(
+								'name'  => $child_2['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+								'icon'  => $child_2['icon'] ? $this->config->get('config_ssl') . '/image/' . $child_2['icon'] : "",
+								'href'  => $this->url->link('product/category', 'category_id=' . $child_2['category_id']),
+								'children' => $children_data_3
+							);
+
+						}
+						if(!$children_level_2) {
+							$brands_level_2 = $this->model_catalog_category_manufacturer->getCategoryManufacturers(array('filter_category_id' => $child['category_id']));
+							foreach ($brands_level_2 as $child_2) {
+								if(!$child_2['top']) { continue; }
+								$children_data_2[] = array(
+									'name'  => $child_2['manufacturer_name'],
+									'icon'  => $child_2['icon'] ? $this->config->get('config_ssl') . '/image/' . $child_2['icon'] : "",
+									'href'  => $this->url->link('product/category', 'category_id=' . $child['category_id'] . '&manufacturer_id=' . $child_2['manufacturer_id']),
+									'children' => array()
+								);
+							}
+						}
+
+						$filter_data = array(
+							'filter_category_id'  => $child['category_id'],
+							'filter_sub_category' => true
+						);
+
+						$children_data_1[] = array(
+							'name'  => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+							'href'  => $this->url->link('product/category', 'category_id=' . $child['category_id']),
+							'children' => $children_data_2
+						);
+					}
+
+					if(!$children_level_1) {
+						$brands_level_1 = $this->model_catalog_category_manufacturer->getCategoryManufacturers(array('filter_category_id' => $category['category_id']));
+						foreach ($brands_level_1 as $child) {
+							if(!$child['top']) { continue; }
+							$children_data_1[] = array(
+								'name'  => $child['manufacturer_name'],
+								'href'  => $this->url->link('product/category', 'category_id=' . $category['category_id'] . '&manufacturer_id=' . $child['manufacturer_id']),
+								'children' => array()
+							);
+						}
+					}
+
+					// Level 1
+					$navViewData['categories'][] = array(
+						'name'     => $category['name'],
+						'icon'     => $category['icon'] ? $this->config->get('config_ssl') . '/image/' . $category['icon'] : "",
+						'children' => $children_data_1,
+						'column'   => $category['column'] ? $category['column'] : 1,
+						'href'     => $this->url->link('product/category', 'category_id=' . $category['category_id'])
+					);
+				}
+			}
+
+			$navViewData['manufacturers'] = array();
+
+			if ($this->config->get('config_include_brand_navigation')) {
+				$this->load->model('catalog/manufacturer');
+				$manufacturers = $this->model_catalog_manufacturer->getManufacturers();
+				foreach ($manufacturers as $manufacturer) {
+					$navViewData['manufacturers'][] = array(
+						'name'     => $manufacturer['name'],
+						'sort_order'     => $manufacturer['sort_order'],
+						'href'     => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer['manufacturer_id'])
+					);
+				}
+			}
+
+			$categories = $this->model_blog_category->getCategories(0);
+			foreach ($categories as $category) {
+				if(!$category['top']) continue;
+
+				$children_data_1 = array();
+
+				$children_level_1 = $this->model_blog_category->getCategories($category['category_id']);
+
+				foreach ($children_level_1 as $child) {
+					if(!$child['top']) continue;
+
+					$children_level_2 = $this->model_blog_category->getCategories($child['category_id']);
+					//Level 3
+					$children_data_2 = array();
+					foreach ($children_level_2 as $child_2) {
+						if(!$child_2['top']) continue;
+
+						$children_data_2[] = array(
+							'name'  => $child_2['name'],
+							'href'  => $this->url->link('blog/category', 'blog_category_id=' .$child_2['category_id'])
+						);
+
+					}
+
+					$children_data_1[] = array(
+						'name'  => $child['name'],
+						'href'  => $this->url->link('blog/category', 'blog_category_id=' . $child['category_id']),
+						'children' => $children_data_2
+					);
+				}
+
+
+				// Level 1
+				$navViewData['categories'][] = array(
+					'name'     => $category['name'],
+					'children' => $children_data_1,
+					'href'     => $this->url->link('blog/category', 'blog_category_id=' . $category['category_id'])
+				);
+			}
+		}
 
 		$navigation = $this->load->view($this->config->get('config_template') . '/template/common/navigation.tpl', $navViewData);
 		$this->cacheManger->setCache("html", "main_nav", $navigation);
