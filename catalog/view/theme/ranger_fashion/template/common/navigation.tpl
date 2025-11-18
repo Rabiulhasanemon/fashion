@@ -61,31 +61,58 @@ if (!$has_categories) {
                             <div id="new-mobile-menu" class="new-mobile-menu">
                                 <div class="new-mobile-overlay"></div>
                                 <ul class="new-mobile-list">
-                                    <?php if ($has_categories) { ?>
+                                    <?php 
+                                    // Debug: Check categories
+                                    $cat_count = isset($categories) && is_array($categories) ? count($categories) : 0;
+                                    
+                                    // Always show at least one test item for debugging
+                                    $show_test_item = false;
+                                    if ($cat_count === 0 || !$has_categories) {
+                                        $show_test_item = true;
+                                    }
+                                    ?>
+                                    <?php if ($has_categories && $cat_count > 0) { ?>
                                         <?php foreach ($categories as $category) { ?>
+                                            <?php if (isset($category['name']) && !empty($category['name'])) { ?>
                                             <li class="mobile-menu-item <?php echo !empty($category['children']) ? 'has-submenu' : ''; ?>">
-                                                <a href="<?php echo $category['href']; ?>" class="mobile-menu-link">
+                                                <a href="<?php echo isset($category['href']) ? $category['href'] : '#'; ?>" class="mobile-menu-link">
                                                     <?php echo htmlspecialchars($category['name']); ?>
                                                     <?php if (!empty($category['children'])) { ?>
                                                         <span class="submenu-toggle">+</span>
                                                     <?php } ?>
                                                 </a>
-                                                <?php if (!empty($category['children'])) { ?>
+                                                <?php if (!empty($category['children']) && is_array($category['children'])) { ?>
                                                     <ul class="mobile-submenu">
                                                         <?php foreach ($category['children'] as $child) { ?>
+                                                            <?php if (isset($child['name']) && !empty($child['name'])) { ?>
                                                             <li>
-                                                                <a href="<?php echo $child['href']; ?>">
+                                                                <a href="<?php echo isset($child['href']) ? $child['href'] : '#'; ?>">
                                                                     <?php echo htmlspecialchars($child['name']); ?>
                                                                 </a>
                                                             </li>
+                                                            <?php } ?>
                                                         <?php } ?>
                                                     </ul>
                                                 <?php } ?>
                                             </li>
+                                            <?php } ?>
                                         <?php } ?>
-                                    <?php } else { ?>
+                                    <?php } ?>
+                                    
+                                    <?php if ($show_test_item) { ?>
+                                        <li class="mobile-menu-item" style="background: #fff3cd; border: 2px solid #ffc107;">
+                                            <a href="#" class="mobile-menu-link" style="color: #856404 !important; font-weight: bold;">
+                                                DEBUG: Categories Count = <?php echo $cat_count; ?> | Has Categories = <?php echo $has_categories ? 'YES' : 'NO'; ?>
+                                            </a>
+                                        </li>
                                         <li class="mobile-menu-item">
-                                            <a href="#" class="mobile-menu-link">No Categories Available</a>
+                                            <a href="#" class="mobile-menu-link">Test Item 1</a>
+                                        </li>
+                                        <li class="mobile-menu-item">
+                                            <a href="#" class="mobile-menu-link">Test Item 2</a>
+                                        </li>
+                                        <li class="mobile-menu-item">
+                                            <a href="#" class="mobile-menu-link">Test Item 3</a>
                                         </li>
                                     <?php } ?>
                                 </ul>
@@ -385,11 +412,13 @@ if (!$has_categories) {
         transition: visibility 0.3s, opacity 0.3s;
         z-index: 99998;
         display: block !important;
+        pointer-events: none;
     }
     
     .new-mobile-menu.open {
-        visibility: visible;
-        opacity: 1;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto;
     }
     
     /* Mobile Menu List */
@@ -400,6 +429,7 @@ if (!$has_categories) {
         top: 0;
         height: 100vh;
         overflow-y: auto;
+        overflow-x: hidden;
         background: #ffffff;
         margin: 0;
         padding: 20px 0 0 0;
@@ -408,18 +438,24 @@ if (!$has_categories) {
         z-index: 99999;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .new-mobile-menu.open .new-mobile-list {
         left: 0;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     /* Mobile Menu Items */
     .new-mobile-list .mobile-menu-item {
-        display: block;
+        display: block !important;
         width: 100%;
         border-bottom: 1px solid #e8e8e8;
         margin: 0;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .new-mobile-list .mobile-menu-item:last-child {
@@ -428,15 +464,17 @@ if (!$has_categories) {
     }
     
     .new-mobile-list .mobile-menu-link {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: space-between;
         padding: 15px 20px;
-        color: #000;
+        color: #000 !important;
         font-size: 14px;
         line-height: 1.5;
         text-decoration: none;
         transition: all 0.3s ease;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .new-mobile-list .mobile-menu-link:hover {
@@ -556,6 +594,18 @@ body.mobile-menu-open {
         }
         
         console.log('New mobile navigation initialized successfully');
+        
+        // Debug: Check if menu items exist
+        var menuItems = mobileMenu.querySelectorAll('.mobile-menu-item');
+        console.log('Mobile menu items found: ' + menuItems.length);
+        
+        if (menuItems.length === 0) {
+            console.warn('WARNING: No mobile menu items found!');
+        } else {
+            menuItems.forEach(function(item, index) {
+                console.log('Menu item ' + index + ':', item.textContent.trim());
+            });
+        }
         
         // Toggle menu function
         function toggleMobileMenu() {
