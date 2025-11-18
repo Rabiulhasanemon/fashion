@@ -168,32 +168,52 @@ class ControllerProductProduct extends Controller
             $data['stock_meta'] = str_replace(" ", "", $data['stock']);
 
             $this->load->model('tool/image');
-            if ($product_info['image']) {
-                $data['popup'] = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
-            } else {
-                $data['popup'] = '';
-            }
-
-            if ($product_info['image']) {
-                $product_thumb = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
-                $data['thumb'] = $product_thumb;
-            } else {
-                $data['thumb'] = '';
-            }
-
-            if ($product_info['image']) {
-                $data['featured_image'] = $this->model_tool_image->resize($product_info['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
-            } else {
-                $data['featured_image'] = '';
-            }
-
+            
+            // Get additional images first
             $data['images'] = array();
             $results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);
+            $first_additional_image = '';
+            
             foreach ($results as $result) {
-                $data['images'][] = array(
-                    'popup' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height')),
-                    'thumb' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'))
-                );
+                if (!empty($result['image'])) {
+                    // Store first additional image for fallback
+                    if (empty($first_additional_image)) {
+                        $first_additional_image = $result['image'];
+                    }
+                    
+                    $data['images'][] = array(
+                        'popup' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height')),
+                        'thumb' => $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'))
+                    );
+                }
+            }
+            
+            // Determine main image - use product image field, or fallback to first additional image
+            $main_image = '';
+            if (!empty($product_info['image'])) {
+                $main_image = $product_info['image'];
+            } elseif (!empty($first_additional_image)) {
+                // Fallback to first additional image if main image is empty
+                $main_image = $first_additional_image;
+            }
+            
+            // Set popup and thumb based on main image
+            if ($main_image) {
+                $data['popup'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
+                $data['thumb'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+            } else {
+                $data['popup'] = '';
+                $data['thumb'] = '';
+            }
+            
+            // Set featured image
+            if (!empty($product_info['featured_image'])) {
+                $data['featured_image'] = $this->model_tool_image->resize($product_info['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+            } elseif ($main_image) {
+                // Fallback to main image if featured_image is empty
+                $data['featured_image'] = $this->model_tool_image->resize($main_image, $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+            } else {
+                $data['featured_image'] = '';
             }
 
             $data["disablePurchase"] = false;
