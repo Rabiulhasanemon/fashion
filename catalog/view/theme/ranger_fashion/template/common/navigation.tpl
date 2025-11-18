@@ -5,15 +5,17 @@
             <div class="inner-wrap">
                 <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
                 <div class="header-left">
-                    <nav id="main-nav" class="main-nav ml-0">
-                        <ul class="menu">
+                    <div class="header-menu">
+                        <div class="main-nav">
+                            <nav id="main-nav" class="nav">
+                                <ul class="responsive-menu">
                             <?php foreach ($categories as $category) { ?>
                             <?php if (isset($category['children']) && !empty($category['children'])) { ?>
-                            <li class="has-submenu">
+                            <li class="has-submenu drop-open c-1">
                                 <a href="<?php echo $category['href']; ?>">
                                     <?php echo htmlspecialchars($category['name']); ?>
                                 </a>
-                                <ul class="submenu">
+                                <ul class="drop-down drop-menu-1">
                                     <?php foreach ($category['children'] as $child) { ?>
                                     <li>
                                         <a href="<?php echo $child['href']; ?>">
@@ -31,8 +33,11 @@
                             </li>
                             <?php } ?>
                             <?php } ?>
-                        </ul>
-                    </nav>
+                                </ul>
+                                <div class="overlay"></div>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
                 <?php if (isset($flash_sale_url) && $flash_sale_url) { ?>
                 <a href="<?php echo $flash_sale_url; ?>" class="h-flash-btn">
@@ -319,160 +324,280 @@
 }
 
 /* Mobile Navigation Toggle */
-.header-bottom .nav-toggler {
+#nav-toggler {
     display: none;
-    width: 30px;
-    height: 30px;
+}
+
+.main-nav .nav {
     position: relative;
-    cursor: pointer;
-    z-index: 1002;
-    margin-right: 15px;
 }
 
-.header-bottom .nav-toggler span {
-    display: block;
-    position: absolute;
-    height: 3px;
-    width: 100%;
-    background: var(--white-color, #fff);
-    border-radius: 3px;
-    opacity: 1;
-    left: 0;
-    transform: rotate(0deg);
-    transition: 0.25s ease-in-out;
+.main-nav .nav .overlay {
+    display: none;
 }
 
-.header-bottom .nav-toggler span:nth-child(1) {
-    top: 0px;
+/* Body scroll lock when menu is open */
+body.no-scroll {
+    overflow: hidden;
 }
 
-.header-bottom .nav-toggler span:nth-child(2) {
-    top: 10px;
-}
+/* Responsive - Mobile Navigation */
+@media only screen and (max-width: 991.98px) {
+    #nav-toggler {
+        width: 22px;
+        height: 15px;
+        background: rgba(255, 255, 255, 0);
+        position: absolute;
+        top: 35px;
+        left: 0;
+        transform: translateY(-50%);
+        display: block;
+        cursor: pointer;
+        z-index: 10002;
+    }
 
-.header-bottom .nav-toggler span:nth-child(3) {
-    top: 20px;
-}
+    #nav-toggler span:after,
+    #nav-toggler span:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -7px;
+    }
 
-.header-bottom .nav-toggler.active span:nth-child(1) {
-    top: 10px;
-    transform: rotate(135deg);
-}
+    #nav-toggler span:after {
+        top: 7px;
+    }
 
-.header-bottom .nav-toggler.active span:nth-child(2) {
-    opacity: 0;
-    left: -60px;
-}
-
-.header-bottom .nav-toggler.active span:nth-child(3) {
-    top: 10px;
-    transform: rotate(-135deg);
-}
-
-/* Responsive */
-@media (max-width: 991px) {
-    .header-bottom .nav-toggler {
+    #nav-toggler span {
+        position: relative;
         display: block;
     }
-    
-    .header-bottom .main-nav {
-        display: none;
+
+    #nav-toggler span,
+    #nav-toggler span:after,
+    #nav-toggler span:before {
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        transition: all 0.3s;
+        backface-visibility: hidden;
+        border-radius: 2px;
+    }
+
+    /* on activation */
+    #nav-toggler.close span {
+        background-color: transparent;
+    }
+
+    #nav-toggler.close span:before {
+        transform: rotate(45deg) translate(6px, 5px);
+    }
+
+    #nav-toggler.close span:after {
+        transform: rotate(-45deg) translate(5px, -4px);
+    }
+
+    .main-nav {
         position: absolute;
-        top: 100%;
         left: 0;
+        top: 2px;
+    }
+
+    .main-nav .nav .overlay.open {
+        content: "";
+        position: fixed;
+        left: 0;
+        top: 55px;
         right: 0;
-        background: var(--primary-color, #FF6A00);
-        width: 100%;
-        z-index: 1001;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        display: block;
+        -webkit-transition: all 300ms ease;
+        -moz-transition: all 300ms ease;
+        -o-transition: all 300ms ease;
+        transition: all 300ms ease;
     }
-    
-    .header-bottom .main-nav.active,
-    #main-nav.active {
-        display: block !important;
-        max-height: 1000px;
-        padding: 15px 0;
+
+    .main-nav .nav ul li {
+        border-bottom: 1px solid #e8e8e8;
+        margin: 0;
+        height: auto;
     }
-    
-    .header-bottom .main-nav .menu {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0 15px;
+
+    .main-nav .nav .drop-menu-2 li {
+        position: relative;
+        left: 0;
+        top: 0;
     }
-    
-    .header-bottom .main-nav .menu > li {
-        width: 100%;
-        margin-right: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .header-bottom .main-nav .menu > li:last-child {
-        border-bottom: none;
-    }
-    
-    .header-bottom .main-nav .menu > li > a {
-        padding: 15px 0;
-        width: 100%;
-    }
-    
-    .header-bottom .main-nav .menu .submenu {
-        position: static;
-        visibility: visible;
-        opacity: 1;
-        transform: none;
-        box-shadow: none;
-        background: rgba(0, 0, 0, 0.12);
-        margin-top: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
-        padding: 0;
-        border-radius: 0;
-        border: none;
-    }
-    
-    .header-bottom .main-nav .menu > li.show > .submenu {
-        max-height: 500px;
-        padding: 8px 0;
-    }
-    
-    .header-bottom .main-nav .menu .submenu li {
-        padding: 0;
-    }
-    
-    .header-bottom .main-nav .menu .submenu li::before {
-        display: none;
-    }
-    
-    .header-bottom .main-nav .menu .submenu li a {
-        padding: 12px 1.5rem;
-        color: rgba(255, 255, 255, 0.95);
+
+    .main-nav .nav li a {
+        margin-left: 20px;
+        color: black;
+        line-height: 40px;
         font-size: 14px;
     }
-    
-    .header-bottom .main-nav .menu .submenu li a::after {
-        left: 1.5rem;
-        right: 1.5rem;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+
+    .main-nav .nav .drop-menu-1 li a {
+        margin-left: 25px;
+        color: black;
+        line-height: 20px;
     }
-    
-    .header-bottom .main-nav .menu .submenu li.active > a,
-    .header-bottom .main-nav .menu .submenu li:hover > a {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.15);
-        padding-left: 1.7rem;
+
+    .main-nav .nav .drop-menu-2 li a {
+        margin-left: 50px;
     }
-    
-    .header-bottom .h-flash-btn {
-        padding: 8px;
+
+    .main-nav .nav .toggle + a {
+        display: none;
+    }
+
+    .main-nav .nav ul li:before {
+        display: none;
+    }
+
+    .main-nav .nav {
+        visibility: hidden;
+    }
+
+    .nav .drop-down li.drop-open > a:before {
+        display: none;
+    }
+
+    .main-nav .nav .drop-menu-1 li {
+        display: block;
+        background-color: #f1f5f963;
+        border-bottom: none;
+        line-height: 40px;
+        color: black;
         font-size: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0;
     }
-    
-    .header-bottom .h-flash-btn i {
-        font-size: 18px;
+
+    .main-nav .nav .drop-down a:hover {
+        background: none;
+        color: inherit;
+    }
+
+    .main-nav .nav .drop-menu-2 li {
+        display: block;
+        line-height: 30px;
+        color: black;
+        font-size: 12px;
+        text-decoration: none;
+        border: none;
+        font-weight: 600;
+        padding: 0;
+    }
+
+    .main-nav .nav ul ul {
+        box-shadow: none;
+    }
+
+    .main-nav .nav .drop-menu-2 li a.active {
+        color: var(--primaryColor);
+    }
+
+    .main-nav .nav .drop-menu-2 li:hover {
+        color: var(--primaryColor);
+    }
+
+    .main-nav .nav.open {
+        visibility: visible;
+    }
+
+    .main-nav .nav .responsive-menu {
+        width: 300px;
+        position: fixed;
+        left: -300px;
+        top: 55px;
+        height: calc(100vh - 55px);
+        overflow: auto;
+        background: white;
+        -webkit-transition: all 300ms ease;
+        -moz-transition: all 300ms ease;
+        -o-transition: all 300ms ease;
+        transition: all 300ms ease;
+        z-index: 99999;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .main-nav .nav.open .responsive-menu {
+        left: 0;
+    }
+
+    .main-nav .nav:before {
+        display: none;
+    }
+
+    .main-nav .nav ul li {
+        display: block;
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .main-nav .nav ul li > ul {
+        display: none !important;
+    }
+
+    .main-nav .nav ul li.open > ul {
+        display: block !important;
+        width: 300px;
+        height: auto;
+    }
+
+    .main-nav .nav .drop-menu-1 a {
+        display: block;
+    }
+
+    .main-nav .nav li a:hover {
+        background: none;
+        color: var(--primaryColor);
+    }
+
+    .main-nav .nav ul ul {
+        float: none;
+        position: static;
+        color: white;
+    }
+
+    /* First Tier Dropdown*/
+    .main-nav .nav ul ul li {
+        display: block;
+        width: 100%;
+    }
+
+    .main-nav .nav ul ul ul li {
+        position: static;
+    }
+
+    .main-nav .nav li.drop-open > a:after,
+    .main-nav .nav li.has-submenu > a:after {
+        content: "\e5cc";
+        float: right;
+        margin-right: 20px;
+        font-size: 15px;
+        font-family: "Material Icons";
+    }
+
+    .main-nav .nav li.open > a:after {
+        content: "\e5ce";
+    }
+
+    .drop-menu-1 li a:only-child:after {
+        content: " ";
+    }
+
+    .responsive-menu > li:last-child {
+        margin-bottom: 100px !important;
+    }
+
+    .main-nav .nav ul li.drop-open.c-1:after {
+        display: none;
     }
 }
 
@@ -511,58 +636,59 @@ jQuery(document).ready(function($) {
         checkSticky();
     }
     
-    // Mobile navigation toggle - Fix for nav-toggler
-    // Use off() first to remove any existing handlers, then add our handler
+    // Mobile navigation toggle - Match the provided mobile nav behavior
     $('#nav-toggler').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var $toggler = $(this);
-        var $nav = $('#main-nav, .header-bottom .main-nav');
+        var $nav = $('#main-nav');
+        var $overlay = $('.main-nav .nav .overlay');
         
-        $toggler.toggleClass('active');
-        $nav.toggleClass('active');
+        // Toggle classes
+        $toggler.toggleClass('close');
+        $nav.toggleClass('open');
+        $overlay.toggleClass('open');
         
-        // Also handle overlay if it exists
-        if ($('.overlay').length) {
-            if ($toggler.hasClass('active')) {
-                $('.overlay').addClass('open');
-                $('body').addClass('no-scroll');
-            } else {
-                $('.overlay').removeClass('open');
-                $('body').removeClass('no-scroll');
-            }
+        // Toggle body scroll
+        if ($nav.hasClass('open')) {
+            $('body').addClass('no-scroll');
+        } else {
+            $('body').removeClass('no-scroll');
         }
     });
     
-    // Mobile submenu toggle
-    $('.header-bottom .menu > li.has-submenu > a').on('click', function(e) {
+    // Mobile submenu toggle - Use 'open' class for submenus
+    $(document).on('click', '.main-nav .nav .responsive-menu > li.has-submenu > a, .main-nav .nav .responsive-menu > li.drop-open > a', function(e) {
         if ($(window).width() <= 991) {
             e.preventDefault();
             e.stopPropagation();
-            $(this).parent().toggleClass('show');
-        }
-    });
-    
-    // Close menu when clicking outside or on overlay
-    $(document).on('click', function(e) {
-        if ($(window).width() <= 991) {
-            var $target = $(e.target);
-            if (!$target.closest('.header-bottom').length && !$target.is('#nav-toggler') && !$target.closest('#nav-toggler').length) {
-                $('#nav-toggler').removeClass('active');
-                $('#main-nav, .header-bottom .main-nav').removeClass('active');
-                $('.overlay').removeClass('open');
-                $('body').removeClass('no-scroll');
-            }
+            $(this).parent().toggleClass('open');
         }
     });
     
     // Close menu when clicking on overlay
-    $('.overlay').on('click', function() {
+    $('.main-nav .nav .overlay').on('click', function() {
         if ($(window).width() <= 991) {
-            $('#nav-toggler').removeClass('active');
-            $('#main-nav, .header-bottom .main-nav').removeClass('active');
+            $('#nav-toggler').removeClass('close');
+            $('#main-nav').removeClass('open');
             $(this).removeClass('open');
             $('body').removeClass('no-scroll');
+        }
+    });
+    
+    // Close menu when clicking outside (but not on nav items)
+    $(document).on('click', function(e) {
+        if ($(window).width() <= 991) {
+            var $target = $(e.target);
+            // Don't close if clicking on nav-toggler, nav, or menu items
+            if (!$target.closest('#nav-toggler').length && 
+                !$target.closest('.main-nav').length && 
+                !$target.closest('#main-nav').length) {
+                $('#nav-toggler').removeClass('close');
+                $('#main-nav').removeClass('open');
+                $('.main-nav .nav .overlay').removeClass('open');
+                $('body').removeClass('no-scroll');
+            }
         }
     });
 });
