@@ -3,12 +3,12 @@
     <div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
         <div class="container">
             <div class="inner-wrap">
-                <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
+                <div id="mobile-menu-toggle" class="mobile-menu-toggle-btn"><span></span><span></span><span></span></div>
                 <div class="header-left">
                     <div class="header-menu">
                         <div class="main-nav">
-                            <nav id="main-nav" class="nav">
-                                <ul class="responsive-menu">
+                            <nav id="mobile-nav-menu" class="mobile-nav-container">
+                                <ul class="mobile-nav-list">
                             <?php foreach ($categories as $category) { ?>
                             <?php if (isset($category['children']) && !empty($category['children'])) { ?>
                             <li class="has-submenu drop-open c-1">
@@ -34,7 +34,7 @@
                             <?php } ?>
                             <?php } ?>
                                 </ul>
-                                <div class="overlay"></div>
+                                <div class="mobile-nav-overlay"></div>
                             </nav>
                         </div>
                     </div>
@@ -324,283 +324,211 @@
     color: var(--primary-color, #FF6A00);
 }
 
-/* Mobile Navigation Toggle */
-#nav-toggler {
+/* NEW Mobile Navigation - Using Unique Class Names */
+.mobile-menu-toggle-btn {
     display: none;
 }
 
-.main-nav .nav {
+.mobile-nav-container {
     position: relative;
 }
 
-.main-nav .nav .overlay {
+.mobile-nav-overlay {
     display: none;
 }
 
 /* Body scroll lock when menu is open */
-body.no-scroll {
+body.mobile-menu-open {
     overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
-/* Responsive - Mobile Navigation */
+/* Mobile Navigation Styles - Only for Mobile View */
 @media only screen and (max-width: 991.98px) {
-    #nav-toggler {
+    /* Toggle Button */
+    .mobile-menu-toggle-btn {
         width: 30px;
         height: 30px;
-        background: rgba(255, 255, 255, 0);
         position: relative;
-        display: block !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        z-index: 10002;
-        pointer-events: auto;
-        -webkit-tap-highlight-color: transparent;
+        z-index: 99999;
         padding: 5px;
-        margin-right: 10px;
+        margin-right: 15px;
         flex-shrink: 0;
+        background: transparent;
+        border: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    #nav-toggler span:after,
-    #nav-toggler span:before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: -7px;
-    }
-
-    #nav-toggler span:after {
-        top: 7px;
-    }
-
-    #nav-toggler span {
-        position: relative;
+    .mobile-menu-toggle-btn span {
         display: block;
-    }
-
-    #nav-toggler span,
-    #nav-toggler span:after,
-    #nav-toggler span:before {
-        width: 100%;
+        width: 22px;
         height: 2px;
         background-color: #000;
-        transition: all 0.3s;
-        backface-visibility: hidden;
+        position: relative;
+        transition: all 0.3s ease;
         border-radius: 2px;
     }
 
-    /* on activation */
-    #nav-toggler.close span {
+    .mobile-menu-toggle-btn span:before,
+    .mobile-menu-toggle-btn span:after {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 2px;
+        background-color: #000;
+        left: 0;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .mobile-menu-toggle-btn span:before {
+        top: -7px;
+    }
+
+    .mobile-menu-toggle-btn span:after {
+        top: 7px;
+    }
+
+    /* When menu is open - transform to X */
+    .mobile-menu-toggle-btn.menu-active span {
         background-color: transparent;
     }
 
-    #nav-toggler.close span:before {
-        transform: rotate(45deg) translate(6px, 5px);
+    .mobile-menu-toggle-btn.menu-active span:before {
+        transform: rotate(45deg) translate(5px, 5px);
     }
 
-    #nav-toggler.close span:after {
-        transform: rotate(-45deg) translate(5px, -4px);
+    .mobile-menu-toggle-btn.menu-active span:after {
+        transform: rotate(-45deg) translate(5px, -5px);
     }
 
-    .main-nav {
-        position: absolute;
-        left: 0;
-        top: 2px;
-    }
-
-    .main-nav .nav .overlay.open {
-        content: "";
+    /* Navigation Container */
+    .mobile-nav-container {
         position: fixed;
-        left: 0;
-        top: 55px;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.4);
-        z-index: 999;
-        display: block;
-        -webkit-transition: all 300ms ease;
-        -moz-transition: all 300ms ease;
-        -o-transition: all 300ms ease;
-        transition: all 300ms ease;
-    }
-
-    .main-nav .nav ul li {
-        border-bottom: 1px solid #e8e8e8;
-        margin: 0;
-        height: auto;
-    }
-
-    .main-nav .nav .drop-menu-2 li {
-        position: relative;
-        left: 0;
         top: 0;
-    }
-
-    .main-nav .nav li a {
-        margin-left: 20px;
-        color: black;
-        line-height: 40px;
-        font-size: 14px;
-    }
-
-    .main-nav .nav .drop-menu-1 li a {
-        margin-left: 25px;
-        color: black;
-        line-height: 20px;
-    }
-
-    .main-nav .nav .drop-menu-2 li a {
-        margin-left: 50px;
-    }
-
-    .main-nav .nav .toggle + a {
-        display: none;
-    }
-
-    .main-nav .nav ul li:before {
-        display: none;
-    }
-
-    .main-nav .nav {
+        left: 0;
+        width: 100%;
+        height: 100vh;
         visibility: hidden;
+        opacity: 0;
+        transition: visibility 0.3s, opacity 0.3s;
+        z-index: 99998;
     }
 
-    .nav .drop-down li.drop-open > a:before {
-        display: none;
-    }
-
-    .main-nav .nav .drop-menu-1 li {
-        display: block;
-        background-color: #f1f5f963;
-        border-bottom: none;
-        line-height: 40px;
-        color: black;
-        font-size: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        padding: 0;
-    }
-
-    .main-nav .nav .drop-down a:hover {
-        background: none;
-        color: inherit;
-    }
-
-    .main-nav .nav .drop-menu-2 li {
-        display: block;
-        line-height: 30px;
-        color: black;
-        font-size: 12px;
-        text-decoration: none;
-        border: none;
-        font-weight: 600;
-        padding: 0;
-    }
-
-    .main-nav .nav ul ul {
-        box-shadow: none;
-    }
-
-    .main-nav .nav .drop-menu-2 li a.active {
-        color: var(--primaryColor);
-    }
-
-    .main-nav .nav .drop-menu-2 li:hover {
-        color: var(--primaryColor);
-    }
-
-    .main-nav .nav.open {
+    .mobile-nav-container.menu-open {
         visibility: visible;
+        opacity: 1;
     }
 
-    .main-nav .nav .responsive-menu {
+    /* Navigation List - Slide from left */
+    .mobile-nav-list {
         width: 300px;
         position: fixed;
         left: -300px;
-        top: 55px;
-        height: calc(100vh - 55px);
-        overflow: auto;
-        background: white;
-        -webkit-transition: all 300ms ease;
-        -moz-transition: all 300ms ease;
-        -o-transition: all 300ms ease;
-        transition: all 300ms ease;
-        z-index: 99999;
-        list-style: none;
-        padding: 0;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: #ffffff;
         margin: 0;
+        padding: 0;
+        list-style: none;
+        transition: left 0.3s ease;
+        z-index: 99999;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    .main-nav .nav.open .responsive-menu {
+    .mobile-nav-container.menu-open .mobile-nav-list {
         left: 0;
     }
 
-    .main-nav .nav:before {
+    /* Navigation Items */
+    .mobile-nav-list li {
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #e8e8e8;
+        margin: 0;
+    }
+
+    .mobile-nav-list li:last-child {
+        border-bottom: none;
+        margin-bottom: 50px;
+    }
+
+    .mobile-nav-list > li > a {
+        display: block;
+        padding: 15px 20px;
+        color: #000;
+        font-size: 14px;
+        line-height: 1.5;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-nav-list > li > a:hover {
+        color: var(--primaryColor, #A68A6A);
+        background-color: #f5f5f5;
+    }
+
+    /* Submenu Items */
+    .mobile-nav-list .drop-menu-1 {
         display: none;
+        background-color: #f1f5f9;
+        padding: 0;
+        margin: 0;
+        list-style: none;
     }
 
-    .main-nav .nav ul li {
-        display: block;
-        width: 100%;
-        margin-right: 0;
-    }
-
-    .main-nav .nav ul li > ul {
-        display: none !important;
-    }
-
-    .main-nav .nav ul li.open > ul {
-        display: block !important;
-        width: 300px;
-        height: auto;
-    }
-
-    .main-nav .nav .drop-menu-1 a {
+    .mobile-nav-list li.menu-item-open .drop-menu-1 {
         display: block;
     }
 
-    .main-nav .nav li a:hover {
-        background: none;
-        color: var(--primaryColor);
+    .mobile-nav-list .drop-menu-1 li {
+        border-bottom: none;
+        background-color: transparent;
     }
 
-    .main-nav .nav ul ul {
-        float: none;
-        position: static;
-        color: white;
+    .mobile-nav-list .drop-menu-1 li a {
+        padding: 12px 20px 12px 40px;
+        font-size: 13px;
+        color: #333;
     }
 
-    /* First Tier Dropdown*/
-    .main-nav .nav ul ul li {
-        display: block;
-        width: 100%;
-    }
-
-    .main-nav .nav ul ul ul li {
-        position: static;
-    }
-
-    .main-nav .nav li.drop-open > a:after,
-    .main-nav .nav li.has-submenu > a:after {
+    /* Submenu Toggle Icon */
+    .mobile-nav-list > li.has-submenu > a:after,
+    .mobile-nav-list > li.drop-open > a:after {
         content: "\e5cc";
         float: right;
-        margin-right: 20px;
-        font-size: 15px;
         font-family: "Material Icons";
+        font-size: 20px;
+        transition: transform 0.3s ease;
     }
 
-    .main-nav .nav li.open > a:after {
+    .mobile-nav-list > li.menu-item-open > a:after {
         content: "\e5ce";
     }
 
-    .drop-menu-1 li a:only-child:after {
-        content: " ";
+    /* Overlay */
+    .mobile-nav-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 99997;
     }
 
-    .responsive-menu > li:last-child {
-        margin-bottom: 100px !important;
-    }
-
-    .main-nav .nav ul li.drop-open.c-1:after {
-        display: none;
+    .mobile-nav-container.menu-open .mobile-nav-overlay {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
@@ -621,138 +549,135 @@ body.no-scroll {
 </style>
 
 <script>
+// NEW Mobile Navigation - Using Unique Class Names - No Conflicts
 (function() {
-    // Function to initialize mobile navigation
-    function initMobileNav() {
-        var navToggler = document.getElementById('nav-toggler');
-        var mainNav = document.getElementById('main-nav');
-        var overlay = document.querySelector('.main-nav .nav .overlay');
-        var body = document.body;
+    'use strict';
+    
+    var mobileToggle = null;
+    var mobileNav = null;
+    var mobileOverlay = null;
+    var isMenuOpen = false;
+    
+    function initMobileNavigation() {
+        // Get elements using new class names
+        mobileToggle = document.getElementById('mobile-menu-toggle');
+        mobileNav = document.getElementById('mobile-nav-menu');
+        mobileOverlay = document.querySelector('.mobile-nav-overlay');
         
-        if (!navToggler || !mainNav) {
-            console.log('Navigation elements not found');
-            return;
+        if (!mobileToggle || !mobileNav) {
+            console.log('Mobile navigation elements not found');
+            return false;
         }
         
-        // Toggle function
-        function toggleNav() {
-            navToggler.classList.toggle('close');
-            mainNav.classList.toggle('open');
-            if (overlay) {
-                overlay.classList.toggle('open');
-            }
+        // Toggle menu function
+        function toggleMobileMenu() {
+            isMenuOpen = !isMenuOpen;
             
-            if (mainNav.classList.contains('open')) {
-                body.classList.add('no-scroll');
+            if (isMenuOpen) {
+                // Open menu
+                mobileToggle.classList.add('menu-active');
+                mobileNav.classList.add('menu-open');
+                document.body.classList.add('mobile-menu-open');
             } else {
-                body.classList.remove('no-scroll');
+                // Close menu
+                mobileToggle.classList.remove('menu-active');
+                mobileNav.classList.remove('menu-open');
+                document.body.classList.remove('mobile-menu-open');
             }
         }
         
-        // Remove any existing event listeners and add new one
-        var newToggler = navToggler.cloneNode(true);
-        navToggler.parentNode.replaceChild(newToggler, navToggler);
-        navToggler = newToggler;
+        // Close menu function
+        function closeMobileMenu() {
+            if (isMenuOpen) {
+                isMenuOpen = false;
+                mobileToggle.classList.remove('menu-active');
+                mobileNav.classList.remove('menu-open');
+                document.body.classList.remove('mobile-menu-open');
+            }
+        }
         
-        // Add click event
-        navToggler.addEventListener('click', function(e) {
+        // Toggle button click
+        mobileToggle.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            toggleNav();
+            toggleMobileMenu();
         });
         
-        // Close on overlay click
-        if (overlay) {
-            overlay.addEventListener('click', function() {
-                if (window.innerWidth <= 991) {
-                    navToggler.classList.remove('close');
-                    mainNav.classList.remove('open');
-                    overlay.classList.remove('open');
-                    body.classList.remove('no-scroll');
-                }
+        // Overlay click to close
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMobileMenu();
             });
         }
         
         // Submenu toggle
-        var submenuLinks = document.querySelectorAll('.main-nav .nav .responsive-menu > li.has-submenu > a, .main-nav .nav .responsive-menu > li.drop-open > a');
+        var submenuLinks = mobileNav.querySelectorAll('.mobile-nav-list > li.has-submenu > a, .mobile-nav-list > li.drop-open > a');
         submenuLinks.forEach(function(link) {
             link.addEventListener('click', function(e) {
                 if (window.innerWidth <= 991) {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.parentElement.classList.toggle('open');
+                    var parentLi = this.parentElement;
+                    parentLi.classList.toggle('menu-item-open');
                 }
             });
         });
         
-        // Close when clicking outside
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close when clicking outside (but not on menu items)
         document.addEventListener('click', function(e) {
-            if (window.innerWidth <= 991) {
-                if (!e.target.closest('#nav-toggler') && 
-                    !e.target.closest('.main-nav') && 
-                    !e.target.closest('#main-nav')) {
-                    navToggler.classList.remove('close');
-                    mainNav.classList.remove('open');
-                    if (overlay) {
-                        overlay.classList.remove('open');
-                    }
-                    body.classList.remove('no-scroll');
+            if (isMenuOpen && window.innerWidth <= 991) {
+                if (!e.target.closest('#mobile-menu-toggle') && 
+                    !e.target.closest('#mobile-nav-menu') && 
+                    !e.target.closest('.mobile-nav-list')) {
+                    closeMobileMenu();
                 }
             }
         });
+        
+        return true;
     }
     
-    // Initialize with jQuery if available, otherwise use vanilla JS
-    if (typeof jQuery !== 'undefined') {
-        jQuery(document).ready(function($) {
-            // Sticky header functionality
-            var $headerBottom = $('.header-bottom.sticky-content');
-            if ($headerBottom.length) {
-                var headerOffset = $headerBottom.offset().top;
-                
-                function checkSticky() {
-                    if ($(window).scrollTop() > headerOffset) {
-                        $headerBottom.addClass('fixed');
-                    } else {
-                        $headerBottom.removeClass('fixed');
+    // Initialize when DOM is ready
+    function init() {
+        // Sticky header functionality (keep existing)
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).ready(function($) {
+                var $headerBottom = $('.header-bottom.sticky-content');
+                if ($headerBottom.length) {
+                    var headerOffset = $headerBottom.offset().top;
+                    
+                    function checkSticky() {
+                        if ($(window).scrollTop() > headerOffset) {
+                            $headerBottom.addClass('fixed');
+                        } else {
+                            $headerBottom.removeClass('fixed');
+                        }
                     }
-                }
-                
-                $(window).on('scroll', checkSticky);
-                checkSticky();
-            }
-            
-            // Initialize mobile nav
-            initMobileNav();
-            
-            // Also add jQuery version as backup
-            $('#nav-toggler').off('click.navToggle').on('click.navToggle', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var $toggler = $(this);
-                var $nav = $('#main-nav');
-                var $overlay = $('.main-nav .nav .overlay');
-                
-                $toggler.toggleClass('close');
-                $nav.toggleClass('open');
-                if ($overlay.length) {
-                    $overlay.toggleClass('open');
-                }
-                
-                if ($nav.hasClass('open')) {
-                    $('body').addClass('no-scroll');
-                } else {
-                    $('body').removeClass('no-scroll');
+                    
+                    $(window).on('scroll', checkSticky);
+                    checkSticky();
                 }
             });
-        });
-    } else {
-        // Fallback: Use vanilla JS
+        }
+        
+        // Initialize mobile navigation
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMobileNav);
+            document.addEventListener('DOMContentLoaded', initMobileNavigation);
         } else {
-            initMobileNav();
+            initMobileNavigation();
         }
     }
+    
+    // Start initialization
+    init();
 })();
 </script>
