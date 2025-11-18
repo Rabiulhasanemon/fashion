@@ -30,23 +30,27 @@
                             <?php 
                             // Check if we have additional images
                             $has_additional_images = (isset($images) && is_array($images) && count($images) > 0);
-                            $show_thumbnails = ($thumb && $has_additional_images) || ($has_additional_images && count($images) > 0);
+                            $has_thumb = (isset($thumb) && $thumb);
+                            $show_thumbnails = $has_thumb || $has_additional_images;
                             ?>
                             
-                            <!-- Thumbnails on the left - only show if we have multiple images -->
+                            <!-- Thumbnails on the left - show if we have images -->
                             <?php if ($show_thumbnails) { ?>
                             <div class="product-thumbnails-left">
-                                <?php if ($thumb) { ?>
+                                <?php if ($has_thumb) { ?>
                                 <a class="thumbnail-item active" href="javascript:void(0);" data-image="<?php echo $thumb; ?>" data-popup="<?php echo isset($popup) ? $popup : $thumb; ?>" title="<?php echo $heading_title; ?>">
                                     <img class="thumb-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                 </a>
                                 <?php } ?>
+                                
                                 <?php if ($has_additional_images) { ?>
                                 <?php foreach ($images as $image) { ?>
-                                <a class="thumbnail-item" href="javascript:void(0);" data-image="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>" data-popup="<?php echo isset($image['popup']) ? $image['popup'] : ''; ?>" title="<?php echo $heading_title; ?>">
-                                    <img class="thumb-image" src="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                <?php if (isset($image['thumb']) && $image['thumb']) { ?>
+                                <a class="thumbnail-item" href="javascript:void(0);" data-image="<?php echo $image['thumb']; ?>" data-popup="<?php echo isset($image['popup']) ? $image['popup'] : $image['thumb']; ?>" title="<?php echo $heading_title; ?>">
+                                    <img class="thumb-image" src="<?php echo $image['thumb']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                 </a>
-                                <meta itemprop="image" content="<?php echo isset($image['thumb']) ? $image['thumb'] : ''; ?>"/>
+                                <meta itemprop="image" content="<?php echo $image['thumb']; ?>"/>
+                                <?php } ?>
                                 <?php } ?>
                                 <?php } ?>
                             </div>
@@ -54,24 +58,42 @@
                             
                             <!-- Main image - ALWAYS SHOW -->
                             <div class="product-main-image">
-                                <?php if (isset($thumb) && $thumb) { ?>
                                 <div class="featured-image">
-                                    <a class="thumbnail" href="<?php echo isset($popup) ? $popup : $thumb; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" id="main-image-link">
-                                        <img class="main-image main-img" id="main-product-image" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
+                                    <?php 
+                                    // Always show main image - use thumb if available, otherwise use first additional image, or placeholder
+                                    $main_image_src = '';
+                                    $main_image_popup = '';
+                                    
+                                    if ($has_thumb) {
+                                        $main_image_src = $thumb;
+                                        $main_image_popup = isset($popup) ? $popup : $thumb;
+                                    } elseif ($has_additional_images && isset($images[0]['thumb']) && $images[0]['thumb']) {
+                                        $main_image_src = $images[0]['thumb'];
+                                        $main_image_popup = isset($images[0]['popup']) ? $images[0]['popup'] : $images[0]['thumb'];
+                                    } else {
+                                        // Use placeholder - check if model_tool_image is available
+                                        if (isset($this->model_tool_image)) {
+                                            $main_image_src = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+                                            $main_image_popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
+                                        } else {
+                                            $main_image_src = 'image/placeholder.png';
+                                            $main_image_popup = 'image/placeholder.png';
+                                        }
+                                    }
+                                    ?>
+                                    <a class="thumbnail" href="<?php echo $main_image_popup; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" id="main-image-link">
+                                        <img class="main-image main-img" id="main-product-image" src="<?php echo $main_image_src; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
                                     </a>
-                                    <meta itemprop="image" content="<?php echo $thumb; ?>"/>
+                                    <meta itemprop="image" content="<?php echo $main_image_src; ?>"/>
+                                    
                                     <?php if ($has_additional_images) { ?>
                                     <?php foreach ($images as $image) { ?>
-                                    <a class="thumbnail" href="<?php echo isset($image['popup']) ? $image['popup'] : ''; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" style="display: none;"></a>
+                                    <?php if (isset($image['popup']) && $image['popup']) { ?>
+                                    <a class="thumbnail" href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" data-fancybox="product-gallery" style="display: none;"></a>
+                                    <?php } ?>
                                     <?php } ?>
                                     <?php } ?>
                                 </div>
-                                <?php } else { ?>
-                                <!-- Fallback if no thumb -->
-                                <div class="featured-image">
-                                    <img class="main-image main-img" src="image/placeholder.png" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" />
-                                </div>
-                                <?php } ?>
                             </div>
                         </div>
                     </div>
