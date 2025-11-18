@@ -439,15 +439,15 @@ if (!$has_categories) {
         display: block !important;
     }
     
-    /* Mobile Menu List */
+    /* Mobile Menu List - ALWAYS VISIBLE FOR DEBUGGING */
     .new-mobile-list {
         width: 300px;
         max-width: 80vw;
-        position: fixed;
-        left: -300px;
-        top: 0;
-        height: 100vh;
-        max-height: 100vh;
+        position: fixed !important;
+        left: 0 !important; /* CHANGED: Always visible, not hidden */
+        top: 0 !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
         overflow-y: auto;
         overflow-x: hidden;
         background: #ffffff !important;
@@ -599,9 +599,35 @@ body.mobile-menu-open {
 </style>
 
 <script>
+// IMMEDIATE DEBUG CHECK
+console.log('=== NAVIGATION SCRIPT LOADED ===');
+console.log('Document ready state:', document.readyState);
+
+// Check immediately if elements exist
+setTimeout(function() {
+    var testToggle = document.getElementById('new-mobile-toggle');
+    var testMenu = document.getElementById('new-mobile-menu');
+    var testList = document.querySelector('.new-mobile-list');
+    
+    console.log('=== IMMEDIATE ELEMENT CHECK ===');
+    console.log('Toggle button exists:', !!testToggle);
+    console.log('Mobile menu exists:', !!testMenu);
+    console.log('Menu list exists:', !!testList);
+    
+    if (testList) {
+        console.log('Menu list left position:', window.getComputedStyle(testList).left);
+        console.log('Menu list display:', window.getComputedStyle(testList).display);
+        console.log('Menu list visibility:', window.getComputedStyle(testList).visibility);
+        console.log('Menu list items count:', testList.querySelectorAll('li').length);
+    }
+    console.log('=== END IMMEDIATE CHECK ===');
+}, 500);
+
 // New Mobile Navigation - Completely Fresh Implementation
 (function() {
     'use strict';
+    
+    console.log('=== INITIALIZING MOBILE NAVIGATION ===');
     
     var mobileToggle = null;
     var mobileMenu = null;
@@ -609,12 +635,22 @@ body.mobile-menu-open {
     var isMenuOpen = false;
     
     function initMobileNavigation() {
+        console.log('initMobileNavigation() called');
+        
         mobileToggle = document.getElementById('new-mobile-toggle');
         mobileMenu = document.getElementById('new-mobile-menu');
         mobileOverlay = document.querySelector('.new-mobile-overlay');
         
+        console.log('Elements found:', {
+            toggle: !!mobileToggle,
+            menu: !!mobileMenu,
+            overlay: !!mobileOverlay
+        });
+        
         if (!mobileToggle || !mobileMenu) {
-            console.log('Mobile navigation elements not found');
+            console.error('ERROR: Mobile navigation elements not found!');
+            console.error('Toggle:', mobileToggle);
+            console.error('Menu:', mobileMenu);
             return false;
         }
         
@@ -759,15 +795,37 @@ body.mobile-menu-open {
     
     // Initialize everything
     function init() {
+        console.log('init() called');
         initStickyHeader();
         
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMobileNavigation);
+            console.log('Document still loading, waiting for DOMContentLoaded');
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOMContentLoaded fired');
+                initMobileNavigation();
+            });
         } else {
+            console.log('Document already loaded, initializing immediately');
             initMobileNavigation();
         }
     }
     
-    init();
+    // Try multiple initialization methods
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        // Document already loaded
+        setTimeout(init, 100);
+    }
+    
+    // Also try jQuery ready if available
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).ready(function() {
+            console.log('jQuery ready fired');
+            setTimeout(init, 200);
+        });
+    }
+    
+    console.log('=== NAVIGATION SCRIPT END ===');
 })();
 </script>
