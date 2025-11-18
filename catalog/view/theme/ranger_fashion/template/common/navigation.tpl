@@ -60,7 +60,14 @@ if (!$has_categories) {
                             <!-- Mobile Navigation Menu -->
                             <div id="new-mobile-menu" class="new-mobile-menu">
                                 <div class="new-mobile-overlay"></div>
-                                <ul class="new-mobile-list">
+                                <ul class="new-mobile-list" style="background: #fff !important; position: fixed !important; z-index: 99999 !important;">
+                                    <!-- ALWAYS VISIBLE TEST ITEM -->
+                                    <li class="mobile-menu-item" style="display: block !important; visibility: visible !important; opacity: 1 !important; background: #ff0000 !important; color: #fff !important; padding: 20px !important; border: 3px solid #000 !important;">
+                                        <a href="#" class="mobile-menu-link" style="color: #fff !important; font-weight: bold !important; font-size: 18px !important;">
+                                            🔴 TEST ITEM - IF YOU SEE THIS, MENU IS WORKING
+                                        </a>
+                                    </li>
+                                    
                                     <?php 
                                     // Debug: Check categories
                                     $cat_count = isset($categories) && is_array($categories) ? count($categories) : 0;
@@ -74,8 +81,8 @@ if (!$has_categories) {
                                     <?php if ($has_categories && $cat_count > 0) { ?>
                                         <?php foreach ($categories as $category) { ?>
                                             <?php if (isset($category['name']) && !empty($category['name'])) { ?>
-                                            <li class="mobile-menu-item <?php echo !empty($category['children']) ? 'has-submenu' : ''; ?>">
-                                                <a href="<?php echo isset($category['href']) ? $category['href'] : '#'; ?>" class="mobile-menu-link">
+                                            <li class="mobile-menu-item <?php echo !empty($category['children']) ? 'has-submenu' : ''; ?>" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                                <a href="<?php echo isset($category['href']) ? $category['href'] : '#'; ?>" class="mobile-menu-link" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
                                                     <?php echo htmlspecialchars($category['name']); ?>
                                                     <?php if (!empty($category['children'])) { ?>
                                                         <span class="submenu-toggle">+</span>
@@ -100,19 +107,19 @@ if (!$has_categories) {
                                     <?php } ?>
                                     
                                     <?php if ($show_test_item) { ?>
-                                        <li class="mobile-menu-item" style="background: #fff3cd; border: 2px solid #ffc107;">
-                                            <a href="#" class="mobile-menu-link" style="color: #856404 !important; font-weight: bold;">
+                                        <li class="mobile-menu-item" style="display: block !important; visibility: visible !important; opacity: 1 !important; background: #fff3cd; border: 2px solid #ffc107;">
+                                            <a href="#" class="mobile-menu-link" style="color: #856404 !important; font-weight: bold; display: flex !important;">
                                                 DEBUG: Categories Count = <?php echo $cat_count; ?> | Has Categories = <?php echo $has_categories ? 'YES' : 'NO'; ?>
                                             </a>
                                         </li>
-                                        <li class="mobile-menu-item">
-                                            <a href="#" class="mobile-menu-link">Test Item 1</a>
+                                        <li class="mobile-menu-item" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                            <a href="#" class="mobile-menu-link" style="display: flex !important;">Test Item 1</a>
                                         </li>
-                                        <li class="mobile-menu-item">
-                                            <a href="#" class="mobile-menu-link">Test Item 2</a>
+                                        <li class="mobile-menu-item" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                            <a href="#" class="mobile-menu-link" style="display: flex !important;">Test Item 2</a>
                                         </li>
-                                        <li class="mobile-menu-item">
-                                            <a href="#" class="mobile-menu-link">Test Item 3</a>
+                                        <li class="mobile-menu-item" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                            <a href="#" class="mobile-menu-link" style="display: flex !important;">Test Item 3</a>
                                         </li>
                                     <?php } ?>
                                 </ul>
@@ -347,6 +354,14 @@ if (!$has_categories) {
     display: none;
 }
 
+/* Ensure mobile menu is never hidden by default styles */
+.new-mobile-menu,
+.new-mobile-list,
+.new-mobile-list li,
+.new-mobile-list a {
+    box-sizing: border-box;
+}
+
 /* Mobile Styles */
 @media only screen and (max-width: 991.98px) {
     /* Hide desktop menu on mobile */
@@ -402,60 +417,70 @@ if (!$has_categories) {
     
     /* Mobile Menu Container */
     .new-mobile-menu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100vh !important;
         visibility: hidden;
         opacity: 0;
         transition: visibility 0.3s, opacity 0.3s;
-        z-index: 99998;
+        z-index: 99998 !important;
         display: block !important;
         pointer-events: none;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .new-mobile-menu.open {
         visibility: visible !important;
         opacity: 1 !important;
-        pointer-events: auto;
+        pointer-events: auto !important;
+        display: block !important;
     }
     
     /* Mobile Menu List */
     .new-mobile-list {
         width: 300px;
+        max-width: 80vw;
         position: fixed;
         left: -300px;
         top: 0;
         height: 100vh;
+        max-height: 100vh;
         overflow-y: auto;
         overflow-x: hidden;
-        background: #ffffff;
-        margin: 0;
-        padding: 20px 0 0 0;
-        list-style: none;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 20px 0 0 0 !important;
+        list-style: none !important;
         transition: left 0.3s ease;
-        z-index: 99999;
+        z-index: 99999 !important;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        transform: none !important;
     }
     
     .new-mobile-menu.open .new-mobile-list {
-        left: 0;
+        left: 0 !important;
         visibility: visible !important;
         opacity: 1 !important;
+        display: block !important;
     }
     
     /* Mobile Menu Items */
     .new-mobile-list .mobile-menu-item {
         display: block !important;
-        width: 100%;
+        width: 100% !important;
         border-bottom: 1px solid #e8e8e8;
-        margin: 0;
+        margin: 0 !important;
+        padding: 0 !important;
         visibility: visible !important;
         opacity: 1 !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
     
     .new-mobile-list .mobile-menu-item:last-child {
@@ -596,16 +621,30 @@ body.mobile-menu-open {
         console.log('New mobile navigation initialized successfully');
         
         // Debug: Check if menu items exist
-        var menuItems = mobileMenu.querySelectorAll('.mobile-menu-item');
-        console.log('Mobile menu items found: ' + menuItems.length);
-        
-        if (menuItems.length === 0) {
-            console.warn('WARNING: No mobile menu items found!');
-        } else {
-            menuItems.forEach(function(item, index) {
-                console.log('Menu item ' + index + ':', item.textContent.trim());
-            });
-        }
+        setTimeout(function() {
+            var menuItems = mobileMenu.querySelectorAll('.mobile-menu-item');
+            var menuList = mobileMenu.querySelector('.new-mobile-list');
+            
+            console.log('=== MOBILE MENU DEBUG ===');
+            console.log('Mobile menu element:', mobileMenu);
+            console.log('Menu list element:', menuList);
+            console.log('Menu items found: ' + menuItems.length);
+            console.log('Menu list computed left:', menuList ? window.getComputedStyle(menuList).left : 'N/A');
+            console.log('Menu list display:', menuList ? window.getComputedStyle(menuList).display : 'N/A');
+            console.log('Menu list visibility:', menuList ? window.getComputedStyle(menuList).visibility : 'N/A');
+            
+            if (menuItems.length === 0) {
+                console.warn('WARNING: No mobile menu items found!');
+                console.warn('Menu list HTML:', menuList ? menuList.innerHTML.substring(0, 200) : 'No list found');
+            } else {
+                menuItems.forEach(function(item, index) {
+                    console.log('Menu item ' + index + ':', item.textContent.trim().substring(0, 50));
+                    console.log('  - Display:', window.getComputedStyle(item).display);
+                    console.log('  - Visibility:', window.getComputedStyle(item).visibility);
+                });
+            }
+            console.log('=== END DEBUG ===');
+        }, 100);
         
         // Toggle menu function
         function toggleMobileMenu() {
