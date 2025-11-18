@@ -81,6 +81,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    position: relative;
 }
 
 .header-bottom .header-left {
@@ -344,16 +345,18 @@ body.no-scroll {
 /* Responsive - Mobile Navigation */
 @media only screen and (max-width: 991.98px) {
     #nav-toggler {
-        width: 22px;
-        height: 15px;
+        width: 30px;
+        height: 30px;
         background: rgba(255, 255, 255, 0);
-        position: absolute;
-        top: 35px;
-        left: 0;
-        transform: translateY(-50%);
-        display: block;
+        position: relative;
+        display: block !important;
         cursor: pointer;
         z-index: 10002;
+        pointer-events: auto;
+        -webkit-tap-highlight-color: transparent;
+        padding: 5px;
+        margin-right: 10px;
+        flex-shrink: 0;
     }
 
     #nav-toggler span:after,
@@ -618,78 +621,138 @@ body.no-scroll {
 </style>
 
 <script>
-jQuery(document).ready(function($) {
-    // Sticky header functionality
-    var $headerBottom = $('.header-bottom.sticky-content');
-    if ($headerBottom.length) {
-        var headerOffset = $headerBottom.offset().top;
+(function() {
+    // Function to initialize mobile navigation
+    function initMobileNav() {
+        var navToggler = document.getElementById('nav-toggler');
+        var mainNav = document.getElementById('main-nav');
+        var overlay = document.querySelector('.main-nav .nav .overlay');
+        var body = document.body;
         
-        function checkSticky() {
-            if ($(window).scrollTop() > headerOffset) {
-                $headerBottom.addClass('fixed');
+        if (!navToggler || !mainNav) {
+            console.log('Navigation elements not found');
+            return;
+        }
+        
+        // Toggle function
+        function toggleNav() {
+            navToggler.classList.toggle('close');
+            mainNav.classList.toggle('open');
+            if (overlay) {
+                overlay.classList.toggle('open');
+            }
+            
+            if (mainNav.classList.contains('open')) {
+                body.classList.add('no-scroll');
             } else {
-                $headerBottom.removeClass('fixed');
+                body.classList.remove('no-scroll');
             }
         }
         
-        $(window).on('scroll', checkSticky);
-        checkSticky();
-    }
-    
-    // Mobile navigation toggle - Match the provided mobile nav behavior
-    $('#nav-toggler').off('click').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $toggler = $(this);
-        var $nav = $('#main-nav');
-        var $overlay = $('.main-nav .nav .overlay');
+        // Remove any existing event listeners and add new one
+        var newToggler = navToggler.cloneNode(true);
+        navToggler.parentNode.replaceChild(newToggler, navToggler);
+        navToggler = newToggler;
         
-        // Toggle classes
-        $toggler.toggleClass('close');
-        $nav.toggleClass('open');
-        $overlay.toggleClass('open');
-        
-        // Toggle body scroll
-        if ($nav.hasClass('open')) {
-            $('body').addClass('no-scroll');
-        } else {
-            $('body').removeClass('no-scroll');
-        }
-    });
-    
-    // Mobile submenu toggle - Use 'open' class for submenus
-    $(document).on('click', '.main-nav .nav .responsive-menu > li.has-submenu > a, .main-nav .nav .responsive-menu > li.drop-open > a', function(e) {
-        if ($(window).width() <= 991) {
+        // Add click event
+        navToggler.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            $(this).parent().toggleClass('open');
+            toggleNav();
+        });
+        
+        // Close on overlay click
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                if (window.innerWidth <= 991) {
+                    navToggler.classList.remove('close');
+                    mainNav.classList.remove('open');
+                    overlay.classList.remove('open');
+                    body.classList.remove('no-scroll');
+                }
+            });
         }
-    });
-    
-    // Close menu when clicking on overlay
-    $('.main-nav .nav .overlay').on('click', function() {
-        if ($(window).width() <= 991) {
-            $('#nav-toggler').removeClass('close');
-            $('#main-nav').removeClass('open');
-            $(this).removeClass('open');
-            $('body').removeClass('no-scroll');
-        }
-    });
-    
-    // Close menu when clicking outside (but not on nav items)
-    $(document).on('click', function(e) {
-        if ($(window).width() <= 991) {
-            var $target = $(e.target);
-            // Don't close if clicking on nav-toggler, nav, or menu items
-            if (!$target.closest('#nav-toggler').length && 
-                !$target.closest('.main-nav').length && 
-                !$target.closest('#main-nav').length) {
-                $('#nav-toggler').removeClass('close');
-                $('#main-nav').removeClass('open');
-                $('.main-nav .nav .overlay').removeClass('open');
-                $('body').removeClass('no-scroll');
+        
+        // Submenu toggle
+        var submenuLinks = document.querySelectorAll('.main-nav .nav .responsive-menu > li.has-submenu > a, .main-nav .nav .responsive-menu > li.drop-open > a');
+        submenuLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 991) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.parentElement.classList.toggle('open');
+                }
+            });
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 991) {
+                if (!e.target.closest('#nav-toggler') && 
+                    !e.target.closest('.main-nav') && 
+                    !e.target.closest('#main-nav')) {
+                    navToggler.classList.remove('close');
+                    mainNav.classList.remove('open');
+                    if (overlay) {
+                        overlay.classList.remove('open');
+                    }
+                    body.classList.remove('no-scroll');
+                }
             }
+        });
+    }
+    
+    // Initialize with jQuery if available, otherwise use vanilla JS
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).ready(function($) {
+            // Sticky header functionality
+            var $headerBottom = $('.header-bottom.sticky-content');
+            if ($headerBottom.length) {
+                var headerOffset = $headerBottom.offset().top;
+                
+                function checkSticky() {
+                    if ($(window).scrollTop() > headerOffset) {
+                        $headerBottom.addClass('fixed');
+                    } else {
+                        $headerBottom.removeClass('fixed');
+                    }
+                }
+                
+                $(window).on('scroll', checkSticky);
+                checkSticky();
+            }
+            
+            // Initialize mobile nav
+            initMobileNav();
+            
+            // Also add jQuery version as backup
+            $('#nav-toggler').off('click.navToggle').on('click.navToggle', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $toggler = $(this);
+                var $nav = $('#main-nav');
+                var $overlay = $('.main-nav .nav .overlay');
+                
+                $toggler.toggleClass('close');
+                $nav.toggleClass('open');
+                if ($overlay.length) {
+                    $overlay.toggleClass('open');
+                }
+                
+                if ($nav.hasClass('open')) {
+                    $('body').addClass('no-scroll');
+                } else {
+                    $('body').removeClass('no-scroll');
+                }
+            });
+        });
+    } else {
+        // Fallback: Use vanilla JS
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileNav);
+        } else {
+            initMobileNav();
         }
-    });
-});
+    }
+})();
 </script>
