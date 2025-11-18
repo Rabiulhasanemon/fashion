@@ -5,7 +5,7 @@
             <div class="inner-wrap">
                 <div id="nav-toggler" class="nav-toggler"><span></span><span></span><span></span></div>
                 <div class="header-left">
-                    <nav class="main-nav ml-0">
+                    <nav id="main-nav" class="main-nav ml-0">
                         <ul class="menu">
                             <?php foreach ($categories as $category) { ?>
                             <?php if (isset($category['children']) && !empty($category['children'])) { ?>
@@ -390,8 +390,9 @@
         transition: max-height 0.3s ease-out;
     }
     
-    .header-bottom .main-nav.active {
-        display: block;
+    .header-bottom .main-nav.active,
+    #main-nav.active {
+        display: block !important;
         max-height: 1000px;
         padding: 15px 0;
     }
@@ -495,40 +496,73 @@
 jQuery(document).ready(function($) {
     // Sticky header functionality
     var $headerBottom = $('.header-bottom.sticky-content');
-    var headerOffset = $headerBottom.offset().top;
-    
-    function checkSticky() {
-        if ($(window).scrollTop() > headerOffset) {
-            $headerBottom.addClass('fixed');
-        } else {
-            $headerBottom.removeClass('fixed');
+    if ($headerBottom.length) {
+        var headerOffset = $headerBottom.offset().top;
+        
+        function checkSticky() {
+            if ($(window).scrollTop() > headerOffset) {
+                $headerBottom.addClass('fixed');
+            } else {
+                $headerBottom.removeClass('fixed');
+            }
         }
+        
+        $(window).on('scroll', checkSticky);
+        checkSticky();
     }
     
-    $(window).on('scroll', checkSticky);
-    checkSticky();
-    
-    // Mobile navigation toggle
-    $('#nav-toggler').on('click', function() {
-        $(this).toggleClass('active');
-        $('.header-bottom .main-nav').toggleClass('active');
+    // Mobile navigation toggle - Fix for nav-toggler
+    // Use off() first to remove any existing handlers, then add our handler
+    $('#nav-toggler').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $toggler = $(this);
+        var $nav = $('#main-nav, .header-bottom .main-nav');
+        
+        $toggler.toggleClass('active');
+        $nav.toggleClass('active');
+        
+        // Also handle overlay if it exists
+        if ($('.overlay').length) {
+            if ($toggler.hasClass('active')) {
+                $('.overlay').addClass('open');
+                $('body').addClass('no-scroll');
+            } else {
+                $('.overlay').removeClass('open');
+                $('body').removeClass('no-scroll');
+            }
+        }
     });
     
     // Mobile submenu toggle
     $('.header-bottom .menu > li.has-submenu > a').on('click', function(e) {
         if ($(window).width() <= 991) {
             e.preventDefault();
+            e.stopPropagation();
             $(this).parent().toggleClass('show');
         }
     });
     
-    // Close menu when clicking outside
+    // Close menu when clicking outside or on overlay
     $(document).on('click', function(e) {
         if ($(window).width() <= 991) {
-            if (!$(e.target).closest('.header-bottom').length) {
+            var $target = $(e.target);
+            if (!$target.closest('.header-bottom').length && !$target.is('#nav-toggler') && !$target.closest('#nav-toggler').length) {
                 $('#nav-toggler').removeClass('active');
-                $('.header-bottom .main-nav').removeClass('active');
+                $('#main-nav, .header-bottom .main-nav').removeClass('active');
+                $('.overlay').removeClass('open');
+                $('body').removeClass('no-scroll');
             }
+        }
+    });
+    
+    // Close menu when clicking on overlay
+    $('.overlay').on('click', function() {
+        if ($(window).width() <= 991) {
+            $('#nav-toggler').removeClass('active');
+            $('#main-nav, .header-bottom .main-nav').removeClass('active');
+            $(this).removeClass('open');
+            $('body').removeClass('no-scroll');
         }
     });
 });
