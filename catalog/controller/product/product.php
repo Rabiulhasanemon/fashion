@@ -371,19 +371,24 @@ class ControllerProductProduct extends Controller
             $compatible_results = $this->model_catalog_product->getProductCompatible($this->request->get['product_id'], (float)$product_info['price']);
 
             foreach ($compatible_results as $result) {
+                // Skip if product data is invalid
+                if (!$result || !is_array($result) || !isset($result['product_id'])) {
+                    continue;
+                }
+                
                 if ($result['image']) {
                     $image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
                 } else {
                     $image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
                 }
-                if ($result['featured_image']) {
+                if (isset($result['featured_image']) && $result['featured_image']) {
                     $featured_image = $this->model_tool_image->resize($result['featured_image'], $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
                 } else {
                     $featured_image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_related_width'), $this->config->get('config_image_related_height'));
                 }
 
                 $disablePurchase = false;
-                if ($result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
+                if (isset($result['quantity']) && $result['quantity'] <= 0 && isset($result['stock_status']) && $result['stock_status'] != "In Stock") {
                     $disablePurchase = true;
                 }
 
@@ -393,14 +398,14 @@ class ControllerProductProduct extends Controller
                     $price = false;
                 }
 
-                if ((float)$result['special']) {
+                if (isset($result['special']) && (float)$result['special']) {
                     $special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
                 } else {
                     $special = false;
                 }
 
                 if ($this->config->get('config_tax')) {
-                    $tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+                    $tax = $this->currency->format((float)(isset($result['special']) && $result['special'] ? $result['special'] : $result['price']));
                 } else {
                     $tax = false;
                 }
@@ -409,16 +414,16 @@ class ControllerProductProduct extends Controller
                     'product_id'  => $result['product_id'],
                     'thumb'       => $image,
                     'featured_image'       => $featured_image,
-                    'name'        => $result['name'],
-                    'sub_name'        => $result['sub_name'],
-                    'short_description' => $result['short_description'],
+                    'name'        => isset($result['name']) ? $result['name'] : '',
+                    'sub_name'        => isset($result['sub_name']) ? $result['sub_name'] : '',
+                    'short_description' => isset($result['short_description']) ? (is_array($result['short_description']) ? implode(' ', $result['short_description']) : $result['short_description']) : '',
                     'price'       => $price,
                     'disablePurchase' => $disablePurchase,
-                    'stock_status' => $result['stock_status'],
+                    'stock_status' => isset($result['stock_status']) ? $result['stock_status'] : '',
                     'special'     => $special,
                     'tax'         => $tax,
-                    'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
-                    'rating'      => $result['rating'],
+                    'minimum'     => isset($result['minimum']) && $result['minimum'] > 0 ? $result['minimum'] : 1,
+                    'rating'      => isset($result['rating']) ? $result['rating'] : 0,
                     'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
                 );
             }
