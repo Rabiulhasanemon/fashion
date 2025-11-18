@@ -1,48 +1,10 @@
-# Configuration files with sensitive data
-# NOTE: config.php and admin/config.php are now tracked in Git
-# Be aware that production credentials will be visible in the repository
-# config.php
-# admin/config.php
-
-# Environment files
-.env
-.env.local
-.env.production
-
-# Logs
-system/logs/*.log
-error_log
-*.log
-deploy.log
-
-# Cache
+# Cache files (but keep directories)
 system/cache/*
-!system/cache/.htaccess
-!system/cache/index.html
+!system/cache/.gitkeep
+!system/cache/html/
+system/cache/html/*
+!system/cache/html/.gitkeep
 
-# Temporary files
-*.tmp
-*.temp
-.DS_Store
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Desktop.ini
-
-# Uploads (optional - uncomment if you don't want to track uploads)
-# system/upload/*
-# image/*
-
+# Keep cache directories but ignore cache files
+*.cache
+cache.*
