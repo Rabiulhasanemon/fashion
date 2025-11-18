@@ -130,17 +130,16 @@ class ControllerCommonHeader extends Controller {
 
 
 		// Menu
-		$navigation = $this->cacheManger->getCache("html", "main_nav");
-		if($navigation) {
-			$data['navigation'] = $navigation;
-		} else {
-			$navViewData['text_category'] = $this->language->get('text_category');
-			$navViewData['text_all'] = $this->language->get('text_all');
-			$navViewData['domain'] = $this->config->get('config_url');
-            $navViewData['item_count'] = $data['item_count'];
-			$navViewData['categories'] = array();
-            $navViewData['logo'] = $data['logo'];
-            $navViewData['name'] = $this->config->get('config_name');
+		// Always regenerate navigation to ensure categories are fresh (cache cleared)
+		$this->cacheManger->deleteCache("html", "main_nav");
+		
+		$navViewData['text_category'] = $this->language->get('text_category');
+		$navViewData['text_all'] = $this->language->get('text_all');
+		$navViewData['domain'] = $this->config->get('config_url');
+        $navViewData['item_count'] = $data['item_count'];
+		$navViewData['categories'] = array();
+        $navViewData['logo'] = $data['logo'];
+        $navViewData['name'] = $this->config->get('config_name');
 
             $navViewData['navigations'] = array();
 
@@ -360,12 +359,9 @@ class ControllerCommonHeader extends Controller {
                 }
             }
 
-
-
-			$navigation = $this->load->view($this->config->get('config_template') . '/template/common/navigation.tpl', $navViewData);
-			$this->cacheManger->setCache("html", "main_nav", $navigation);
-			$data['navigation']  = $navigation;
-		}
+		$navigation = $this->load->view($this->config->get('config_template') . '/template/common/navigation.tpl', $navViewData);
+		$this->cacheManger->setCache("html", "main_nav", $navigation);
+		$data['navigation'] = $navigation;
 
 		$data['language'] = $this->load->controller('common/language');
 		$data['currency'] = $this->load->controller('common/currency');
