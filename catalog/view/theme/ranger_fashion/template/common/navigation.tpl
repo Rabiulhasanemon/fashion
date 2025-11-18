@@ -650,14 +650,38 @@ body.mobile-menu-open {
         function toggleMobileMenu() {
             isMenuOpen = !isMenuOpen;
             
+            console.log('Toggle menu called. isMenuOpen:', isMenuOpen);
+            console.log('Mobile menu element:', mobileMenu);
+            console.log('Mobile toggle element:', mobileToggle);
+            
             if (isMenuOpen) {
                 mobileToggle.classList.add('active');
                 mobileMenu.classList.add('open');
                 document.body.classList.add('mobile-menu-open');
+                
+                // Force menu list to be visible
+                var menuList = mobileMenu.querySelector('.new-mobile-list');
+                if (menuList) {
+                    menuList.style.left = '0px';
+                    menuList.style.visibility = 'visible';
+                    menuList.style.opacity = '1';
+                    menuList.style.display = 'block';
+                    console.log('Menu list forced to visible. Left:', menuList.style.left);
+                }
+                
+                console.log('Menu opened. Classes:', mobileMenu.className);
             } else {
                 mobileToggle.classList.remove('active');
                 mobileMenu.classList.remove('open');
                 document.body.classList.remove('mobile-menu-open');
+                
+                // Reset menu list position
+                var menuList = mobileMenu.querySelector('.new-mobile-list');
+                if (menuList) {
+                    menuList.style.left = '-300px';
+                }
+                
+                console.log('Menu closed. Classes:', mobileMenu.className);
             }
         }
         
