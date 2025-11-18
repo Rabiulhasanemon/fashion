@@ -1,44 +1,99 @@
-<?php if (isset($categories) && $categories) { ?>
+<?php
+// Debug: Check if categories exist
+$has_categories = isset($categories) && is_array($categories) && count($categories) > 0;
+
+// Debug output (remove in production)
+if (!$has_categories) {
+    // Check what variables are available
+    $debug_vars = get_defined_vars();
+    $available_keys = array_keys($debug_vars);
+    // Uncomment below to see what's available:
+    // echo "<!-- DEBUG: Available vars: " . implode(', ', $available_keys) . " -->";
+    // echo "<!-- DEBUG: Categories count: " . (isset($categories) ? count($categories) : 'NOT SET') . " -->";
+}
+?>
 <div class="sticky-content-wrapper">
     <div class="header-bottom sticky-content fix-top sticky-header has-dropdown">
         <div class="container">
             <div class="inner-wrap">
-                <div id="mobile-menu-toggle" class="mobile-menu-toggle-btn"><span></span><span></span><span></span></div>
+                <!-- Mobile Menu Toggle Button -->
+                <div id="new-mobile-toggle" class="new-mobile-toggle-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
                 <div class="header-left">
                     <div class="header-menu">
                         <div class="main-nav">
-                            <nav id="mobile-nav-menu" class="mobile-nav-container">
-                                <ul class="mobile-nav-list">
-                            <?php foreach ($categories as $category) { ?>
-                            <?php if (isset($category['children']) && !empty($category['children'])) { ?>
-                            <li class="has-submenu drop-open c-1">
-                                <a href="<?php echo $category['href']; ?>">
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </a>
-                                <ul class="drop-down drop-menu-1">
-                                    <?php foreach ($category['children'] as $child) { ?>
-                                    <li>
-                                        <a href="<?php echo $child['href']; ?>">
-                                            <?php echo htmlspecialchars($child['name']); ?>
-                                        </a>
+                            <!-- Desktop Navigation Menu -->
+                            <ul class="desktop-menu">
+                                <?php if ($has_categories) { ?>
+                                    <?php foreach ($categories as $category) { ?>
+                                        <li class="menu-item <?php echo !empty($category['children']) ? 'has-children' : ''; ?>">
+                                            <a href="<?php echo $category['href']; ?>" class="menu-link">
+                                                <?php echo htmlspecialchars($category['name']); ?>
+                                                <?php if (!empty($category['children'])) { ?>
+                                                    <i class="fa fa-chevron-down"></i>
+                                                <?php } ?>
+                                            </a>
+                                            <?php if (!empty($category['children'])) { ?>
+                                                <ul class="submenu">
+                                                    <?php foreach ($category['children'] as $child) { ?>
+                                                        <li>
+                                                            <a href="<?php echo $child['href']; ?>">
+                                                                <?php echo htmlspecialchars($child['name']); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php } ?>
+                                                </ul>
+                                            <?php } ?>
+                                        </li>
+                                    <?php } ?>
+                                <?php } else { ?>
+                                    <li class="menu-item">
+                                        <a href="#" class="menu-link">No Categories Available</a>
                                     </li>
+                                <?php } ?>
+                            </ul>
+                            
+                            <!-- Mobile Navigation Menu -->
+                            <div id="new-mobile-menu" class="new-mobile-menu">
+                                <div class="new-mobile-overlay"></div>
+                                <ul class="new-mobile-list">
+                                    <?php if ($has_categories) { ?>
+                                        <?php foreach ($categories as $category) { ?>
+                                            <li class="mobile-menu-item <?php echo !empty($category['children']) ? 'has-submenu' : ''; ?>">
+                                                <a href="<?php echo $category['href']; ?>" class="mobile-menu-link">
+                                                    <?php echo htmlspecialchars($category['name']); ?>
+                                                    <?php if (!empty($category['children'])) { ?>
+                                                        <span class="submenu-toggle">+</span>
+                                                    <?php } ?>
+                                                </a>
+                                                <?php if (!empty($category['children'])) { ?>
+                                                    <ul class="mobile-submenu">
+                                                        <?php foreach ($category['children'] as $child) { ?>
+                                                            <li>
+                                                                <a href="<?php echo $child['href']; ?>">
+                                                                    <?php echo htmlspecialchars($child['name']); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php } ?>
+                                                    </ul>
+                                                <?php } ?>
+                                            </li>
+                                        <?php } ?>
+                                    <?php } else { ?>
+                                        <li class="mobile-menu-item">
+                                            <a href="#" class="mobile-menu-link">No Categories Available</a>
+                                        </li>
                                     <?php } ?>
                                 </ul>
-                            </li>
-                            <?php } else { ?>
-                            <li class="">
-                                <a href="<?php echo $category['href']; ?>">
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </a>
-                            </li>
-                            <?php } ?>
-                            <?php } ?>
-                                </ul>
-                                <div class="mobile-nav-overlay"></div>
-                            </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
                 <?php if (isset($flash_sale_url) && $flash_sale_url) { ?>
                 <a href="<?php echo $flash_sale_url; ?>" class="h-flash-btn">
                     <i class="fi-rs-sparkles"></i><span>Flash Sale</span>
@@ -48,10 +103,11 @@
         </div>
     </div>
 </div>
-<?php } ?>
 
 <style>
-/* Header Bottom Navigation Styles */
+/* ============================================
+   DESKTOP NAVIGATION STYLES
+   ============================================ */
 .sticky-content-wrapper {
     position: relative;
 }
@@ -67,13 +123,6 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0 20px;
-}
-
-@media (max-width: 767px) {
-    .header-bottom .container {
-        max-width: 100%;
-        padding: 0 15px;
-    }
 }
 
 .header-bottom .inner-wrap {
@@ -92,7 +141,8 @@
     display: block;
 }
 
-.header-bottom .main-nav .menu {
+/* Desktop Menu */
+.desktop-menu {
     display: flex;
     align-items: center;
     list-style: none;
@@ -101,54 +151,49 @@
     flex-wrap: wrap;
 }
 
-.header-bottom .main-nav .menu > li {
+.desktop-menu > .menu-item {
     position: relative;
     display: inline-block;
     margin-right: 2.4rem;
 }
 
-.header-bottom .main-nav .menu > li:last-child {
+.desktop-menu > .menu-item:last-child {
     margin-right: 0;
 }
 
-.header-bottom .main-nav .menu > li > a {
+.desktop-menu > .menu-item > .menu-link {
     display: block;
-    padding: 0;
+    padding: 15px 0;
     font-size: 0.9rem;
     font-weight: 400;
     letter-spacing: -0.009em;
     line-height: 1.1;
     text-transform: capitalize;
-    color: var(--white-color, #fff);
+    color: #fff;
     text-decoration: none;
     transition: all 0.3s ease;
     position: relative;
 }
 
-.header-bottom .main-nav .menu > li.active > a:not(.menu-title),
-.header-bottom .main-nav .menu > li:hover > a:not(.menu-title) {
-    color: var(--primary-color, #FF6A00) !important;
+.desktop-menu > .menu-item > .menu-link i {
+    margin-left: 5px;
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
 }
 
-.header-bottom .main-nav .menu > li.has-submenu > a::after {
-    content: "\f107";
-    display: inline-block;
-    margin-left: 0.6rem;
-    margin-top: 1px;
-    right: -16px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: "Font Awesome 5 Free";
-    font-size: 0.8rem;
-    font-weight: 900;
-    vertical-align: middle;
-    color: inherit;
+.desktop-menu > .menu-item:hover > .menu-link,
+.desktop-menu > .menu-item.active > .menu-link {
+    color: #FF6A00 !important;
 }
 
-.header-bottom .main-nav .menu .submenu {
+.desktop-menu > .menu-item:hover > .menu-link i {
+    transform: rotate(180deg);
+}
+
+/* Desktop Submenu */
+.desktop-menu .submenu {
     position: absolute;
-    top: -9999px;
+    top: calc(100% + 8px);
     left: -1.5rem;
     min-width: 240px;
     padding: 1.2rem 0;
@@ -166,38 +211,20 @@
     overflow: hidden;
 }
 
-.header-bottom .main-nav .menu > li.show > .submenu,
-.header-bottom .main-nav .menu > li:hover > .submenu {
+.desktop-menu > .menu-item:hover > .submenu {
     visibility: visible;
-    top: calc(100% + 8px);
     opacity: 1;
     transform: translate3d(0, 0, 0);
 }
 
-.header-bottom .main-nav .menu .submenu li {
+.desktop-menu .submenu li {
     padding: 0;
     width: 100%;
     margin: 0;
     position: relative;
 }
 
-.header-bottom .main-nav .menu .submenu li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, #FF6A00 0%, #ff8c42 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.header-bottom .main-nav .menu .submenu li:hover::before {
-    opacity: 1;
-}
-
-.header-bottom .main-nav .menu .submenu li a {
+.desktop-menu .submenu li a {
     display: block;
     padding: 0.85rem 1.9rem;
     color: #333333;
@@ -212,37 +239,17 @@
     background: transparent;
 }
 
-.header-bottom .main-nav .menu .submenu li a::after {
-    content: '';
-    position: absolute;
-    left: 1.9rem;
-    right: 1.9rem;
-    bottom: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.header-bottom .main-nav .menu .submenu li:last-child a::after {
-    display: none;
-}
-
-.header-bottom .main-nav .menu .submenu li.active > a,
-.header-bottom .main-nav .menu .submenu li:hover > a {
+.desktop-menu .submenu li:hover > a {
     color: #FF6A00;
     background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
     padding-left: 2.1rem;
     font-weight: 500;
 }
 
-.header-bottom .main-nav .menu .submenu li:hover > a::after {
-    opacity: 1;
-}
-
+/* Flash Sale Button */
 .header-bottom .h-flash-btn {
     border-radius: 4px;
-    background: var(--white-color, #fff);
+    background: #fff;
     padding: 0.6rem 1.2rem;
     display: flex;
     align-items: center;
@@ -253,7 +260,7 @@
     line-height: 1.2;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: var(--primary-color, #FF6A00) !important;
+    color: #FF6A00 !important;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -261,14 +268,12 @@
 }
 
 .header-bottom .h-flash-btn:hover {
-    background: var(--white-color, #fff);
-    color: var(--primary-color, #FF6A00) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .header-bottom .h-flash-btn i {
     font-size: 1.6rem;
-    color: var(--primary-color, #FF6A00);
+    color: #FF6A00;
 }
 
 /* Sticky Header */
@@ -276,15 +281,12 @@
     position: fixed;
     left: 0;
     right: 0;
+    top: 0;
     opacity: 1;
     transform: translateY(0);
     z-index: 1051;
     box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
-    background: var(--white-color, #fff);
-}
-
-.header-bottom.sticky-content.fixed.fix-top {
-    top: 0;
+    background: #fff;
     animation: fixedTopContent 0.4s;
 }
 
@@ -299,69 +301,39 @@
     }
 }
 
-.header-bottom.sticky-content.fixed .main-nav .menu > li > a {
-    color: var(--title-color, #232323);
+.header-bottom.sticky-content.fixed .desktop-menu > .menu-item > .menu-link {
+    color: #232323;
 }
 
-.header-bottom.sticky-content.fixed .main-nav .menu > li.active > a:not(.menu-title),
-.header-bottom.sticky-content.fixed .main-nav .menu > li:hover > a:not(.menu-title) {
-    color: var(--primary-color, #FF6A00) !important;
+.header-bottom.sticky-content.fixed .desktop-menu > .menu-item:hover > .menu-link {
+    color: #FF6A00 !important;
 }
 
-.header-bottom.sticky-content.fixed .h-flash-btn {
-    background: var(--white-color, #fff);
-    color: var(--primary-color, #FF6A00) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.header-bottom.sticky-content.fixed .h-flash-btn:hover {
-    background: var(--white-color, #fff);
-    color: var(--primary-color, #FF6A00) !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.header-bottom.sticky-content.fixed .h-flash-btn i {
-    color: var(--primary-color, #FF6A00);
-}
-
-/* NEW Mobile Navigation - Using Unique Class Names */
-.mobile-menu-toggle-btn {
+/* ============================================
+   MOBILE NAVIGATION STYLES
+   ============================================ */
+.new-mobile-toggle-btn {
     display: none;
 }
 
-.mobile-nav-container {
-    position: relative;
+.new-mobile-menu {
     display: none;
 }
 
-.mobile-nav-overlay {
-    display: none;
-}
-
-/* Body scroll lock when menu is open */
-body.mobile-menu-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-}
-
-/* Mobile Navigation Styles - Only for Mobile View */
+/* Mobile Styles */
 @media only screen and (max-width: 991.98px) {
-    /* Hide desktop navigation on mobile */
-    .header-bottom .main-nav .menu {
-        display: none !important;
-    }
-    
-    .header-bottom .main-nav {
+    /* Hide desktop menu on mobile */
+    .desktop-menu {
         display: none !important;
     }
     
     /* Show mobile toggle button */
-    .mobile-menu-toggle-btn {
+    .new-mobile-toggle-btn {
         width: 30px;
         height: 30px;
         position: relative;
         display: flex !important;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         cursor: pointer;
@@ -373,52 +345,36 @@ body.mobile-menu-open {
         border: none;
         -webkit-tap-highlight-color: transparent;
     }
-
-    .mobile-menu-toggle-btn span {
+    
+    .new-mobile-toggle-btn span {
         display: block;
         width: 22px;
         height: 2px;
-        background-color: #000;
-        position: relative;
+        background-color: #fff;
+        margin: 3px 0;
         transition: all 0.3s ease;
         border-radius: 2px;
     }
-
-    .mobile-menu-toggle-btn span:before,
-    .mobile-menu-toggle-btn span:after {
-        content: "";
-        position: absolute;
-        width: 22px;
-        height: 2px;
+    
+    .header-bottom.sticky-content.fixed .new-mobile-toggle-btn span {
         background-color: #000;
-        left: 0;
-        transition: all 0.3s ease;
-        border-radius: 2px;
     }
-
-    .mobile-menu-toggle-btn span:before {
-        top: -7px;
+    
+    /* Toggle button active state (X) */
+    .new-mobile-toggle-btn.active span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
     }
-
-    .mobile-menu-toggle-btn span:after {
-        top: 7px;
+    
+    .new-mobile-toggle-btn.active span:nth-child(2) {
+        opacity: 0;
     }
-
-    /* When menu is open - transform to X */
-    .mobile-menu-toggle-btn.menu-active span {
-        background-color: transparent;
+    
+    .new-mobile-toggle-btn.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
     }
-
-    .mobile-menu-toggle-btn.menu-active span:before {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .mobile-menu-toggle-btn.menu-active span:after {
-        transform: rotate(-45deg) translate(5px, -5px);
-    }
-
-    /* Navigation Container - Show on mobile */
-    .mobile-nav-container {
+    
+    /* Mobile Menu Container */
+    .new-mobile-menu {
         position: fixed;
         top: 0;
         left: 0;
@@ -430,14 +386,14 @@ body.mobile-menu-open {
         z-index: 99998;
         display: block !important;
     }
-
-    .mobile-nav-container.menu-open {
+    
+    .new-mobile-menu.open {
         visibility: visible;
         opacity: 1;
     }
-
-    /* Navigation List - Slide from left */
-    .mobile-nav-list {
+    
+    /* Mobile Menu List */
+    .new-mobile-list {
         width: 300px;
         position: fixed;
         left: -300px;
@@ -453,26 +409,28 @@ body.mobile-menu-open {
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         display: block !important;
     }
-
-    .mobile-nav-container.menu-open .mobile-nav-list {
+    
+    .new-mobile-menu.open .new-mobile-list {
         left: 0;
     }
-
-    /* Navigation Items */
-    .mobile-nav-list li {
+    
+    /* Mobile Menu Items */
+    .new-mobile-list .mobile-menu-item {
         display: block;
         width: 100%;
         border-bottom: 1px solid #e8e8e8;
         margin: 0;
     }
-
-    .mobile-nav-list li:last-child {
+    
+    .new-mobile-list .mobile-menu-item:last-child {
         border-bottom: none;
         margin-bottom: 50px;
     }
-
-    .mobile-nav-list > li > a {
-        display: block;
+    
+    .new-mobile-list .mobile-menu-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         padding: 15px 20px;
         color: #000;
         font-size: 14px;
@@ -480,52 +438,56 @@ body.mobile-menu-open {
         text-decoration: none;
         transition: all 0.3s ease;
     }
-
-    .mobile-nav-list > li > a:hover {
-        color: var(--primaryColor, #A68A6A);
+    
+    .new-mobile-list .mobile-menu-link:hover {
+        color: #FF6A00;
         background-color: #f5f5f5;
     }
-
-    /* Submenu Items */
-    .mobile-nav-list .drop-menu-1 {
+    
+    .new-mobile-list .submenu-toggle {
+        font-size: 20px;
+        font-weight: bold;
+        color: #666;
+        transition: transform 0.3s ease;
+    }
+    
+    .new-mobile-list .mobile-menu-item.open .submenu-toggle {
+        transform: rotate(45deg);
+    }
+    
+    /* Mobile Submenu */
+    .new-mobile-list .mobile-submenu {
         display: none;
         background-color: #f1f5f9;
         padding: 0;
         margin: 0;
         list-style: none;
     }
-
-    .mobile-nav-list li.menu-item-open .drop-menu-1 {
+    
+    .new-mobile-list .mobile-menu-item.open .mobile-submenu {
         display: block;
     }
-
-    .mobile-nav-list .drop-menu-1 li {
+    
+    .new-mobile-list .mobile-submenu li {
         border-bottom: none;
         background-color: transparent;
     }
-
-    .mobile-nav-list .drop-menu-1 li a {
+    
+    .new-mobile-list .mobile-submenu li a {
+        display: block;
         padding: 12px 20px 12px 40px;
         font-size: 13px;
         color: #333;
+        text-decoration: none;
     }
-
-    /* Submenu Toggle Icon */
-    .mobile-nav-list > li.has-submenu > a:after,
-    .mobile-nav-list > li.drop-open > a:after {
-        content: "\e5cc";
-        float: right;
-        font-family: "Material Icons";
-        font-size: 20px;
-        transition: transform 0.3s ease;
+    
+    .new-mobile-list .mobile-submenu li a:hover {
+        color: #FF6A00;
+        background-color: #e8e8e8;
     }
-
-    .mobile-nav-list > li.menu-item-open > a:after {
-        content: "\e5ce";
-    }
-
-    /* Overlay */
-    .mobile-nav-overlay {
+    
+    /* Mobile Overlay */
+    .new-mobile-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -538,8 +500,8 @@ body.mobile-menu-open {
         z-index: 99997;
         display: block !important;
     }
-
-    .mobile-nav-container.menu-open .mobile-nav-overlay {
+    
+    .new-mobile-menu.open .new-mobile-overlay {
         opacity: 1;
         visibility: visible;
     }
@@ -549,18 +511,12 @@ body.mobile-menu-open {
         display: block !important;
     }
     
-    /* Make sure inner-wrap shows toggle button */
     .header-bottom .inner-wrap {
         display: flex !important;
         align-items: center;
     }
-}
-
-@media (max-width: 767px) {
-    .header-bottom .inner-wrap {
-        justify-content: center;
-    }
     
+    /* Flash Sale Button on Mobile */
     .header-bottom .h-flash-btn {
         padding: 6px 8px;
         font-size: 11px;
@@ -570,49 +526,48 @@ body.mobile-menu-open {
         font-size: 16px;
     }
 }
+
+/* Body scroll lock when mobile menu is open */
+body.mobile-menu-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
 </style>
 
 <script>
-// NEW Mobile Navigation - Using Unique Class Names - No Conflicts
+// New Mobile Navigation - Completely Fresh Implementation
 (function() {
     'use strict';
     
     var mobileToggle = null;
-    var mobileNav = null;
+    var mobileMenu = null;
     var mobileOverlay = null;
     var isMenuOpen = false;
     
     function initMobileNavigation() {
-        // Get elements using new class names
-        mobileToggle = document.getElementById('mobile-menu-toggle');
-        mobileNav = document.getElementById('mobile-nav-menu');
-        mobileOverlay = document.querySelector('.mobile-nav-overlay');
+        mobileToggle = document.getElementById('new-mobile-toggle');
+        mobileMenu = document.getElementById('new-mobile-menu');
+        mobileOverlay = document.querySelector('.new-mobile-overlay');
         
-        if (!mobileToggle) {
-            console.log('Mobile toggle button not found');
+        if (!mobileToggle || !mobileMenu) {
+            console.log('Mobile navigation elements not found');
             return false;
         }
         
-        if (!mobileNav) {
-            console.log('Mobile nav menu not found');
-            return false;
-        }
-        
-        console.log('Mobile navigation initialized successfully');
+        console.log('New mobile navigation initialized successfully');
         
         // Toggle menu function
         function toggleMobileMenu() {
             isMenuOpen = !isMenuOpen;
             
             if (isMenuOpen) {
-                // Open menu
-                mobileToggle.classList.add('menu-active');
-                mobileNav.classList.add('menu-open');
+                mobileToggle.classList.add('active');
+                mobileMenu.classList.add('open');
                 document.body.classList.add('mobile-menu-open');
             } else {
-                // Close menu
-                mobileToggle.classList.remove('menu-active');
-                mobileNav.classList.remove('menu-open');
+                mobileToggle.classList.remove('active');
+                mobileMenu.classList.remove('open');
                 document.body.classList.remove('mobile-menu-open');
             }
         }
@@ -621,8 +576,8 @@ body.mobile-menu-open {
         function closeMobileMenu() {
             if (isMenuOpen) {
                 isMenuOpen = false;
-                mobileToggle.classList.remove('menu-active');
-                mobileNav.classList.remove('menu-open');
+                mobileToggle.classList.remove('active');
+                mobileMenu.classList.remove('open');
                 document.body.classList.remove('mobile-menu-open');
             }
         }
@@ -643,15 +598,15 @@ body.mobile-menu-open {
             });
         }
         
-        // Submenu toggle
-        var submenuLinks = mobileNav.querySelectorAll('.mobile-nav-list > li.has-submenu > a, .mobile-nav-list > li.drop-open > a');
-        submenuLinks.forEach(function(link) {
+        // Submenu toggle for mobile
+        var submenuToggles = mobileMenu.querySelectorAll('.mobile-menu-item.has-submenu > .mobile-menu-link');
+        submenuToggles.forEach(function(link) {
             link.addEventListener('click', function(e) {
                 if (window.innerWidth <= 991) {
                     e.preventDefault();
                     e.stopPropagation();
                     var parentLi = this.parentElement;
-                    parentLi.classList.toggle('menu-item-open');
+                    parentLi.classList.toggle('open');
                 }
             });
         });
@@ -663,23 +618,11 @@ body.mobile-menu-open {
             }
         });
         
-        // Close when clicking outside (but not on menu items)
-        document.addEventListener('click', function(e) {
-            if (isMenuOpen && window.innerWidth <= 991) {
-                if (!e.target.closest('#mobile-menu-toggle') && 
-                    !e.target.closest('#mobile-nav-menu') && 
-                    !e.target.closest('.mobile-nav-list')) {
-                    closeMobileMenu();
-                }
-            }
-        });
-        
         return true;
     }
     
-    // Initialize when DOM is ready
-    function init() {
-        // Sticky header functionality (keep existing)
+    // Initialize sticky header
+    function initStickyHeader() {
         if (typeof jQuery !== 'undefined') {
             jQuery(document).ready(function($) {
                 var $headerBottom = $('.header-bottom.sticky-content');
@@ -699,8 +642,12 @@ body.mobile-menu-open {
                 }
             });
         }
+    }
+    
+    // Initialize everything
+    function init() {
+        initStickyHeader();
         
-        // Initialize mobile navigation
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initMobileNavigation);
         } else {
@@ -708,7 +655,6 @@ body.mobile-menu-open {
         }
     }
     
-    // Start initialization
     init();
 })();
 </script>

@@ -129,12 +129,14 @@ class ControllerCommonHeader extends Controller {
 
 
 
-		// Menu
-		// Always regenerate navigation to ensure categories are fresh (cache cleared)
+		// Menu - NEW NAVIGATION SYSTEM
+		// Always clear cache to ensure fresh categories
 		if (method_exists($this->cacheManger, 'deleteCache')) {
 			$this->cacheManger->deleteCache("html", "main_nav");
 		}
 		
+		// Initialize navigation data
+		$navViewData = array();
 		$navViewData['text_category'] = $this->language->get('text_category');
 		$navViewData['text_all'] = $this->language->get('text_all');
 		$navViewData['domain'] = $this->config->get('config_url');
@@ -142,8 +144,8 @@ class ControllerCommonHeader extends Controller {
 		$navViewData['categories'] = array();
 		$navViewData['logo'] = $data['logo'];
 		$navViewData['name'] = $this->config->get('config_name');
-
 		$navViewData['navigations'] = array();
+		$navViewData['flash_sale_url'] = isset($data['flash_sale_url']) ? $data['flash_sale_url'] : '';
 
 		if($this->config->get('config_navigation_type') === 'navigation') {
 			$this->load->model('catalog/navigation');
