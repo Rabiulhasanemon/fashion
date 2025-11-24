@@ -763,7 +763,7 @@ class ControllerCatalogProduct extends Controller {
 						'product_attribute', 'product_discount', 'product_filter', 
 						'product_image', 'product_option', 'product_option_value',
 						'product_related', 'product_reward', 'product_special', 'product_to_category',
-						'product_to_download', 'product_to_layout'
+						'product_to_download', 'product_to_layout', 'product_variation', 'product_compatible'
 					);
 					foreach ($tables_to_clean as $table) {
 						$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
@@ -982,6 +982,7 @@ class ControllerCatalogProduct extends Controller {
 								'sub_name' => $nextRow($row, 'sub_name_' . $code, $nextRow($row, 'sub_name')),
 								'description' => $nextRow($row, 'description_' . $code, $nextRow($row, 'description')),
 								'short_description' => $nextRow($row, 'short_description_' . $code, $nextRow($row, 'short_description')),
+								'video_url' => $nextRow($row, 'video_url_' . $code, $nextRow($row, 'video_url')),
 								'tag' => $nextRow($row, 'tag_' . $code, $nextRow($row, 'tag')),
 								'meta_title' => $nextRow($row, 'meta_title_' . $code, $nextRow($row, 'meta_title')),
 								'meta_description' => $nextRow($row, 'meta_description_' . $code, $nextRow($row, 'meta_description')),
