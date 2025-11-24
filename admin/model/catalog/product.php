@@ -1144,6 +1144,11 @@ class ModelCatalogProduct extends Model {
 			$this->persistProductOptions($product_id, $data['product_option']);
 		}
 
+		// Insert product variations
+		if (isset($data['product_variation']) && is_array($data['product_variation']) && !empty($data['product_variation'])) {
+			$this->persistProductVariations($product_id, $data['product_variation']);
+		}
+
 		return $product_id;
 	}
 
@@ -1592,6 +1597,11 @@ class ModelCatalogProduct extends Model {
 		if (isset($data['product_option']) && is_array($data['product_option']) && !empty($data['product_option'])) {
 			$this->persistProductOptions($product_id, $data['product_option']);
 		}
+
+		// Update product variations
+		if (isset($data['product_variation']) && is_array($data['product_variation'])) {
+			$this->persistProductVariations($product_id, $data['product_variation']);
+		}
 	}
 
 	protected function persistProductOptions($product_id, $product_options = array()) {
@@ -1826,6 +1836,89 @@ class ModelCatalogProduct extends Model {
 			} catch (Exception $e) {
 				// Log error but don't throw - column might already exist from concurrent request
 				error_log("Error adding value column: " . $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Persist product variations to database
+	 * This method saves product variations (combinations of option values)
+	 */
+	protected function persistProductVariations($product_id, $product_variations = array()) {
+		if (empty($product_variations) || !is_array($product_variations)) {
+			// If no variations provided, delete existing ones
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = '" . (int)$product_id . "'");
+			return;
+		}
+
+		// CRITICAL: Validate product_id before proceeding
+		$product_id = (int)$product_id;
+		if ($product_id <= 0) {
+			error_log("persistProductVariations: Invalid product_id: " . $product_id);
+			return;
+		}
+
+		// CRITICAL: Clean up any orphaned records with product_id = 0
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = 0");
+		
+		// Delete existing variations for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = '" . (int)$product_id . "'");
+
+		// Insert new variations
+		foreach ($product_variations as $variation) {
+			if (!isset($variation['key']) || empty($variation['key'])) {
+				continue;
+			}
+
+			$key = $this->db->escape($variation['key']);
+			$sku = isset($variation['sku']) ? $this->db->escape($variation['sku']) : '';
+			$price_prefix = isset($variation['price_prefix']) ? $this->db->escape($variation['price_prefix']) : '+';
+			$price = isset($variation['price']) ? (float)$variation['price'] : 0;
+			$quantity = isset($variation['quantity']) ? (int)$variation['quantity'] : 0;
+			$image = isset($variation['image']) ? $this->db->escape($variation['image']) : '';
+
+			// Delete any existing record first (safety)
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = '" . (int)$product_id . "' AND `key` = '" . $key . "'");
+
+			$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_variation SET 
+				product_id = '" . (int)$product_id . "', 
+				`key` = '" . $key . "', 
+				sku = '" . $sku . "', 
+				price_prefix = '" . $price_prefix . "', 
+				price = '" . $price . "', 
+				quantity = '" . $quantity . "', 
+				image = '" . $image . "'");
+
+			// Check for errors
+			if (!$result) {
+				$db_error = '';
+				$db_errno = 0;
+				if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+					if (property_exists($this->db->link, 'error')) {
+						$db_error = $this->db->link->error;
+					}
+					if (property_exists($this->db->link, 'errno')) {
+						$db_errno = $this->db->link->errno;
+					}
+				}
+
+				// If duplicate key error, delete and retry once
+				if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'duplicate') !== false)) {
+					// Delete any conflicting record and retry
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = '" . (int)$product_id . "' AND `key` = '" . $key . "'");
+					
+					// Retry the insert
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_variation SET 
+						product_id = '" . (int)$product_id . "', 
+						`key` = '" . $key . "', 
+						sku = '" . $sku . "', 
+						price_prefix = '" . $price_prefix . "', 
+						price = '" . $price . "', 
+						quantity = '" . $quantity . "', 
+						image = '" . $image . "'");
+				} else {
+					error_log("Error inserting product variation: " . $db_error . " (Error No: " . $db_errno . ")");
+				}
 			}
 		}
 	}
