@@ -350,6 +350,9 @@ class ModelCatalogProduct extends Model {
 	}
 
 	public function addProduct($data) {
+		// Ensure video_url column exists
+		$this->ensureVideoUrlColumn();
+		
 		// Clean up any orphaned product with product_id = 0 before inserting
 		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
@@ -1071,6 +1074,9 @@ class ModelCatalogProduct extends Model {
 	}
 
 	public function editProduct($product_id, $data) {
+		// Ensure video_url column exists
+		$this->ensureVideoUrlColumn();
+		
 		// Validate product_id
 		$product_id = (int)$product_id;
 		if ($product_id <= 0) {
@@ -1547,6 +1553,27 @@ class ModelCatalogProduct extends Model {
 		
 		// Finally delete the main product record
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "'");
+	}
+
+	/**
+	 * Ensure video_url column exists in product_description table
+	 * This method checks if the column exists and adds it if missing
+	 */
+	private function ensureVideoUrlColumn() {
+		$table_name = DB_PREFIX . "product_description";
+		
+		// Check if column exists
+		$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'video_url'");
+		
+		if (!$check_query->num_rows) {
+			// Column doesn't exist, add it
+			try {
+				$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `video_url` VARCHAR(255) DEFAULT NULL AFTER `short_description`");
+			} catch (Exception $e) {
+				// Log error but don't throw - column might already exist from concurrent request
+				error_log("Error adding video_url column: " . $e->getMessage());
+			}
+		}
 	}
 }
 
