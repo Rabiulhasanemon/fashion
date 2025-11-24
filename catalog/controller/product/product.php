@@ -47,170 +47,6 @@ class ControllerProductProduct extends Controller
                             'href' => $this->url->link('product/category', 'category_id=' . $path_id)
                         );
                     }
-
-    private function buildVideoEmbedUrl($url) {
-        $url = trim($url);
-        if ($url === '') {
-            return '';
-        }
-
-        $parsed = parse_url($url);
-        $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
-        $video_id = '';
-
-        if (strpos($host, 'youtu.be') !== false) {
-            $video_id = isset($parsed['path']) ? ltrim($parsed['path'], '/') : '';
-        } elseif (strpos($host, 'youtube.com') !== false) {
-            if (!empty($parsed['query'])) {
-                parse_str($parsed['query'], $params);
-                if (!empty($params['v'])) {
-                    $video_id = $params['v'];
-                }
-
-    private function buildVideoEmbedUrl($url) {
-        $url = trim($url);
-        if ($url === '') {
-            return '';
-        }
-
-        $parsed = parse_url($url);
-        $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
-        $video_id = '';
-
-        if (strpos($host, 'youtu.be') !== false) {
-            $video_id = isset($parsed['path']) ? ltrim($parsed['path'], '/') : '';
-        } elseif (strpos($host, 'youtube.com') !== false) {
-            if (!empty($parsed['query'])) {
-                parse_str($parsed['query'], $params);
-                if (!empty($params['v'])) {
-                    $video_id = $params['v'];
-                }
-            }
-
-            if (!$video_id && !empty($parsed['path']) && strpos($parsed['path'], '/embed/') !== false) {
-                $parts = explode('/', trim($parsed['path'], '/'));
-                $video_id = end($parts);
-            }
-        }
-
-        if ($video_id) {
-            return 'https://www.youtube.com/embed/' . $video_id . '?rel=0&playsinline=1';
-        }
-
-        return $url;
-    }
-
-    private function buildImageUrl($image) {
-        if (empty($image)) {
-            return '';
-        }
-
-        if (stripos($image, 'http://') === 0 || stripos($image, 'https://') === 0) {
-            return $image;
-        }
-
-        $base = $this->request->server['HTTPS'] ? $this->config->get('config_ssl') : $this->config->get('config_url');
-        return rtrim($base, '/') . '/image/' . ltrim($image, '/');
-    }
-
-    private function normalizeInternationalPhone($number) {
-        $digits = preg_replace('/\D+/', '', $number);
-        if ($digits === '') {
-            return '';
-        }
-
-        if (strpos($digits, '88') === 0) {
-            return $digits;
-        }
-
-        if ($digits[0] === '0') {
-            return '88' . ltrim($digits, '0');
-        }
-
-        return $digits;
-    }
-
-    private function buildTelHref($number) {
-        $intl = $this->normalizeInternationalPhone($number);
-        return $intl ? 'tel:+' . $intl : '';
-    }
-
-    private function buildWhatsappLink($number, $productName, $productUrl) {
-        $intl = $this->normalizeInternationalPhone($number);
-        if (!$intl) {
-            return '';
-        }
-
-        $message = 'Hello, I would like to order ' . $productName;
-        if ($productUrl) {
-            $message .= ' - ' . $productUrl;
-        }
-
-        return 'https://wa.me/' . $intl . '?text=' . rawurlencode($message);
-    }
-}
-
-            if (!$video_id && !empty($parsed['path']) && strpos($parsed['path'], '/embed/') !== false) {
-                $parts = explode('/', trim($parsed['path'], '/'));
-                $video_id = end($parts);
-            }
-        }
-
-        if ($video_id) {
-            return 'https://www.youtube.com/embed/' . $video_id . '?rel=0&playsinline=1';
-        }
-
-        return $url;
-    }
-
-    private function buildImageUrl($image) {
-        if (empty($image)) {
-            return '';
-        }
-
-        if (stripos($image, 'http://') === 0 || stripos($image, 'https://') === 0) {
-            return $image;
-        }
-
-        $base = $this->request->server['HTTPS'] ? $this->config->get('config_ssl') : $this->config->get('config_url');
-        return rtrim($base, '/') . '/image/' . ltrim($image, '/');
-    }
-
-    private function normalizeInternationalPhone($number) {
-        $digits = preg_replace('/\D+/', '', $number);
-        if ($digits === '') {
-            return '';
-        }
-
-        if (strpos($digits, '88') === 0) {
-            return $digits;
-        }
-
-        if ($digits[0] === '0') {
-            return '88' . ltrim($digits, '0');
-        }
-
-        return $digits;
-    }
-
-    private function buildTelHref($number) {
-        $intl = $this->normalizeInternationalPhone($number);
-        return $intl ? 'tel:+' . $intl : '';
-    }
-
-    private function buildWhatsappLink($number, $productName, $productUrl) {
-        $intl = $this->normalizeInternationalPhone($number);
-        if (!$intl) {
-            return '';
-        }
-
-        $message = 'Hello, I would like to order ' . $productName;
-        if ($productUrl) {
-            $message .= ' - ' . $productUrl;
-        }
-
-        return 'https://wa.me/' . $intl . '?text=' . rawurlencode($message);
-    }
                 }
 
 
@@ -1204,5 +1040,87 @@ class ControllerProductProduct extends Controller
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($data));
+    }
+
+    private function buildVideoEmbedUrl($url) {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        $parsed = parse_url($url);
+        $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
+        $video_id = '';
+
+        if (strpos($host, 'youtu.be') !== false) {
+            $video_id = isset($parsed['path']) ? ltrim($parsed['path'], '/') : '';
+        } elseif (strpos($host, 'youtube.com') !== false) {
+            if (!empty($parsed['query'])) {
+                parse_str($parsed['query'], $params);
+                if (!empty($params['v'])) {
+                    $video_id = $params['v'];
+                }
+            }
+
+            if (!$video_id && !empty($parsed['path']) && strpos($parsed['path'], '/embed/') !== false) {
+                $parts = explode('/', trim($parsed['path'], '/'));
+                $video_id = end($parts);
+            }
+        }
+
+        if ($video_id) {
+            return 'https://www.youtube.com/embed/' . $video_id . '?rel=0&playsinline=1';
+        }
+
+        return $url;
+    }
+
+    private function buildImageUrl($image) {
+        if (empty($image)) {
+            return '';
+        }
+
+        if (stripos($image, 'http://') === 0 || stripos($image, 'https://') === 0) {
+            return $image;
+        }
+
+        $base = $this->request->server['HTTPS'] ? $this->config->get('config_ssl') : $this->config->get('config_url');
+        return rtrim($base, '/') . '/image/' . ltrim($image, '/');
+    }
+
+    private function normalizeInternationalPhone($number) {
+        $digits = preg_replace('/\D+/', '', $number);
+        if ($digits === '') {
+            return '';
+        }
+
+        if (strpos($digits, '88') === 0) {
+            return $digits;
+        }
+
+        if ($digits[0] === '0') {
+            return '88' . ltrim($digits, '0');
+        }
+
+        return $digits;
+    }
+
+    private function buildTelHref($number) {
+        $intl = $this->normalizeInternationalPhone($number);
+        return $intl ? 'tel:+' . $intl : '';
+    }
+
+    private function buildWhatsappLink($number, $productName, $productUrl) {
+        $intl = $this->normalizeInternationalPhone($number);
+        if (!$intl) {
+            return '';
+        }
+
+        $message = 'Hello, I would like to order ' . $productName;
+        if ($productUrl) {
+            $message .= ' - ' . $productUrl;
+        }
+
+        return 'https://wa.me/' . $intl . '?text=' . rawurlencode($message);
     }
 }
