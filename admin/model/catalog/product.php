@@ -1614,8 +1614,9 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
 
-		// Ensure required column exists
+		// Ensure required and value columns exist
 		$this->ensureRequiredColumn();
+		$this->ensureValueColumn();
 
 		foreach ($product_options as $product_option) {
 			if (!isset($product_option['option_id'])) {
@@ -1801,6 +1802,27 @@ class ModelCatalogProduct extends Model {
 			} catch (Exception $e) {
 				// Log error but don't throw - column might already exist from concurrent request
 				error_log("Error adding required column: " . $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Ensure value column exists in product_option table
+	 * This method checks if the column exists and adds it if missing
+	 */
+	private function ensureValueColumn() {
+		$table_name = DB_PREFIX . "product_option";
+		
+		// Check if column exists
+		$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'value'");
+		
+		if (!$check_query->num_rows) {
+			// Column doesn't exist, add it
+			try {
+				$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `value` TEXT DEFAULT NULL AFTER `required`");
+			} catch (Exception $e) {
+				// Log error but don't throw - column might already exist from concurrent request
+				error_log("Error adding value column: " . $e->getMessage());
 			}
 		}
 	}
