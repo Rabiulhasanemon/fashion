@@ -16,9 +16,9 @@ if (empty($tabs)) {
                     <div>
                         <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
                         <?php if (count($tabs) > 1) { ?>
-                        <div class="links">
+                        <div class="links lux-premium-tabs">
                             <?php $i=0; foreach ($tabs as $tab) { ?>
-                            <a class="category_get tabbed-category-tab <?php echo $i==0 ? 'active' : ''; ?>" 
+                            <a class="category_get tabbed-category-tab lux-tab-item <?php echo $i==0 ? 'active' : ''; ?>" 
                                data-tab-id="<?php echo $i; ?>"
                                href="javascript:;"><?php echo htmlspecialchars($tab['title']); ?></a>
                             <?php $i++; } ?>
@@ -693,6 +693,89 @@ if (empty($tabs)) {
     /* Reduce slider item padding for mobile */
     .slider-item {
         padding: 5px 4px;
+    }
+}
+
+/* Premium Tab Design */
+.lux-premium-tabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lux-tab-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 24px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.lux-tab-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.lux-tab-item:hover::before {
+    left: 100%;
+}
+
+.lux-tab-item:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    border-color: transparent;
+}
+
+.lux-tab-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    border-color: transparent;
+    font-weight: 600;
+}
+
+.lux-tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+@media (max-width: 767px) {
+    .lux-premium-tabs {
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+    
+    .lux-tab-item {
+        padding: 8px 16px;
+        font-size: 12px;
     }
 }
 </style>

@@ -25,8 +25,8 @@
         <div class="container"  id="product">
             <div class="row">
                 <div class="col-md-6 col-sm-12">
-                    <div class="images product-images">
-                        <div class="product-image-wrapper">
+                    <div class="lux-product-media" id="product-media-gallery">
+                        <div class="lux-media-grid">
                             <?php 
                             // DEBUG: Check what we have
                             $debug_output = '';
@@ -95,61 +95,58 @@
                                 $main_img_popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
                             }
                             ?>
-                            
-                            <!-- Thumbnails on the left -->
-                            <?php if (count($all_thumbnails) > 0) { ?>
-                            <div class="product-thumbnails-left">
-                                <?php foreach ($all_thumbnails as $index => $thumb_data) { 
-                                    $thumb_src = isset($thumb_data['thumb']) && $thumb_data['thumb'] ? $thumb_data['thumb'] : (isset($thumb_data['original']) ? $thumb_data['original'] : '');
-                                    $popup_src = isset($thumb_data['popup']) && $thumb_data['popup'] ? $thumb_data['popup'] : $thumb_src;
-                                    if (!$thumb_src) { continue; }
-                                ?>
-                                <a class="thumbnail-item <?php echo ($index === 0) ? 'active' : ''; ?>" 
-                                   href="javascript:void(0);" 
-                                   data-image="<?php echo htmlspecialchars($thumb_src); ?>" 
-                                   data-popup="<?php echo htmlspecialchars($popup_src); ?>" 
-                                   title="<?php echo htmlspecialchars($heading_title); ?>">
-                                    <img class="thumb-image" 
-                                         src="<?php echo htmlspecialchars($thumb_src); ?>" 
-                                         title="<?php echo htmlspecialchars($heading_title); ?>" 
-                                         alt="<?php echo htmlspecialchars($heading_title); ?>" 
-                                         onerror="this.src='image/placeholder.png';" />
-                                </a>
-                                <meta itemprop="image" content="<?php echo htmlspecialchars($thumb_src); ?>"/>
+                            <div class="lux-media-grid__thumbs">
+                                <?php if (count($all_thumbnails) > 0) { ?>
+                                    <div class="lux-thumb-track">
+                                        <?php foreach ($all_thumbnails as $index => $thumb_data) { 
+                                            $thumb_src = isset($thumb_data['thumb']) && $thumb_data['thumb'] ? $thumb_data['thumb'] : (isset($thumb_data['original']) ? $thumb_data['original'] : '');
+                                            $popup_src = isset($thumb_data['popup']) && $thumb_data['popup'] ? $thumb_data['popup'] : $thumb_src;
+                                            if (!$thumb_src) { continue; }
+                                        ?>
+                                        <button class="lux-thumb <?php echo ($index === 0) ? 'is-active' : ''; ?>"
+                                                type="button"
+                                                data-image="<?php echo htmlspecialchars($thumb_src); ?>"
+                                                data-popup="<?php echo htmlspecialchars($popup_src); ?>"
+                                                aria-label="Preview <?php echo htmlspecialchars($heading_title); ?>">
+                                            <span class="lux-thumb__inner">
+                                                <img src="<?php echo htmlspecialchars($thumb_src); ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" onerror="this.src='image/placeholder.png';">
+                                            </span>
+                                        </button>
+                                        <meta itemprop="image" content="<?php echo htmlspecialchars($thumb_src); ?>"/>
+                                        <?php } ?>
+                                    </div>
                                 <?php } ?>
                             </div>
-                            <?php } ?>
-                            
-                            <!-- Main image - ALWAYS SHOW -->
-                            <div class="product-main-image">
-                                <div class="featured-image">
-                                    <a class="thumbnail" 
-                                       href="<?php echo htmlspecialchars($main_img_popup); ?>" 
-                                       title="<?php echo htmlspecialchars($heading_title); ?>" 
-                                       data-fancybox="product-gallery" 
+
+                            <div class="lux-media-grid__viewer">
+                                <div class="lux-stage" data-media-stage>
+                                    <a class="lux-stage__link"
+                                       href="<?php echo htmlspecialchars($main_img_popup); ?>"
+                                       title="<?php echo htmlspecialchars($heading_title); ?>"
+                                       data-fancybox="product-gallery"
                                        id="main-image-link">
-                                        <img class="main-image main-img" 
-                                             id="main-product-image" 
-                                             src="<?php echo htmlspecialchars($main_img_src); ?>" 
-                                             title="<?php echo htmlspecialchars($heading_title); ?>" 
-                                             alt="<?php echo htmlspecialchars($heading_title); ?>" 
-                                             onerror="this.src='image/placeholder.png';" />
+                                        <img class="lux-stage__image"
+                                             id="main-product-image"
+                                             src="<?php echo htmlspecialchars($main_img_src); ?>"
+                                             alt="<?php echo htmlspecialchars($heading_title); ?>"
+                                             onerror="this.src='image/placeholder.png';">
+                                        <span class="lux-stage__zoom">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M10.5 3A7.5 7.5 0 0 1 18 10.5c0 1.73-.6 3.32-1.6 4.57l4.76 4.76-1.41 1.41-4.76-4.76A7.47 7.47 0 0 1 10.5 18 7.5 7.5 0 1 1 10.5 3zm0 2A5.5 5.5 0 1 0 10.5 16 5.5 5.5 0 0 0 10.5 5z" fill="currentColor"/>
+                                            </svg>
+                                        </span>
                                     </a>
                                     <meta itemprop="image" content="<?php echo htmlspecialchars($main_img_src); ?>"/>
-                                    
-                                    <!-- Hidden links for fancybox gallery -->
-                                    <?php if (!empty($images) && is_array($images)) { ?>
-                                    <?php foreach ($images as $img) { ?>
-                                    <?php if (!empty($img['popup'])) { ?>
-                                    <a class="thumbnail" 
-                                       href="<?php echo htmlspecialchars($img['popup']); ?>" 
-                                       title="<?php echo htmlspecialchars($heading_title); ?>" 
-                                       data-fancybox="product-gallery" 
-                                       style="display: none;"></a>
-                                    <?php } ?>
-                                    <?php } ?>
-                                    <?php } ?>
                                 </div>
+                                <?php if (!empty($images) && is_array($images)) { ?>
+                                    <div class="lux-stage__hidden">
+                                        <?php foreach ($images as $img) { ?>
+                                            <?php if (!empty($img['popup'])) { ?>
+                                            <a href="<?php echo htmlspecialchars($img['popup']); ?>" data-fancybox="product-gallery"></a>
+                                            <?php } ?>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -218,7 +215,7 @@
                                 <?php } ?>
                             </div>
                             <div class="prx-action-grid">
-                                <div class="prx-qty-control">
+                                <div class="prx-qty-control" data-min-qty="<?php echo (int)$minimum; ?>">
                                     <span class="prx-qty-btn prx-qty-btn--minus"><i class="material-icons">remove</i></span>
                                     <span class="qty"><input type="text" name="quantity" id="input-quantity" value="<?php echo $minimum; ?>" size="2"></span>
                                     <span class="prx-qty-btn prx-qty-btn--plus"><i class="material-icons">add</i></span>
@@ -548,6 +545,10 @@
     justify-content: center;
     cursor: pointer;
     color: #858585;
+}
+.prx-qty-btn.is-disabled {
+    opacity: 0.35;
+    pointer-events: none;
 }
 .prx-qty-control .qty input {
     width: 50px;
@@ -888,7 +889,7 @@ fbq && fbq('track', 'ViewContent', {
 
     // Product Image Thumbnail Click Handler
     document.addEventListener('DOMContentLoaded', function() {
-        const thumbnailItems = document.querySelectorAll('.product-thumbnails-left .thumbnail-item');
+        const thumbnailItems = document.querySelectorAll('.lux-thumb');
         const mainImage = document.getElementById('main-product-image');
         const mainImageLink = document.getElementById('main-image-link');
         
@@ -898,11 +899,11 @@ fbq && fbq('track', 'ViewContent', {
                 
                 // Remove active class from all thumbnails
                 thumbnailItems.forEach(function(thumb) {
-                    thumb.classList.remove('active');
+                    thumb.classList.remove('is-active');
                 });
                 
                 // Add active class to clicked thumbnail
-                this.classList.add('active');
+                this.classList.add('is-active');
                 
                 // Update main image
                 const newImageSrc = this.getAttribute('data-image');
@@ -935,6 +936,59 @@ fbq && fbq('track', 'ViewContent', {
                 parentLabel.classList.add('is-selected');
             });
         });
+
+        const qtyWrapper = document.querySelector('.prx-qty-control');
+        const qtyInput = document.getElementById('input-quantity');
+
+        if (qtyWrapper && qtyInput) {
+            const minusBtn = qtyWrapper.querySelector('.prx-qty-btn--minus');
+            const plusBtn = qtyWrapper.querySelector('.prx-qty-btn--plus');
+            const minQty = parseInt(qtyWrapper.dataset.minQty, 10) || 1;
+
+            const sanitizeValue = (val) => {
+                const parsed = parseInt(val, 10);
+                if (isNaN(parsed) || parsed < minQty) {
+                    return minQty;
+                }
+                return parsed;
+            };
+
+            const syncButtonState = () => {
+                const current = sanitizeValue(qtyInput.value);
+                qtyInput.value = current;
+                if (minusBtn) {
+                    minusBtn.classList.toggle('is-disabled', current <= minQty);
+                }
+            };
+
+            const updateQty = (delta) => {
+                const current = sanitizeValue(qtyInput.value);
+                const next = Math.max(minQty, current + delta);
+                qtyInput.value = next;
+                qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
+                syncButtonState();
+            };
+
+            if (minusBtn) {
+                minusBtn.addEventListener('click', function () {
+                    updateQty(-1);
+                });
+            }
+
+            if (plusBtn) {
+                plusBtn.addEventListener('click', function () {
+                    updateQty(1);
+                });
+            }
+
+            qtyInput.addEventListener('input', function () {
+                const safeValue = sanitizeValue(qtyInput.value);
+                qtyInput.value = safeValue;
+                syncButtonState();
+            });
+
+            syncButtonState();
+        }
 
         // Initialize Owl Carousel for Related Products
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {

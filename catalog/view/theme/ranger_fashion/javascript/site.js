@@ -44,7 +44,7 @@ $(function () {
   };
 
   var toggle = new Toggle([
-    { toggle: "#nav-toggler", target: "#main-nav", overlay: true },
+    { toggle: "#nav-toggler", target: "#column-left", overlay: true, no_scroll: true },
     { toggle: ".search-toggle", target: ".search-wrap" },
     { toggle: ".cart-toggler", target: ".mini-cart" },
     {

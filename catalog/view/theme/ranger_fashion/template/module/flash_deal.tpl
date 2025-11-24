@@ -138,14 +138,14 @@
     display: flex;
     position: relative;
     width: 100%;
-    height: 250px;
-    border-radius: 10px;
+    height: 350px;
+    border-radius: 12px;
     background-color: #fff;
     overflow: visible;
     border: 1px solid #f0f0f0;
     transition: all 0.3s ease;
     margin-bottom: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .flash-sell-new-section .product-card:hover {
@@ -155,25 +155,29 @@
 }
 
 .flash-sell-new-section .product-card .product-thumb {
-    width: 250px;
-    height: 250px;
+    width: 350px;
+    height: 350px;
     flex-shrink: 0;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     overflow: hidden;
     position: relative;
+    background: #fafafa;
 }
 
 .flash-sell-new-section .product-card .product-thumb > img {
     display: block;
     width: 100%;
-    height: 34%;
+    height: 100%;
     object-fit: contain !important;
     object-position: center;
-    background: #fff;
+    background: transparent;
     transform: scale(1);
     transition: 0.3s linear;
+    padding: 20px;
 }
 
 /* Responsive image height for different screen sizes */

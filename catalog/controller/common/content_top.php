@@ -43,14 +43,25 @@ class ControllerCommonContentTop extends Controller {
 		$this->load->model('extension/module');
 
 		$data['modules'] = array();
+		$data['module_has_products'] = array(); // Track which modules have products
+
+		// Module codes that typically have products
+		$product_module_codes = array(
+			'featured', 'latest', 'bestseller', 'special', 'popular', 'topseller',
+			'featured_list', 'tabbed_category', 'flash_deal', 'featured_flash_sale',
+			'featured_category', 'product_showcase_tabs', 'carousel'
+		);
 
 		$modules = $this->model_design_layout->getLayoutModules($layout_id, 'content_top');
 
 		foreach ($modules as $module) {
 			$part = explode('.', $module['code']);
+			$module_code = isset($part[0]) ? $part[0] : '';
+			$has_products = in_array($module_code, $product_module_codes);
 
 			if (isset($part[0]) && $this->config->get($part[0] . '_status')) {
 				$data['modules'][] = $this->load->controller('module/' . $part[0]);
+				$data['module_has_products'][] = $has_products;
 			}
 
 			if (isset($part[1])) {
@@ -63,8 +74,10 @@ class ControllerCommonContentTop extends Controller {
 					
 					if (file_exists($extension_path)) {
 						$data['modules'][] = $this->load->controller('extension/module/' . $part[0], $setting_info);
+						$data['module_has_products'][] = $has_products;
 					} elseif (file_exists($module_path)) {
 						$data['modules'][] = $this->load->controller('module/' . $part[0], $setting_info);
+						$data['module_has_products'][] = $has_products;
 					}
 				}
 			}

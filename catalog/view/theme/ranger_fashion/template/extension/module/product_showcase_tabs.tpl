@@ -4,16 +4,18 @@
             <div class="col-lg-12">
                 <?php if ($tabs) { ?>
                 <div class="section-title">
-                    <h2 class="h3"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
-                    <div class="links">
-                        <?php $first = true; ?>
-                        <?php foreach ($tabs as $tab) { ?>
-                        <a class="category_get pst-tab-item <?php echo $first ? 'active' : ''; ?>" 
-                           data-target="popular_category_view" 
-                           data-tab-id="<?php echo $tab['id']; ?>"
-                           href="javascript:;"><?php echo $tab['title']; ?></a>
-                        <?php $first = false; ?>
-                        <?php } ?>
+                    <div class="lux-section-header-row">
+                        <h2 class="h3"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
+                        <div class="links lux-premium-tabs">
+                            <?php $first = true; ?>
+                            <?php foreach ($tabs as $tab) { ?>
+                            <a class="category_get pst-tab-item lux-tab-item <?php echo $first ? 'active' : ''; ?>" 
+                               data-target="popular_category_view" 
+                               data-tab-id="<?php echo $tab['id']; ?>"
+                               href="javascript:;"><?php echo $tab['title']; ?></a>
+                            <?php $first = false; ?>
+                            <?php } ?>
+                        </div>
                     </div>
                 </div>
                 <?php } ?>
@@ -53,6 +55,22 @@
         max-width: 100% !important;
         padding: 0 15px !important;
     }
+    
+    .lux-section-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .section-title .links.lux-premium-tabs {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .section-title .links.lux-premium-tabs a.lux-tab-item {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
 }
 
 /* Section Title */
@@ -83,20 +101,83 @@
     background: #377dff;
 }
 
-.section-title .links {
+.lux-section-header-row {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
     flex-wrap: wrap;
-    gap: 0;
 }
 
-.section-title .links a {
-    color: #444;
-    margin-left: 20px;
-    position: relative;
-    font-size: 15px;
-    font-weight: 600;
+.section-title .links.lux-premium-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 0;
+    margin-left: auto;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 24px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    color: #64748b;
     text-decoration: none;
-    padding-bottom: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    margin-left: 0;
+    padding-bottom: 10px;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item:hover::before {
+    left: 100%;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    border-color: transparent;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    border-color: transparent;
+    font-weight: 600;
+}
+
+.section-title .links.lux-premium-tabs a.lux-tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
 }
 
 .section-title .links a::before {
