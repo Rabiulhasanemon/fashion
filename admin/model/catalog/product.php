@@ -657,6 +657,10 @@ class ModelCatalogProduct extends Model {
 			throw new Exception($error_msg);
 		}
 		
+		// CRITICAL: Clean up ALL product_description records with product_id = 0 BEFORE inserting
+		// This prevents "Duplicate entry '0' for key 'PRIMARY'" errors
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		
 		// Insert product descriptions
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
 			foreach ($data['product_description'] as $language_id => $value) {
@@ -665,6 +669,13 @@ class ModelCatalogProduct extends Model {
 				if ($language_id > 0 && $product_id > 0) {
 					// Delete any existing record first (safety)
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
+					
+					// Double-check product_id is still valid
+					if ($product_id <= 0) {
+						$error_msg = "CRITICAL: product_id became invalid (" . $product_id . ") before inserting product_description. Aborting.";
+						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+						throw new Exception($error_msg);
+					}
 					
 					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
 						product_id = '" . (int)$product_id . "', 
@@ -692,13 +703,23 @@ class ModelCatalogProduct extends Model {
 							}
 						}
 						
-						// If duplicate key error, delete and retry once
+						// If duplicate key error, clean up and retry
 						if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'duplicate') !== false)) {
-							// Delete any conflicting record and retry
+							// CRITICAL: Clean up ALL product_id = 0 records again
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+							
+							// Delete any conflicting record for this specific product
 							$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
 							
+							// Verify product_id is still valid
+							if ($product_id <= 0) {
+								$error_msg = "CRITICAL: product_id is invalid (" . $product_id . ") during retry. Cannot insert product_description.";
+								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+								throw new Exception($error_msg);
+							}
+							
 							// Retry the insert
-							$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+							$retry_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
 								product_id = '" . (int)$product_id . "', 
 								language_id = '" . $language_id . "', 
 								name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
@@ -710,6 +731,17 @@ class ModelCatalogProduct extends Model {
 								meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
 								meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
 								meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+							
+							if (!$retry_result) {
+								$error_msg = "Failed to insert product_description after retry. product_id: " . $product_id . ", language_id: " . $language_id . ". Error: " . $db_error;
+								file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+								throw new Exception($error_msg);
+							}
+						} else {
+							// Non-duplicate error
+							$error_msg = "Failed to insert product_description. product_id: " . $product_id . ", language_id: " . $language_id . ". Error: " . $db_error;
+							file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+							throw new Exception($error_msg);
 						}
 					}
 				}
