@@ -1163,6 +1163,8 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
 
 		// Verify product exists before updating
 		$check_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . $product_id . "' LIMIT 1");
@@ -1597,6 +1599,21 @@ class ModelCatalogProduct extends Model {
 			return;
 		}
 
+		// CRITICAL: Validate product_id before proceeding
+		$product_id = (int)$product_id;
+		if ($product_id <= 0) {
+			error_log("persistProductOptions: Invalid product_id: " . $product_id);
+			return;
+		}
+
+		// CRITICAL: Clean up any orphaned records with product_id = 0 or product_option_id = 0
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
+		
+		// Delete existing product options for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
+
 		// Ensure required column exists
 		$this->ensureRequiredColumn();
 
@@ -1606,11 +1623,27 @@ class ModelCatalogProduct extends Model {
 			}
 
 			$option_id = (int)$product_option['option_id'];
+			if ($option_id <= 0) {
+				continue;
+			}
+
 			$required = isset($product_option['required']) ? (int)$product_option['required'] : 0;
 			$value    = isset($product_option['value']) ? $product_option['value'] : '';
 
-			$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
+			$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
 			$product_option_id = $this->db->getLastId();
+
+			// CRITICAL: Validate product_option_id before proceeding
+			if ($product_option_id <= 0) {
+				// Try to get the actual ID from database
+				$find_query = $this->db->query("SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1");
+				if ($find_query && $find_query->num_rows) {
+					$product_option_id = (int)$find_query->row['product_option_id'];
+				} else {
+					error_log("persistProductOptions: Failed to get valid product_option_id for product_id={$product_id}, option_id={$option_id}");
+					continue;
+				}
+			}
 
 			if (isset($product_option['product_option_value']) && is_array($product_option['product_option_value'])) {
 				foreach ($product_option['product_option_value'] as $product_option_value) {
@@ -1619,6 +1652,10 @@ class ModelCatalogProduct extends Model {
 					}
 
 					$option_value_id = (int)$product_option_value['option_value_id'];
+					if ($option_value_id <= 0) {
+						continue;
+					}
+
 					$show            = !empty($product_option_value['show']) ? 1 : 0;
 					$quantity        = isset($product_option_value['quantity']) ? (int)$product_option_value['quantity'] : 0;
 					$subtract        = isset($product_option_value['subtract']) ? (int)$product_option_value['subtract'] : 0;
@@ -1630,7 +1667,10 @@ class ModelCatalogProduct extends Model {
 					$weight_prefix   = isset($product_option_value['weight_prefix']) ? $product_option_value['weight_prefix'] : '+';
 					$color           = isset($product_option_value['color']) ? $product_option_value['color'] : '';
 
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
+					// Delete any existing record first (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'");
+
+					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
 						product_option_id = '" . (int)$product_option_id . "', 
 						product_id = '" . (int)$product_id . "', 
 						option_id = '" . $option_id . "', 
@@ -1645,6 +1685,43 @@ class ModelCatalogProduct extends Model {
 						weight_prefix = '" . $this->db->escape($weight_prefix) . "', 
 						color = '" . $this->db->escape($color) . "', 
 						`show` = '" . (int)$show . "'");
+
+					// Check for errors
+					if (!$result) {
+						$db_error = '';
+						$db_errno = 0;
+						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+							if (property_exists($this->db->link, 'error')) {
+								$db_error = $this->db->link->error;
+							}
+							if (property_exists($this->db->link, 'errno')) {
+								$db_errno = $this->db->link->errno;
+							}
+						}
+
+						// If duplicate key error, delete and retry once
+						if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'duplicate') !== false)) {
+							// Delete any conflicting record and retry
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'");
+							
+							// Retry the insert
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
+								product_option_id = '" . (int)$product_option_id . "', 
+								product_id = '" . (int)$product_id . "', 
+								option_id = '" . $option_id . "', 
+								option_value_id = '" . $option_value_id . "', 
+								quantity = '" . $quantity . "', 
+								subtract = '" . $subtract . "', 
+								price = '" . $price . "', 
+								price_prefix = '" . $this->db->escape($price_prefix) . "', 
+								points = '" . $points . "', 
+								points_prefix = '" . $this->db->escape($points_prefix) . "', 
+								weight = '" . $weight . "', 
+								weight_prefix = '" . $this->db->escape($weight_prefix) . "', 
+								color = '" . $this->db->escape($color) . "', 
+								`show` = '" . (int)$show . "'");
+						}
+					}
 				}
 			}
 		}
