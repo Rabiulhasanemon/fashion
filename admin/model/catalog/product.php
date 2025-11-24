@@ -1858,6 +1858,9 @@ class ModelCatalogProduct extends Model {
 			return;
 		}
 
+		// Ensure product_variation table has all required columns
+		$this->ensureProductVariationColumns();
+
 		// CRITICAL: Clean up any orphaned records with product_id = 0
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_variation WHERE product_id = 0");
 		
@@ -1969,6 +1972,88 @@ class ModelCatalogProduct extends Model {
 				} catch (Exception $e) {
 					// Log error but don't throw - column might already exist from concurrent request
 					error_log("Error adding " . $column_name . " column to product_option_value: " . $e->getMessage());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Ensure product_variation table has all required columns
+	 * This method checks if columns exist and adds them if missing
+	 */
+	private function ensureProductVariationColumns() {
+		$table_name = DB_PREFIX . "product_variation";
+		
+		// Check if table exists
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . $table_name . "'");
+		if (!$table_check || !$table_check->num_rows) {
+			// Table doesn't exist, create it
+			try {
+				$this->db->query("CREATE TABLE IF NOT EXISTS `" . $table_name . "` (
+					`product_variation_id` INT(11) NOT NULL AUTO_INCREMENT,
+					`product_id` INT(11) NOT NULL,
+					`key` VARCHAR(255) NOT NULL,
+					`sku` VARCHAR(64) DEFAULT NULL,
+					`price_prefix` VARCHAR(1) NOT NULL DEFAULT '+',
+					`price` DECIMAL(15,4) NOT NULL DEFAULT '0.0000',
+					`quantity` INT(11) NOT NULL DEFAULT '0',
+					`image` VARCHAR(255) DEFAULT NULL,
+					PRIMARY KEY (`product_variation_id`),
+					UNIQUE KEY `product_key` (`product_id`, `key`),
+					KEY `product_id` (`product_id`)
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8");
+			} catch (Exception $e) {
+				error_log("Error creating product_variation table: " . $e->getMessage());
+				return;
+			}
+		}
+		
+		// Get existing columns
+		$existing_columns = array();
+		$columns_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "`");
+		if ($columns_query && $columns_query->num_rows) {
+			foreach ($columns_query->rows as $row) {
+				$existing_columns[] = $row['Field'];
+			}
+		}
+		
+		// List of required columns with their definitions
+		$required_columns = array(
+			'product_variation_id' => "INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY",
+			'product_id' => "INT(11) NOT NULL",
+			'key' => "VARCHAR(255) NOT NULL",
+			'sku' => "VARCHAR(64) DEFAULT NULL",
+			'price_prefix' => "VARCHAR(1) NOT NULL DEFAULT '+'",
+			'price' => "DECIMAL(15,4) NOT NULL DEFAULT '0.0000'",
+			'quantity' => "INT(11) NOT NULL DEFAULT '0'",
+			'image' => "VARCHAR(255) DEFAULT NULL"
+		);
+		
+		// Add missing columns (skip product_variation_id as it's the primary key)
+		foreach ($required_columns as $column_name => $column_definition) {
+			if ($column_name == 'product_variation_id') {
+				continue; // Skip primary key
+			}
+			
+			if (!in_array($column_name, $existing_columns)) {
+				try {
+					// Determine position - add after product_id if it exists
+					if (in_array('product_id', $existing_columns)) {
+						$after_column = 'product_id';
+					} elseif (in_array('key', $existing_columns)) {
+						$after_column = 'key';
+					} else {
+						$after_column = '';
+					}
+					
+					if ($after_column) {
+						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `" . $column_name . "` " . $column_definition . " AFTER `" . $after_column . "`");
+					} else {
+						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `" . $column_name . "` " . $column_definition);
+					}
+					$existing_columns[] = $column_name;
+				} catch (Exception $e) {
+					error_log("Error adding " . $column_name . " column to product_variation: " . $e->getMessage());
 				}
 			}
 		}
