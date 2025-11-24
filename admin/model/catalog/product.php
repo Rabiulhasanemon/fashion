@@ -468,9 +468,32 @@ class ModelCatalogProduct extends Model {
 			}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . ' (Error No: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
 			
-			// If it's a duplicate key error, throw exception with details
+			// If it's a duplicate key error, clean up and retry
 			if ($db_errno == 1062 || stripos($db_error, 'duplicate') !== false || stripos($db_error, 'primary') !== false) {
-				$error_msg = "Duplicate entry error: " . $db_error . ". This usually means product_id = 0 exists or AUTO_INCREMENT is broken.";
+				// Clean up any orphaned records with product_id = 0
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
+				
+				// Fix AUTO_INCREMENT
+				$max_retry = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product WHERE product_id > 0");
+				$next_retry = 1;
+				if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
+					$next_retry = (int)$max_retry->row['max_id'] + 1;
+				}
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_retry);
+				
+				// Retry the insert
+				$insert_result = $this->db->query($sql);
+				$product_id = $this->db->getLastId();
+				
+				if (!$insert_result || $product_id <= 0) {
+					$error_msg = "Duplicate entry error: " . $db_error . ". Failed to insert product even after cleanup and retry.";
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+					throw new Exception($error_msg);
+				}
+			} else {
+				$error_msg = "Database error: " . $db_error;
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 				throw new Exception($error_msg);
 			}
@@ -627,15 +650,25 @@ class ModelCatalogProduct extends Model {
 			throw new Exception($error_msg);
 		}
 
+		// CRITICAL: Verify product_id is valid before proceeding with related data
+		if ($product_id <= 0) {
+			$error_msg = "CRITICAL: Product was inserted but product_id is invalid (" . $product_id . "). Cannot proceed with related data insertion.";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
+		
 		// Insert product descriptions
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
 			foreach ($data['product_description'] as $language_id => $value) {
-				// Check if description already exists
-				$check_desc = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$language_id . "' LIMIT 1");
-				if (!$check_desc || !$check_desc->num_rows) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+				$language_id = (int)$language_id;
+				// CRITICAL: Ensure both product_id and language_id are valid before inserting
+				if ($language_id > 0 && $product_id > 0) {
+					// Delete any existing record first (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
+					
+					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
 						product_id = '" . (int)$product_id . "', 
-						language_id = '" . (int)$language_id . "', 
+						language_id = '" . $language_id . "', 
 						name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
 						sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
 						description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
@@ -645,14 +678,51 @@ class ModelCatalogProduct extends Model {
 						meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
 						meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
 						meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+					
+					// Check for errors
+					if (!$result) {
+						$db_error = '';
+						$db_errno = 0;
+						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+							if (property_exists($this->db->link, 'error')) {
+								$db_error = $this->db->link->error;
+							}
+							if (property_exists($this->db->link, 'errno')) {
+								$db_errno = $this->db->link->errno;
+							}
+						}
+						
+						// If duplicate key error, delete and retry once
+						if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'duplicate') !== false)) {
+							// Delete any conflicting record and retry
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
+							
+							// Retry the insert
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+								product_id = '" . (int)$product_id . "', 
+								language_id = '" . $language_id . "', 
+								name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
+								sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
+								description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
+								short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
+								video_url = '" . $this->db->escape(isset($value['video_url']) ? $value['video_url'] : '') . "', 
+								tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
+								meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
+								meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
+								meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+						}
+					}
 				}
 			}
 		} else {
 			// Insert default description if none provided
 			$default_language_id = $this->config->get('config_language_id');
 			$name = isset($data['name']) ? $data['name'] : '';
-			$check_desc = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$default_language_id . "' LIMIT 1");
-			if (!$check_desc || !$check_desc->num_rows) {
+			// CRITICAL: Ensure product_id is valid before inserting
+			if ($product_id > 0 && $default_language_id > 0) {
+				// Delete any existing record first (safety)
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$default_language_id . "'");
+				
 				$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
 					product_id = '" . (int)$product_id . "', 
 					language_id = '" . (int)$default_language_id . "', 
@@ -669,17 +739,21 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Insert product to store
-		if (isset($data['product_store']) && is_array($data['product_store'])) {
-			foreach ($data['product_store'] as $store_id) {
-				$check_store = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "' AND store_id = '" . (int)$store_id . "' LIMIT 1");
-				if (!$check_store || !$check_store->num_rows) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '" . (int)$store_id . "'");
+		// CRITICAL: Ensure product_id is valid before inserting
+		if ($product_id > 0) {
+			if (isset($data['product_store']) && is_array($data['product_store'])) {
+				foreach ($data['product_store'] as $store_id) {
+					$store_id = (int)$store_id;
+					if ($store_id >= 0) {
+						// Delete any existing record first (safety)
+						$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "' AND store_id = '" . $store_id . "'");
+						$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "'");
+					}
 				}
-			}
-		} else {
-			// Default to store 0 if none specified
-			$check_store = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "' AND store_id = '0' LIMIT 1");
-			if (!$check_store || !$check_store->num_rows) {
+			} else {
+				// Default to store 0 if none specified
+				// Delete any existing record first (safety)
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "' AND store_id = '0'");
 				$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '0'");
 			}
 		}
