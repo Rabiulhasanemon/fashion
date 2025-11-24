@@ -76,6 +76,12 @@
                     </div>
                   </div>
                   <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-video-url<?php echo $language['language_id']; ?>"><span data-toggle="tooltip" title="<?php echo $help_video_url; ?>"><?php echo $entry_video_url; ?></span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="product_description[<?php echo $language['language_id']; ?>][video_url]" value="<?php echo isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['video_url'] : ''; ?>" placeholder="https://www.youtube.com/watch?v=..." id="input-video-url<?php echo $language['language_id']; ?>" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-description<?php echo $language['language_id']; ?>"><?php echo $entry_description; ?></label>
                     <div class="col-sm-10">
                       <textarea name="product_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>"><?php echo isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['description'] : ''; ?></textarea>
@@ -706,10 +712,9 @@
               </div>
             </div>
             <div class="tab-pane" id="tab-reward">
-              <!–– TODO: Remove  ––>
-              <div class="form-group" style="display: none">
-                <label class="col-lg-2 control-label" for="input-points"><span data-toggle="tooltip" title="<?php echo $help_points; ?>"><?php echo $entry_points; ?></span></label>
-                <div class="col-lg-10">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-points"><span data-toggle="tooltip" title="<?php echo $help_points; ?>"><?php echo $entry_points; ?></span></label>
+                <div class="col-sm-10">
                   <input type="text" name="points" value="<?php echo $points; ?>" placeholder="<?php echo $entry_points; ?>" id="input-points" class="form-control" />
                 </div>
               </div>

@@ -44,6 +44,13 @@ class ControllerCheckoutCart extends Controller {
 				$data['error_warning'] = '';
 			}
 
+            if (isset($this->session->data['success'])) {
+                $data['success'] = $this->session->data['success'];
+                unset($this->session->data['success']);
+            } else {
+                $data['success'] = '';
+            }
+
 			if ($this->config->get('config_customer_price') && !$this->customer->isLogged()) {
 				$data['attention'] = sprintf($this->language->get('text_login'), $this->url->link('account/login'), $this->url->link('account/register'));
 			} else {
@@ -79,10 +86,13 @@ class ControllerCheckoutCart extends Controller {
 					$data['error_warning'] = sprintf($this->language->get('error_maximum'), $product['name'], $product['maximum']);
 				}
 
-				if ($product['image']) {
+				if (!empty($product['image'])) {
 					$image = $this->model_tool_image->resize($product['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					if (!$image) {
+						$image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+					}
 				} else {
-					$image = '';
+					$image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
 				}
 
                 $option_data = array();
@@ -228,6 +238,7 @@ class ControllerCheckoutCart extends Controller {
 			$data['continue'] = $this->url->link('common/home');
 
 			unset($this->session->data['success']);
+            $data['success'] = '';
 
 			$data['column_left'] = $this->load->controller('common/column_left');
 			$data['column_right'] = $this->load->controller('common/column_right');

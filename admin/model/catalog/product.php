@@ -132,6 +132,7 @@ class ModelCatalogProduct extends Model {
 				'sub_name'         => isset($result['sub_name']) ? $result['sub_name'] : '',
 				'description'      => $result['description'],
 				'short_description' => isset($result['short_description']) ? $result['short_description'] : '',
+				'video_url'        => isset($result['video_url']) ? $result['video_url'] : '',
 				'tag'              => $result['tag'],
 				'meta_title'       => $result['meta_title'],
 				'meta_description' => $result['meta_description'],
@@ -636,6 +637,7 @@ class ModelCatalogProduct extends Model {
 						sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
 						description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
 						short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
+						video_url = '" . $this->db->escape(isset($value['video_url']) ? $value['video_url'] : '') . "', 
 						tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
 						meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
 						meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
@@ -655,6 +657,7 @@ class ModelCatalogProduct extends Model {
 					sub_name = '', 
 					description = '', 
 					short_description = '', 
+					video_url = '', 
 					tag = '', 
 					meta_title = '" . $this->db->escape($name) . "', 
 					meta_description = '', 
@@ -1059,6 +1062,11 @@ class ModelCatalogProduct extends Model {
 			}
 		}
 
+		// Insert product options
+		if (isset($data['product_option']) && is_array($data['product_option']) && !empty($data['product_option'])) {
+			$this->persistProductOptions($product_id, $data['product_option']);
+		}
+
 		return $product_id;
 	}
 
@@ -1127,6 +1135,7 @@ class ModelCatalogProduct extends Model {
 						sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
 						description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
 						short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
+						video_url = '" . $this->db->escape(isset($value['video_url']) ? $value['video_url'] : '') . "', 
 						tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
 						meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
 						meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
@@ -1439,6 +1448,66 @@ class ModelCatalogProduct extends Model {
 				$compatible_id = (int)$compatible_id;
 				if ($compatible_id > 0 && $compatible_id != $product_id) {
 					$this->db->query("INSERT INTO " . DB_PREFIX . "product_compatible SET product_id = '" . (int)$product_id . "', compatible_id = '" . $compatible_id . "'");
+				}
+			}
+		}
+
+		// Update product options
+		if (isset($data['product_option']) && is_array($data['product_option']) && !empty($data['product_option'])) {
+			$this->persistProductOptions($product_id, $data['product_option']);
+		}
+	}
+
+	protected function persistProductOptions($product_id, $product_options = array()) {
+		if (empty($product_options) || !is_array($product_options)) {
+			return;
+		}
+
+		foreach ($product_options as $product_option) {
+			if (!isset($product_option['option_id'])) {
+				continue;
+			}
+
+			$option_id = (int)$product_option['option_id'];
+			$required = isset($product_option['required']) ? (int)$product_option['required'] : 0;
+			$value    = isset($product_option['value']) ? $product_option['value'] : '';
+
+			$this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
+			$product_option_id = $this->db->getLastId();
+
+			if (isset($product_option['product_option_value']) && is_array($product_option['product_option_value'])) {
+				foreach ($product_option['product_option_value'] as $product_option_value) {
+					if (empty($product_option_value['option_value_id'])) {
+						continue;
+					}
+
+					$option_value_id = (int)$product_option_value['option_value_id'];
+					$show            = !empty($product_option_value['show']) ? 1 : 0;
+					$quantity        = isset($product_option_value['quantity']) ? (int)$product_option_value['quantity'] : 0;
+					$subtract        = isset($product_option_value['subtract']) ? (int)$product_option_value['subtract'] : 0;
+					$price           = isset($product_option_value['price']) ? (float)$product_option_value['price'] : 0;
+					$price_prefix    = isset($product_option_value['price_prefix']) ? $product_option_value['price_prefix'] : '+';
+					$points          = isset($product_option_value['points']) ? (int)$product_option_value['points'] : 0;
+					$points_prefix   = isset($product_option_value['points_prefix']) ? $product_option_value['points_prefix'] : '+';
+					$weight          = isset($product_option_value['weight']) ? (float)$product_option_value['weight'] : 0;
+					$weight_prefix   = isset($product_option_value['weight_prefix']) ? $product_option_value['weight_prefix'] : '+';
+					$color           = isset($product_option_value['color']) ? $product_option_value['color'] : '';
+
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
+						product_option_id = '" . (int)$product_option_id . "', 
+						product_id = '" . (int)$product_id . "', 
+						option_id = '" . $option_id . "', 
+						option_value_id = '" . $option_value_id . "', 
+						quantity = '" . $quantity . "', 
+						subtract = '" . $subtract . "', 
+						price = '" . $price . "', 
+						price_prefix = '" . $this->db->escape($price_prefix) . "', 
+						points = '" . $points . "', 
+						points_prefix = '" . $this->db->escape($points_prefix) . "', 
+						weight = '" . $weight . "', 
+						weight_prefix = '" . $this->db->escape($weight_prefix) . "', 
+						color = '" . $this->db->escape($color) . "', 
+						`show` = '" . (int)$show . "'");
 				}
 			}
 		}

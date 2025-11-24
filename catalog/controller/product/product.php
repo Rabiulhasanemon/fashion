@@ -47,6 +47,170 @@ class ControllerProductProduct extends Controller
                             'href' => $this->url->link('product/category', 'category_id=' . $path_id)
                         );
                     }
+
+    private function buildVideoEmbedUrl($url) {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        $parsed = parse_url($url);
+        $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
+        $video_id = '';
+
+        if (strpos($host, 'youtu.be') !== false) {
+            $video_id = isset($parsed['path']) ? ltrim($parsed['path'], '/') : '';
+        } elseif (strpos($host, 'youtube.com') !== false) {
+            if (!empty($parsed['query'])) {
+                parse_str($parsed['query'], $params);
+                if (!empty($params['v'])) {
+                    $video_id = $params['v'];
+                }
+
+    private function buildVideoEmbedUrl($url) {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        $parsed = parse_url($url);
+        $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
+        $video_id = '';
+
+        if (strpos($host, 'youtu.be') !== false) {
+            $video_id = isset($parsed['path']) ? ltrim($parsed['path'], '/') : '';
+        } elseif (strpos($host, 'youtube.com') !== false) {
+            if (!empty($parsed['query'])) {
+                parse_str($parsed['query'], $params);
+                if (!empty($params['v'])) {
+                    $video_id = $params['v'];
+                }
+            }
+
+            if (!$video_id && !empty($parsed['path']) && strpos($parsed['path'], '/embed/') !== false) {
+                $parts = explode('/', trim($parsed['path'], '/'));
+                $video_id = end($parts);
+            }
+        }
+
+        if ($video_id) {
+            return 'https://www.youtube.com/embed/' . $video_id . '?rel=0&playsinline=1';
+        }
+
+        return $url;
+    }
+
+    private function buildImageUrl($image) {
+        if (empty($image)) {
+            return '';
+        }
+
+        if (stripos($image, 'http://') === 0 || stripos($image, 'https://') === 0) {
+            return $image;
+        }
+
+        $base = $this->request->server['HTTPS'] ? $this->config->get('config_ssl') : $this->config->get('config_url');
+        return rtrim($base, '/') . '/image/' . ltrim($image, '/');
+    }
+
+    private function normalizeInternationalPhone($number) {
+        $digits = preg_replace('/\D+/', '', $number);
+        if ($digits === '') {
+            return '';
+        }
+
+        if (strpos($digits, '88') === 0) {
+            return $digits;
+        }
+
+        if ($digits[0] === '0') {
+            return '88' . ltrim($digits, '0');
+        }
+
+        return $digits;
+    }
+
+    private function buildTelHref($number) {
+        $intl = $this->normalizeInternationalPhone($number);
+        return $intl ? 'tel:+' . $intl : '';
+    }
+
+    private function buildWhatsappLink($number, $productName, $productUrl) {
+        $intl = $this->normalizeInternationalPhone($number);
+        if (!$intl) {
+            return '';
+        }
+
+        $message = 'Hello, I would like to order ' . $productName;
+        if ($productUrl) {
+            $message .= ' - ' . $productUrl;
+        }
+
+        return 'https://wa.me/' . $intl . '?text=' . rawurlencode($message);
+    }
+}
+
+            if (!$video_id && !empty($parsed['path']) && strpos($parsed['path'], '/embed/') !== false) {
+                $parts = explode('/', trim($parsed['path'], '/'));
+                $video_id = end($parts);
+            }
+        }
+
+        if ($video_id) {
+            return 'https://www.youtube.com/embed/' . $video_id . '?rel=0&playsinline=1';
+        }
+
+        return $url;
+    }
+
+    private function buildImageUrl($image) {
+        if (empty($image)) {
+            return '';
+        }
+
+        if (stripos($image, 'http://') === 0 || stripos($image, 'https://') === 0) {
+            return $image;
+        }
+
+        $base = $this->request->server['HTTPS'] ? $this->config->get('config_ssl') : $this->config->get('config_url');
+        return rtrim($base, '/') . '/image/' . ltrim($image, '/');
+    }
+
+    private function normalizeInternationalPhone($number) {
+        $digits = preg_replace('/\D+/', '', $number);
+        if ($digits === '') {
+            return '';
+        }
+
+        if (strpos($digits, '88') === 0) {
+            return $digits;
+        }
+
+        if ($digits[0] === '0') {
+            return '88' . ltrim($digits, '0');
+        }
+
+        return $digits;
+    }
+
+    private function buildTelHref($number) {
+        $intl = $this->normalizeInternationalPhone($number);
+        return $intl ? 'tel:+' . $intl : '';
+    }
+
+    private function buildWhatsappLink($number, $productName, $productUrl) {
+        $intl = $this->normalizeInternationalPhone($number);
+        if (!$intl) {
+            return '';
+        }
+
+        $message = 'Hello, I would like to order ' . $productName;
+        if ($productUrl) {
+            $message .= ' - ' . $productUrl;
+        }
+
+        return 'https://wa.me/' . $intl . '?text=' . rawurlencode($message);
+    }
                 }
 
 
@@ -145,8 +309,16 @@ class ControllerProductProduct extends Controller
             $data['mpn'] = $product_info['mpn'];
             $data['reward'] = $product_info['reward'];
             $data['points'] = $product_info['points'];
+			$data['product_reward_points'] = (int)$product_info['points'];
             $data['short_description'] = $product_info['short_description'];
             $data['short_note'] = $product_info['short_note'];
+			$raw_video_url = isset($product_info['video_url']) ? trim($product_info['video_url']) : '';
+			$data['video_url'] = $raw_video_url ? $this->buildVideoEmbedUrl($raw_video_url) : '';
+			$data['view_all_products_link'] = $this->url->link('product/category', 'view_all=1');
+			$contactNumber = '01738811656';
+			$data['primary_contact_number'] = $contactNumber;
+			$data['primary_contact_tel'] = $this->buildTelHref($contactNumber);
+			$data['whatsapp_link'] = $this->buildWhatsappLink($contactNumber, $product_info['name'], $product_url);
             $data['product_image_url'] = (int)$this->request->get['product_id'];
             $data["print_url"] = $this->url->link('product/print', 'product_id=' . $product_info['product_id']);
 
@@ -183,23 +355,29 @@ class ControllerProductProduct extends Controller
             $first_additional_image = '';
             foreach ($results as $index => $result) {
                 $debug_info .= "  Image #" . ($index + 1) . ": " . (isset($result['image']) ? $result['image'] : 'EMPTY') . "\n";
-                if (!empty($result['image'])) {
-                    // Store first additional image for fallback
-                    if (empty($first_additional_image)) {
-                        $first_additional_image = $result['image'];
-                    }
-                    
-                    $resized_popup = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
-                    $resized_thumb = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'));
-                    
-                    $debug_info .= "    Resized popup: " . $resized_popup . "\n";
-                    $debug_info .= "    Resized thumb: " . $resized_thumb . "\n";
-                    
-                    $data['images'][] = array(
-                        'popup' => $resized_popup,
-                        'thumb' => $resized_thumb
-                    );
+                if (empty($result['image'])) {
+                    continue;
                 }
+
+                if (empty($first_additional_image)) {
+                    $first_additional_image = $result['image'];
+                }
+
+                $original_image_url = $this->buildImageUrl($result['image']);
+                $resized_popup = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
+                $resized_thumb = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_additional_width'), $this->config->get('config_image_additional_height'));
+
+                $resized_popup = $resized_popup ?: $original_image_url;
+                $resized_thumb = $resized_thumb ?: $original_image_url;
+
+                $debug_info .= "    Resized popup: " . $resized_popup . "\n";
+                $debug_info .= "    Resized thumb: " . $resized_thumb . "\n";
+
+                $data['images'][] = array(
+                    'popup'    => $resized_popup,
+                    'thumb'    => $resized_thumb,
+                    'original' => $original_image_url
+                );
             }
             
             // Determine main image - use product image field, or fallback to first additional image
@@ -216,9 +394,12 @@ class ControllerProductProduct extends Controller
             }
             
             // Set popup and thumb based on main image
+            $main_image_original = $main_image ? $this->buildImageUrl($main_image) : '';
             if ($main_image) {
                 $data['popup'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
                 $data['thumb'] = $this->model_tool_image->resize($main_image, $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+                $data['popup'] = $data['popup'] ?: $main_image_original;
+                $data['thumb'] = $data['thumb'] ?: $main_image_original;
                 $debug_info .= "Final thumb: " . $data['thumb'] . "\n";
                 $debug_info .= "Final popup: " . $data['popup'] . "\n";
             } else {
@@ -230,9 +411,15 @@ class ControllerProductProduct extends Controller
             // Set featured image
             if (!empty($product_info['featured_image'])) {
                 $data['featured_image'] = $this->model_tool_image->resize($product_info['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+                if (!$data['featured_image']) {
+                    $data['featured_image'] = $this->buildImageUrl($product_info['featured_image']);
+                }
             } elseif ($main_image) {
                 // Fallback to main image if featured_image is empty
                 $data['featured_image'] = $this->model_tool_image->resize($main_image, $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+                if (!$data['featured_image']) {
+                    $data['featured_image'] = $main_image_original;
+                }
             } else {
                 $data['featured_image'] = '';
             }

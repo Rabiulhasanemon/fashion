@@ -39,13 +39,25 @@ class ControllerProductCategory extends Controller {
 
 		$data['breadcrumbs'] = array();
 
+        $is_view_all = !empty($this->request->get['view_all']);
+
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
 			'href' => $this->url->link('common/home')
 		);
 
+        if (!empty($is_view_all)) {
+            $data['breadcrumbs'][] = array(
+                'text' => $this->language->get('text_all_products'),
+                'href' => $this->url->link('product/category', 'view_all=1')
+            );
+        }
+
 		// Handle both path and category_id parameters (SEO URLs may use category_id)
-		if (isset($this->request->get['category_id'])) {
+		if ($is_view_all) {
+            $category_id = 0;
+            $path = '';
+        } elseif (isset($this->request->get['category_id'])) {
 			$category_id = (int)$this->request->get['category_id'];
 			$path = (string)$category_id;
 		} elseif (isset($this->request->get['path'])) {
@@ -97,6 +109,17 @@ class ControllerProductCategory extends Controller {
 
 		$category_info = $this->model_catalog_category->getCategory($category_id);
 
+        if ($is_view_all) {
+            $category_info = array(
+                'name' => $this->language->get('text_all_products'),
+                'meta_title' => $this->language->get('text_all_products'),
+                'meta_description' => '',
+                'meta_keyword' => '',
+                'description' => '',
+                'image' => ''
+            );
+        }
+
 		if ($category_info) {
 			$this->document->setTitle($category_info['meta_title']);
 			$this->document->setDescription($category_info['meta_description']);
@@ -129,10 +152,12 @@ class ControllerProductCategory extends Controller {
 				$breadcrumb_path = 'category_id=' . $category_id;
 			}
 			
-			$data['breadcrumbs'][] = array(
-				'text' => $category_info['name'],
-				'href' => $this->url->link('product/category', $breadcrumb_path . $url)
-			);
+            if (!$is_view_all) {
+                $data['breadcrumbs'][] = array(
+                    'text' => $category_info['name'],
+                    'href' => $this->url->link('product/category', $breadcrumb_path . $url)
+                );
+            }
 
 			if ($category_info['image']) {
 				$data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get('config_image_category_width'), $this->config->get('config_image_category_height'));
@@ -162,27 +187,29 @@ class ControllerProductCategory extends Controller {
 
 			$data['categories'] = array();
 
-			$results = $this->model_catalog_category->getCategories($category_id);
+            if (!$is_view_all) {
+                $results = $this->model_catalog_category->getCategories($category_id);
 
-			foreach ($results as $result) {
-				$filter_data = array(
-					'filter_category_id'  => $result['category_id'],
-					'filter_sub_category' => true
-				);
+                foreach ($results as $result) {
+                    $filter_data = array(
+                        'filter_category_id'  => $result['category_id'],
+                        'filter_sub_category' => true
+                    );
 
-				// Build path for subcategory link
-				$subcategory_path = '';
-				if (isset($this->request->get['path'])) {
-					$subcategory_path = 'path=' . $this->request->get['path'] . '_' . $result['category_id'];
-				} elseif (isset($this->request->get['category_id'])) {
-					$subcategory_path = 'path=' . $category_id . '_' . $result['category_id'];
-				}
-				
-				$data['categories'][] = array(
-					'name' => $result['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-					'href' => $this->url->link('product/category', $subcategory_path . $url)
-				);
-			}
+                    // Build path for subcategory link
+                    $subcategory_path = '';
+                    if (isset($this->request->get['path'])) {
+                        $subcategory_path = 'path=' . $this->request->get['path'] . '_' . $result['category_id'];
+                    } elseif (isset($this->request->get['category_id'])) {
+                        $subcategory_path = 'path=' . $category_id . '_' . $result['category_id'];
+                    }
+                    
+                    $data['categories'][] = array(
+                        'name' => $result['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+                        'href' => $this->url->link('product/category', $subcategory_path . $url)
+                    );
+                }
+            }
 
 			$data['products'] = array();
 
@@ -538,7 +565,7 @@ class ControllerProductCategory extends Controller {
 			$data['header'] = $this->load->controller('common/header');
 
 			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/error/not_found.tpl')) {
-				$this->response->setOutput($this->load->view('error/not_found', $data));
+				$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/error/not_found.tpl', $data));
 			} else {
 				// Fallback if error template doesn't exist
 				$data['text_error'] = $this->language->get('text_error');

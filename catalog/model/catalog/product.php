@@ -16,6 +16,7 @@ class ModelCatalogProduct extends Model {
 				'sub_name'         => $query->row['sub_name'],
 				'description'      => $query->row['description'],
 				'short_description'=> explode("\n", $query->row['short_description']),
+				'video_url'        => isset($query->row['video_url']) ? $query->row['video_url'] : '',
 				'meta_title'       => $query->row['meta_title'],
 				'meta_description' => $query->row['meta_description'],
 				'meta_keyword'     => $query->row['meta_keyword'],

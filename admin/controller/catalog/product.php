@@ -1375,6 +1375,7 @@ class ControllerCatalogProduct extends Controller {
         $data['entry_sub_name'] = $this->language->get('entry_sub_name');
 		$data['entry_description'] = $this->language->get('entry_description');
 		$data['entry_short_description'] = $this->language->get('entry_short_description');
+		$data['entry_video_url'] = $this->language->get('entry_video_url');
 		$data['entry_meta_title'] = $this->language->get('entry_meta_title');
 		$data['entry_meta_description'] = $this->language->get('entry_meta_description');
 		$data['entry_meta_keyword'] = $this->language->get('entry_meta_keyword');
@@ -1443,6 +1444,7 @@ class ControllerCatalogProduct extends Controller {
 		$data['help_download'] = $this->language->get('help_download');
 		$data['help_related'] = $this->language->get('help_related');
 		$data['help_tag'] = $this->language->get('help_tag');
+		$data['help_video_url'] = $this->language->get('help_video_url');
 
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');

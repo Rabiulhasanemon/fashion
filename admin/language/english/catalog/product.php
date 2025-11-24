@@ -35,6 +35,7 @@ $_['entry_name']             = 'Product Name';
 $_['entry_sub_name']         = 'Product Sub Name';
 $_['entry_description']      = 'Description';
 $_['entry_short_description']= 'Short Description';
+$_['entry_video_url']        = 'Product Video URL';
 $_['entry_meta_title'] 	     = 'Meta Tag Title';
 $_['entry_meta_keyword'] 	 = 'Meta Tag Keywords';
 $_['entry_meta_description'] = 'Meta Tag Description';
@@ -123,6 +124,7 @@ $_['help_filter']            = '(Autocomplete)';
 $_['help_download']          = '(Autocomplete)';
 $_['help_related']           = '(Autocomplete)';
 $_['help_tag']          	 = 'comma separated';
+$_['help_video_url']         = 'Paste a valid YouTube link (watch/share).';
 
 // Error
 $_['error_warning']          = 'Warning: Please check the form carefully for errors!';

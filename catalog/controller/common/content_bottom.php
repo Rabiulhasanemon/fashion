@@ -2,6 +2,7 @@
 class ControllerCommonContentBottom extends Controller {
 	public function index() {
 		$this->load->model('design/layout');
+        $this->load->language('product/category');
 
 		if (isset($this->request->get['route'])) {
 			$route = (string)$this->request->get['route'];
@@ -69,6 +70,10 @@ class ControllerCommonContentBottom extends Controller {
 				}
 			}
 		}
+
+        $data['home_view_all_enabled'] = ($route === 'common/home');
+        $data['home_view_all_link'] = $data['home_view_all_enabled'] ? $this->url->link('product/category', 'view_all=1') : '';
+        $data['home_view_all_label'] = $this->language->get('text_all_products');
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/content_bottom.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/common/content_bottom.tpl', $data);

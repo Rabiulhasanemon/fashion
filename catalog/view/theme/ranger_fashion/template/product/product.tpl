@@ -52,17 +52,27 @@
                             if (!empty($thumb)) {
                                 $all_thumbnails[] = array(
                                     'thumb' => $thumb,
-                                    'popup' => !empty($popup) ? $popup : $thumb
+                                    'popup' => !empty($popup) ? $popup : $thumb,
+                                    'original' => $thumb
                                 );
                             }
                             
                             // Add additional images
                             if (!empty($images) && is_array($images)) {
                                 foreach ($images as $img) {
+                                    $thumb_src = '';
                                     if (!empty($img['thumb'])) {
+                                        $thumb_src = $img['thumb'];
+                                    } elseif (!empty($img['original'])) {
+                                        $thumb_src = $img['original'];
+                                    }
+                                    
+                                    if (!empty($thumb_src)) {
+                                        $popup_src = !empty($img['popup']) ? $img['popup'] : $thumb_src;
                                         $all_thumbnails[] = array(
-                                            'thumb' => $img['thumb'],
-                                            'popup' => !empty($img['popup']) ? $img['popup'] : $img['thumb']
+                                            'thumb' => $thumb_src,
+                                            'popup' => $popup_src,
+                                            'original' => !empty($img['original']) ? $img['original'] : $thumb_src
                                         );
                                     }
                                 }
@@ -89,19 +99,23 @@
                             <!-- Thumbnails on the left -->
                             <?php if (count($all_thumbnails) > 0) { ?>
                             <div class="product-thumbnails-left">
-                                <?php foreach ($all_thumbnails as $index => $thumb_data) { ?>
+                                <?php foreach ($all_thumbnails as $index => $thumb_data) { 
+                                    $thumb_src = isset($thumb_data['thumb']) && $thumb_data['thumb'] ? $thumb_data['thumb'] : (isset($thumb_data['original']) ? $thumb_data['original'] : '');
+                                    $popup_src = isset($thumb_data['popup']) && $thumb_data['popup'] ? $thumb_data['popup'] : $thumb_src;
+                                    if (!$thumb_src) { continue; }
+                                ?>
                                 <a class="thumbnail-item <?php echo ($index === 0) ? 'active' : ''; ?>" 
                                    href="javascript:void(0);" 
-                                   data-image="<?php echo htmlspecialchars($thumb_data['thumb']); ?>" 
-                                   data-popup="<?php echo htmlspecialchars($thumb_data['popup']); ?>" 
+                                   data-image="<?php echo htmlspecialchars($thumb_src); ?>" 
+                                   data-popup="<?php echo htmlspecialchars($popup_src); ?>" 
                                    title="<?php echo htmlspecialchars($heading_title); ?>">
                                     <img class="thumb-image" 
-                                         src="<?php echo htmlspecialchars($thumb_data['thumb']); ?>" 
+                                         src="<?php echo htmlspecialchars($thumb_src); ?>" 
                                          title="<?php echo htmlspecialchars($heading_title); ?>" 
                                          alt="<?php echo htmlspecialchars($heading_title); ?>" 
                                          onerror="this.src='image/placeholder.png';" />
                                 </a>
-                                <meta itemprop="image" content="<?php echo htmlspecialchars($thumb_data['thumb']); ?>"/>
+                                <meta itemprop="image" content="<?php echo htmlspecialchars($thumb_src); ?>"/>
                                 <?php } ?>
                             </div>
                             <?php } ?>
@@ -157,37 +171,31 @@
                         </div>
 
                         <?php if ($options) { ?>
-                        <div class="p-opt-wrap">
+                        <div class="p-opt-wrap prx-option-wrap">
                             <?php foreach ($options as $option) { ?>
-                            <?php if($option['type'] === 'select'){ ?>
-                            <div class="p-opt color required">
-                                <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>">  <?php echo $option['name']; ?>:  <b></b></div>
-                                <div class="p-opt-vals">
+                            <div class="prx-option-field <?php echo $option['type']; ?>">
+                                <div class="prx-option-head">
+                                    <div class="prx-option-name"><?php echo $option['name']; ?></div>
+                                    <div class="prx-option-selection" id="input-option<?php echo $option['product_option_id']; ?>"><b></b></div>
+                                </div>
+                                <div class="prx-option-values">
                                     <?php foreach ($option['product_option_value'] as $option_value) { ?>
-                                    <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
+                                    <label class="prx-option-pill">
+                                        <input class="prx-option-input" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>">
+                                        <span class="prx-option-pill__label"><?php echo $option_value['name']; ?></span>
+                                    </label>
                                     <?php } ?>
                                 </div>
                             </div>
-                            <?php } else { ?>
-                            <div class="p-opt required">
-                                <div class="p-opt-lbl" id="input-option<?php echo $option['product_option_id']; ?>">Select <?php echo $option['name']; ?>:  <b></b></div>
-                                <div class="p-opt-vals">
-                                    <?php foreach ($option['product_option_value'] as $option_value) { ?>
-                                    <label><input class="hide" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>"><span><?php echo $option_value['name']; ?></span></label>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                            <?php }  ?>
-
                             <?php } ?>
                         </div>
                         <?php } ?>
 
-                        <div class="cart-option" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                        <div class="cart-option prx-cart-option" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                             <link itemprop="availability" href="http://schema.org/<?php echo $stock_meta; ?>"/><link itemprop="itemCondition" href="http://schema.org/NewCondition">
                             <meta itemprop="priceCurrency" content="BDT" /><meta itemprop="price" content="<?php echo $raw_price; ?>" />
 
-                            <div class="price-wrap">
+                            <div class="price-wrap prx-price-wrap">
                                 <input type="hidden" name="enable_emi" checked value="0"/>
 
                                 <?php if ($disablePurchase || !$special) { ?>
@@ -202,17 +210,47 @@
                                 ?>
                                 <span class="save">Save <?php echo $discountAmount; ?> TK.</span>
                                 <?php } ?>
+                                <?php if (!empty($product_reward_points)) { ?>
+                                <div class="prx-reward-pill">
+                                    <i class="fa fa-gift"></i>
+                                    <span>Earn <?php echo $product_reward_points; ?> reward points</span>
+                                </div>
+                                <?php } ?>
                             </div>
-                            <div class="control-options">
-                                <div class="quantity">
-                                    <span><i class="material-icons">remove</i></span>
+                            <div class="prx-action-grid">
+                                <div class="prx-qty-control">
+                                    <span class="prx-qty-btn prx-qty-btn--minus"><i class="material-icons">remove</i></span>
                                     <span class="qty"><input type="text" name="quantity" id="input-quantity" value="<?php echo $minimum; ?>" size="2"></span>
-                                    <span  class="increment"><i class="material-icons">add</i></span>
+                                    <span class="prx-qty-btn prx-qty-btn--plus"><i class="material-icons">add</i></span>
                                     <input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
                                 </div>
-                                <button id="button-cart" class="btn" <?php echo $disablePurchase ? "disabled" : ""; ?>> Buy Now</button>
+                                <div class="prx-cta-buttons">
+                                    <button id="button-cart" class="prx-btn prx-btn--cart" <?php echo $disablePurchase ? "disabled" : ""; ?>><i class="fa fa-shopping-cart"></i><span>Add to Cart</span></button>
+                                    <button id="buy-now" class="prx-btn prx-btn--buy" <?php echo $disablePurchase ? "disabled" : ""; ?>><i class="fa fa-bolt"></i><span>Buy Now</span></button>
+                                    <button type="button" class="prx-btn prx-btn--compare" onclick="compare.add('<?php echo $product_id; ?>');"><i class="fa fa-exchange"></i><span>Compare</span></button>
+                                </div>
                             </div>
+                        </div>
 
+                        <div class="prx-contact-grid">
+                            <?php if (!empty($whatsapp_link)) { ?>
+                            <a class="prx-contact-card prx-contact-card--whatsapp" href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener">
+                                <div class="prx-contact-icon"><i class="fa fa-whatsapp"></i></div>
+                                <div class="prx-contact-text">
+                                    <span class="prx-contact-label">Order on WhatsApp</span>
+                                    <span class="prx-contact-value"><?php echo $primary_contact_number; ?></span>
+                                </div>
+                            </a>
+                            <?php } ?>
+                            <?php if (!empty($primary_contact_tel)) { ?>
+                            <a class="prx-contact-card prx-contact-card--call" href="<?php echo $primary_contact_tel; ?>">
+                                <div class="prx-contact-icon"><i class="fa fa-phone"></i></div>
+                                <div class="prx-contact-text">
+                                    <span class="prx-contact-label">Call for Order</span>
+                                    <span class="prx-contact-value"><?php echo $primary_contact_number; ?></span>
+                                </div>
+                            </a>
+                            <?php } ?>
                         </div>
 
                         <div class="save-and-share-wrap">
@@ -339,50 +377,37 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <?php
-                    if (isset($products) && is_array($products) && count($products) > 0) {
-                    ?>
-
-                   <div class="related-products-head mb-3" style="display: flex; align-items: center; justify-content: space-between;">
-                       <h4 class="related-product-title" style="margin: 0;">More Products</h4>
-                       <div class="more-products-nav" style="display: flex; gap: 8px;">
-                           <button type="button" class="more-products-prev" style="background: transparent; border: 1px solid #ddd; padding: 5px 10px; cursor: pointer; border-radius: 3px;"><i class="fa fa-chevron-left"></i></button>
-                           <button type="button" class="more-products-next" style="background: transparent; border: 1px solid #ddd; padding: 5px 10px; cursor: pointer; border-radius: 3px;"><i class="fa fa-chevron-right"></i></button>
-                       </div>
-                   </div>
-                    <div class="related-product-list-wrapper">
-                        <?php foreach ($products as $product) { ?>
-                        <a href="<?php echo $product['href']; ?>" class="special-product-item">
-                            <div class="img">
-                                <img
-                                        src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>"
-                                        width="120"
-                                        height="120"
-                                />
+                    <?php if (isset($products) && is_array($products) && count($products) > 0) { ?>
+                    <div class="rpmini24_widget">
+                        <div class="rpmini24_head">
+                            <div>
+                                <p class="rpmini24_kicker">You may also like</p>
+                                <h4 class="rpmini24_title">Related Products</h4>
                             </div>
-                            <div class="info">
-                                <?php if ($product['special']) { ?>
-                                <?php
-                                  $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                  $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                  $discountAmount = $price - $special;
-                                  $mark = ($discountAmount / $price) * 100;
-                                ?>
-                                <div class="mark"><?php echo round($mark, 1); ?>% OFF </div>
-                                <?php } ?>
-                                <h5 class="name"><?php echo $product['name']; ?></h5>
-                                <div class="product-price-wrap">
-                                    <?php if ($product['special']) { ?>
-                                    <span class="price"><?php echo $product['special']; ?></span>
-                                    <span class="price old"><?php echo $product['price']; ?></span>
-                                    <?php } else { ?>
-                                    <span class="price"><?php echo $product['price']; ?></span>
-                                    <?php } ?>
-
+                            <?php if (!empty($view_all_products_link)) { ?>
+                            <a class="rpmini24_viewall" href="<?php echo $view_all_products_link; ?>">View All</a>
+                            <?php } ?>
+                        </div>
+                        <div class="rpmini24_list">
+                            <?php foreach ($products as $product) { ?>
+                            <a href="<?php echo $product['href']; ?>" class="rpmini24_card">
+                                <div class="rpmini24_media">
+                                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" onerror="this.src='image/placeholder.png';" />
                                 </div>
-                            </div>
-                        </a>
-                        <?php } ?>
+                                <div class="rpmini24_info">
+                                    <h5><?php echo $product['name']; ?></h5>
+                                    <div class="rpmini24_price">
+                                        <?php if ($product['special']) { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['special']; ?></span>
+                                        <span class="rpmini24_price-old"><?php echo $product['price']; ?></span>
+                                        <?php } else { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['price']; ?></span>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </a>
+                            <?php } ?>
+                        </div>
                     </div>
                     <?php } ?>
                 </div>
@@ -391,149 +416,6 @@
     </section>
     
     <!-- Related Products Section -->
-    <?php 
-    if (isset($products) && is_array($products) && count($products) > 0) { 
-        $total_related = count($products);
-        $initial_display = 6; // Show first 6 products initially
-        $remaining_products = array_slice($products, $initial_display);
-        $display_products = array_slice($products, 0, $initial_display);
-    ?>
-    <section class="newproduct-section popular-category-sec related-products-showcase" style="padding: 50px 0; background-color: #f3f5f6;">
-        <div class="container">
-            <div class="section-title">
-                <h2 class="h3">Related Products</h2>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="popular-category-slider owl-carousel related-products-slider">
-                        <?php foreach ($display_products as $product) { ?>
-                        <div class="slider-item">
-                            <div class="product-card">
-                                <div class="product-thumb">
-                                    <?php if ($product['special']) { ?>
-                                    <?php
-                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                    $discount = 0;
-                                    if ($price > 0) {
-                                        $discountAmount = $price - $special;
-                                        $discount = round(($discountAmount / $price) * 100, 0);
-                                    }
-                                    if ($discount > 0) {
-                                    ?>
-                                    <div class="product-badge product-badge2 bg-info">-<?php echo $discount; ?>%</div>
-                                    <?php } ?>
-                                    <?php } ?>
-                                    
-                                    <?php if ($product['featured_image']) { ?>
-                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['featured_image']; ?>" />
-                                    <?php } else { ?>
-                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['thumb']; ?>" />
-                                    <?php } ?>
-                                    
-                                    <div class="product-button-group">
-                                        <a class="product-button wishlist_store" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
-                                        <?php if (!$product['disablePurchase']) { ?>
-                                        <a class="product-button add_to_single_cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                                <div class="product-card-body">
-                                    <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h3>
-                                    
-                                    <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
-                                    <div class="rating-stars">
-                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                        <i class="fas fa-star<?php echo $i <= $product['rating'] ? ' filled' : ''; ?>"></i>
-                                        <?php } ?>
-                                    </div>
-                                    <?php } ?>
-                                    
-                                    <h4 class="product-price">
-                                        <?php if ($product['special']) { ?>
-                                        <del><?php echo $product['price']; ?></del> <?php echo $product['special']; ?>
-                                        <?php } else { ?>
-                                        <?php echo $product['price']; ?>
-                                        <?php } ?>
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                        <?php } ?>
-                    </div>
-                    
-                    <?php if (count($remaining_products) > 0) { ?>
-                    <div class="more-products-container" style="display: none;">
-                        <div class="popular-category-slider owl-carousel related-products-slider-more">
-                            <?php foreach ($remaining_products as $product) { ?>
-                            <div class="slider-item">
-                                <div class="product-card">
-                                    <div class="product-thumb">
-                                        <?php if ($product['special']) { ?>
-                                        <?php
-                                        $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                        $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                        $discount = 0;
-                                        if ($price > 0) {
-                                            $discountAmount = $price - $special;
-                                            $discount = round(($discountAmount / $price) * 100, 0);
-                                        }
-                                        if ($discount > 0) {
-                                        ?>
-                                        <div class="product-badge product-badge2 bg-info">-<?php echo $discount; ?>%</div>
-                                        <?php } ?>
-                                        <?php } ?>
-                                        
-                                        <?php if ($product['featured_image']) { ?>
-                                        <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['featured_image']; ?>" />
-                                        <?php } else { ?>
-                                        <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['thumb']; ?>" />
-                                        <?php } ?>
-                                        
-                                        <div class="product-button-group">
-                                            <a class="product-button wishlist_store" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
-                                            <?php if (!$product['disablePurchase']) { ?>
-                                            <a class="product-button add_to_single_cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
-                                            <?php } ?>
-                                        </div>
-                                    </div>
-                                    <div class="product-card-body">
-                                        <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h3>
-                                        
-                                        <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
-                                        <div class="rating-stars">
-                                            <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                            <i class="fas fa-star<?php echo $i <= $product['rating'] ? ' filled' : ''; ?>"></i>
-                                            <?php } ?>
-                                        </div>
-                                        <?php } ?>
-                                        
-                                        <h4 class="product-price">
-                                            <?php if ($product['special']) { ?>
-                                            <del><?php echo $product['price']; ?></del> <?php echo $product['special']; ?>
-                                            <?php } else { ?>
-                                            <?php echo $product['price']; ?>
-                                            <?php } ?>
-                                        </h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php } ?>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center" style="margin-top: 30px;">
-                        <button type="button" class="btn btn-primary show-more-products-btn" style="padding: 12px 40px; font-size: 14px; font-weight: 600; border-radius: 25px; background: #FF6A00; border: none; color: #fff; transition: all 0.3s;">
-                            <span class="btn-text">More Products</span>
-                            <i class="fas fa-chevron-down" style="margin-left: 8px;"></i>
-                        </button>
-                    </div>
-                    <?php } ?>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php } ?>
 
     <!-- Compatible Products Section -->
     <?php 
@@ -616,303 +498,335 @@
 <?php echo $footer; ?>
 
 <style>
-/* Related & Compatible Products - Product Showcase Tabs Style */
-.related-products-showcase .container,
-.compatible-products-showcase .container {
-    max-width: 80%;
-    margin: 0 auto;
-    padding: 0 20px;
-    width: 100%;
-    box-sizing: border-box;
+.prx-cart-option {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 18px;
+    background: #fff;
 }
-
-@media (max-width: 767px) {
-    .related-products-showcase .container,
-    .compatible-products-showcase .container {
-        max-width: 100% !important;
-        padding: 0 15px !important;
-    }
+.prx-price-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
-
-.related-products-showcase .section-title,
-.compatible-products-showcase .section-title {
-    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
-    padding-bottom: 0;
-    margin-bottom: 25px;
+.prx-reward-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff7e6;
+    color: #b37400;
+    font-size: 12px;
+    font-weight: 600;
+}
+.prx-reward-pill i {
+    color: #ff9800;
+}
+.prx-action-grid {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.prx-qty-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9f9f9;
+    border-radius: 999px;
+    padding: 6px 16px;
+    border: 1px solid #ededed;
+}
+.prx-qty-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #858585;
+}
+.prx-qty-control .qty input {
+    width: 50px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+}
+.prx-cta-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+.prx-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.prx-btn--cart {
+    background: #fff2e7;
+    color: #ff6a00;
+}
+.prx-btn--buy {
+    background: #000;
+    color: #fff;
+}
+.prx-btn--compare {
+    background: #f4f4f4;
+    color: #333;
+}
+.prx-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.prx-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+.prx-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.prx-contact-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.prx-contact-card:hover {
+    border-color: #ff6a00;
+    transform: translateY(-2px);
+}
+.prx-contact-card--whatsapp {
+    background: #f0fff5;
+}
+.prx-contact-card--call {
+    background: #fff8f0;
+}
+.prx-contact-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.04);
+    font-size: 18px;
+}
+.prx-contact-card--whatsapp .prx-contact-icon {
+    background: rgba(37,211,102,0.15);
+    color: #25d366;
+}
+.prx-contact-card--call .prx-contact-icon {
+    background: rgba(0,0,0,0.08);
+    color: #ff6a00;
+}
+.prx-contact-label {
+    display: block;
+    font-size: 12px;
+    color: #6f6f6f;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.prx-contact-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+}
+.prx-option-wrap {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.prx-option-field {
+    border: 1px solid #f1f1f1;
+    border-radius: 12px;
+    padding: 16px;
+}
+.prx-option-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 12px;
 }
-
-.related-products-showcase .section-title h2,
-.compatible-products-showcase .section-title h2 {
-    padding-bottom: 12px;
-    margin-bottom: 0;
+.prx-option-name {
     font-weight: 600;
-    font-size: 24px;
-    position: relative;
+    font-size: 15px;
 }
-
-.related-products-showcase .section-title h2::before,
-.compatible-products-showcase .section-title h2::before {
-    position: absolute;
-    content: "";
-    height: 2px;
-    width: 100%;
-    bottom: -2px;
-    left: 0;
-    background: #377dff;
-}
-
-.related-products-slider,
-.compatible-products-slider,
-.related-products-slider-more {
-    margin: 0 -4px;
-}
-
-.related-products-showcase .slider-item,
-.compatible-products-showcase .slider-item {
-    padding: 8px 4px;
-}
-
-/* Ensure product cards use Product Showcase Tabs styles - Smaller Premium Design */
-.related-products-showcase .product-card,
-.compatible-products-showcase .product-card {
-    display: block;
-    position: relative;
-    width: 100%;
-    border-radius: 8px;
-    background-color: #fff;
-    overflow: visible;
-    border: 1px solid #e8e8e8;
-    transition: all 0.3s ease;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-}
-
-.related-products-showcase .product-card:hover,
-.compatible-products-showcase .product-card:hover {
-    border-color: #FF6A00;
-    box-shadow: 0 4px 16px rgba(255, 106, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-.related-products-showcase .product-card .product-thumb,
-.compatible-products-showcase .product-card .product-thumb {
-    display: block;
-    width: 100%;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    overflow: hidden;
-    position: relative;
-}
-
-.related-products-showcase .product-card .product-thumb > img,
-.compatible-products-showcase .product-card .product-thumb > img {
-    display: block;
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    padding-top: 0;
-    transform: scale(1);
-    transition: 0.3s linear;
-}
-
-.related-products-showcase .product-card:hover .product-thumb > img,
-.compatible-products-showcase .product-card:hover .product-thumb > img {
-    transform: scale(1.1);
-}
-
-.related-products-showcase .product-card .product-badge,
-.compatible-products-showcase .product-card .product-badge {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    border-radius: 0 6px 20px 0;
-    padding: 0 8px 0 6px;
-    height: 20px;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 20px;
-    z-index: 9;
-}
-
-.related-products-showcase .product-card .product-badge.product-badge2,
-.compatible-products-showcase .product-card .product-badge.product-badge2 {
-    left: auto;
-    right: 0;
-    border-radius: 9px 0 0 30px;
-    padding: 0 10px 0 12px;
-    background: #daa520 !important;
-}
-
-.related-products-showcase .product-card .product-badge.bg-info,
-.compatible-products-showcase .product-card .product-badge.bg-info {
-    background: #0dcaf0 !important;
-}
-
-.related-products-showcase .product-card .product-button-group,
-.compatible-products-showcase .product-card .product-button-group {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 10px;
-    width: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    opacity: 0;
-    visibility: hidden;
-    z-index: 15;
-    transition: all 0.3s ease;
-    pointer-events: none;
-}
-
-.related-products-showcase .product-card:hover .product-button-group,
-.compatible-products-showcase .product-card:hover .product-button-group {
-    bottom: 10px;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.related-products-showcase .product-card .product-button-group .product-button,
-.compatible-products-showcase .product-card .product-button-group .product-button {
-    height: 32px;
-    width: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    padding: 0;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    margin: 0;
-    background: #FF6A00 !important;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 16;
-    border: none;
-}
-
-.related-products-showcase .product-card .product-button-group .product-button:hover,
-.compatible-products-showcase .product-card .product-button-group .product-button:hover {
-    background: #ff8c00 !important;
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4);
-}
-
-.related-products-showcase .product-card .product-button-group .product-button i,
-.compatible-products-showcase .product-card .product-button-group .product-button i {
-    font-size: 14px;
-    color: #ffffff;
-    line-height: 1;
-    display: block;
-}
-
-.related-products-showcase .product-card .product-card-body,
-.compatible-products-showcase .product-card .product-card-body {
-    padding: 12px 10px 8px;
-}
-
-.related-products-showcase .product-card .product-title,
-.compatible-products-showcase .product-card .product-title {
-    margin-bottom: 4px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.related-products-showcase .product-card .product-title > a,
-.compatible-products-showcase .product-card .product-title > a {
-    transition: color 0.3s;
-    color: #232323;
-    text-decoration: none;
+.prx-option-selection {
     font-size: 13px;
-    height: 32px;
-    display: block;
-    font-weight: 500;
-    line-height: 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    color: #888;
 }
-
-.related-products-showcase .product-card .product-title > a:hover,
-.compatible-products-showcase .product-card .product-title > a:hover {
-    color: #FF6A00;
+.prx-option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
-
-.related-products-showcase .product-card .rating-stars,
-.compatible-products-showcase .product-card .rating-stars {
-    display: block;
-    margin-bottom: 4px;
+.prx-option-pill {
+    border: 1px solid #e1e1e1;
+    border-radius: 999px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
 }
-
-.related-products-showcase .product-card .rating-stars > i,
-.compatible-products-showcase .product-card .rating-stars > i {
-    display: inline-block;
-    margin-right: 1px;
-    color: #c7c7c7;
-    font-size: 10px;
+.prx-option-pill input {
+    display: none;
 }
-
-.related-products-showcase .product-card .rating-stars > i.filled,
-.compatible-products-showcase .product-card .rating-stars > i.filled {
-    color: #ffa500;
+.prx-option-pill:hover {
+    border-color: #ff6a00;
+    color: #ff6a00;
 }
-
-.related-products-showcase .product-card .product-price,
-.compatible-products-showcase .product-card .product-price {
-    display: inline-block;
-    margin-bottom: 0;
-    font-size: 14px;
+.prx-option-pill.is-selected {
+    border-color: #ff6a00;
+    background: #fff5ed;
+    color: #ff6a00;
+}
+.prx-option-pill.is-selected .prx-option-pill__label {
     font-weight: 600;
-    text-align: center;
-    color: #FF6A00;
 }
-
-.related-products-showcase .product-card .product-price > del,
-.compatible-products-showcase .product-card .product-price > del {
-    margin-right: 4px;
-    color: #999;
-    font-weight: 400;
+.prx-option-pill__label {
+    display: inline-block;
+}
+.rpmini24_widget {
+    border: 1px solid #f0f0f0;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+    background: #fff;
+}
+.rpmini24_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+}
+.rpmini24_kicker {
     font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #999;
+    margin: 0 0 4px;
+}
+.rpmini24_title {
+    margin: 0;
+    font-size: 20px;
+}
+.rpmini24_viewall {
+    font-size: 13px;
+    color: #ff6a00;
+    text-decoration: none;
+    font-weight: 600;
+}
+.rpmini24_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.rpmini24_card {
+    display: flex;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+.rpmini24_card:hover {
+    border-color: #ffe1cf;
+    background: #fff8f3;
+}
+.rpmini24_media {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.rpmini24_media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.rpmini24_info h5 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.3;
+}
+.rpmini24_price {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    font-weight: 600;
+    color: #ff6a00;
+}
+.rpmini24_price-old {
+    font-size: 12px;
+    color: #999;
+    text-decoration: line-through;
 }
 
-/* More Products Button Styles */
-.show-more-products-btn {
-    transition: all 0.3s ease;
+/* Compatible products */
+.compatible-products-showcase {
+    padding: 50px 0;
+    background: #f9f9fb;
+}
+.compatible-products-showcase .product-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.compatible-products-showcase .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 32px rgba(16,24,40,0.08);
+}
+.compatible-products-showcase .product-thumb img {
+    height: 190px;
+    object-fit: cover;
+}
+.compatible-products-showcase .product-button-group .product-button {
+    background: #111 !important;
+}
+.compatible-products-showcase .product-card-body {
+    padding: 16px;
+}
+.compatible-products-showcase .product-price del {
+    color: #9e9e9e;
+    font-size: 13px;
 }
 
-.show-more-products-btn:hover {
-    background: #ff8c00 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
-}
-
-.show-more-products-btn.active .btn-text::after {
-    content: " (Less)";
-}
-
-.more-products-container {
-    margin-top: 20px;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+@media (max-width: 768px) {
+    .prx-cart-option {
+        padding: 18px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .prx-cta-buttons {
+        grid-template-columns: 1fr;
+    }
+    .prx-contact-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -1004,50 +918,26 @@ fbq && fbq('track', 'ViewContent', {
             });
         });
 
-        // Initialize Owl Carousel for Related Products
-        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
-            var $relatedSlider = jQuery('.related-products-slider');
-            if ($relatedSlider.length && $relatedSlider.find('.slider-item').length > 0) {
-                if ($relatedSlider.data('owl.carousel')) {
-                    $relatedSlider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
-                }
-                $relatedSlider.addClass('owl-carousel').owlCarousel({
-                    loop: false,
-                    margin: 10,
-                    nav: false,
-                    dots: false,
-                    autoplay: false,
-                    autoplayTimeout: 3000,
-                    autoplayHoverPause: true,
-                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
-                    responsive: {
-                        0: {
-                            items: 2,
-                            margin: 6,
-                            slideBy: 2
-                        },
-                        576: {
-                            items: 3,
-                            margin: 8,
-                            slideBy: 2
-                        },
-                        768: {
-                            items: 4,
-                            margin: 10,
-                            slideBy: 2
-                        },
-                        992: {
-                            items: 5,
-                            margin: 10
-                        },
-                        1200: {
-                            items: 6,
-                            margin: 10
-                        }
-                    }
-                });
+        const optionInputs = document.querySelectorAll('.prx-option-pill input');
+        optionInputs.forEach(function(input) {
+            const parentLabel = input.parentElement;
+            if (input.checked) {
+                parentLabel.classList.add('is-selected');
             }
 
+            input.addEventListener('change', function() {
+                const valuesWrapper = parentLabel.closest('.prx-option-values');
+                if (valuesWrapper) {
+                    valuesWrapper.querySelectorAll('.prx-option-pill').forEach(function(pill) {
+                        pill.classList.remove('is-selected');
+                    });
+                }
+                parentLabel.classList.add('is-selected');
+            });
+        });
+
+        // Initialize Owl Carousel for Related Products
+        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
             // Initialize Owl Carousel for Compatible Products
             var $compatibleSlider = jQuery('.compatible-products-slider');
             if ($compatibleSlider.length && $compatibleSlider.find('.slider-item').length > 0) {
@@ -1091,91 +981,6 @@ fbq && fbq('track', 'ViewContent', {
                 });
             }
 
-            // Initialize Owl Carousel for More Related Products
-            var $relatedSliderMore = jQuery('.related-products-slider-more');
-            if ($relatedSliderMore.length && $relatedSliderMore.find('.slider-item').length > 0) {
-                if ($relatedSliderMore.data('owl.carousel')) {
-                    $relatedSliderMore.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
-                }
-                $relatedSliderMore.addClass('owl-carousel').owlCarousel({
-                    loop: false,
-                    margin: 10,
-                    nav: false,
-                    dots: false,
-                    autoplay: false,
-                    autoplayTimeout: 3000,
-                    autoplayHoverPause: true,
-                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
-                    responsive: {
-                        0: {
-                            items: 2,
-                            margin: 6,
-                            slideBy: 2
-                        },
-                        576: {
-                            items: 3,
-                            margin: 8,
-                            slideBy: 2
-                        },
-                        768: {
-                            items: 4,
-                            margin: 10,
-                            slideBy: 2
-                        },
-                        992: {
-                            items: 5,
-                            margin: 10
-                        },
-                        1200: {
-                            items: 6,
-                            margin: 10
-                        }
-                    }
-                });
-            }
-
-            // More Products Button Handler
-            var $moreProductsBtn = jQuery('.show-more-products-btn');
-            var $moreProductsContainer = jQuery('.more-products-container');
-            
-            if ($moreProductsBtn.length && $moreProductsContainer.length) {
-                $moreProductsBtn.on('click', function() {
-                    var $btn = jQuery(this);
-                    var $icon = $btn.find('i');
-                    
-                    if ($moreProductsContainer.is(':visible')) {
-                        // Hide more products
-                        $moreProductsContainer.slideUp(300);
-                        $btn.removeClass('active');
-                        $btn.find('.btn-text').text('More Products');
-                        $icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
-                    } else {
-                        // Show more products
-                        $moreProductsContainer.slideDown(300);
-                        $btn.addClass('active');
-                        $btn.find('.btn-text').text('Less Products');
-                        $icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
-                        
-                        // Reinitialize carousel if needed
-                        if ($relatedSliderMore.length && !$relatedSliderMore.data('owl.carousel')) {
-                            $relatedSliderMore.owlCarousel({
-                                loop: false,
-                                margin: 10,
-                                nav: false,
-                                dots: false,
-                                autoplay: false,
-                                responsive: {
-                                    0: { items: 2, margin: 6 },
-                                    576: { items: 3, margin: 8 },
-                                    768: { items: 4, margin: 10 },
-                                    992: { items: 5, margin: 10 },
-                                    1200: { items: 6, margin: 10 }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
         }
     });
 
