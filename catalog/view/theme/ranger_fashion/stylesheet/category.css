@@ -62,11 +62,489 @@
     margin: 0;
 }
 
+/* ============================================
+   LUXURY CATEGORY PAGE - PREMIUM DESIGN
+   ============================================ */
+
+#lux-category-page.lux-category-section {
+    margin-top: 20px;
+    padding: 0;
+}
+
+.lux-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Category Modules Wrapper */
+#lux-category-modules.lux-category-modules-wrapper {
+    margin-bottom: 40px;
+}
+
+.lux-module-item {
+    margin-bottom: 30px;
+}
+
+.lux-module-description {
+    margin-bottom: 20px;
+}
+
+.lux-category-module-content {
+    /* Module content styling */
+}
+
+/* Category Layout */
+.lux-category-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+@media (max-width: 991px) {
+    .lux-category-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Category Header */
+#lux-category-header.lux-category-header {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.lux-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.lux-header-title-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+#lux-category-title.lux-category-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#lux-filter-toggle.lux-filter-btn {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f5f7fa;
+    border: 1px solid #e8ecf1;
+    border-radius: 8px;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#lux-filter-toggle.lux-filter-btn:hover {
+    background: #10503d;
+    color: #fff;
+    border-color: #10503d;
+}
+
+@media (max-width: 991px) {
+    #lux-filter-toggle.lux-filter-btn {
+        display: flex;
+    }
+}
+
+.lux-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.lux-control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lux-control-label {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.lux-select-wrapper {
+    position: relative;
+}
+
+.lux-select {
+    padding: 10px 16px;
+    border: 1px solid #e8ecf1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.lux-select:hover {
+    border-color: #10503d;
+}
+
+.lux-select:focus {
+    outline: none;
+    border-color: #10503d;
+    box-shadow: 0 0 0 3px rgba(16, 80, 61, 0.1);
+}
+
+/* Products Grid */
+#lux-products-grid.lux-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Product Card */
+.lux-product-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.lux-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.lux-product-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #10503d;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lux-product-image-link {
+    display: block;
+    text-decoration: none;
+}
+
+.lux-product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.lux-product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.lux-product-card:hover .lux-product-image {
+    transform: scale(1.05);
+}
+
+.lux-product-details {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.lux-product-name {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 42px;
+    text-align: center;
+}
+
+.lux-product-name a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.lux-product-name a:hover {
+    color: #10503d;
+}
+
+.lux-product-pricing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.lux-price-current {
+    font-size: 18px;
+    font-weight: 600;
+    color: #10503d;
+}
+
+.lux-price-original {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+.lux-product-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.lux-product-card:hover .lux-product-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lux-action-btn {
+    border-radius: 50px;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+}
+
+.lux-action-btn:hover {
+    background: #10503d;
+    color: #fff;
+    border-color: #10503d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.2);
+}
+
+.lux-action-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.lux-buy-btn--full {
+    width: auto;
+    padding: 10px 20px;
+    border-radius: 50px;
+    flex: 1;
+    gap: 8px;
+}
+
+.lux-buy-btn--full span.material-icons {
+    font-size: 18px;
+}
+
+/* Empty State */
+.lux-empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.lux-empty-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.lux-empty-icon {
+    display: block;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #f5f7fa;
+    border-radius: 50%;
+}
+
+.lux-empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+}
+
+.lux-empty-text {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Category Footer */
+#lux-category-footer.lux-category-footer {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 30px;
+    margin-top: 40px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.lux-footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.lux-pagination-wrapper {
+    flex: 1;
+}
+
+.lux-results-info {
+    text-align: right;
+}
+
+.lux-results-text {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    #lux-products-grid.lux-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+    
+    .lux-product-actions {
+        opacity: 1;
+        transform: translateY(0);
+        margin-top: 10px;
+    }
+    
+    .lux-action-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 767px) {
+    #lux-products-grid.lux-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    #lux-category-header.lux-category-header {
+        padding: 20px;
+    }
+    
+    #lux-category-title.lux-category-title {
+        font-size: 22px;
+    }
+    
+    .lux-header-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .lux-control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .lux-select {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .lux-product-details {
+        padding: 16px;
+    }
+    
+    .lux-product-name {
+        font-size: 14px;
+        min-height: 40px;
+    }
+    
+    .lux-price-current {
+        font-size: 16px;
+    }
+    
+    #lux-category-footer.lux-category-footer {
+        padding: 20px;
+    }
+    
+    .lux-footer-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .lux-results-info {
+        text-align: center;
+    }
+}
+
+/* Legacy Support - Keep old classes working */
 .product-categories {
     margin-top: 15px;
 }
 
-/* Premium Category Page Product Grid */
 .product-categories .main-content {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
