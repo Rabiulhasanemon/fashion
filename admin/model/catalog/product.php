@@ -1597,6 +1597,9 @@ class ModelCatalogProduct extends Model {
 			return;
 		}
 
+		// Ensure required column exists
+		$this->ensureRequiredColumn();
+
 		foreach ($product_options as $product_option) {
 			if (!isset($product_option['option_id'])) {
 				continue;
@@ -1700,6 +1703,27 @@ class ModelCatalogProduct extends Model {
 			} catch (Exception $e) {
 				// Log error but don't throw - column might already exist from concurrent request
 				error_log("Error adding video_url column: " . $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Ensure required column exists in product_option table
+	 * This method checks if the column exists and adds it if missing
+	 */
+	private function ensureRequiredColumn() {
+		$table_name = DB_PREFIX . "product_option";
+		
+		// Check if column exists
+		$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'required'");
+		
+		if (!$check_query->num_rows) {
+			// Column doesn't exist, add it
+			try {
+				$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `required` TINYINT(1) NOT NULL DEFAULT '0' AFTER `option_id`");
+			} catch (Exception $e) {
+				// Log error but don't throw - column might already exist from concurrent request
+				error_log("Error adding required column: " . $e->getMessage());
 			}
 		}
 	}
