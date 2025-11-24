@@ -1083,6 +1083,13 @@ class ModelCatalogProduct extends Model {
 			throw new Exception('Invalid product ID: ' . $product_id);
 		}
 
+		// CRITICAL: Clean up any orphaned records with product_id = 0 in all related tables
+		// This prevents "Duplicate entry '0' for key 'PRIMARY'" errors
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
+
 		// Verify product exists before updating
 		$check_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . $product_id . "' LIMIT 1");
 		if (!$check_query->num_rows) {
@@ -1129,13 +1136,22 @@ class ModelCatalogProduct extends Model {
 		$this->db->query($sql);
 
 		// Update product descriptions
+		// CRITICAL: Clean up any orphaned records with product_id = 0 first
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		
+		// Delete existing descriptions for this product
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . $product_id . "'");
+		
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
 			foreach ($data['product_description'] as $language_id => $value) {
 				$language_id = (int)$language_id;
-				if ($language_id > 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
-						product_id = '" . $product_id . "', 
+				// CRITICAL: Ensure both product_id and language_id are valid before inserting
+				if ($language_id > 0 && $product_id > 0) {
+					// Delete any existing record for this product_id + language_id combination first (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
+					
+					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+						product_id = '" . (int)$product_id . "', 
 						language_id = '" . $language_id . "', 
 						name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
 						sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
@@ -1146,6 +1162,40 @@ class ModelCatalogProduct extends Model {
 						meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
 						meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
 						meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+					
+					// Check for errors
+					if (!$result) {
+						$db_error = '';
+						$db_errno = 0;
+						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+							if (property_exists($this->db->link, 'error')) {
+								$db_error = $this->db->link->error;
+							}
+							if (property_exists($this->db->link, 'errno')) {
+								$db_errno = $this->db->link->errno;
+							}
+						}
+						
+						// If duplicate key error, delete and retry once
+						if ($db_errno == 1062 && (stripos($db_error, 'PRIMARY') !== false || stripos($db_error, 'duplicate') !== false)) {
+							// Delete any conflicting record and retry
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $language_id . "'");
+							
+							// Retry the insert
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET 
+								product_id = '" . (int)$product_id . "', 
+								language_id = '" . $language_id . "', 
+								name = '" . $this->db->escape(isset($value['name']) ? $value['name'] : '') . "', 
+								sub_name = '" . $this->db->escape(isset($value['sub_name']) ? $value['sub_name'] : '') . "', 
+								description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', 
+								short_description = '" . $this->db->escape(isset($value['short_description']) ? $value['short_description'] : '') . "', 
+								video_url = '" . $this->db->escape(isset($value['video_url']) ? $value['video_url'] : '') . "', 
+								tag = '" . $this->db->escape(isset($value['tag']) ? $value['tag'] : '') . "', 
+								meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', 
+								meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', 
+								meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+						}
+					}
 				}
 			}
 		}
@@ -1155,13 +1205,17 @@ class ModelCatalogProduct extends Model {
 		if (isset($data['product_store']) && is_array($data['product_store']) && !empty($data['product_store'])) {
 			foreach ($data['product_store'] as $store_id) {
 				$store_id = (int)$store_id;
-				if ($store_id >= 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . $product_id . "', store_id = '" . $store_id . "'");
+				// CRITICAL: Ensure product_id is valid before inserting
+				if ($store_id >= 0 && $product_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "'");
 				}
 			}
 		} else {
 			// Default to store 0 if no stores specified
-			$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . $product_id . "', store_id = '0'");
+			// CRITICAL: Ensure product_id is valid before inserting
+			if ($product_id > 0) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_store SET product_id = '" . (int)$product_id . "', store_id = '0'");
+			}
 		}
 
 		// Update product categories
