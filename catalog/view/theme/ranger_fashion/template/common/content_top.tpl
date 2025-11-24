@@ -11,7 +11,7 @@
             <?php 
             // Wrap module output to inject "All Products" button in section headers
             $module_output = $module;
-            if ($has_products) {
+            if ($has_products && !empty($module_output) && is_string($module_output)) {
                 // Inject button into section headers that have products
                 $button_html = '<div class="lux-view-all-btn-wrapper"><a class="lux-view-all-btn" href="' . htmlspecialchars($home_view_all_link) . '">' . htmlspecialchars($home_view_all_label) . ' <i class="fa fa-arrow-right"></i></a></div>';
                 // Try to inject into common section header patterns
@@ -65,20 +65,20 @@
         gap: 8px;
         padding: 10px 24px;
         border-radius: 999px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #10503d 0%, #0a3d2e 100%);
         color: #fff;
         text-decoration: none;
         font-weight: 600;
         font-size: 13px;
         letter-spacing: 0.02em;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(16, 80, 61, 0.3);
         border: none;
     }
     .lux-view-all-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 6px 20px rgba(16, 80, 61, 0.4);
+        background: linear-gradient(135deg, #0a3d2e 0%, #10503d 100%);
     }
     .lux-view-all-btn i {
         font-size: 12px;

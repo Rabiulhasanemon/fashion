@@ -177,7 +177,6 @@
     background: transparent;
     transform: scale(1);
     transition: 0.3s linear;
-    padding: 20px;
 }
 
 /* Responsive image height for different screen sizes */

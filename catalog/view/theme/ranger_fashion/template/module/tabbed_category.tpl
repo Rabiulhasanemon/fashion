@@ -739,17 +739,17 @@ if (empty($tabs)) {
 }
 
 .lux-tab-item:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503d 0%, #0a3d2e 100%);
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.3);
     border-color: transparent;
 }
 
 .lux-tab-item.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503d 0%, #0a3d2e 100%);
     color: #fff;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 16px rgba(16, 80, 61, 0.4);
     border-color: transparent;
     font-weight: 600;
 }
