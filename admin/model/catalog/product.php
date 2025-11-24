@@ -1614,9 +1614,12 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
 
-		// Ensure required and value columns exist
+		// Ensure required and value columns exist in product_option table
 		$this->ensureRequiredColumn();
 		$this->ensureValueColumn();
+		
+		// Ensure all required columns exist in product_option_value table
+		$this->ensureProductOptionValueColumns();
 
 		foreach ($product_options as $product_option) {
 			if (!isset($product_option['option_id'])) {
@@ -1823,6 +1826,57 @@ class ModelCatalogProduct extends Model {
 			} catch (Exception $e) {
 				// Log error but don't throw - column might already exist from concurrent request
 				error_log("Error adding value column: " . $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Ensure all required columns exist in product_option_value table
+	 * This method checks if columns exist and adds them if missing
+	 */
+	private function ensureProductOptionValueColumns() {
+		$table_name = DB_PREFIX . "product_option_value";
+		
+		// List of columns that need to exist with their definitions
+		$columns = array(
+			'quantity' => "INT(11) NOT NULL DEFAULT '0'",
+			'subtract' => "TINYINT(1) NOT NULL DEFAULT '0'",
+			'price' => "DECIMAL(15,4) NOT NULL DEFAULT '0.0000'",
+			'price_prefix' => "VARCHAR(1) NOT NULL DEFAULT '+'",
+			'points' => "INT(8) NOT NULL DEFAULT '0'",
+			'points_prefix' => "VARCHAR(1) NOT NULL DEFAULT '+'",
+			'weight' => "DECIMAL(15,8) NOT NULL DEFAULT '0.00000000'",
+			'weight_prefix' => "VARCHAR(1) NOT NULL DEFAULT '+'",
+			'color' => "VARCHAR(255) DEFAULT NULL",
+			'show' => "TINYINT(1) NOT NULL DEFAULT '1'"
+		);
+		
+		// Get existing columns
+		$existing_columns = array();
+		$columns_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "`");
+		if ($columns_query && $columns_query->num_rows) {
+			foreach ($columns_query->rows as $row) {
+				$existing_columns[] = $row['Field'];
+			}
+		}
+		
+		// Add missing columns
+		foreach ($columns as $column_name => $column_definition) {
+			if (!in_array($column_name, $existing_columns)) {
+				try {
+					// Determine position - add after option_value_id if it exists, otherwise at the end
+					$after_column = 'option_value_id';
+					if (in_array($after_column, $existing_columns)) {
+						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `" . $column_name . "` " . $column_definition . " AFTER `" . $after_column . "`");
+					} else {
+						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `" . $column_name . "` " . $column_definition);
+					}
+					// Add to existing columns list to avoid duplicate attempts
+					$existing_columns[] = $column_name;
+				} catch (Exception $e) {
+					// Log error but don't throw - column might already exist from concurrent request
+					error_log("Error adding " . $column_name . " column to product_option_value: " . $e->getMessage());
+				}
 			}
 		}
 	}
