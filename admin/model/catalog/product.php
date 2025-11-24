@@ -649,17 +649,34 @@ class ModelCatalogProduct extends Model {
 			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 			throw new Exception($error_msg);
 		}
-
-		// CRITICAL: Verify product_id is valid before proceeding with related data
-		if ($product_id <= 0) {
-			$error_msg = "CRITICAL: Product was inserted but product_id is invalid (" . $product_id . "). Cannot proceed with related data insertion.";
+		
+		// CRITICAL: Verify product actually exists in database
+		$verify_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "' LIMIT 1");
+		if (!$verify_query || !$verify_query->num_rows) {
+			$error_msg = "CRITICAL: Product with ID " . $product_id . " does not exist in database after insertion!";
 			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 			throw new Exception($error_msg);
 		}
 		
-		// CRITICAL: Clean up ALL product_description records with product_id = 0 BEFORE inserting
+		// CRITICAL: Final aggressive cleanup of ALL product_id = 0 records in ALL related tables
 		// This prevents "Duplicate entry '0' for key 'PRIMARY'" errors
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		$cleanup_tables = array(
+			'product_description',
+			'product_to_store',
+			'product_to_category',
+			'product_image',
+			'product_option',
+			'product_option_value',
+			'product_variation',
+			'url_alias'
+		);
+		foreach ($cleanup_tables as $table) {
+			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+			if ($check_table && $check_table->num_rows) {
+				$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+			}
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Aggressive cleanup: Removed all product_id = 0 records from related tables' . PHP_EOL, FILE_APPEND);
 		
 		// Insert product descriptions
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
