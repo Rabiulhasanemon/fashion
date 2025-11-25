@@ -719,12 +719,29 @@ class ModelCatalogProduct extends Model {
 			'product_option',
 			'product_option_value',
 			'product_variation',
+			'product_filter',
+			'product_to_filter_profile',
+			'product_attribute',
 			'url_alias'
 		);
 		foreach ($cleanup_tables as $table) {
-			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
-			if ($check_table && $check_table->num_rows) {
-				$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+			try {
+				$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+				if ($check_table && $check_table->num_rows) {
+					// Check if table has product_id column before trying to delete
+					$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+					if ($check_column && $check_column->num_rows) {
+						$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+					} else {
+						// Table exists but doesn't have product_id column - skip it
+						error_log("Table " . DB_PREFIX . $table . " exists but doesn't have product_id column - skipping cleanup");
+					}
+				}
+			} catch (Exception $e) {
+				$error_msg = "Error cleaning table " . DB_PREFIX . $table . ": " . $e->getMessage();
+				error_log($error_msg);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+				// Don't throw - continue with other tables
 			}
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Aggressive cleanup: Removed all product_id = 0 records from related tables' . PHP_EOL, FILE_APPEND);
@@ -1779,18 +1796,34 @@ class ModelCatalogProduct extends Model {
 			$required = isset($product_option['required']) ? (int)$product_option['required'] : 0;
 			$value    = isset($product_option['value']) ? $product_option['value'] : '';
 
-			$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
-			$product_option_id = $this->db->getLastId();
+			try {
+				$insert_sql = "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'";
+				$result = $this->db->query($insert_sql);
+				$product_option_id = $this->db->getLastId();
+			} catch (Exception $e) {
+				$error_msg = "Error inserting product_option: " . $e->getMessage() . " | SQL: " . $insert_sql . " | Product ID: " . $product_id;
+				error_log($error_msg);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+				throw new Exception("Error updating product: " . $e->getMessage());
+			}
 
 			// CRITICAL: Validate product_option_id before proceeding
 			if ($product_option_id <= 0) {
 				// Try to get the actual ID from database
-				$find_query = $this->db->query("SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1");
-				if ($find_query && $find_query->num_rows) {
-					$product_option_id = (int)$find_query->row['product_option_id'];
-				} else {
-					error_log("persistProductOptions: Failed to get valid product_option_id for product_id={$product_id}, option_id={$option_id}");
-					continue;
+				try {
+					$find_sql = "SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1";
+					$find_query = $this->db->query($find_sql);
+					if ($find_query && $find_query->num_rows) {
+						$product_option_id = (int)$find_query->row['product_option_id'];
+					} else {
+						error_log("persistProductOptions: Failed to get valid product_option_id for product_id={$product_id}, option_id={$option_id}");
+						continue;
+					}
+				} catch (Exception $e) {
+					$error_msg = "Error finding product_option_id: " . $e->getMessage() . " | SQL: " . $find_sql . " | Product ID: " . $product_id;
+					error_log($error_msg);
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+					throw new Exception("Error updating product: " . $e->getMessage());
 				}
 			}
 
@@ -1817,9 +1850,18 @@ class ModelCatalogProduct extends Model {
 					$color           = isset($product_option_value['color']) ? $product_option_value['color'] : '';
 
 					// Delete any existing record first (safety)
-					$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'");
+					try {
+						$delete_sql = "DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'";
+						$this->db->query($delete_sql);
+					} catch (Exception $e) {
+						$error_msg = "Error deleting product_option_value (before insert): " . $e->getMessage() . " | SQL: " . $delete_sql . " | Product ID: " . $product_id;
+						error_log($error_msg);
+						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+						throw new Exception("Error updating product: " . $e->getMessage());
+					}
 
-					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
+					try {
+						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_option_value SET 
 						product_option_id = '" . (int)$product_option_id . "', 
 						product_id = '" . (int)$product_id . "', 
 						option_id = '" . $option_id . "', 
