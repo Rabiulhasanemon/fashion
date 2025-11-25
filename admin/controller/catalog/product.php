@@ -50,89 +50,89 @@ class ControllerCatalogProduct extends Controller {
 					}
 				}
 			}
-		
-		if ($validation_result) {
 			
-			try {
-				$product_id = $this->model_catalog_product->addProduct($this->request->post);
-				
-				// Verify product_id is valid
-				if (!$product_id || $product_id <= 0) {
-					$error_msg = "Error updating product: addProduct returned invalid product_id (" . $product_id . ")";
-					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-					$this->session->data['error_warning'] = $error_msg;
+			if ($validation_result) {
+				try {
+					$product_id = $this->model_catalog_product->addProduct($this->request->post);
+					
+					// Verify product_id is valid
+					if (!$product_id || $product_id <= 0) {
+						$error_msg = "Error updating product: addProduct returned invalid product_id (" . $product_id . ")";
+						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+						$this->session->data['error_warning'] = $error_msg;
+						$this->getForm();
+						return;
+					}
+					
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product added successfully with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+
+					// Add to activity log
+					$this->load->model('user/user');
+
+					$activity_data = array(
+						'%user_id' => $this->user->getId(),
+						'%product_id' => $product_id,
+						'%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+					);
+
+					$this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
+
+					$this->session->data['success'] = $this->language->get('text_success');
+				} catch (Exception $e) {
+					$error_message = $e->getMessage();
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+					
+					$this->session->data['error_warning'] = "Error updating product: " . $error_message;
 					$this->getForm();
 					return;
 				}
-				
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product added successfully with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 
-				// Add to activity log
-				$this->load->model('user/user');
+				$url = '';
 
-				$activity_data = array(
-					'%user_id' => $this->user->getId(),
-					'%product_id' => $product_id,
-					'%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-				);
+				if (isset($this->request->get['filter_name'])) {
+					$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+				}
 
-				$this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
+				if (isset($this->request->get['filter_model'])) {
+					$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+				}
 
-				$this->session->data['success'] = $this->language->get('text_success');
-			} catch (Exception $e) {
-				$error_message = $e->getMessage();
-				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
-				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
-				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
-				
-				$this->session->data['error_warning'] = "Error updating product: " . $error_message;
-				$this->getForm();
-				return;
+				if (isset($this->request->get['filter_price'])) {
+					$url .= '&filter_price=' . $this->request->get['filter_price'];
+				}
+
+				if (isset($this->request->get['filter_quantity'])) {
+					$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+				}
+
+				if (isset($this->request->get['filter_status'])) {
+					$url .= '&filter_status=' . $this->request->get['filter_status'];
+				}
+
+				if (isset($this->request->get['filter_category_id'])) {
+					$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
+				}
+
+				if (isset($this->request->get['filter_manufacturer_id'])) {
+					$url .= '&filter_manufacturer_id=' . $this->request->get['filter_manufacturer_id'];
+				}
+
+				if (isset($this->request->get['sort'])) {
+					$url .= '&sort=' . $this->request->get['sort'];
+				}
+
+				if (isset($this->request->get['order'])) {
+					$url .= '&order=' . $this->request->get['order'];
+				}
+
+				if (isset($this->request->get['page'])) {
+					$url .= '&page=' . $this->request->get['page'];
+				}
+
+				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 			}
-
-			$url = '';
-
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_model'])) {
-				$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_price'])) {
-				$url .= '&filter_price=' . $this->request->get['filter_price'];
-			}
-
-			if (isset($this->request->get['filter_quantity'])) {
-				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-			}
-
-			if (isset($this->request->get['filter_status'])) {
-				$url .= '&filter_status=' . $this->request->get['filter_status'];
-			}
-
-            if (isset($this->request->get['filter_category_id'])) {
-                $url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
-            }
-
-            if (isset($this->request->get['filter_manufacturer_id'])) {
-                $url .= '&filter_manufacturer_id=' . $this->request->get['filter_manufacturer_id'];
-            }
-
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-
-			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		}
 
 		$this->getForm();
