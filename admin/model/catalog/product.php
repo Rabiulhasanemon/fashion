@@ -467,12 +467,14 @@ class ModelCatalogProduct extends Model {
 		$sql .= "date_added = NOW(), ";
 		$sql .= "date_modified = NOW()";
 
-		// Get the next available product_id before inserting
-		$max_query = $this->db->query("SELECT MAX(product_id) AS max_id FROM " . DB_PREFIX . "product");
+		// Get the next available product_id before inserting - use MAX(product_id > 0) to avoid issues
+		$max_query = $this->db->query("SELECT MAX(product_id) AS max_id FROM " . DB_PREFIX . "product WHERE product_id > 0");
 		$next_product_id = 1;
 		if ($max_query && $max_query->num_rows && isset($max_query->row['max_id']) && $max_query->row['max_id'] !== null) {
 			$next_product_id = (int)$max_query->row['max_id'] + 1;
 		}
+		// Ensure next_product_id is at least 1
+		$next_product_id = max($next_product_id, 1);
 		
 		// Verify the product doesn't already exist by model or SKU
 		$model = isset($data['model']) ? $data['model'] : '';
