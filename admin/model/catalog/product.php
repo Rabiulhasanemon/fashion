@@ -353,22 +353,82 @@ class ModelCatalogProduct extends Model {
 		// Ensure video_url column exists
 		$this->ensureVideoUrlColumn();
 		
-		// Clean up any orphaned product with product_id = 0 before inserting
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+		// CRITICAL: Aggressive cleanup of ALL product_id = 0 records BEFORE anything else
+		// This must happen first to prevent duplicate entry errors
+		$log_file = DIR_LOGS . 'product_insert_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== STARTING PRODUCT ADD ==========' . PHP_EOL, FILE_APPEND);
 		
-		// Ensure auto-increment is properly set
-		$max_check = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product");
+		// Clean up ALL related tables with product_id = 0
+		$cleanup_tables = array(
+			'product_description',
+			'product_to_store',
+			'product_to_category',
+			'product_image',
+			'product_option',
+			'product_option_value',
+			'product_variation',
+			'product_related',
+			'product_compatible',
+			'product_reward',
+			'product_to_layout',
+			'product_discount',
+			'product_special',
+			'product_to_download'
+		);
+		
+		foreach ($cleanup_tables as $table) {
+			try {
+				$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+				if ($check_table && $check_table->num_rows) {
+					$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+					if ($check_column && $check_column->num_rows) {
+						$delete_result = $this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Cleaned up product_id=0 from ' . $table . PHP_EOL, FILE_APPEND);
+					}
+				}
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning cleaning ' . $table . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			}
+		}
+		
+		// Clean up url_alias (uses query column, not product_id)
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning cleaning url_alias: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Finally, delete the main product record with product_id = 0
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Cleaned up product_id=0 from product table' . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning cleaning product table: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Verify no product_id = 0 exists
+		$check_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product WHERE product_id = 0");
+		if ($check_zero && $check_zero->num_rows && isset($check_zero->row['count']) && $check_zero->row['count'] > 0) {
+			// Force delete using a different method
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id <= 0");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Force deleted product_id <= 0 records' . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Ensure auto-increment is properly set - use MAX of product_id > 0 to avoid issues
+		$max_check = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product WHERE product_id > 0");
 		$max_id = 0;
 		if ($max_check && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
 			$max_id = (int)$max_check->row['max_id'];
 		}
 		$next_id = max($max_id + 1, 1);
-		$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_id);
+		
+		// Set AUTO_INCREMENT to ensure it's higher than any existing ID
+		try {
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Set AUTO_INCREMENT to ' . $next_id . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning setting AUTO_INCREMENT: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
 		
 		// Insert main product record
 		$sql = "INSERT INTO " . DB_PREFIX . "product SET ";
@@ -470,25 +530,78 @@ class ModelCatalogProduct extends Model {
 			
 			// If it's a duplicate key error, clean up and retry
 			if ($db_errno == 1062 || stripos($db_error, 'duplicate') !== false || stripos($db_error, 'primary') !== false) {
-				// Clean up any orphaned records with product_id = 0
-				$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
-				$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
-				$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected: ' . $db_error . PHP_EOL, FILE_APPEND);
 				
-				// Fix AUTO_INCREMENT
+				// Aggressive cleanup of ALL product_id = 0 records
+				$cleanup_tables_retry = array(
+					'product_description',
+					'product_to_store',
+					'product_to_category',
+					'product_image',
+					'product_option',
+					'product_option_value',
+					'product_variation',
+					'product_related',
+					'product_compatible',
+					'product_reward',
+					'product_to_layout',
+					'product_discount',
+					'product_special',
+					'product_to_download',
+					'product'
+				);
+				
+				foreach ($cleanup_tables_retry as $table) {
+					try {
+						$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+						if ($check_table && $check_table->num_rows) {
+							if ($table == 'product') {
+								$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id <= 0");
+							} else {
+								$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+								if ($check_column && $check_column->num_rows) {
+									$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id <= 0");
+								}
+							}
+						}
+					} catch (Exception $e) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning during retry cleanup ' . $table . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+					}
+				}
+				
+				// Clean url_alias
+				try {
+					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+				} catch (Exception $e) {
+					// Ignore
+				}
+				
+				// Fix AUTO_INCREMENT - use MAX of product_id > 0
 				$max_retry = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product WHERE product_id > 0");
 				$next_retry = 1;
 				if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
 					$next_retry = (int)$max_retry->row['max_id'] + 1;
 				}
-				$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_retry);
+				
+				// Ensure AUTO_INCREMENT is at least 1
+				$next_retry = max($next_retry, 1);
+				
+				try {
+					$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_retry);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry: Set AUTO_INCREMENT to ' . $next_retry . PHP_EOL, FILE_APPEND);
+				} catch (Exception $e) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning setting AUTO_INCREMENT on retry: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				}
 				
 				// Retry the insert
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrying insert after cleanup...' . PHP_EOL, FILE_APPEND);
 				$insert_result = $this->db->query($sql);
 				$product_id = $this->db->getLastId();
 				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry result: ' . ($insert_result ? 'SUCCESS' : 'FAILED') . ', product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+				
 				if (!$insert_result || $product_id <= 0) {
-					$error_msg = "Duplicate entry error: " . $db_error . ". Failed to insert product even after cleanup and retry.";
+					$error_msg = "Duplicate entry error: " . $db_error . ". Failed to insert product even after aggressive cleanup and retry. Please check your database for product_id = 0 records.";
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 					throw new Exception($error_msg);
 				}
