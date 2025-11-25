@@ -14,7 +14,7 @@
           <div class="<?php echo $banner['group_class'] ?>">
             <?php foreach ($banner['banners'] as $banner_child) { ?>
               <div class="<?php echo $banner_child['image_class'] ?>" style="margin: 0; padding: 0;">
-                <div class="banner-type <?php echo $class; ?>" style="margin: 0; padding: 0; line-height: 0;">
+                <div class="banner-type <?php echo isset($class) ? $class : ''; ?>" style="margin: 0; padding: 0; line-height: 0;">
                   <?php if ($banner_child['link']) { ?>
                     <a href="<?php echo $banner_child['link']; ?>" style="display: block; margin: 0; padding: 0;">
                       <img class="img-fluid" src="<?php echo $banner_child['image']; ?>" title="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" alt="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />
@@ -30,7 +30,7 @@
           </div>
         <?php } else { ?>
           <div class="<?php echo $banner['image_class'] ?>" style="margin: 0; padding: 0;">
-            <div class="banner-type <?php echo $class; ?>" style="margin: 0; padding: 0; line-height: 0;">
+            <div class="banner-type <?php echo isset($class) ? $class : ''; ?>" style="margin: 0; padding: 0; line-height: 0;">
               <?php if ($banner['link']) { ?>
                 <a href="<?php echo $banner['link']; ?>" style="display: block; margin: 0; padding: 0;">
                   <img class="img-fluid" src="<?php echo $banner['image']; ?>" title="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" alt="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />

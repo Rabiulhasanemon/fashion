@@ -82,7 +82,7 @@ class ControllerCheckoutCart extends Controller {
 					$data['error_warning'] = sprintf($this->language->get('error_minimum'), $product['name'], $product['minimum']);
 				}
 
-				if ($product['maximum'] && $product['maximum'] < $product_total) {
+				if (isset($product['maximum']) && $product['maximum'] && $product['maximum'] < $product_total) {
 					$data['error_warning'] = sprintf($this->language->get('error_maximum'), $product['name'], $product['maximum']);
 				}
 
@@ -315,7 +315,7 @@ class ControllerCheckoutCart extends Controller {
 
             if ($this->config->get('config_stock_checkout') && (!$product_info['quantity'] || ($product_info['quantity'] < $cartQty))) {
                 $json['error'] =   $this->language->get('error_product_stock');
-            } elseif ($product_info['maximum'] && $product_info['maximum'] < $cartQty) {
+            } elseif (isset($product_info['maximum']) && $product_info['maximum'] && $product_info['maximum'] < $cartQty) {
                 $json['error'] = sprintf($this->language->get('error_maximum'), $product_info['name'], $product_info['maximum']);
             } elseif ($product_info['minimum'] > $cartQty) {
                 $json['error'] = sprintf($this->language->get('error_minimum'), $product_info['name'], $product_info['minimum']);

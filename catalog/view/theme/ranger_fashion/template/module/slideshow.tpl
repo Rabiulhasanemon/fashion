@@ -333,7 +333,7 @@
                 <?php if ($banner['link']) { ?>
                 <a href="<?php echo $banner['link']; ?>" class="shop-btn">Shop Now</a>
                 <?php } else { ?>
-                <button type="button" class="shop-btn" onclick="window.location.href='<?php echo $base; ?>'">Shop Now</button>
+                <button type="button" class="shop-btn" onclick="window.location.href='<?php echo isset($base) ? $base : 'index.php?route=common/home'; ?>'">Shop Now</button>
                 <?php } ?>
             </div>
             <div class="content-right">

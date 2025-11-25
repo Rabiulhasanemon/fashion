@@ -23,7 +23,7 @@ class Customer {
 
 			if ($customer_query->num_rows) {
 				$this->customer_id = $customer_query->row['customer_id'];
-				$this->incomplete = $customer_query->row['incomplete'];
+				$this->incomplete = isset($customer_query->row['incomplete']) ? $customer_query->row['incomplete'] : 0;
 				$this->firstname = $customer_query->row['firstname'];
 				$this->lastname = $customer_query->row['lastname'];
 				$this->email = $customer_query->row['email'];

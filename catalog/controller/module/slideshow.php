@@ -10,6 +10,12 @@ class ControllerModuleSlideshow extends Controller {
 		$data['width'] = $setting['width'];
 		$data['height'] = $setting['height'];
 		$data['banners'] = array();
+		
+		if ($this->request->server['HTTPS']) {
+			$data['base'] = $this->config->get('config_ssl');
+		} else {
+			$data['base'] = $this->config->get('config_url');
+		}
 		$results = $this->model_design_banner->getBanner($setting['banner_id']);
 
 		foreach ($results as $result) {

@@ -316,7 +316,7 @@
                                 <p class="section-blurb"><?php echo $text_question_help; ?></p>
                             </div>
                         </div>
-                        <div id="question"><?php echo $question; ?></div>
+                        <div id="question"><?php echo isset($question) ? $question : ''; ?></div>
                     </div>
                     <div class="single-tab-details review" id="write-review" style="display: none;">
                         <?php if ($no_of_review) { ?>
@@ -344,7 +344,7 @@
                                 <?php } ?>
                             </div>
                         </div>
-                        <div id="review" class="mb-3"><?php echo $review; ?></div>
+                        <div id="review" class="mb-3"><?php echo isset($review) ? $review : ''; ?></div>
                         <form method="post" enctype="multipart/form-data" id="form-review" action="index.php?route=product/product/write&product_id=<?php echo $product_id; ?>">
 
                             <h4 class="write-reivew-title mb-3"><?php echo $text_write_review; ?></h4>

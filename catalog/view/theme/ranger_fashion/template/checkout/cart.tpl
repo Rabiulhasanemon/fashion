@@ -14,7 +14,7 @@
       <button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>
     <?php } ?>
-    <?php if ($success) { ?>
+    <?php if (isset($success) && $success) { ?>
     <div class="alert alert-success"><i class="fa fa-check-circle"></i> <?php echo $success; ?>
       <button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>

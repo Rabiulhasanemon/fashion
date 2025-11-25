@@ -667,13 +667,30 @@ class ModelCatalogProduct extends Model {
 			'product_image',
 			'product_option',
 			'product_option_value',
-			'product_variation',
-			'url_alias'
+			'product_variation'
 		);
 		foreach ($cleanup_tables as $table) {
 			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
 			if ($check_table && $check_table->num_rows) {
-				$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+				// Check if product_id column exists before trying to use it
+				$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+				if ($check_column && $check_column->num_rows) {
+					try {
+						$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+					} catch (Exception $e) {
+						// Log but don't fail - table might have different structure
+						error_log("Cleanup warning for table " . $table . ": " . $e->getMessage());
+					}
+				}
+			}
+		}
+		// Handle url_alias separately - it uses 'query' column, not 'product_id'
+		$check_url_alias = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "url_alias'");
+		if ($check_url_alias && $check_url_alias->num_rows) {
+			try {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+			} catch (Exception $e) {
+				error_log("Cleanup warning for url_alias: " . $e->getMessage());
 			}
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Aggressive cleanup: Removed all product_id = 0 records from related tables' . PHP_EOL, FILE_APPEND);
@@ -1213,12 +1230,29 @@ class ModelCatalogProduct extends Model {
 
 		// CRITICAL: Clean up any orphaned records with product_id = 0 in all related tables
 		// This prevents "Duplicate entry '0' for key 'PRIMARY'" errors
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
+		$cleanup_tables_edit = array(
+			'product_description',
+			'product_to_store',
+			'product_to_category',
+			'product_image',
+			'product_option',
+			'product_option_value'
+		);
+		foreach ($cleanup_tables_edit as $table) {
+			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+			if ($check_table && $check_table->num_rows) {
+				// Check if product_id column exists before trying to use it
+				$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+				if ($check_column && $check_column->num_rows) {
+					try {
+						$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+					} catch (Exception $e) {
+						// Log but don't fail - table might have different structure
+						error_log("Cleanup warning for table " . $table . ": " . $e->getMessage());
+					}
+				}
+			}
+		}
 
 		// Verify product exists before updating
 		$check_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . $product_id . "' LIMIT 1");
@@ -1267,10 +1301,18 @@ class ModelCatalogProduct extends Model {
 
 		// Update product descriptions
 		// CRITICAL: Clean up any orphaned records with product_id = 0 first
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		} catch (Exception $e) {
+			error_log("Cleanup warning for product_description: " . $e->getMessage());
+		}
 		
 		// Delete existing descriptions for this product
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . $product_id . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			error_log("Warning: Could not delete product descriptions for product_id " . $product_id . ": " . $e->getMessage());
+		}
 		
 		if (isset($data['product_description']) && is_array($data['product_description'])) {
 			foreach ($data['product_description'] as $language_id => $value) {
@@ -1331,7 +1373,11 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Update product to store
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . $product_id . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			error_log("Warning: Could not delete product_to_store for product_id " . $product_id . ": " . $e->getMessage());
+		}
 		if (isset($data['product_store']) && is_array($data['product_store']) && !empty($data['product_store'])) {
 			foreach ($data['product_store'] as $store_id) {
 				$store_id = (int)$store_id;
@@ -1349,7 +1395,11 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Update product categories
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . $product_id . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			error_log("Warning: Could not delete product_to_category for product_id " . $product_id . ": " . $e->getMessage());
+		}
 		if (isset($data['product_category']) && is_array($data['product_category']) && !empty($data['product_category'])) {
 			foreach ($data['product_category'] as $category_id) {
 				$category_id = (int)$category_id;
@@ -1384,7 +1434,11 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("ALTER TABLE " . DB_PREFIX . "product_image AUTO_INCREMENT = " . $next_id_initial);
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Set AUTO_INCREMENT to ' . $next_id_initial . ' before starting' . PHP_EOL, FILE_APPEND);
 		
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			error_log("Warning: Could not delete product_image for product_id " . $product_id . ": " . $e->getMessage());
+		}
 		
 		if (isset($data['product_image']) && is_array($data['product_image']) && count($data['product_image']) > 0) {
 			// CRITICAL: Clean up any product_image records with product_image_id = 0 (double-check)
@@ -1610,14 +1664,19 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Update keyword
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . $product_id . "'");
-		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
-			$keyword = trim($data['keyword']);
-			// Check if keyword already exists for a different product
-			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . $product_id . "' LIMIT 1");
-			if (!$existing->num_rows) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . $product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . $product_id . "'");
+			if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+				$keyword = trim($data['keyword']);
+				// Check if keyword already exists for a different product
+				$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . $product_id . "' LIMIT 1");
+				if (!$existing->num_rows) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . $product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+				}
 			}
+		} catch (Exception $e) {
+			// Log but don't fail - keyword update is not critical
+			error_log("Warning: Could not update keyword for product_id " . $product_id . ": " . $e->getMessage());
 		}
 
 		// Update product related
