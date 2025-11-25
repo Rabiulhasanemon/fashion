@@ -1432,6 +1432,7 @@ class ModelCatalogProduct extends Model {
 			// Delete existing discounts for this product (in case of retry)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "'");
 			
+			$discount_count = 0;
 			if (isset($data['product_discount']) && is_array($data['product_discount'])) {
 				foreach ($data['product_discount'] as $product_discount) {
 					$customer_group_id = isset($product_discount['customer_group_id']) ? (int)$product_discount['customer_group_id'] : 0;
@@ -1443,9 +1444,11 @@ class ModelCatalogProduct extends Model {
 					
 					if ($customer_group_id >= 0 && $quantity >= 0) {
 						$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', quantity = '" . $quantity . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+						$discount_count++;
 					}
 				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $discount_count . ' product discount(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product specials
@@ -1460,6 +1463,7 @@ class ModelCatalogProduct extends Model {
 			// Delete existing specials for this product (in case of retry)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
 			
+			$special_count = 0;
 			if (isset($data['product_special']) && is_array($data['product_special'])) {
 				foreach ($data['product_special'] as $product_special) {
 					$customer_group_id = isset($product_special['customer_group_id']) ? (int)$product_special['customer_group_id'] : 0;
@@ -1470,9 +1474,11 @@ class ModelCatalogProduct extends Model {
 					
 					if ($customer_group_id >= 0) {
 						$this->db->query("INSERT INTO " . DB_PREFIX . "product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+						$special_count++;
 					}
 				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $special_count . ' product special(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product rewards
@@ -1487,6 +1493,7 @@ class ModelCatalogProduct extends Model {
 			// Delete existing rewards for this product (in case of retry)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "'");
 			
+			$reward_count = 0;
 			if (isset($data['product_reward']) && is_array($data['product_reward'])) {
 				foreach ($data['product_reward'] as $customer_group_id => $points) {
 					$customer_group_id = (int)$customer_group_id;
@@ -1494,9 +1501,11 @@ class ModelCatalogProduct extends Model {
 					
 					if ($customer_group_id >= 0 && $points >= 0) {
 						$this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+						$reward_count++;
 					}
 				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $reward_count . ' product reward(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product downloads
@@ -1511,14 +1520,17 @@ class ModelCatalogProduct extends Model {
 			// Delete existing downloads for this product (in case of retry)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_download WHERE product_id = '" . (int)$product_id . "'");
 			
+			$download_count = 0;
 			if (isset($data['product_download']) && is_array($data['product_download'])) {
 				foreach ($data['product_download'] as $download_id) {
 					$download_id = (int)$download_id;
 					if ($download_id > 0) {
 						$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_download SET product_id = '" . (int)$product_id . "', download_id = '" . $download_id . "'");
+						$download_count++;
 					}
 				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $download_count . ' product download(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product layouts
@@ -1533,6 +1545,7 @@ class ModelCatalogProduct extends Model {
 			// Delete existing layouts for this product (in case of retry)
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "'");
 			
+			$layout_count = 0;
 			if (isset($data['product_layout']) && is_array($data['product_layout'])) {
 				foreach ($data['product_layout'] as $store_id => $layout_id) {
 					$store_id = (int)$store_id;
@@ -1540,10 +1553,15 @@ class ModelCatalogProduct extends Model {
 					
 					if ($store_id >= 0 && $layout_id > 0) {
 						$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_layout SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
+						$layout_count++;
 					}
 				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $layout_count . ' product layout(s)' . PHP_EOL, FILE_APPEND);
 		}
+
+		// Final summary log
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== PRODUCT ADD COMPLETED - Product ID: ' . $product_id . ' ==========' . PHP_EOL, FILE_APPEND);
 
 		return $product_id;
 	}
