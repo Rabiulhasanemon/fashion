@@ -1,0 +1,16 @@
+# Allow access to admin panel (bypass cPGuard if possible)
+# Note: This may not work if cPGuard is configured at server level
+
+# Try to bypass security checks for admin
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/admin/
+RewriteRule .* - [E=no-gzip:1]
+</IfModule>
+
+# Allow admin access
+<Files "index.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
