@@ -12,6 +12,9 @@ class ControllerModuleBanner extends Controller {
 
 		$data['banners'] = array();
         $group_index = array();
+        
+        // Initialize class variable to prevent undefined variable warnings
+        $data['class'] = isset($setting['class']) ? $setting['class'] : '';
 
 		$results = $this->model_design_banner->getBanner($setting['banner_id']);
 

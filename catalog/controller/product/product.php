@@ -571,6 +571,10 @@ class ControllerProductProduct extends Controller
 
             $data['write'] =  $this->url->link('account/review', 'product_id=' . $this->request->get['product_id']);
             $data['ask'] =  $this->url->link('account/question', 'product_id=' . $this->request->get['product_id']);
+            
+            // Initialize question and review variables to prevent undefined variable warnings
+            $data['question'] = '';
+            $data['review'] = '';
 
             $this->document->addMeta('fb:app_id', FB_APP_ID);
             $this->document->addMeta('og:title', $product_info['name']);
