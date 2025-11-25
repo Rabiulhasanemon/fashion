@@ -19,7 +19,7 @@ class ControllerCatalogProduct extends Controller {
 
 		$this->load->model('catalog/product');
 
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
 			// Log the request for debugging
 			$log_file = DIR_LOGS . 'product_insert_debug.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== NEW PRODUCT ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
@@ -27,6 +27,31 @@ class ControllerCatalogProduct extends Controller {
 			if (isset($this->request->post['product_image'])) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image count: ' . (is_array($this->request->post['product_image']) ? count($this->request->post['product_image']) : 'not array') . PHP_EOL, FILE_APPEND);
 			}
+			
+			// Validate form and log results
+			$validation_result = $this->validateForm();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation result: ' . ($validation_result ? 'PASSED' : 'FAILED') . PHP_EOL, FILE_APPEND);
+			if (!$validation_result) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation errors: ' . print_r($this->error, true) . PHP_EOL, FILE_APPEND);
+				// Set error warning if not already set
+				if (!isset($this->session->data['error_warning']) || empty($this->session->data['error_warning'])) {
+					$error_messages = array();
+					foreach ($this->error as $key => $value) {
+						if (is_array($value)) {
+							$error_messages[] = implode(', ', $value);
+						} else {
+							$error_messages[] = $value;
+						}
+					}
+					if (!empty($error_messages)) {
+						$this->session->data['error_warning'] = 'Validation failed: ' . implode('; ', $error_messages);
+					} else {
+						$this->session->data['error_warning'] = 'Please check the form for errors.';
+					}
+				}
+			}
+		
+		if ($validation_result) {
 			
 			try {
 				$product_id = $this->model_catalog_product->addProduct($this->request->post);
@@ -2471,6 +2496,11 @@ class ControllerCatalogProduct extends Controller {
 	protected function  validateForm() {
 		if (!$this->user->hasPermission('modify', 'catalog/product')) {
 			$this->error['warning'] = $this->language->get('error_permission');
+		}
+
+		if (!isset($this->request->post['product_description']) || !is_array($this->request->post['product_description'])) {
+			$this->error['product_description'] = $this->language->get('error_product_description');
+			return false;
 		}
 
 		foreach ($this->request->post['product_description'] as $language_id => $value) {
