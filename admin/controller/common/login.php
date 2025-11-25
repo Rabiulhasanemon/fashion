@@ -11,8 +11,19 @@ class ControllerCommonLogin extends Controller {
 			$this->response->redirect($this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
+		// Log login page access
+		$log_file = DIR_LOGS . 'admin_login_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== LOGIN PAGE ACCESSED ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Request Method: ' . $this->request->server['REQUEST_METHOD'] . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data: ' . (isset($this->request->post) ? 'YES (' . count($this->request->post) . ' items)' : 'NO') . PHP_EOL, FILE_APPEND);
+		
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation passed, generating token...' . PHP_EOL, FILE_APPEND);
+			
 			$this->session->data['token'] = md5(mt_rand());
+			$token = $this->session->data['token'];
+			
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Token generated: ' . $token . PHP_EOL, FILE_APPEND);
 
             // Add to activity log
             try {
@@ -22,27 +33,55 @@ class ControllerCommonLogin extends Controller {
                     '%name'   => $this->user->getFirstName() . ' ' . $this->user->getLastName()
                 );
                 $this->model_user_user->addActivity($this->user->getId(), 'login', $activity_data);
+                file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Activity logged' . PHP_EOL, FILE_APPEND);
             } catch (Exception $e) {
                 // Log error but don't block login
-                error_log("Activity log error: " . $e->getMessage());
+                $error_msg = "Activity log error: " . $e->getMessage();
+                error_log($error_msg);
+                file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
             }
 
 			// Handle redirect - use JavaScript fallback if header redirect fails (cPGuard workaround)
 			$redirect_url = '';
 			if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], HTTP_SERVER) === 0 || strpos($this->request->post['redirect'], HTTPS_SERVER) === 0 )) {
-				$redirect_url = $this->request->post['redirect'] . '&token=' . $this->session->data['token'];
+				$redirect_url = $this->request->post['redirect'] . '&token=' . $token;
 			} else {
-				$redirect_url = $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL');
+				$redirect_url = $this->url->link('common/dashboard', 'token=' . $token, 'SSL');
 			}
 			
-			// Try header redirect first
-			$this->response->redirect($redirect_url);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Redirect URL: ' . $redirect_url . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting redirect...' . PHP_EOL, FILE_APPEND);
 			
-			// If redirect fails (cPGuard blocking), output JavaScript redirect as fallback
-			echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($redirect_url) . '"></head>';
-			echo '<body><script>window.location.href = "' . htmlspecialchars($redirect_url) . '";</script>';
-			echo '<p>Redirecting... If you are not redirected, <a href="' . htmlspecialchars($redirect_url) . '">click here</a>.</p></body></html>';
+			// Output redirect page with multiple fallback methods
+			?>
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<meta charset="UTF-8">
+				<meta http-equiv="refresh" content="0;url=<?php echo htmlspecialchars($redirect_url); ?>">
+				<title>Redirecting...</title>
+				<script type="text/javascript">
+					// Immediate JavaScript redirect
+					window.location.href = <?php echo json_encode($redirect_url); ?>;
+					
+					// Fallback after 1 second
+					setTimeout(function() {
+						window.location.href = <?php echo json_encode($redirect_url); ?>;
+					}, 1000);
+				</script>
+			</head>
+			<body>
+				<p>Login successful! Redirecting to dashboard...</p>
+				<p>If you are not redirected automatically, <a href="<?php echo htmlspecialchars($redirect_url); ?>">click here</a>.</p>
+				<p>Or copy this URL: <br><input type="text" value="<?php echo htmlspecialchars($redirect_url); ?>" style="width:100%;max-width:600px;" readonly onclick="this.select();"></p>
+			</body>
+			</html>
+			<?php
 			exit;
+		} else {
+			if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed' . PHP_EOL, FILE_APPEND);
+			}
 		}
 
 		$data['heading_title'] = $this->language->get('heading_title');
@@ -117,8 +156,50 @@ class ControllerCommonLogin extends Controller {
 	}
 
 	protected function validate() {
-		if (!isset($this->request->post['username']) || !isset($this->request->post['password']) || !$this->user->login($this->request->post['username'], $this->request->post['password'])) {
+		// Log login attempt for debugging
+		$log_file = DIR_LOGS . 'admin_login_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== LOGIN ATTEMPT ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data received: ' . (isset($this->request->post['username']) ? 'YES' : 'NO') . PHP_EOL, FILE_APPEND);
+		
+		if (!isset($this->request->post['username'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Username not provided in POST' . PHP_EOL, FILE_APPEND);
 			$this->error['warning'] = $this->language->get('error_login');
+			return !$this->error;
+		}
+		
+		if (!isset($this->request->post['password'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Password not provided in POST' . PHP_EOL, FILE_APPEND);
+			$this->error['warning'] = $this->language->get('error_login');
+			return !$this->error;
+		}
+		
+		$username = $this->request->post['username'];
+		$password = $this->request->post['password'];
+		
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Username: ' . $username . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting login...' . PHP_EOL, FILE_APPEND);
+		
+		// Try to login
+		$login_result = $this->user->login($username, $password);
+		
+		if (!$login_result) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - LOGIN FAILED: Invalid credentials or user not active' . PHP_EOL, FILE_APPEND);
+			
+			// Check if user exists
+			$user_check = $this->db->query("SELECT user_id, username, status FROM " . DB_PREFIX . "user WHERE username = '" . $this->db->escape($username) . "'");
+			if ($user_check->num_rows) {
+				$user_data = $user_check->row;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - User exists: ID=' . $user_data['user_id'] . ', Status=' . $user_data['status'] . PHP_EOL, FILE_APPEND);
+				if ($user_data['status'] != '1') {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: User account is disabled (status=' . $user_data['status'] . ')' . PHP_EOL, FILE_APPEND);
+				}
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: User not found in database' . PHP_EOL, FILE_APPEND);
+			}
+			
+			$this->error['warning'] = $this->language->get('error_login');
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - LOGIN SUCCESS: User ID=' . $this->user->getId() . PHP_EOL, FILE_APPEND);
 		}
 
 		return !$this->error;
