@@ -373,7 +373,9 @@ class ModelCatalogProduct extends Model {
 			'product_to_layout',
 			'product_discount',
 			'product_special',
-			'product_to_download'
+			'product_to_download',
+			'product_filter',
+			'product_attribute'
 		);
 		
 		foreach ($cleanup_tables as $table) {
@@ -1334,6 +1336,67 @@ class ModelCatalogProduct extends Model {
 		// Insert product variations
 		if (isset($data['product_variation']) && is_array($data['product_variation']) && !empty($data['product_variation'])) {
 			$this->persistProductVariations($product_id, $data['product_variation']);
+		}
+
+		// Insert product filters
+		if ($product_id > 0) {
+			// Clean up any product_id = 0 records first
+			try {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = 0");
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning cleaning product_filter: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			}
+			
+			// Delete existing filters for this product (in case of retry)
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
+			
+			if (isset($data['product_filter']) && is_array($data['product_filter'])) {
+				foreach ($data['product_filter'] as $filter_id) {
+					$filter_id = (int)$filter_id;
+					if ($filter_id > 0) {
+						// Check if this filter already exists for this product
+						$check_filter = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "' AND filter_id = '" . $filter_id . "' LIMIT 1");
+						if (!$check_filter || !$check_filter->num_rows) {
+							$this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
+						}
+					}
+				}
+			}
+		}
+
+		// Insert product attributes
+		if ($product_id > 0) {
+			// Clean up any product_id = 0 records first
+			try {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = 0");
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning cleaning product_attribute: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			}
+			
+			// Delete existing attributes for this product (in case of retry)
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
+			
+			if (isset($data['product_attribute']) && is_array($data['product_attribute'])) {
+				foreach ($data['product_attribute'] as $attribute) {
+					if (isset($attribute['attribute_id']) && isset($attribute['product_attribute_description'])) {
+						$attribute_id = (int)$attribute['attribute_id'];
+						if ($attribute_id > 0) {
+							foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
+								$language_id = (int)$language_id;
+								$text = isset($product_attribute_description['text']) ? $product_attribute_description['text'] : '';
+								
+								if ($language_id > 0 && $text !== '') {
+									// Check if this attribute already exists for this product
+									$check_attr = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "' AND attribute_id = '" . $attribute_id . "' AND language_id = '" . $language_id . "' LIMIT 1");
+									if (!$check_attr || !$check_attr->num_rows) {
+										$this->db->query("INSERT INTO " . DB_PREFIX . "product_attribute SET product_id = '" . (int)$product_id . "', attribute_id = '" . $attribute_id . "', language_id = '" . $language_id . "', text = '" . $this->db->escape($text) . "'");
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
 		return $product_id;
