@@ -1875,10 +1875,12 @@ class ModelCatalogProduct extends Model {
 						weight = '" . $weight . "', 
 						weight_prefix = '" . $this->db->escape($weight_prefix) . "', 
 						color = '" . $this->db->escape($color) . "', 
-						`show` = '" . (int)$show . "'");
+						`show` = '" . (int)$show . "'";
+						
+						$result = $this->db->query($insert_sql);
 
-					// Check for errors
-					if (!$result) {
+						// Check for errors
+						if (!$result) {
 						$db_error = '';
 						$db_errno = 0;
 						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
@@ -1912,6 +1914,11 @@ class ModelCatalogProduct extends Model {
 								color = '" . $this->db->escape($color) . "', 
 								`show` = '" . (int)$show . "'");
 						}
+					} catch (Exception $e) {
+						$error_msg = "Error inserting product_option_value: " . $e->getMessage() . " | SQL: " . $insert_sql . " | Product ID: " . $product_id;
+						error_log($error_msg);
+						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+						throw new Exception("Error updating product: " . $e->getMessage());
 					}
 				}
 			}
