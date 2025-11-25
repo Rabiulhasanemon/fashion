@@ -81,14 +81,14 @@ echo "<h3>Test 3: Try to insert a test product</h3>";
 // Clean up any existing test products first
 $db->query("DELETE FROM " . DB_PREFIX . "product WHERE model = 'TEST_MODEL_DEBUG'");
 
-// Prepare test data
+// Prepare comprehensive test data for all tabs
 $test_data = array(
     'model' => 'TEST_MODEL_DEBUG',
     'sku' => 'TEST_SKU_DEBUG',
     'quantity' => 1,
     'minimum' => 1,
     'status' => 0, // Set to 0 so it doesn't show in frontend
-    'price' => 0,
+    'price' => 100,
     'product_description' => array(
         1 => array( // Assuming language_id 1
             'name' => 'Test Product Debug',
@@ -100,7 +100,49 @@ $test_data = array(
     ),
     'product_store' => array(0),
     'product_category' => array(),
-    'product_image' => array()
+    'product_image' => array(),
+    // Test Filter tab
+    'product_filter' => array(1), // Test with filter_id 1 if exists
+    // Test Attribute tab
+    'product_attribute' => array(
+        array(
+            'attribute_id' => 1,
+            'product_attribute_description' => array(
+                1 => array('text' => 'Test Attribute Value')
+            )
+        )
+    ),
+    // Test Discount tab
+    'product_discount' => array(
+        array(
+            'customer_group_id' => 1,
+            'quantity' => 10,
+            'priority' => 1,
+            'price' => 80,
+            'date_start' => date('Y-m-d'),
+            'date_end' => date('Y-m-d', strtotime('+1 year'))
+        )
+    ),
+    // Test Special tab
+    'product_special' => array(
+        array(
+            'customer_group_id' => 1,
+            'priority' => 1,
+            'price' => 90,
+            'date_start' => date('Y-m-d'),
+            'date_end' => date('Y-m-d', strtotime('+1 month'))
+        )
+    ),
+    // Test Reward Points tab
+    'product_reward' => array(
+        1 => 100 // customer_group_id => points
+    ),
+    // Test Downloads (Links tab)
+    'product_download' => array(), // Empty for now
+    // Test Design tab
+    'product_layout' => array(
+        0 => 0 // store_id => layout_id
+    )
 );
 
 try {
@@ -115,12 +157,51 @@ try {
         if ($verify && $verify->num_rows) {
             echo "<p class='success'>✓ Product verified in database</p>";
             echo "<pre>Product ID: " . $verify->row['product_id'] . "\nModel: " . $verify->row['model'] . "</pre>";
+            
+            // Verify all tabs data
+            echo "<h3>Verifying All Tabs Data</h3>";
+            
+            // Check filters
+            $filters = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Filters: " . ($filters && $filters->num_rows ? $filters->row['count'] : 0) . " saved</p>";
+            
+            // Check attributes
+            $attributes = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Attributes: " . ($attributes && $attributes->num_rows ? $attributes->row['count'] : 0) . " saved</p>";
+            
+            // Check discounts
+            $discounts = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Discounts: " . ($discounts && $discounts->num_rows ? $discounts->row['count'] : 0) . " saved</p>";
+            
+            // Check specials
+            $specials = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Specials: " . ($specials && $specials->num_rows ? $specials->row['count'] : 0) . " saved</p>";
+            
+            // Check rewards
+            $rewards = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Rewards: " . ($rewards && $rewards->num_rows ? $rewards->row['count'] : 0) . " saved</p>";
+            
+            // Check downloads
+            $downloads = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_to_download WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Downloads: " . ($downloads && $downloads->num_rows ? $downloads->row['count'] : 0) . " saved</p>";
+            
+            // Check layouts
+            $layouts = $db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "'");
+            echo "<p>Layouts: " . ($layouts && $layouts->num_rows ? $layouts->row['count'] : 0) . " saved</p>";
+            
         } else {
             echo "<p class='error'>✗ Product ID returned but product not found in database!</p>";
         }
         
         // Clean up test product
         echo "<h3>Cleanup</h3>";
+        $db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_to_download WHERE product_id = '" . (int)$product_id . "'");
+        $db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "'");
         $db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");
         $db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "'");
         echo "<p class='success'>✓ Test product cleaned up</p>";
