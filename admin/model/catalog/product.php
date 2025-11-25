@@ -1666,19 +1666,47 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// CRITICAL: Clean up any orphaned records with product_id = 0 or product_option_id = 0
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
+		} catch (Exception $e) {
+			error_log("Error deleting from product_option: " . $e->getMessage());
+		}
+		
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
+		} catch (Exception $e) {
+			error_log("Error deleting from product_option_value: " . $e->getMessage());
+		}
 		
 		// Delete existing product options for this product
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			$error_msg = "Error deleting product_option_value: " . $e->getMessage() . " | SQL: DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'";
+			error_log($error_msg);
+			throw new Exception($error_msg);
+		}
+		
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
+		} catch (Exception $e) {
+			$error_msg = "Error deleting product_option: " . $e->getMessage() . " | SQL: DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'";
+			error_log($error_msg);
+			throw new Exception($error_msg);
+		}
 
 		// Ensure required and value columns exist in product_option table
 		$this->ensureRequiredColumn();
 		$this->ensureValueColumn();
 		
+		// CRITICAL: Ensure product_id column exists in product_option table
+		$this->ensureProductIdColumnInProductOption();
+		
 		// Ensure all required columns exist in product_option_value table
 		$this->ensureProductOptionValueColumns();
+		
+		// CRITICAL: Ensure product_id column exists in product_option_value table
+		$this->ensureProductIdColumnInProductOptionValue();
 
 		foreach ($product_options as $product_option) {
 			if (!isset($product_option['option_id'])) {
@@ -2022,6 +2050,88 @@ class ModelCatalogProduct extends Model {
 					// Log error but don't throw - column might already exist from concurrent request
 					error_log("Error adding " . $column_name . " column to product_option_value: " . $e->getMessage());
 				}
+			}
+		}
+	}
+
+	/**
+	 * Ensure product_id column exists in product_option table
+	 * This method checks if the column exists and adds it if missing
+	 */
+	private function ensureProductIdColumnInProductOption() {
+		$table_name = DB_PREFIX . "product_option";
+		
+		// Check if table exists first
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . $table_name . "'");
+		if (!$table_check || !$table_check->num_rows) {
+			error_log("Table " . $table_name . " does not exist!");
+			return;
+		}
+		
+		// Check if product_id column exists
+		$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'product_id'");
+		
+		if (!$check_query->num_rows) {
+			// Column doesn't exist, add it
+			try {
+				// Check if option_id exists to determine position
+				$option_id_check = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'option_id'");
+				if ($option_id_check && $option_id_check->num_rows) {
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL FIRST");
+				} else {
+					// Add at the beginning
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL FIRST");
+				}
+				// Add index for better performance
+				try {
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD INDEX `product_id` (`product_id`)");
+				} catch (Exception $e) {
+					// Index might already exist, ignore
+				}
+			} catch (Exception $e) {
+				// Log error but don't throw - column might already exist from concurrent request
+				error_log("Error adding product_id column to product_option: " . $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Ensure product_id column exists in product_option_value table
+	 * This method checks if the column exists and adds it if missing
+	 */
+	private function ensureProductIdColumnInProductOptionValue() {
+		$table_name = DB_PREFIX . "product_option_value";
+		
+		// Check if table exists first
+		$table_check = $this->db->query("SHOW TABLES LIKE '" . $table_name . "'");
+		if (!$table_check || !$table_check->num_rows) {
+			error_log("Table " . $table_name . " does not exist!");
+			return;
+		}
+		
+		// Check if product_id column exists
+		$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'product_id'");
+		
+		if (!$check_query->num_rows) {
+			// Column doesn't exist, add it
+			try {
+				// Check if product_option_id exists to determine position
+				$option_id_check = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'product_option_id'");
+				if ($option_id_check && $option_id_check->num_rows) {
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL AFTER `product_option_id`");
+				} else {
+					// Add at the beginning if product_option_id doesn't exist
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL FIRST");
+				}
+				// Add index for better performance
+				try {
+					$this->db->query("ALTER TABLE `" . $table_name . "` ADD INDEX `product_id` (`product_id`)");
+				} catch (Exception $e) {
+					// Index might already exist, ignore
+				}
+			} catch (Exception $e) {
+				// Log error but don't throw - column might already exist from concurrent request
+				error_log("Error adding product_id column to product_option_value: " . $e->getMessage());
 			}
 		}
 	}
