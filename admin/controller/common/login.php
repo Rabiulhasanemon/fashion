@@ -15,20 +15,34 @@ class ControllerCommonLogin extends Controller {
 			$this->session->data['token'] = md5(mt_rand());
 
             // Add to activity log
-            $this->load->model('user/user');
+            try {
+                $this->load->model('user/user');
+                $activity_data = array(
+                    '%user_id' => $this->user->getId(),
+                    '%name'   => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+                );
+                $this->model_user_user->addActivity($this->user->getId(), 'login', $activity_data);
+            } catch (Exception $e) {
+                // Log error but don't block login
+                error_log("Activity log error: " . $e->getMessage());
+            }
 
-            $activity_data = array(
-                '%user_id' => $this->user->getId(),
-                '%name'   => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-            );
-
-            $this->model_user_user->addActivity($this->user->getId(), 'login', $activity_data);
-
+			// Handle redirect - use JavaScript fallback if header redirect fails (cPGuard workaround)
+			$redirect_url = '';
 			if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], HTTP_SERVER) === 0 || strpos($this->request->post['redirect'], HTTPS_SERVER) === 0 )) {
-				$this->response->redirect($this->request->post['redirect'] . '&token=' . $this->session->data['token']);
+				$redirect_url = $this->request->post['redirect'] . '&token=' . $this->session->data['token'];
 			} else {
-				$this->response->redirect($this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'));
+				$redirect_url = $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL');
 			}
+			
+			// Try header redirect first
+			$this->response->redirect($redirect_url);
+			
+			// If redirect fails (cPGuard blocking), output JavaScript redirect as fallback
+			echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($redirect_url) . '"></head>';
+			echo '<body><script>window.location.href = "' . htmlspecialchars($redirect_url) . '";</script>';
+			echo '<p>Redirecting... If you are not redirected, <a href="' . htmlspecialchars($redirect_url) . '">click here</a>.</p></body></html>';
+			exit;
 		}
 
 		$data['heading_title'] = $this->language->get('heading_title');
