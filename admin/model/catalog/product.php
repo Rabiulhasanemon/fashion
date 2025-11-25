@@ -353,64 +353,13 @@ class ModelCatalogProduct extends Model {
 		// Ensure video_url column exists
 		$this->ensureVideoUrlColumn();
 		
-		// CRITICAL: Ensure product_id columns exist in product_option and product_option_value tables
-		// This must be done BEFORE any DELETE queries that use product_id
-		$this->ensureProductIdColumnInProductOption();
-		$this->ensureProductIdColumnInProductOptionValue();
-		
 		// Clean up any orphaned product with product_id = 0 before inserting
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
-		} catch (Exception $e) {
-			error_log("Error cleaning url_alias: " . $e->getMessage());
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
-		} catch (Exception $e) {
-			error_log("Error cleaning product_to_store: " . $e->getMessage());
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
-		} catch (Exception $e) {
-			error_log("Error cleaning product_to_category: " . $e->getMessage());
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
-		} catch (Exception $e) {
-			error_log("Error cleaning product_image: " . $e->getMessage());
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
-		} catch (Exception $e) {
-			error_log("Error cleaning product_description: " . $e->getMessage());
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
-		} catch (Exception $e) {
-			error_log("Error cleaning product: " . $e->getMessage());
-		}
-		
-		// Clean up product_option and product_option_value with product_id = 0
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
-		} catch (Exception $e) {
-			$error_msg = "Error cleaning product_option (product_id=0): " . $e->getMessage();
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
-		} catch (Exception $e) {
-			$error_msg = "Error cleaning product_option_value (product_id=0): " . $e->getMessage();
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-		}
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_store WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
 		
 		// Ensure auto-increment is properly set
 		$max_check = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product");
@@ -719,29 +668,12 @@ class ModelCatalogProduct extends Model {
 			'product_option',
 			'product_option_value',
 			'product_variation',
-			'product_filter',
-			'product_to_filter_profile',
-			'product_attribute',
 			'url_alias'
 		);
 		foreach ($cleanup_tables as $table) {
-			try {
-				$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
-				if ($check_table && $check_table->num_rows) {
-					// Check if table has product_id column before trying to delete
-					$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
-					if ($check_column && $check_column->num_rows) {
-						$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
-					} else {
-						// Table exists but doesn't have product_id column - skip it
-						error_log("Table " . DB_PREFIX . $table . " exists but doesn't have product_id column - skipping cleanup");
-					}
-				}
-			} catch (Exception $e) {
-				$error_msg = "Error cleaning table " . DB_PREFIX . $table . ": " . $e->getMessage();
-				error_log($error_msg);
-				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-				// Don't throw - continue with other tables
+			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+			if ($check_table && $check_table->num_rows) {
+				$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
 			}
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Aggressive cleanup: Removed all product_id = 0 records from related tables' . PHP_EOL, FILE_APPEND);
@@ -1733,55 +1665,20 @@ class ModelCatalogProduct extends Model {
 			return;
 		}
 
-		// CRITICAL: Ensure tables exist and have required columns BEFORE any queries
-		$this->ensureProductIdColumnInProductOption();
-		$this->ensureProductIdColumnInProductOptionValue();
+		// CRITICAL: Clean up any orphaned records with product_id = 0 or product_option_id = 0
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
 		
+		// Delete existing product options for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'");
+
 		// Ensure required and value columns exist in product_option table
 		$this->ensureRequiredColumn();
 		$this->ensureValueColumn();
 		
 		// Ensure all required columns exist in product_option_value table
 		$this->ensureProductOptionValueColumns();
-
-		// CRITICAL: Clean up any orphaned records with product_id = 0 or product_option_id = 0
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
-		} catch (Exception $e) {
-			$error_msg = "Error deleting from product_option (product_id=0): " . $e->getMessage() . " | SQL: DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0";
-			error_log($error_msg);
-			// Don't throw, just log - this is cleanup
-		}
-		
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
-		} catch (Exception $e) {
-			$error_msg = "Error deleting from product_option_value (product_id=0): " . $e->getMessage() . " | SQL: DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0";
-			error_log($error_msg);
-			// Don't throw, just log - this is cleanup
-		}
-		
-		// Delete existing product options for this product
-		try {
-			$sql = "DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'";
-			$this->db->query($sql);
-		} catch (Exception $e) {
-			$error_msg = "Error deleting product_option_value: " . $e->getMessage() . " | SQL: " . $sql . " | Product ID: " . $product_id;
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-			throw new Exception("Error updating product: " . $e->getMessage());
-		}
-		
-		try {
-			$sql = "DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . $product_id . "'";
-			$this->db->query($sql);
-		} catch (Exception $e) {
-			$error_msg = "Error deleting product_option: " . $e->getMessage() . " | SQL: " . $sql . " | Product ID: " . $product_id;
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-			throw new Exception("Error updating product: " . $e->getMessage());
-		}
-
 
 		foreach ($product_options as $product_option) {
 			if (!isset($product_option['option_id'])) {
@@ -1796,34 +1693,18 @@ class ModelCatalogProduct extends Model {
 			$required = isset($product_option['required']) ? (int)$product_option['required'] : 0;
 			$value    = isset($product_option['value']) ? $product_option['value'] : '';
 
-			try {
-				$insert_sql = "INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'";
-				$result = $this->db->query($insert_sql);
-				$product_option_id = $this->db->getLastId();
-			} catch (Exception $e) {
-				$error_msg = "Error inserting product_option: " . $e->getMessage() . " | SQL: " . $insert_sql . " | Product ID: " . $product_id;
-				error_log($error_msg);
-				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-				throw new Exception("Error updating product: " . $e->getMessage());
-			}
+			$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
+			$product_option_id = $this->db->getLastId();
 
 			// CRITICAL: Validate product_option_id before proceeding
 			if ($product_option_id <= 0) {
 				// Try to get the actual ID from database
-				try {
-					$find_sql = "SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1";
-					$find_query = $this->db->query($find_sql);
-					if ($find_query && $find_query->num_rows) {
-						$product_option_id = (int)$find_query->row['product_option_id'];
-					} else {
-						error_log("persistProductOptions: Failed to get valid product_option_id for product_id={$product_id}, option_id={$option_id}");
-						continue;
-					}
-				} catch (Exception $e) {
-					$error_msg = "Error finding product_option_id: " . $e->getMessage() . " | SQL: " . $find_sql . " | Product ID: " . $product_id;
-					error_log($error_msg);
-					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-					throw new Exception("Error updating product: " . $e->getMessage());
+				$find_query = $this->db->query("SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1");
+				if ($find_query && $find_query->num_rows) {
+					$product_option_id = (int)$find_query->row['product_option_id'];
+				} else {
+					error_log("persistProductOptions: Failed to get valid product_option_id for product_id={$product_id}, option_id={$option_id}");
+					continue;
 				}
 			}
 
@@ -1850,18 +1731,9 @@ class ModelCatalogProduct extends Model {
 					$color           = isset($product_option_value['color']) ? $product_option_value['color'] : '';
 
 					// Delete any existing record first (safety)
-					try {
-						$delete_sql = "DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'";
-						$this->db->query($delete_sql);
-					} catch (Exception $e) {
-						$error_msg = "Error deleting product_option_value (before insert): " . $e->getMessage() . " | SQL: " . $delete_sql . " | Product ID: " . $product_id;
-						error_log($error_msg);
-						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-						throw new Exception("Error updating product: " . $e->getMessage());
-					}
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$product_id . "' AND product_option_id = '" . (int)$product_option_id . "' AND option_value_id = '" . $option_value_id . "'");
 
-					try {
-						$insert_sql = "INSERT INTO " . DB_PREFIX . "product_option_value SET 
+					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option_value SET 
 						product_option_id = '" . (int)$product_option_id . "', 
 						product_id = '" . (int)$product_id . "', 
 						option_id = '" . $option_id . "', 
@@ -1875,12 +1747,10 @@ class ModelCatalogProduct extends Model {
 						weight = '" . $weight . "', 
 						weight_prefix = '" . $this->db->escape($weight_prefix) . "', 
 						color = '" . $this->db->escape($color) . "', 
-						`show` = '" . (int)$show . "'";
-						
-						$result = $this->db->query($insert_sql);
+						`show` = '" . (int)$show . "'");
 
-						// Check for errors
-						if (!$result) {
+					// Check for errors
+					if (!$result) {
 						$db_error = '';
 						$db_errno = 0;
 						if (property_exists($this->db, 'link') && is_object($this->db->link)) {
@@ -1914,11 +1784,6 @@ class ModelCatalogProduct extends Model {
 								color = '" . $this->db->escape($color) . "', 
 								`show` = '" . (int)$show . "'");
 						}
-					} catch (Exception $e) {
-						$error_msg = "Error inserting product_option_value: " . $e->getMessage() . " | SQL: " . $insert_sql . " | Product ID: " . $product_id;
-						error_log($error_msg);
-						file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-						throw new Exception("Error updating product: " . $e->getMessage());
 					}
 				}
 			}
@@ -2158,136 +2023,6 @@ class ModelCatalogProduct extends Model {
 					error_log("Error adding " . $column_name . " column to product_option_value: " . $e->getMessage());
 				}
 			}
-		}
-	}
-
-	/**
-	 * Ensure product_id column exists in product_option table
-	 * This method checks if the column exists and adds it if missing
-	 */
-	private function ensureProductIdColumnInProductOption() {
-		$table_name = DB_PREFIX . "product_option";
-		
-		try {
-			// Check if table exists first
-			$table_check = $this->db->query("SHOW TABLES LIKE '" . $table_name . "'");
-			if (!$table_check || !$table_check->num_rows) {
-				error_log("Table " . $table_name . " does not exist! Cannot add product_id column.");
-				return false;
-			}
-			
-			// Check if product_id column exists
-			$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'product_id'");
-			
-			if (!$check_query->num_rows) {
-				// Column doesn't exist, add it
-				try {
-					// Get all columns to determine position
-					$columns_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "`");
-					$has_product_option_id = false;
-					if ($columns_query && $columns_query->num_rows) {
-						foreach ($columns_query->rows as $row) {
-							if ($row['Field'] == 'product_option_id') {
-								$has_product_option_id = true;
-								break;
-							}
-						}
-					}
-					
-					if ($has_product_option_id) {
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL AFTER `product_option_id`");
-					} else {
-						// Add at the beginning
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL FIRST");
-					}
-					
-					// Add index for better performance
-					try {
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD INDEX `product_id` (`product_id`)");
-					} catch (Exception $e) {
-						// Index might already exist, ignore
-					}
-					
-					error_log("Successfully added product_id column to " . $table_name);
-					return true;
-				} catch (Exception $e) {
-					$error_msg = "Error adding product_id column to product_option: " . $e->getMessage();
-					error_log($error_msg);
-					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-					return false;
-				}
-			}
-			return true;
-		} catch (Exception $e) {
-			$error_msg = "Error checking product_id column in product_option: " . $e->getMessage();
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-			return false;
-		}
-	}
-
-	/**
-	 * Ensure product_id column exists in product_option_value table
-	 * This method checks if the column exists and adds it if missing
-	 */
-	private function ensureProductIdColumnInProductOptionValue() {
-		$table_name = DB_PREFIX . "product_option_value";
-		
-		try {
-			// Check if table exists first
-			$table_check = $this->db->query("SHOW TABLES LIKE '" . $table_name . "'");
-			if (!$table_check || !$table_check->num_rows) {
-				error_log("Table " . $table_name . " does not exist! Cannot add product_id column.");
-				return false;
-			}
-			
-			// Check if product_id column exists
-			$check_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "` LIKE 'product_id'");
-			
-			if (!$check_query->num_rows) {
-				// Column doesn't exist, add it
-				try {
-					// Get all columns to determine position
-					$columns_query = $this->db->query("SHOW COLUMNS FROM `" . $table_name . "`");
-					$has_product_option_id = false;
-					if ($columns_query && $columns_query->num_rows) {
-						foreach ($columns_query->rows as $row) {
-							if ($row['Field'] == 'product_option_id') {
-								$has_product_option_id = true;
-								break;
-							}
-						}
-					}
-					
-					if ($has_product_option_id) {
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL AFTER `product_option_id`");
-					} else {
-						// Add at the beginning if product_option_id doesn't exist
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD COLUMN `product_id` INT(11) NOT NULL FIRST");
-					}
-					
-					// Add index for better performance
-					try {
-						$this->db->query("ALTER TABLE `" . $table_name . "` ADD INDEX `product_id` (`product_id`)");
-					} catch (Exception $e) {
-						// Index might already exist, ignore
-					}
-					
-					error_log("Successfully added product_id column to " . $table_name);
-					return true;
-				} catch (Exception $e) {
-					$error_msg = "Error adding product_id column to product_option_value: " . $e->getMessage();
-					error_log($error_msg);
-					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-					return false;
-				}
-			}
-			return true;
-		} catch (Exception $e) {
-			$error_msg = "Error checking product_id column in product_option_value: " . $e->getMessage();
-			error_log($error_msg);
-			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
-			return false;
 		}
 	}
 
