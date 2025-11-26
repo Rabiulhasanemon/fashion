@@ -40,7 +40,68 @@ $model = $registry->get('model_catalog_product');
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
 
 if ($product_id <= 0) {
-    die("Please provide a valid product_id. Usage: ?product_id=1");
+    // Show list of available products
+    echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Product Edit Debug - Select Product</title>";
+    echo "<style>
+        body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}
+        .container{max-width:1200px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+        h1{color:#333;border-bottom:2px solid #007bff;padding-bottom:10px;}
+        table{border-collapse:collapse;width:100%;margin:20px 0;}
+        table th, table td{border:1px solid #ddd;padding:12px;text-align:left;}
+        table th{background:#007bff;color:white;}
+        table tr:nth-child(even){background:#f9f9f9;}
+        table tr:hover{background:#f0f0f0;}
+        a{color:#007bff;text-decoration:none;font-weight:bold;}
+        a:hover{text-decoration:underline;}
+        .info{background:#e7f3ff;padding:15px;border-left:4px solid #2196F3;margin:20px 0;border-radius:4px;}
+    </style></head><body><div class='container'>";
+    
+    echo "<h1>🔍 Product Edit Debug Tool</h1>";
+    echo "<div class='info'>";
+    echo "<p><strong>Select a product to debug:</strong></p>";
+    echo "<p>This tool will show you the status of all tabs (General, Data, Links, Attribute, Filter, Option, Discount, Special, Image, Reward Points, Design) for the selected product.</p>";
+    echo "</div>";
+    
+    // Get list of products
+    try {
+        $products_query = $db->query("SELECT p.product_id, pd.name, p.model, p.sku, p.status FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = 1) ORDER BY p.product_id DESC LIMIT 100");
+        
+        if ($products_query && $products_query->num_rows > 0) {
+            echo "<h2>Available Products (Last 100)</h2>";
+            echo "<table>";
+            echo "<tr><th>Product ID</th><th>Name</th><th>Model</th><th>SKU</th><th>Status</th><th>Action</th></tr>";
+            
+            foreach ($products_query->rows as $product) {
+                $status_text = $product['status'] == 1 ? '<span style="color:green;">Enabled</span>' : '<span style="color:red;">Disabled</span>';
+                $name = $product['name'] ? htmlspecialchars($product['name']) : '<em>No name</em>';
+                $model = $product['model'] ? htmlspecialchars($product['model']) : '-';
+                $sku = $product['sku'] ? htmlspecialchars($product['sku']) : '-';
+                
+                echo "<tr>";
+                echo "<td><strong>" . $product['product_id'] . "</strong></td>";
+                echo "<td>" . $name . "</td>";
+                echo "<td>" . $model . "</td>";
+                echo "<td>" . $sku . "</td>";
+                echo "<td>" . $status_text . "</td>";
+                echo "<td><a href='?product_id=" . $product['product_id'] . "'>Debug This Product</a></td>";
+                echo "</tr>";
+            }
+            
+            echo "</table>";
+        } else {
+            echo "<p style='color:red;'><strong>No products found in database.</strong></p>";
+        }
+    } catch (Exception $e) {
+        echo "<p style='color:red;'><strong>Error loading products:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+    
+    echo "<div class='info'>";
+    echo "<p><strong>Usage:</strong> Click on 'Debug This Product' for any product above, or manually add <code>?product_id=X</code> to the URL.</p>";
+    echo "<p><strong>Example:</strong> <code>" . $_SERVER['PHP_SELF'] . "?product_id=1</code></p>";
+    echo "</div>";
+    
+    echo "</div></body></html>";
+    exit;
 }
 
 echo "<h1>Product Edit Debug Report</h1>";
