@@ -2207,6 +2207,242 @@ class ModelCatalogProduct extends Model {
 			}
 		}
 
+		// Update product attributes
+		$log_file = DIR_LOGS . 'product_insert_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting attribute update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_attribute: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing attributes for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
+		
+		$attribute_count = 0;
+		if (isset($data['product_attribute']) && is_array($data['product_attribute'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_attribute']) . ' attribute(s)' . PHP_EOL, FILE_APPEND);
+			
+			foreach ($data['product_attribute'] as $key => $attribute) {
+				// Handle both numeric keys and attribute_id keys
+				$attribute_id = 0;
+				if (isset($attribute['attribute_id'])) {
+					$attribute_id = (int)$attribute['attribute_id'];
+				} elseif (is_numeric($key)) {
+					$attribute_id = (int)$key;
+				}
+				
+				if ($attribute_id > 0) {
+					// Check if product_attribute_description exists
+					if (isset($attribute['product_attribute_description']) && is_array($attribute['product_attribute_description'])) {
+						foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
+							$language_id = (int)$language_id;
+							$text = isset($product_attribute_description['text']) ? trim($product_attribute_description['text']) : '';
+							
+							// Save attribute even if text is empty (some attributes might be empty)
+							if ($language_id > 0) {
+								$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_attribute SET product_id = '" . (int)$product_id . "', attribute_id = '" . $attribute_id . "', language_id = '" . $language_id . "', text = '" . $this->db->escape($text) . "'");
+								if ($insert_result) {
+									$attribute_count++;
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
+								} else {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_attribute data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $attribute_count . ' attribute(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product filters
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting filter update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_filter: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing filters for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
+		
+		$filter_count = 0;
+		if (isset($data['product_filter']) && is_array($data['product_filter'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_filter'] as $filter_id) {
+				$filter_id = (int)$filter_id;
+				if ($filter_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
+					$filter_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_filter data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $filter_count . ' filter(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product discounts
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting discount update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_discount: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing discounts for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "'");
+		
+		$discount_count = 0;
+		if (isset($data['product_discount']) && is_array($data['product_discount'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_discount']) . ' discount(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_discount'] as $product_discount) {
+				$customer_group_id = isset($product_discount['customer_group_id']) ? (int)$product_discount['customer_group_id'] : 0;
+				$quantity = isset($product_discount['quantity']) ? (int)$product_discount['quantity'] : 0;
+				$priority = isset($product_discount['priority']) ? (int)$product_discount['priority'] : 0;
+				$price = isset($product_discount['price']) ? (float)$product_discount['price'] : 0;
+				$date_start = isset($product_discount['date_start']) && $product_discount['date_start'] ? $this->db->escape($product_discount['date_start']) : '0000-00-00';
+				$date_end = isset($product_discount['date_end']) && $product_discount['date_end'] ? $this->db->escape($product_discount['date_end']) : '0000-00-00';
+				
+				if ($customer_group_id >= 0 && $quantity >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', quantity = '" . $quantity . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+					$discount_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_discount data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $discount_count . ' discount(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product specials
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting special update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_special: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing specials for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
+		
+		$special_count = 0;
+		if (isset($data['product_special']) && is_array($data['product_special'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_special']) . ' special(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_special'] as $product_special) {
+				$customer_group_id = isset($product_special['customer_group_id']) ? (int)$product_special['customer_group_id'] : 0;
+				$priority = isset($product_special['priority']) ? (int)$product_special['priority'] : 0;
+				$price = isset($product_special['price']) ? (float)$product_special['price'] : 0;
+				$date_start = isset($product_special['date_start']) && $product_special['date_start'] ? $this->db->escape($product_special['date_start']) : '0000-00-00';
+				$date_end = isset($product_special['date_end']) && $product_special['date_end'] ? $this->db->escape($product_special['date_end']) : '0000-00-00';
+				
+				if ($customer_group_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+					$special_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_special data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $special_count . ' special(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product rewards
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting reward update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_reward: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing rewards for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "'");
+		
+		$reward_count = 0;
+		if (isset($data['product_reward']) && is_array($data['product_reward'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_reward']) . ' reward(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_reward'] as $customer_group_id => $product_reward) {
+				$customer_group_id = (int)$customer_group_id;
+				$points = isset($product_reward['points']) ? (int)$product_reward['points'] : 0;
+				
+				if ($customer_group_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+					$reward_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_reward data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $reward_count . ' reward(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product layouts (Design)
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting layout update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_to_layout: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing layouts for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "'");
+		
+		$layout_count = 0;
+		if (isset($data['product_layout']) && is_array($data['product_layout'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_layout']) . ' layout(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_layout'] as $store_id => $layout_id) {
+				$store_id = (int)$store_id;
+				$layout_id = (int)$layout_id;
+				
+				if ($store_id >= 0 && $layout_id >= 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_layout SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
+					$layout_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_layout data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $layout_count . ' layout(s)' . PHP_EOL, FILE_APPEND);
+
+		// Update product downloads
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting download update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		
+		// Clean up any product_id = 0 records first
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_download WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_to_download: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete existing downloads for this product
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_to_download WHERE product_id = '" . (int)$product_id . "'");
+		
+		$download_count = 0;
+		if (isset($data['product_download']) && is_array($data['product_download'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_download']) . ' download(s)' . PHP_EOL, FILE_APPEND);
+			foreach ($data['product_download'] as $download_id) {
+				$download_id = (int)$download_id;
+				if ($download_id > 0) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_download SET product_id = '" . (int)$product_id . "', download_id = '" . $download_id . "'");
+					$download_count++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_download data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $download_count . ' download(s)' . PHP_EOL, FILE_APPEND);
+
 		// Update product options
 		if (isset($data['product_option']) && is_array($data['product_option']) && !empty($data['product_option'])) {
 			$this->persistProductOptions($product_id, $data['product_option']);
@@ -2216,6 +2452,10 @@ class ModelCatalogProduct extends Model {
 		if (isset($data['product_variation']) && is_array($data['product_variation'])) {
 			$this->persistProductVariations($product_id, $data['product_variation']);
 		}
+		
+		// Final summary log
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== PRODUCT EDIT COMPLETED SUCCESSFULLY - Product ID: ' . $product_id . ' ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Summary: Attributes=' . $attribute_count . ', Filters=' . $filter_count . ', Discounts=' . $discount_count . ', Specials=' . $special_count . ', Rewards=' . $reward_count . ', Layouts=' . $layout_count . ', Downloads=' . $download_count . PHP_EOL, FILE_APPEND);
 	}
 
 	protected function persistProductOptions($product_id, $product_options = array()) {

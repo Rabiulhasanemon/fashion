@@ -239,6 +239,64 @@ class ControllerCatalogProduct extends Controller {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product ID: ' . $product_id . PHP_EOL, FILE_APPEND);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
 			
+			// Log detailed information about each tab's data
+			$tab_fields = array(
+				'image' => 'Main Image',
+				'featured_image' => 'Featured Image',
+				'product_image' => 'Additional Images',
+				'product_category' => 'Categories (Links)',
+				'product_download' => 'Downloads (Links)',
+				'product_related' => 'Related Products (Links)',
+				'product_compatible' => 'Compatible Products (Links)',
+				'product_attribute' => 'Attributes',
+				'product_filter' => 'Filters',
+				'product_option' => 'Options',
+				'product_discount' => 'Discounts',
+				'product_special' => 'Specials',
+				'product_reward' => 'Reward Points',
+				'product_layout' => 'Layouts (Design)',
+				'manufacturer_id' => 'Manufacturer',
+				'parent_id' => 'Parent Product'
+			);
+			
+			foreach ($tab_fields as $key => $label) {
+				if (isset($this->request->post[$key])) {
+					if (is_array($this->request->post[$key])) {
+						$count = count($this->request->post[$key]);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][' . $label . '] ' . $key . ': YES (' . $count . ' items)' . PHP_EOL, FILE_APPEND);
+						if ($count > 0 && $count <= 5) {
+							// Log first few items for debugging
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][' . $label . '] Sample data: ' . print_r(array_slice($this->request->post[$key], 0, 2), true) . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						$value = $this->request->post[$key];
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][' . $label . '] ' . $key . ': YES (value: ' . substr($value, 0, 100) . ')' . PHP_EOL, FILE_APPEND);
+					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][' . $label . '] ' . $key . ': NOT SET' . PHP_EOL, FILE_APPEND);
+				}
+			}
+			
+			// Normalize product_attribute data structure if needed
+			if (isset($this->request->post['product_attribute']) && is_array($this->request->post['product_attribute'])) {
+				$normalized_attributes = array();
+				foreach ($this->request->post['product_attribute'] as $key => $attribute) {
+					// If key is numeric and attribute has attribute_id, use attribute_id as key
+					if (is_numeric($key) && isset($attribute['attribute_id'])) {
+						$attr_id = (int)$attribute['attribute_id'];
+						if ($attr_id > 0) {
+							$normalized_attributes[$attr_id] = $attribute;
+						} else {
+							$normalized_attributes[$key] = $attribute;
+						}
+					} else {
+						$normalized_attributes[$key] = $attribute;
+					}
+				}
+				$this->request->post['product_attribute'] = $normalized_attributes;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][ATTRIBUTE] Normalized attribute structure, count: ' . count($normalized_attributes) . PHP_EOL, FILE_APPEND);
+			}
+			
 			if (isset($this->request->post['product_image'])) {
 				$img_count = is_array($this->request->post['product_image']) ? count($this->request->post['product_image']) : 'not array';
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image count: ' . $img_count . PHP_EOL, FILE_APPEND);
@@ -264,8 +322,13 @@ class ControllerCatalogProduct extends Controller {
 			}
 
 			try {
+				// Log attribute data before processing
+				if (isset($this->request->post['product_attribute'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][ATTRIBUTE] Raw POST data structure: ' . print_r($this->request->post['product_attribute'], true) . PHP_EOL, FILE_APPEND);
+				}
+				
 				$this->model_catalog_product->editProduct($product_id, $this->request->post);
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - editProduct completed successfully' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] editProduct completed successfully' . PHP_EOL, FILE_APPEND);
 
 				$this->session->data['success'] = $this->language->get('text_success');
 
@@ -286,8 +349,20 @@ class ControllerCatalogProduct extends Controller {
 				}
 			} catch (Exception $e) {
 				// Product update failed
-				$this->session->data['error_warning'] = 'Error updating product: ' . $e->getMessage();
-				error_log('Product update error: ' . $e->getMessage());
+				$error_message = $e->getMessage();
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+				
+				// Check if it's a duplicate entry error - provide helpful message
+				if (stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
+					$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system will attempt to clean this up. Please try saving again.";
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected' . PHP_EOL, FILE_APPEND);
+				}
+				
+				$this->session->data['error_warning'] = 'Error updating product: ' . $error_message;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Error occurred, showing form with error message' . PHP_EOL, FILE_APPEND);
+				error_log('Product update error: ' . $error_message);
 			}
 
 			$url = '';
