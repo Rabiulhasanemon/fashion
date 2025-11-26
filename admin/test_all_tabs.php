@@ -3,12 +3,17 @@
 // Place this in your admin root and access via browser
 
 // Suppress deprecation warnings from third-party libraries (Google API)
-// Use output buffering to catch and filter deprecation warnings
-ob_start();
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
-ini_set('display_errors', 0); // Don't display errors directly
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 0);
 ini_set('log_errors', 1);
+
+// Start output buffering to filter deprecation warnings
+ob_start(function($buffer) {
+    // Remove Google API deprecation warnings
+    $buffer = preg_replace('/Deprecated:.*?Google.*?\n/', '', $buffer);
+    return $buffer;
+});
 
 // Include OpenCart configuration
 if (!file_exists('config.php')) {
@@ -491,5 +496,8 @@ echo "<tr><td>Parent ID</td><td>" . $test_data['parent_id'] . "</td><td>" . (iss
 }
 
 echo "</div></body></html>";
+
+// End output buffering and output filtered content
+ob_end_flush();
 ?>
 
