@@ -196,7 +196,14 @@ class ControllerCatalogProduct extends Controller {
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
 					
-					$this->session->data['error_warning'] = "Error updating product: " . $error_message;
+					// Check if it's a duplicate entry error - provide helpful message
+					if (stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
+						$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system will attempt to clean this up. Please try saving again. If the problem persists, contact support.";
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected, user will need to retry' . PHP_EOL, FILE_APPEND);
+					}
+					
+					$this->session->data['error_warning'] = "Error saving product: " . $error_message;
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error occurred, showing form with error message' . PHP_EOL, FILE_APPEND);
 					$this->getForm();
 					return;
 				}

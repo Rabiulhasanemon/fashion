@@ -437,6 +437,41 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Force deleted product_id <= 0 records' . PHP_EOL, FILE_APPEND);
 		}
 		
+		// CRITICAL: Check and remove product_id = 0 BEFORE calculating next ID
+		$check_zero = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = 0 LIMIT 1");
+		if ($check_zero && $check_zero->num_rows > 0) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Found product_id = 0, deleting immediately...' . PHP_EOL, FILE_APPEND);
+			// Delete from all related tables first
+			$related_tables = array(
+				'product_description', 'product_to_store', 'product_to_category', 'product_image',
+				'product_option', 'product_option_value', 'product_variation', 'product_related',
+				'product_compatible', 'product_reward', 'product_to_layout', 'product_discount',
+				'product_special', 'product_to_download', 'product_filter', 'product_attribute'
+			);
+			foreach ($related_tables as $table) {
+				try {
+					$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+					if ($check_table && $check_table->num_rows) {
+						$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
+						if ($check_column && $check_column->num_rows) {
+							$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+						}
+					}
+				} catch (Exception $e) {
+					// Continue even if one table fails
+				}
+			}
+			// Delete from url_alias
+			try {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+			} catch (Exception $e) {
+				// Continue
+			}
+			// Finally delete the product itself
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted product_id = 0 and all related records' . PHP_EOL, FILE_APPEND);
+		}
+		
 		// Ensure auto-increment is properly set - use MAX of product_id > 0 to avoid issues
 		$max_check = $this->db->query("SELECT MAX(product_id) as max_id FROM " . DB_PREFIX . "product WHERE product_id > 0");
 		$max_id = 0;
@@ -461,9 +496,44 @@ class ModelCatalogProduct extends Model {
 		}
 		$next_product_id = max($next_product_id, 1);
 		
+		// CRITICAL: Verify next_product_id is valid (must be > 0)
+		if ($next_product_id <= 0) {
+			$error_msg = "CRITICAL: Calculated next_product_id is invalid (" . $next_product_id . "). Cannot proceed.";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
+		
+		// CRITICAL: Verify product_id = 0 doesn't exist before inserting
+		$verify_zero = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = 0 LIMIT 1");
+		if ($verify_zero && $verify_zero->num_rows > 0) {
+			$error_msg = "CRITICAL: product_id = 0 still exists after cleanup! Cannot proceed with insert.";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			// Try one more aggressive delete
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id <= 0");
+			// Check again
+			$verify_zero2 = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = 0 LIMIT 1");
+			if ($verify_zero2 && $verify_zero2->num_rows > 0) {
+				throw new Exception($error_msg);
+			}
+		}
+		
+		// CRITICAL: Final safety check - product_id must be > 0
+		if ($next_product_id <= 0) {
+			$error_msg = "CRITICAL: next_product_id is invalid (" . $next_product_id . ") before building SQL. Cannot insert.";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
+		
 		// Insert main product record (explicit product_id to avoid relying on AUTO_INCREMENT)
 		$sql = "INSERT INTO " . DB_PREFIX . "product SET ";
 		$sql .= "product_id = '" . (int)$next_product_id . "', ";
+		
+		// CRITICAL: Verify the SQL doesn't contain product_id = 0
+		if (strpos($sql, "product_id = '0'") !== false || strpos($sql, "product_id = 0") !== false) {
+			$error_msg = "CRITICAL: SQL contains product_id = 0! SQL: " . substr($sql, 0, 200);
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
 		$sql .= "model = '" . $this->db->escape(isset($data['model']) ? $data['model'] : '') . "', ";
 		$sql .= "sku = '" . $this->db->escape(isset($data['sku']) ? $data['sku'] : '') . "', ";
 		$sql .= "mpn = '" . $this->db->escape(isset($data['mpn']) ? $data['mpn'] : '') . "', ";
@@ -1632,8 +1702,24 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Total inserted: ' . $layout_count . ' product layout(s)' . PHP_EOL, FILE_APPEND);
 		}
 
+		// Final verification: Ensure product_id is still valid
+		if ($product_id <= 0) {
+			$error_msg = "CRITICAL: product_id became invalid (" . $product_id . ") at end of addProduct function!";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
+		
+		// Final verification: Check product exists in database
+		$final_verify = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "' LIMIT 1");
+		if (!$final_verify || !$final_verify->num_rows) {
+			$error_msg = "CRITICAL: Product with ID " . $product_id . " does not exist in database after all operations!";
+			file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+			throw new Exception($error_msg);
+		}
+		
 		// Final summary log
-		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== PRODUCT ADD COMPLETED - Product ID: ' . $product_id . ' ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== PRODUCT ADD COMPLETED SUCCESSFULLY - Product ID: ' . $product_id . ' ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - All tab data has been processed and saved' . PHP_EOL, FILE_APPEND);
 
 		return $product_id;
 	}
