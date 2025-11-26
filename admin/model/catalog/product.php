@@ -2115,6 +2115,34 @@ class ModelCatalogProduct extends Model {
 		// CRITICAL: Clean up any orphaned records with product_id = 0 or product_option_id = 0
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = 0");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_option_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_option_value_id = 0");
+		
+		// Fix AUTO_INCREMENT for product_option table
+		$max_option = $this->db->query("SELECT MAX(product_option_id) as max_id FROM " . DB_PREFIX . "product_option WHERE product_option_id > 0");
+		$next_option_id = 1;
+		if ($max_option && $max_option->num_rows && isset($max_option->row['max_id']) && $max_option->row['max_id'] !== null) {
+			$next_option_id = (int)$max_option->row['max_id'] + 1;
+		}
+		$next_option_id = max($next_option_id, 1);
+		try {
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "product_option AUTO_INCREMENT = " . $next_option_id);
+		} catch (Exception $e) {
+			error_log("Warning: Could not set AUTO_INCREMENT for product_option: " . $e->getMessage());
+		}
+		
+		// Fix AUTO_INCREMENT for product_option_value table
+		$max_option_value = $this->db->query("SELECT MAX(product_option_value_id) as max_id FROM " . DB_PREFIX . "product_option_value WHERE product_option_value_id > 0");
+		$next_option_value_id = 1;
+		if ($max_option_value && $max_option_value->num_rows && isset($max_option_value->row['max_id']) && $max_option_value->row['max_id'] !== null) {
+			$next_option_value_id = (int)$max_option_value->row['max_id'] + 1;
+		}
+		$next_option_value_id = max($next_option_value_id, 1);
+		try {
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "product_option_value AUTO_INCREMENT = " . $next_option_value_id);
+		} catch (Exception $e) {
+			error_log("Warning: Could not set AUTO_INCREMENT for product_option_value: " . $e->getMessage());
+		}
 		
 		// Delete existing product options for this product
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . $product_id . "'");
@@ -2140,8 +2168,40 @@ class ModelCatalogProduct extends Model {
 			$required = isset($product_option['required']) ? (int)$product_option['required'] : 0;
 			$value    = isset($product_option['value']) ? $product_option['value'] : '';
 
+			// Get next product_option_id to avoid duplicate key errors
+			$max_check = $this->db->query("SELECT MAX(product_option_id) as max_id FROM " . DB_PREFIX . "product_option WHERE product_option_id > 0");
+			$next_id = 1;
+			if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+				$next_id = (int)$max_check->row['max_id'] + 1;
+			}
+			$next_id = max($next_id, 1);
+			
+			// Clean up any product_option_id = 0 before inserting
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_option_id = 0");
+			
+			// Set AUTO_INCREMENT
+			try {
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "product_option AUTO_INCREMENT = " . $next_id);
+			} catch (Exception $e) {
+				// Ignore if it fails
+			}
+
 			$result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_option SET product_id = '" . (int)$product_id . "', option_id = '" . $option_id . "', required = '" . $required . "', value = '" . $this->db->escape($value) . "'");
 			$product_option_id = $this->db->getLastId();
+			
+			// If getLastId() returns 0 or invalid, try to find the actual ID
+			if ($product_option_id <= 0) {
+				$find_query = $this->db->query("SELECT product_option_id FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$product_id . "' AND option_id = '" . $option_id . "' ORDER BY product_option_id DESC LIMIT 1");
+				if ($find_query && $find_query->num_rows) {
+					$product_option_id = (int)$find_query->row['product_option_id'];
+				}
+			}
+			
+			// If still 0, there's a problem - log it and skip
+			if ($product_option_id <= 0) {
+				error_log("persistProductOptions: Failed to insert product_option for product_id={$product_id}, option_id={$option_id}");
+				continue;
+			}
 
 			// CRITICAL: Validate product_option_id before proceeding
 			if ($product_option_id <= 0) {
