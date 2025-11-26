@@ -623,9 +623,9 @@ class ModelCatalogProduct extends Model {
 			}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Database error: ' . $db_error . ' (Error No: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
 			
-			// If it's a duplicate key error, clean up and retry
+			// If it's a duplicate key error, clean up and retry (silently - don't show error if retry succeeds)
 			if ($db_errno == 1062 || stripos($db_error, 'duplicate') !== false || stripos($db_error, 'primary') !== false) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected: ' . $db_error . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected: ' . $db_error . '. Attempting automatic retry...' . PHP_EOL, FILE_APPEND);
 				
 				// Aggressive cleanup of ALL product_id = 0 records
 				$cleanup_tables_retry = array(
@@ -643,6 +643,8 @@ class ModelCatalogProduct extends Model {
 					'product_discount',
 					'product_special',
 					'product_to_download',
+					'product_filter',
+					'product_attribute',
 					'product'
 				);
 				
@@ -652,10 +654,12 @@ class ModelCatalogProduct extends Model {
 						if ($check_table && $check_table->num_rows) {
 							if ($table == 'product') {
 								$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id <= 0");
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Cleaned up product_id <= 0 from ' . $table . PHP_EOL, FILE_APPEND);
 							} else {
 								$check_column = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE 'product_id'");
 								if ($check_column && $check_column->num_rows) {
 									$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id <= 0");
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Cleaned up product_id <= 0 from ' . $table . PHP_EOL, FILE_APPEND);
 								}
 							}
 						}
@@ -667,6 +671,7 @@ class ModelCatalogProduct extends Model {
 				// Clean url_alias
 				try {
 					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Cleaned up url_alias for product_id=0' . PHP_EOL, FILE_APPEND);
 				} catch (Exception $e) {
 					// Ignore
 				}
@@ -683,24 +688,41 @@ class ModelCatalogProduct extends Model {
 				
 				try {
 					$this->db->query("ALTER TABLE " . DB_PREFIX . "product AUTO_INCREMENT = " . $next_retry);
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry: Set AUTO_INCREMENT to ' . $next_retry . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Set AUTO_INCREMENT to ' . $next_retry . PHP_EOL, FILE_APPEND);
 				} catch (Exception $e) {
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning setting AUTO_INCREMENT on retry: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 				}
 				
+				// Update SQL with new product_id for retry
+				$sql_retry = str_replace("product_id = '" . (int)$next_product_id . "'", "product_id = '" . (int)$next_retry . "'", $sql);
+				
 				// Retry the insert
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrying insert after cleanup...' . PHP_EOL, FILE_APPEND);
-				$insert_result = $this->db->query($sql);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Retrying insert with product_id: ' . $next_retry . PHP_EOL, FILE_APPEND);
+				$insert_result = $this->db->query($sql_retry);
 				$product_id = $this->db->getLastId();
 				
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry result: ' . ($insert_result ? 'SUCCESS' : 'FAILED') . ', product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+				// If getLastId() fails, try to find the product by model/SKU
+				if ($product_id <= 0) {
+					$find_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$next_retry . "' LIMIT 1");
+					if ($find_query && $find_query->num_rows) {
+						$product_id = (int)$find_query->row['product_id'];
+					}
+				}
 				
-				if (!$insert_result || $product_id <= 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Retry result: ' . ($insert_result ? 'SUCCESS' : 'FAILED') . ', product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+				
+				// If retry succeeded, continue normally (don't throw exception)
+				if ($insert_result && $product_id > 0) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [RETRY] Retry succeeded! Product saved successfully with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+					// Continue execution - don't throw exception
+				} else {
+					// Retry failed - now throw exception
 					$error_msg = "Duplicate entry error: " . $db_error . ". Failed to insert product even after aggressive cleanup and retry. Please check your database for product_id = 0 records.";
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 					throw new Exception($error_msg);
 				}
 			} else {
+				// Non-duplicate error - throw exception
 				$error_msg = "Database error: " . $db_error;
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
 				throw new Exception($error_msg);

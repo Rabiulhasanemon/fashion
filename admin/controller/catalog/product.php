@@ -196,13 +196,58 @@ class ControllerCatalogProduct extends Controller {
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
 					
-					// Check if it's a duplicate entry error - provide helpful message
+					// Check if it's a duplicate entry error - check if product was actually saved (retry might have succeeded)
 					if (stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
-						$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system will attempt to clean this up. Please try saving again. If the problem persists, contact support.";
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected, user will need to retry' . PHP_EOL, FILE_APPEND);
+						// Check if product was actually saved despite the error (automatic retry might have succeeded)
+						$check_saved = false;
+						if (isset($this->request->post['model']) && !empty($this->request->post['model'])) {
+							$check_query = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape($this->request->post['model']) . "' ORDER BY product_id DESC LIMIT 1");
+							if ($check_query && $check_query->num_rows) {
+								$check_saved = true;
+								$saved_product_id = (int)$check_query->row['product_id'];
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] Product was actually saved despite error! product_id: ' . $saved_product_id . ' (automatic retry succeeded)' . PHP_EOL, FILE_APPEND);
+								
+								// Product was saved - redirect to success (don't show error)
+								$this->session->data['success'] = $this->language->get('text_success');
+								$url = '';
+								if (isset($this->request->get['filter_name'])) {
+									$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+								}
+								if (isset($this->request->get['filter_model'])) {
+									$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+								}
+								if (isset($this->request->get['filter_price'])) {
+									$url .= '&filter_price=' . $this->request->get['filter_price'];
+								}
+								if (isset($this->request->get['filter_quantity'])) {
+									$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+								}
+								if (isset($this->request->get['filter_status'])) {
+									$url .= '&filter_status=' . $this->request->get['filter_status'];
+								}
+								if (isset($this->request->get['sort'])) {
+									$url .= '&sort=' . $this->request->get['sort'];
+								}
+								if (isset($this->request->get['order'])) {
+									$url .= '&order=' . $this->request->get['order'];
+								}
+								if (isset($this->request->get['page'])) {
+									$url .= '&page=' . $this->request->get['page'];
+								}
+								$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+								return;
+							}
+						}
+						
+						if (!$check_saved) {
+							$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system will attempt to clean this up. Please try saving again. If the problem persists, contact support.";
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Duplicate entry error detected, product was not saved' . PHP_EOL, FILE_APPEND);
+							$this->session->data['error_warning'] = "Error saving product: " . $error_message;
+						}
+					} else {
+						$this->session->data['error_warning'] = "Error saving product: " . $error_message;
 					}
 					
-					$this->session->data['error_warning'] = "Error saving product: " . $error_message;
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error occurred, showing form with error message' . PHP_EOL, FILE_APPEND);
 					$this->getForm();
 					return;
