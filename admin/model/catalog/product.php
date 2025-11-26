@@ -1624,17 +1624,37 @@ class ModelCatalogProduct extends Model {
 			
 			$reward_count = 0;
 			if (isset($data['product_reward']) && is_array($data['product_reward'])) {
-				foreach ($data['product_reward'] as $customer_group_id => $points) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Processing ' . count($data['product_reward']) . ' reward(s)' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Data structure: ' . print_r($data['product_reward'], true) . PHP_EOL, FILE_APPEND);
+				
+				foreach ($data['product_reward'] as $customer_group_id => $reward_data) {
 					$customer_group_id = (int)$customer_group_id;
-					$points = (int)$points;
+					
+					// Handle both formats: direct points value or array with 'points' key
+					if (is_array($reward_data) && isset($reward_data['points'])) {
+						$points = (int)$reward_data['points'];
+					} else {
+						$points = (int)$reward_data;
+					}
+					
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
 					
 					if ($customer_group_id >= 0 && $points >= 0) {
-						$this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
-						$reward_count++;
+						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+						if ($insert_result) {
+							$reward_count++;
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] FAILED to insert reward for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Skipped invalid reward: customer_group_id=' . $customer_group_id . ', points=' . $points . PHP_EOL, FILE_APPEND);
 					}
 				}
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] No product_reward data found or not an array' . PHP_EOL, FILE_APPEND);
 			}
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $reward_count . ' product reward(s)' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Total inserted: ' . $reward_count . ' product reward(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product downloads
