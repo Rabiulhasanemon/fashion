@@ -110,10 +110,73 @@ echo "<h2>Product ID: " . $product_id . "</h2>";
 // Get product info
 $product = $model->getProduct($product_id);
 if (!$product) {
-    die("Product not found!");
+    // Try direct database query to see if product exists
+    $product_check = $db->query("SELECT p.*, pd.name FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = 1) WHERE p.product_id = '" . (int)$product_id . "'");
+    
+    if ($product_check && $product_check->num_rows > 0) {
+        $product = $product_check->row;
+        echo "<div style='background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px;'>";
+        echo "<p><strong>⚠ Warning:</strong> Product exists in database but getProduct() method returned false. Using direct database query instead.</p>";
+        echo "</div>";
+    } else {
+        echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Product Not Found</title>";
+        echo "<style>
+            body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}
+            .container{max-width:1200px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+            .error{background:#f8d7da;padding:15px;border-left:4px solid #dc3545;margin:20px 0;border-radius:4px;color:#721c24;}
+            table{border-collapse:collapse;width:100%;margin:20px 0;}
+            table th, table td{border:1px solid #ddd;padding:12px;text-align:left;}
+            table th{background:#007bff;color:white;}
+            table tr:nth-child(even){background:#f9f9f9;}
+            a{color:#007bff;text-decoration:none;font-weight:bold;}
+            a:hover{text-decoration:underline;}
+        </style></head><body><div class='container'>";
+        
+        echo "<h1>❌ Product Not Found</h1>";
+        echo "<div class='error'>";
+        echo "<p><strong>Product ID " . $product_id . " does not exist in the database.</strong></p>";
+        echo "</div>";
+        
+        // Show available products
+        try {
+            $products_query = $db->query("SELECT p.product_id, pd.name, p.model, p.sku, p.status FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = 1) ORDER BY p.product_id DESC LIMIT 50");
+            
+            if ($products_query && $products_query->num_rows > 0) {
+                echo "<h2>Available Products (Last 50)</h2>";
+                echo "<table>";
+                echo "<tr><th>Product ID</th><th>Name</th><th>Model</th><th>SKU</th><th>Status</th><th>Action</th></tr>";
+                
+                foreach ($products_query->rows as $prod) {
+                    $status_text = $prod['status'] == 1 ? '<span style="color:green;">Enabled</span>' : '<span style="color:red;">Disabled</span>';
+                    $name = $prod['name'] ? htmlspecialchars($prod['name']) : '<em>No name</em>';
+                    $model = $prod['model'] ? htmlspecialchars($prod['model']) : '-';
+                    $sku = $prod['sku'] ? htmlspecialchars($prod['sku']) : '-';
+                    
+                    echo "<tr>";
+                    echo "<td><strong>" . $prod['product_id'] . "</strong></td>";
+                    echo "<td>" . $name . "</td>";
+                    echo "<td>" . $model . "</td>";
+                    echo "<td>" . $sku . "</td>";
+                    echo "<td>" . $status_text . "</td>";
+                    echo "<td><a href='?product_id=" . $prod['product_id'] . "'>Debug This Product</a></td>";
+                    echo "</tr>";
+                }
+                
+                echo "</table>";
+            } else {
+                echo "<p style='color:red;'><strong>No products found in database at all!</strong></p>";
+            }
+        } catch (Exception $e) {
+            echo "<p style='color:red;'><strong>Error loading products:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+        }
+        
+        echo "<p><a href='?'>← Back to Product List</a></p>";
+        echo "</div></body></html>";
+        exit;
+    }
 }
 
-echo "<h3>Product: " . htmlspecialchars($product['name']) . "</h3>";
+echo "<h3>Product: " . htmlspecialchars(isset($product['name']) ? $product['name'] : 'Product ID ' . $product_id) . "</h3>";
 
 // Test all tabs
 $tabs = array(
