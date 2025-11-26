@@ -24,8 +24,43 @@ class ControllerCatalogProduct extends Controller {
 			$log_file = DIR_LOGS . 'product_insert_debug.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== NEW PRODUCT ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
-			if (isset($this->request->post['product_image'])) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - product_image count: ' . (is_array($this->request->post['product_image']) ? count($this->request->post['product_image']) : 'not array') . PHP_EOL, FILE_APPEND);
+			
+			// Log detailed information about each tab's data
+			$tab_fields = array(
+				'image' => 'Main Image',
+				'featured_image' => 'Featured Image',
+				'product_image' => 'Additional Images',
+				'product_category' => 'Categories (Links)',
+				'product_download' => 'Downloads (Links)',
+				'product_related' => 'Related Products (Links)',
+				'product_compatible' => 'Compatible Products (Links)',
+				'product_attribute' => 'Attributes',
+				'product_filter' => 'Filters',
+				'product_option' => 'Options',
+				'product_discount' => 'Discounts',
+				'product_special' => 'Specials',
+				'product_reward' => 'Reward Points',
+				'product_layout' => 'Layouts (Design)',
+				'manufacturer_id' => 'Manufacturer',
+				'parent_id' => 'Parent Product'
+			);
+			
+			foreach ($tab_fields as $key => $label) {
+				if (isset($this->request->post[$key])) {
+					if (is_array($this->request->post[$key])) {
+						$count = count($this->request->post[$key]);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [' . $label . '] ' . $key . ': YES (' . $count . ' items)' . PHP_EOL, FILE_APPEND);
+						if ($count > 0 && $count <= 5) {
+							// Log first few items for debugging
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [' . $label . '] Sample data: ' . print_r(array_slice($this->request->post[$key], 0, 2), true) . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						$value = $this->request->post[$key];
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [' . $label . '] ' . $key . ': YES (value: ' . substr($value, 0, 100) . ')' . PHP_EOL, FILE_APPEND);
+					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [' . $label . '] ' . $key . ': NOT SET' . PHP_EOL, FILE_APPEND);
+				}
 			}
 			
 			// Validate form and log results
