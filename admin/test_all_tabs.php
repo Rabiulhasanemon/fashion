@@ -2,31 +2,50 @@
 // Comprehensive test script for all product tabs
 // Place this in your admin root and access via browser
 
-// Enable error reporting
-error_reporting(E_ALL);
+// Suppress deprecation warnings from third-party libraries (Google API)
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 // Include OpenCart configuration
-try {
-    require_once('config.php');
-} catch (Exception $e) {
-    die("Error loading config.php: " . $e->getMessage());
+if (!file_exists('config.php')) {
+    die("Error: config.php not found in " . __DIR__);
 }
 
-try {
-    require_once(DIR_SYSTEM . 'startup.php');
-} catch (Exception $e) {
-    die("Error loading startup.php: " . $e->getMessage());
+require_once('config.php');
+
+if (!defined('DIR_SYSTEM')) {
+    die("Error: DIR_SYSTEM not defined after loading config.php");
 }
+
+if (!file_exists(DIR_SYSTEM . 'startup.php')) {
+    die("Error: startup.php not found at " . DIR_SYSTEM . 'startup.php');
+}
+
+require_once(DIR_SYSTEM . 'startup.php');
 
 // Registry
 $registry = new Registry();
 
 // Config
 $config = new Config();
-$config->load('default');
-$config->load('admin');
+// Try to load config files, but don't fail if they don't exist
+try {
+    if (file_exists(DIR_SYSTEM . 'config/default.php')) {
+        $config->load('default');
+    }
+} catch (Exception $e) {
+    // Ignore config loading errors for default
+}
+
+try {
+    if (file_exists(DIR_SYSTEM . 'config/admin.php')) {
+        $config->load('admin');
+    }
+} catch (Exception $e) {
+    // Ignore config loading errors for admin
+}
+
 $registry->set('config', $config);
 
 // Database
