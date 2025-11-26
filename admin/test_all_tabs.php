@@ -2,9 +2,23 @@
 // Comprehensive test script for all product tabs
 // Place this in your admin root and access via browser
 
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
 // Include OpenCart configuration
-require_once('config.php');
-require_once(DIR_SYSTEM . 'startup.php');
+try {
+    require_once('config.php');
+} catch (Exception $e) {
+    die("Error loading config.php: " . $e->getMessage());
+}
+
+try {
+    require_once(DIR_SYSTEM . 'startup.php');
+} catch (Exception $e) {
+    die("Error loading startup.php: " . $e->getMessage());
+}
 
 // Registry
 $registry = new Registry();
@@ -53,15 +67,54 @@ echo "</head><body><div class='container'>";
 
 echo "<h2>🔍 Comprehensive Product Tabs Test & Debug</h2>";
 
-// Get available data for testing
-$manufacturers = $db->query("SELECT manufacturer_id, name FROM " . DB_PREFIX . "manufacturer LIMIT 5");
-$categories = $db->query("SELECT category_id, name FROM " . DB_PREFIX . "category LIMIT 5");
-$filters = $db->query("SELECT filter_id, name FROM " . DB_PREFIX . "filter LIMIT 5");
-$attributes = $db->query("SELECT attribute_id, name FROM " . DB_PREFIX . "attribute LIMIT 3");
-$downloads = $db->query("SELECT download_id, name FROM " . DB_PREFIX . "download LIMIT 3");
-$layouts = $db->query("SELECT layout_id, name FROM " . DB_PREFIX . "layout LIMIT 3");
-$customer_groups = $db->query("SELECT customer_group_id, name FROM " . DB_PREFIX . "customer_group LIMIT 3");
-$products = $db->query("SELECT product_id, name FROM " . DB_PREFIX . "product_description WHERE language_id = 1 LIMIT 5");
+// Get available data for testing (with error handling)
+try {
+    $manufacturers = $db->query("SELECT manufacturer_id, name FROM " . DB_PREFIX . "manufacturer LIMIT 5");
+} catch (Exception $e) {
+    $manufacturers = false;
+}
+
+try {
+    $categories = $db->query("SELECT category_id, name FROM " . DB_PREFIX . "category LIMIT 5");
+} catch (Exception $e) {
+    $categories = false;
+}
+
+try {
+    $filters = $db->query("SELECT filter_id, name FROM " . DB_PREFIX . "filter LIMIT 5");
+} catch (Exception $e) {
+    $filters = false;
+}
+
+try {
+    $attributes = $db->query("SELECT attribute_id, name FROM " . DB_PREFIX . "attribute LIMIT 3");
+} catch (Exception $e) {
+    $attributes = false;
+}
+
+try {
+    $downloads = $db->query("SELECT download_id, name FROM " . DB_PREFIX . "download LIMIT 3");
+} catch (Exception $e) {
+    $downloads = false;
+}
+
+try {
+    $layouts = $db->query("SELECT layout_id, name FROM " . DB_PREFIX . "layout LIMIT 3");
+} catch (Exception $e) {
+    $layouts = false;
+}
+
+try {
+    $customer_groups = $db->query("SELECT customer_group_id, name FROM " . DB_PREFIX . "customer_group LIMIT 3");
+} catch (Exception $e) {
+    $customer_groups = false;
+}
+
+try {
+    $products = $db->query("SELECT product_id, name FROM " . DB_PREFIX . "product_description WHERE language_id = 1 LIMIT 5");
+} catch (Exception $e) {
+    $products = false;
+}
 
 // Clean up any existing test products first
 $db->query("DELETE FROM " . DB_PREFIX . "product WHERE model = 'TEST_ALL_TABS'");
@@ -160,36 +213,42 @@ if ($attributes && $attributes->num_rows) {
 }
 
 // Populate discounts
-if ($customer_groups && $customer_groups->num_rows) {
+if ($customer_groups && isset($customer_groups->rows) && is_array($customer_groups->rows) && count($customer_groups->rows) > 0) {
     foreach ($customer_groups->rows as $cg) {
-        $test_data['product_discount'][] = array(
-            'customer_group_id' => (int)$cg['customer_group_id'],
-            'quantity' => 10,
-            'priority' => 1,
-            'price' => 150.00,
-            'date_start' => date('Y-m-d'),
-            'date_end' => date('Y-m-d', strtotime('+1 year'))
-        );
+        if (isset($cg['customer_group_id'])) {
+            $test_data['product_discount'][] = array(
+                'customer_group_id' => (int)$cg['customer_group_id'],
+                'quantity' => 10,
+                'priority' => 1,
+                'price' => 150.00,
+                'date_start' => date('Y-m-d'),
+                'date_end' => date('Y-m-d', strtotime('+1 year'))
+            );
+        }
     }
 }
 
 // Populate specials
-if ($customer_groups && $customer_groups->num_rows) {
+if ($customer_groups && isset($customer_groups->rows) && is_array($customer_groups->rows) && count($customer_groups->rows) > 0) {
     foreach ($customer_groups->rows as $cg) {
-        $test_data['product_special'][] = array(
-            'customer_group_id' => (int)$cg['customer_group_id'],
-            'priority' => 1,
-            'price' => 179.99,
-            'date_start' => date('Y-m-d'),
-            'date_end' => date('Y-m-d', strtotime('+1 month'))
-        );
+        if (isset($cg['customer_group_id'])) {
+            $test_data['product_special'][] = array(
+                'customer_group_id' => (int)$cg['customer_group_id'],
+                'priority' => 1,
+                'price' => 179.99,
+                'date_start' => date('Y-m-d'),
+                'date_end' => date('Y-m-d', strtotime('+1 month'))
+            );
+        }
     }
 }
 
 // Populate reward points
-if ($customer_groups && $customer_groups->num_rows) {
+if ($customer_groups && isset($customer_groups->rows) && is_array($customer_groups->rows) && count($customer_groups->rows) > 0) {
     foreach ($customer_groups->rows as $cg) {
-        $test_data['product_reward'][(int)$cg['customer_group_id']] = 100;
+        if (isset($cg['customer_group_id'])) {
+            $test_data['product_reward'][(int)$cg['customer_group_id']] = 100;
+        }
     }
 }
 
@@ -201,10 +260,12 @@ $test_data['product_image'] = array(
 );
 
 // Populate layouts
-if ($layouts && $layouts->num_rows) {
+if ($layouts && isset($layouts->rows) && is_array($layouts->rows) && count($layouts->rows) > 0) {
     foreach ($layouts->rows as $layout) {
-        $test_data['product_layout'][0] = (int)$layout['layout_id'];
-        break; // Just use first layout for store 0
+        if (isset($layout['layout_id'])) {
+            $test_data['product_layout'][0] = (int)$layout['layout_id'];
+            break; // Just use first layout for store 0
+        }
     }
 }
 
@@ -276,8 +337,8 @@ try {
             echo "<tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr>";
             echo "<tr><td>Model</td><td>" . $test_data['model'] . "</td><td>" . $product['model'] . "</td><td class='" . ($product['model'] == $test_data['model'] ? 'status-ok' : 'status-fail') . "'>" . ($product['model'] == $test_data['model'] ? '✓' : '✗') . "</td></tr>";
             echo "<tr><td>Price</td><td>" . $test_data['price'] . "</td><td>" . $product['price'] . "</td><td class='" . (abs($product['price'] - $test_data['price']) < 0.01 ? 'status-ok' : 'status-fail') . "'>" . (abs($product['price'] - $test_data['price']) < 0.01 ? '✓' : '✗') . "</td></tr>";
-            echo "<tr><td>Manufacturer ID</td><td>" . $test_data['manufacturer_id'] . "</td><td>" . $product['manufacturer_id'] . "</td><td class='" . ($product['manufacturer_id'] == $test_data['manufacturer_id'] ? 'status-ok' : 'status-fail') . "'>" . ($product['manufacturer_id'] == $test_data['manufacturer_id'] ? '✓' : '✗') . "</td></tr>";
-            echo "<tr><td>Parent ID</td><td>" . $test_data['parent_id'] . "</td><td>" . $product['parent_id'] . "</td><td class='" . ($product['parent_id'] == $test_data['parent_id'] ? 'status-ok' : 'status-fail') . "'>" . ($product['parent_id'] == $test_data['parent_id'] ? '✓' : '✗') . "</td></tr>";
+echo "<tr><td>Manufacturer ID</td><td>" . $test_data['manufacturer_id'] . "</td><td>" . (isset($product['manufacturer_id']) ? $product['manufacturer_id'] : 'N/A') . "</td><td class='" . (isset($product['manufacturer_id']) && $product['manufacturer_id'] == $test_data['manufacturer_id'] ? 'status-ok' : 'status-fail') . "'>" . (isset($product['manufacturer_id']) && $product['manufacturer_id'] == $test_data['manufacturer_id'] ? '✓' : '✗') . "</td></tr>";
+echo "<tr><td>Parent ID</td><td>" . $test_data['parent_id'] . "</td><td>" . (isset($product['parent_id']) ? $product['parent_id'] : 'N/A') . "</td><td class='" . (isset($product['parent_id']) && $product['parent_id'] == $test_data['parent_id'] ? 'status-ok' : 'status-fail') . "'>" . (isset($product['parent_id']) && $product['parent_id'] == $test_data['parent_id'] ? '✓' : '✗') . "</td></tr>";
             echo "<tr><td>Main Image</td><td>" . ($test_data['image'] ?: 'None') . "</td><td>" . ($product['image'] ?: 'None') . "</td><td class='" . ($product['image'] == $test_data['image'] ? 'status-ok' : 'status-fail') . "'>" . ($product['image'] == $test_data['image'] ? '✓' : '✗') . "</td></tr>";
             echo "<tr><td>Featured Image</td><td>" . ($test_data['featured_image'] ?: 'None') . "</td><td>" . ($product['featured_image'] ?: 'None') . "</td><td class='" . ($product['featured_image'] == $test_data['featured_image'] ? 'status-ok' : 'status-fail') . "'>" . ($product['featured_image'] == $test_data['featured_image'] ? '✓' : '✗') . "</td></tr>";
             echo "</table></div>";
