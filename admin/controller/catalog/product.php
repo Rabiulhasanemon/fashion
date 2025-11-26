@@ -2063,24 +2063,35 @@ class ControllerCatalogProduct extends Controller {
         foreach ($product_options as $product_option) {
             $product_option_value_data = array();
 
-            if (!isset($product_option['product_option_value']) || count($product_option['product_option_value']) < 1) {
+            if (!isset($product_option['product_option_value']) || !is_array($product_option['product_option_value']) || count($product_option['product_option_value']) < 1) {
                 continue;
             }
 
+            // Validate option_id exists
+            if (!isset($product_option['option_id']) || empty($product_option['option_id'])) {
+                continue;
+            }
 
             $option_info = $this->model_catalog_option->getOption($product_option['option_id']);
+            if (!$option_info) {
+                continue;
+            }
+            
             $option_values = $this->model_catalog_option->getOptionValues($product_option['option_id']);
+            if (!$option_values || !is_array($option_values)) {
+                continue;
+            }
 
             foreach ($option_values as $option_value) {
                 $product_option_value = array_filter($product_option['product_option_value'], function ($item) use ($option_value) {
-                    return $item['option_value_id'] == $option_value['option_value_id'];
+                    return isset($item['option_value_id']) && $item['option_value_id'] == $option_value['option_value_id'];
                 });
 
                 $product_option_value_data[] = array(
                     'option_value_id'         => $option_value['option_value_id'],
                     'name'         => $option_value['name'],
                     'selected' => count($product_option_value) > 0,
-                    'show' => $product_option_value ? array_pop($product_option_value)['show'] : false
+                    'show' => $product_option_value ? (isset(array_values($product_option_value)[0]['show']) ? array_values($product_option_value)[0]['show'] : false) : false
                 );
             }
 
