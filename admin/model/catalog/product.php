@@ -1587,17 +1587,30 @@ class ModelCatalogProduct extends Model {
 			
 			$layout_count = 0;
 			if (isset($data['product_layout']) && is_array($data['product_layout'])) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Processing ' . count($data['product_layout']) . ' layout(s)' . PHP_EOL, FILE_APPEND);
 				foreach ($data['product_layout'] as $store_id => $layout_id) {
 					$store_id = (int)$store_id;
 					$layout_id = (int)$layout_id;
 					
-					if ($store_id >= 0 && $layout_id > 0) {
-						$this->db->query("INSERT INTO " . DB_PREFIX . "product_to_layout SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
-						$layout_count++;
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Store ID: ' . $store_id . ', Layout ID: ' . $layout_id . PHP_EOL, FILE_APPEND);
+					
+					// Allow layout_id = 0 (default layout) - it's a valid value
+					if ($store_id >= 0 && $layout_id >= 0) {
+						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_to_layout SET product_id = '" . (int)$product_id . "', store_id = '" . $store_id . "', layout_id = '" . $layout_id . "'");
+						if ($insert_result) {
+							$layout_count++;
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Inserted layout for store_id: ' . $store_id . ', layout_id: ' . $layout_id . PHP_EOL, FILE_APPEND);
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] FAILED to insert layout for store_id: ' . $store_id . ', layout_id: ' . $layout_id . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Skipped invalid layout: store_id=' . $store_id . ', layout_id=' . $layout_id . PHP_EOL, FILE_APPEND);
 					}
 				}
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] No product_layout data found or not an array' . PHP_EOL, FILE_APPEND);
 			}
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserted ' . $layout_count . ' product layout(s)' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LAYOUT] Total inserted: ' . $layout_count . ' product layout(s)' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Final summary log
