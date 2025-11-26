@@ -25,6 +25,26 @@ class ControllerCatalogProduct extends Controller {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== NEW PRODUCT ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
 			
+			// Normalize product_attribute data structure if needed
+			if (isset($this->request->post['product_attribute']) && is_array($this->request->post['product_attribute'])) {
+				$normalized_attributes = array();
+				foreach ($this->request->post['product_attribute'] as $key => $attribute) {
+					// If key is numeric and attribute has attribute_id, use attribute_id as key
+					if (is_numeric($key) && isset($attribute['attribute_id'])) {
+						$attr_id = (int)$attribute['attribute_id'];
+						if ($attr_id > 0) {
+							$normalized_attributes[$attr_id] = $attribute;
+						} else {
+							$normalized_attributes[$key] = $attribute;
+						}
+					} else {
+						$normalized_attributes[$key] = $attribute;
+					}
+				}
+				$this->request->post['product_attribute'] = $normalized_attributes;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Normalized attribute structure, count: ' . count($normalized_attributes) . PHP_EOL, FILE_APPEND);
+			}
+			
 			// Log detailed information about each tab's data
 			$tab_fields = array(
 				'image' => 'Main Image',
@@ -88,6 +108,11 @@ class ControllerCatalogProduct extends Controller {
 			
 			if ($validation_result) {
 				try {
+					// Log attribute data before processing
+					if (isset($this->request->post['product_attribute'])) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Raw POST data structure: ' . print_r($this->request->post['product_attribute'], true) . PHP_EOL, FILE_APPEND);
+					}
+					
 					$product_id = $this->model_catalog_product->addProduct($this->request->post);
 					
 					// Verify product_id is valid
@@ -101,18 +126,70 @@ class ControllerCatalogProduct extends Controller {
 					
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product added successfully with product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 
-					// Add to activity log
-					$this->load->model('user/user');
-
-					$activity_data = array(
-						'%user_id' => $this->user->getId(),
-						'%product_id' => $product_id,
-						'%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
-					);
-
-					$this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
+					// Add to activity log (non-blocking - don't fail if this fails)
+					try {
+						$this->load->model('user/user');
+						$activity_data = array(
+							'%user_id' => $this->user->getId(),
+							'%product_id' => $product_id,
+							'%name'        => $this->user->getFirstName() . ' ' . $this->user->getLastName()
+						);
+						$this->model_user_user->addActivity($this->user->getId(), 'add_product', $activity_data, $product_id);
+					} catch (Exception $activity_error) {
+						// Log but don't fail the save
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Activity log failed (non-critical): ' . $activity_error->getMessage() . PHP_EOL, FILE_APPEND);
+					}
 
 					$this->session->data['success'] = $this->language->get('text_success');
+					
+					// Build redirect URL
+					$url = '';
+
+					if (isset($this->request->get['filter_name'])) {
+						$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+					}
+
+					if (isset($this->request->get['filter_model'])) {
+						$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+					}
+
+					if (isset($this->request->get['filter_price'])) {
+						$url .= '&filter_price=' . $this->request->get['filter_price'];
+					}
+
+					if (isset($this->request->get['filter_quantity'])) {
+						$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+					}
+
+					if (isset($this->request->get['filter_status'])) {
+						$url .= '&filter_status=' . $this->request->get['filter_status'];
+					}
+
+					if (isset($this->request->get['filter_category_id'])) {
+						$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
+					}
+
+					if (isset($this->request->get['filter_manufacturer_id'])) {
+						$url .= '&filter_manufacturer_id=' . $this->request->get['filter_manufacturer_id'];
+					}
+
+					if (isset($this->request->get['sort'])) {
+						$url .= '&sort=' . $this->request->get['sort'];
+					}
+
+					if (isset($this->request->get['order'])) {
+						$url .= '&order=' . $this->request->get['order'];
+					}
+
+					if (isset($this->request->get['page'])) {
+						$url .= '&page=' . $this->request->get['page'];
+					}
+
+					// CRITICAL: Always redirect after successful save
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Redirecting to product list' . PHP_EOL, FILE_APPEND);
+					$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+					return; // Ensure we exit here
+					
 				} catch (Exception $e) {
 					$error_message = $e->getMessage();
 					file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
@@ -123,50 +200,9 @@ class ControllerCatalogProduct extends Controller {
 					$this->getForm();
 					return;
 				}
-
-				$url = '';
-
-				if (isset($this->request->get['filter_name'])) {
-					$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-				}
-
-				if (isset($this->request->get['filter_model'])) {
-					$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-				}
-
-				if (isset($this->request->get['filter_price'])) {
-					$url .= '&filter_price=' . $this->request->get['filter_price'];
-				}
-
-				if (isset($this->request->get['filter_quantity'])) {
-					$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-				}
-
-				if (isset($this->request->get['filter_status'])) {
-					$url .= '&filter_status=' . $this->request->get['filter_status'];
-				}
-
-				if (isset($this->request->get['filter_category_id'])) {
-					$url .= '&filter_category_id=' . $this->request->get['filter_category_id'];
-				}
-
-				if (isset($this->request->get['filter_manufacturer_id'])) {
-					$url .= '&filter_manufacturer_id=' . $this->request->get['filter_manufacturer_id'];
-				}
-
-				if (isset($this->request->get['sort'])) {
-					$url .= '&sort=' . $this->request->get['sort'];
-				}
-
-				if (isset($this->request->get['order'])) {
-					$url .= '&order=' . $this->request->get['order'];
-				}
-
-				if (isset($this->request->get['page'])) {
-					$url .= '&page=' . $this->request->get['page'];
-				}
-
-				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			} else {
+				// Validation failed - show form with errors
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed, showing form again' . PHP_EOL, FILE_APPEND);
 			}
 		}
 
