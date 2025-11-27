@@ -764,7 +764,8 @@ class ModelCatalogManufacturer extends Model {
 		try {
 			// Delete url_alias first
 			$url_result = $this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted url_alias records' . PHP_EOL, FILE_APPEND);
+			$url_affected = $this->db->countAffected();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted url_alias records (affected: ' . $url_affected . ')' . PHP_EOL, FILE_APPEND);
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting url_alias: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -772,7 +773,8 @@ class ModelCatalogManufacturer extends Model {
 		try {
 			// Delete manufacturer_to_layout
 			$layout_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = " . (int)$manufacturer_id);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_layout records' . PHP_EOL, FILE_APPEND);
+			$layout_affected = $this->db->countAffected();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_layout records (affected: ' . $layout_affected . ')' . PHP_EOL, FILE_APPEND);
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_to_layout: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -780,7 +782,8 @@ class ModelCatalogManufacturer extends Model {
 		try {
 			// Delete manufacturer_to_store
 			$store_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = " . (int)$manufacturer_id);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_store records' . PHP_EOL, FILE_APPEND);
+			$store_affected = $this->db->countAffected();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_store records (affected: ' . $store_affected . ')' . PHP_EOL, FILE_APPEND);
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_to_store: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -788,7 +791,8 @@ class ModelCatalogManufacturer extends Model {
 		try {
 			// Delete manufacturer_description
 			$desc_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = " . (int)$manufacturer_id);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_description records' . PHP_EOL, FILE_APPEND);
+			$desc_affected = $this->db->countAffected();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_description records (affected: ' . $desc_affected . ')' . PHP_EOL, FILE_APPEND);
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_description: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -796,8 +800,17 @@ class ModelCatalogManufacturer extends Model {
 		try {
 			// Finally delete the main manufacturer record
 			$main_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id);
-			if ($main_result) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer record deleted successfully' . PHP_EOL, FILE_APPEND);
+			
+			// Check affected rows to verify deletion actually happened
+			$affected_rows = $this->db->countAffected();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - DELETE query result: ' . ($main_result ? 'true' : 'false') . ', Affected rows: ' . $affected_rows . PHP_EOL, FILE_APPEND);
+			
+			// Verify the record was actually deleted
+			$verify_delete = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
+			$still_exists = ($verify_delete && $verify_delete->num_rows > 0);
+			
+			if ($main_result && $affected_rows > 0 && !$still_exists) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer record deleted successfully (verified)' . PHP_EOL, FILE_APPEND);
 			} else {
 				// Get MySQL error
 				$error_msg = 'Unknown error';
@@ -823,8 +836,21 @@ class ModelCatalogManufacturer extends Model {
 				} catch (Exception $e) {
 					// Ignore
 				}
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Failed to delete main manufacturer record! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
-				throw new Exception('Failed to delete manufacturer: ' . $error_msg);
+				
+				if ($still_exists) {
+					$error_msg = 'Record still exists after DELETE query (affected_rows: ' . $affected_rows . ')';
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record still exists after deletion attempt!' . PHP_EOL, FILE_APPEND);
+				} else if ($affected_rows == 0) {
+					$error_msg = 'No rows affected by DELETE query (record may not exist)';
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: No rows affected by DELETE query' . PHP_EOL, FILE_APPEND);
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Failed to delete main manufacturer record! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
+				}
+				
+				// Only throw exception if record still exists
+				if ($still_exists) {
+					throw new Exception('Failed to delete manufacturer: ' . $error_msg);
+				}
 			}
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Exception deleting main manufacturer record: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
