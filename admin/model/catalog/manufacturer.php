@@ -805,15 +805,8 @@ class ModelCatalogManufacturer extends Model {
 			
 			// CRITICAL: Disable foreign key checks temporarily to ensure deletion works
 			// This prevents foreign key constraints from blocking deletion
-			$this->db->query("SET FOREIGN_KEY_CHECKS = 0");
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Disabled FOREIGN_KEY_CHECKS' . PHP_EOL, FILE_APPEND);
-			
-			$main_result = $this->db->query($delete_sql);
-			
-			// Get direct MySQLi link to check actual result
-			$direct_affected = 0;
-			$mysql_error = '';
-			$mysql_errno = 0;
+			// Use direct MySQLi to ensure the setting persists
+			$fk_disabled = false;
 			try {
 				$reflection = new ReflectionClass($this->db);
 				$db_property = $reflection->getProperty('db');
@@ -823,30 +816,50 @@ class ModelCatalogManufacturer extends Model {
 					$link_reflection = new ReflectionProperty($db_driver, 'link');
 					$link_reflection->setAccessible(true);
 					$link = $link_reflection->getValue($db_driver);
-					if (is_object($link)) {
-						$direct_affected = $link->affected_rows;
-						if (method_exists($link, 'error')) {
-							$mysql_error = $link->error;
-						}
-						if (method_exists($link, 'errno')) {
-							$mysql_errno = $link->errno;
-						}
+					if (is_object($link) && method_exists($link, 'query')) {
+						$link->query("SET FOREIGN_KEY_CHECKS = 0");
+						$fk_disabled = true;
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Disabled FOREIGN_KEY_CHECKS via direct MySQLi' . PHP_EOL, FILE_APPEND);
 					}
 				}
 			} catch (Exception $e) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Could not get direct MySQLi link: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Could not disable FK checks via MySQLi, trying via wrapper: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				$this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Disabled FOREIGN_KEY_CHECKS via wrapper' . PHP_EOL, FILE_APPEND);
 			}
 			
-			// Check affected rows using both methods
+			// Execute DELETE using direct MySQLi if available, otherwise use wrapper
+			if ($fk_disabled && isset($link)) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Executing DELETE via direct MySQLi' . PHP_EOL, FILE_APPEND);
+				$main_result = $link->query($delete_sql);
+				$direct_affected = $link->affected_rows;
+				$mysql_error = $link->error;
+				$mysql_errno = $link->errno;
+			} else {
+				$main_result = $this->db->query($delete_sql);
+				$direct_affected = 0;
+				$mysql_error = '';
+				$mysql_errno = 0;
+			}
+			
+			// Get affected rows
+			if (!isset($direct_affected)) {
+				$direct_affected = 0;
+			}
 			$affected_rows = $this->db->countAffected();
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - DELETE query result: ' . ($main_result ? 'true' : 'false') . ', Affected rows (countAffected): ' . $affected_rows . ', Direct MySQLi affected_rows: ' . $direct_affected . PHP_EOL, FILE_APPEND);
-			if ($mysql_error) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL Error: ' . $mysql_error . ' (Code: ' . $mysql_errno . ')' . PHP_EOL, FILE_APPEND);
+			if (isset($mysql_error) && $mysql_error) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL Error: ' . $mysql_error . ' (Code: ' . (isset($mysql_errno) ? $mysql_errno : 0) . ')' . PHP_EOL, FILE_APPEND);
 			}
 			
 			// Re-enable foreign key checks
-			$this->db->query("SET FOREIGN_KEY_CHECKS = 1");
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Re-enabled FOREIGN_KEY_CHECKS' . PHP_EOL, FILE_APPEND);
+			if ($fk_disabled && isset($link)) {
+				$link->query("SET FOREIGN_KEY_CHECKS = 1");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Re-enabled FOREIGN_KEY_CHECKS via direct MySQLi' . PHP_EOL, FILE_APPEND);
+			} else {
+				$this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Re-enabled FOREIGN_KEY_CHECKS via wrapper' . PHP_EOL, FILE_APPEND);
+			}
 			
 			// Use the direct affected_rows if available, otherwise use countAffected
 			$actual_affected = ($direct_affected > 0) ? $direct_affected : $affected_rows;
