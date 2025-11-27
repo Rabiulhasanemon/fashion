@@ -548,6 +548,15 @@ class ModelCatalogManufacturer extends Model {
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Data keys: ' . implode(', ', array_keys($data)) . PHP_EOL, FILE_APPEND);
 		
+		// CRITICAL: Clean up any ID 0 records before editing
+		// These can cause "Duplicate entry '0'" errors
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Cleaned up any manufacturer_id = 0 records' . PHP_EOL, FILE_APPEND);
+		
 		// Validate manufacturer_id
 		$manufacturer_id = (int)$manufacturer_id;
 		if ($manufacturer_id <= 0) {
@@ -576,13 +585,20 @@ class ModelCatalogManufacturer extends Model {
 		
 		$this->db->query("UPDATE " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . " WHERE manufacturer_id = " . (int)$manufacturer_id);
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . $manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = " . (int)$manufacturer_id);
 
 		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
 			foreach ($data['manufacturer_description'] as $language_id => $value) {
 				$language_id = (int)$language_id;
-				if ($language_id > 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = '" . $manufacturer_id . "', language_id = '" . $language_id . "', description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+				if ($language_id > 0 && $manufacturer_id > 0) {
+					// Check if exists first to avoid duplicate key errors
+					$check_desc = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = " . (int)$manufacturer_id . " AND language_id = " . (int)$language_id . " LIMIT 1");
+					if (!$check_desc || !$check_desc->num_rows) {
+						$desc_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_description SET manufacturer_id = " . (int)$manufacturer_id . ", language_id = " . (int)$language_id . ", description = '" . $this->db->escape(isset($value['description']) ? $value['description'] : '') . "', meta_title = '" . $this->db->escape(isset($value['meta_title']) ? $value['meta_title'] : '') . "', meta_description = '" . $this->db->escape(isset($value['meta_description']) ? $value['meta_description'] : '') . "', meta_keyword = '" . $this->db->escape(isset($value['meta_keyword']) ? $value['meta_keyword'] : '') . "'");
+						if (!$desc_result) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: manufacturer_description insert failed for language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
+						}
+					}
 				}
 			}
 		}
@@ -619,27 +635,28 @@ class ModelCatalogManufacturer extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted existing url_alias for manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 
-		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+		// Check if keyword is provided (even if empty string, we should handle it)
+		if (isset($data['keyword'])) {
 			$keyword = trim($data['keyword']);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Processing keyword: ' . $keyword . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Keyword provided: "' . $keyword . '" (length: ' . strlen($keyword) . ')' . PHP_EOL, FILE_APPEND);
 			
-			// Check if keyword already exists for a different manufacturer/product/category
-			$existing = $this->db->query("SELECT url_alias_id, query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
-			if ($existing && $existing->num_rows) {
-				$existing_query = isset($existing->row['query']) ? $existing->row['query'] : '';
-				if ($existing_query != 'manufacturer_id=' . (int)$manufacturer_id) {
-					// Keyword exists for different entity - delete it first to avoid conflicts
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Keyword exists for different entity (' . $existing_query . '), deleting it first' . PHP_EOL, FILE_APPEND);
-					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "'");
+			if (!empty($keyword)) {
+				// Check if keyword already exists for a different manufacturer/product/category
+				$existing = $this->db->query("SELECT url_alias_id, query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
+				if ($existing && $existing->num_rows) {
+					$existing_query = isset($existing->row['query']) ? $existing->row['query'] : '';
+					if ($existing_query != 'manufacturer_id=' . (int)$manufacturer_id) {
+						// Keyword exists for different entity - delete it first to avoid conflicts
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Keyword exists for different entity (' . $existing_query . '), deleting it first' . PHP_EOL, FILE_APPEND);
+						$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "'");
+					}
 				}
-			}
-			
-			// Insert the new keyword - use REPLACE INTO to handle any edge cases
-			// But first check if it already exists for this manufacturer (shouldn't, but just in case)
-			$check_existing = $this->db->query("SELECT url_alias_id FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "' AND keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
-			if (!$check_existing || !$check_existing->num_rows) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting url_alias: query=manufacturer_id=' . $manufacturer_id . ', keyword=' . $keyword . PHP_EOL, FILE_APPEND);
-				$url_result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+				
+				// Use REPLACE INTO to ensure the keyword is always saved, even if there's a duplicate
+				// REPLACE INTO will delete the existing row if there's a duplicate on PRIMARY KEY or UNIQUE index, then insert
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Using REPLACE INTO for url_alias: query=manufacturer_id=' . $manufacturer_id . ', keyword=' . $keyword . PHP_EOL, FILE_APPEND);
+				$url_result = $this->db->query("REPLACE INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+				
 				if (!$url_result) {
 					// Get MySQL error
 					$error_msg = 'Unknown error';
@@ -665,16 +682,24 @@ class ModelCatalogManufacturer extends Model {
 					} catch (Exception $e) {
 						// Ignore
 					}
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: url_alias insert failed! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
-					// Don't throw - url_alias is optional, but log the error
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: url_alias REPLACE failed! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
+					// Try INSERT as fallback
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Trying INSERT as fallback...' . PHP_EOL, FILE_APPEND);
+					$url_result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+					if (!$url_result) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: url_alias INSERT also failed!' . PHP_EOL, FILE_APPEND);
+						// Don't throw - url_alias is optional, but log the error
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ url_alias INSERT succeeded (fallback)' . PHP_EOL, FILE_APPEND);
+					}
 				} else {
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ url_alias inserted successfully' . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ url_alias REPLACE succeeded' . PHP_EOL, FILE_APPEND);
 				}
 			} else {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - url_alias already exists for this manufacturer, skipping insert' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Keyword is empty, not inserting url_alias' . PHP_EOL, FILE_APPEND);
 			}
 		} else {
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - No keyword provided or keyword is empty' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - No keyword field in data array' . PHP_EOL, FILE_APPEND);
 		}
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = " . (int)$manufacturer_id);
