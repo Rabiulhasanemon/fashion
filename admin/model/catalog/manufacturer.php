@@ -723,13 +723,101 @@ class ModelCatalogManufacturer extends Model {
 	}
 
 	public function deleteManufacturer($manufacturer_id) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
+		$log_file = DIR_LOGS . 'manufacturer_error.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== deleteManufacturer() CALLED ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+		
+		// Validate manufacturer_id
+		$manufacturer_id = (int)$manufacturer_id;
+		if ($manufacturer_id <= 0) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Invalid manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+			throw new Exception('Invalid manufacturer ID: ' . $manufacturer_id);
+		}
+		
+		// Verify manufacturer exists before deleting
+		$check_query = $this->db->query("SELECT manufacturer_id, name FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
+		if (!$check_query->num_rows) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Manufacturer not found: ' . $manufacturer_id . ' (may already be deleted)' . PHP_EOL, FILE_APPEND);
+			// Don't throw error - just clean up related records if they exist
+		} else {
+			$manufacturer_name = isset($check_query->row['name']) ? $check_query->row['name'] : 'Unknown';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleting manufacturer: ' . $manufacturer_name . ' (ID: ' . $manufacturer_id . ')' . PHP_EOL, FILE_APPEND);
+		}
+		
+		// Delete in order: related tables first, then main table
+		// This prevents foreign key constraint issues
+		try {
+			// Delete url_alias first
+			$url_result = $this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "'");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted url_alias records' . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting url_alias: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		try {
+			// Delete manufacturer_to_layout
+			$layout_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = " . (int)$manufacturer_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_layout records' . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_to_layout: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		try {
+			// Delete manufacturer_to_store
+			$store_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = " . (int)$manufacturer_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_to_store records' . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_to_store: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		try {
+			// Delete manufacturer_description
+			$desc_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = " . (int)$manufacturer_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleted manufacturer_description records' . PHP_EOL, FILE_APPEND);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error deleting manufacturer_description: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
+		try {
+			// Finally delete the main manufacturer record
+			$main_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id);
+			if ($main_result) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer record deleted successfully' . PHP_EOL, FILE_APPEND);
+			} else {
+				// Get MySQL error
+				$error_msg = 'Unknown error';
+				$error_code = 0;
+				try {
+					$reflection = new ReflectionClass($this->db);
+					$db_property = $reflection->getProperty('db');
+					$db_property->setAccessible(true);
+					$db_driver = $db_property->getValue($this->db);
+					if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+						$link_reflection = new ReflectionProperty($db_driver, 'link');
+						$link_reflection->setAccessible(true);
+						$link = $link_reflection->getValue($db_driver);
+						if (is_object($link)) {
+							if (method_exists($link, 'error')) {
+								$error_msg = $link->error;
+							}
+							if (method_exists($link, 'errno')) {
+								$error_code = $link->errno;
+							}
+						}
+					}
+				} catch (Exception $e) {
+					// Ignore
+				}
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Failed to delete main manufacturer record! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
+				throw new Exception('Failed to delete manufacturer: ' . $error_msg);
+			}
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Exception deleting main manufacturer record: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			throw $e;
+		}
 
 		$this->cache->delete('manufacturer');
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ deleteManufacturer() completed successfully' . PHP_EOL, FILE_APPEND);
 	}
 
 	public function getManufacturer($manufacturer_id) {

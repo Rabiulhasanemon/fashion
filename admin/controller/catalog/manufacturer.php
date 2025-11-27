@@ -122,11 +122,32 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('catalog/manufacturer');
 
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			$deleted_count = 0;
+			$failed_count = 0;
+			$errors = array();
+			
 			foreach ($this->request->post['selected'] as $manufacturer_id) {
-				$this->model_catalog_manufacturer->deleteManufacturer($manufacturer_id);
+				try {
+					$this->model_catalog_manufacturer->deleteManufacturer($manufacturer_id);
+					$deleted_count++;
+				} catch (Exception $e) {
+					$failed_count++;
+					$errors[] = 'Manufacturer ID ' . $manufacturer_id . ': ' . $e->getMessage();
+					
+					// Log the error
+					$log_file = DIR_LOGS . 'manufacturer_error.log';
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error deleting manufacturer ID ' . $manufacturer_id . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				}
 			}
-
-			$this->session->data['success'] = $this->language->get('text_success');
+			
+			if ($failed_count > 0) {
+				$this->error['warning'] = sprintf($this->language->get('text_error'), $deleted_count, $failed_count);
+				if (!empty($errors)) {
+					$this->error['warning'] .= '<br />' . implode('<br />', $errors);
+				}
+			} else {
+				$this->session->data['success'] = $this->language->get('text_success');
+			}
 
 			$url = '';
 
