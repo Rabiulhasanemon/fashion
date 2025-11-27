@@ -40,4 +40,3 @@ $_['error_meta_title']       = 'Meta Title must be greater than 3 and less than 
 $_['error_keyword']      = 'SEO keyword already in use!';
 $_['error_product']      = 'Warning: This manufacturer cannot be deleted as it is currently assigned to %s products!';
 $_['error_insert_failed'] = 'Warning: Failed to add manufacturer. Please check your data and try again.';
-$_['error_insert_failed'] = 'Warning: Failed to add manufacturer. Please check your data and try again.';

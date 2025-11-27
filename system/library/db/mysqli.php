@@ -71,11 +71,3 @@ final class MySQLi {
 		$this->link->close();
 	}
 }
-	public function getLastId() {
-		return $this->link->insert_id;
-	}
-
-	public function __destruct() {
-		$this->link->close();
-	}
-}

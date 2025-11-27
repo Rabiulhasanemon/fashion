@@ -176,13 +176,7 @@ class ControllerCatalogManufacturer extends Controller {
 					$this->error['warning'] .= '<br />' . implode('<br />', $errors);
 				}
 			} else {
-				// Set success message
-				$success_msg = $this->language->get('text_success');
-				if (empty($success_msg) || $success_msg == 'text_success') {
-					$success_msg = 'Success: You have modified manufacturers!';
-				}
-				$this->session->data['success'] = $success_msg;
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Success message set: ' . $success_msg . PHP_EOL, FILE_APPEND);
+				$this->session->data['success'] = $this->language->get('text_success');
 			}
 
 			$url = '';
@@ -199,24 +193,12 @@ class ControllerCatalogManufacturer extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			// Build redirect URL
-			$redirect_url = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL');
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Redirecting to: ' . $redirect_url . PHP_EOL, FILE_APPEND);
-			
-			// Ensure no output before redirect
-			if (ob_get_level()) {
-				ob_end_clean();
-			}
-			
 			try {
-				$this->response->redirect($redirect_url);
-				return; // Exit the function after redirect
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 			} catch (Exception $e) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR during redirect: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-				// Fallback: show list with error message
-				$this->error['warning'] = 'Redirect failed, but deletion completed. ' . $e->getMessage();
+				// Fallback: just show the list
 				$this->getList();
-				return;
 			}
 		} else {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed or no selected items' . PHP_EOL, FILE_APPEND);
@@ -587,138 +569,6 @@ class ControllerCatalogManufacturer extends Controller {
 
 		$this->load->model('tool/image');
 
-		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
-			$data['image_thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
-		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['image'])) {
-			$data['image_thumb'] = $this->model_tool_image->resize($manufacturer_info['image'], 100, 100);
-		} else {
-			$data['image_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
-		}
-
-		if (isset($this->request->post['thumb']) && is_file(DIR_IMAGE . $this->request->post['thumb'])) {
-			$data['thumb_thumb'] = $this->model_tool_image->resize($this->request->post['thumb'], 100, 100);
-		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['thumb'])) {
-			$data['thumb_thumb'] = $this->model_tool_image->resize($manufacturer_info['thumb'], 100, 100);
-		} else {
-			$data['thumb_thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
-		}
-
-		$data['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);
-
-		if (isset($this->request->post['sort_order'])) {
-			$data['sort_order'] = $this->request->post['sort_order'];
-		} elseif (!empty($manufacturer_info)) {
-			$data['sort_order'] = $manufacturer_info['sort_order'];
-		} else {
-			$data['sort_order'] = '';
-		}
-
-		$data['header'] = $this->load->controller('common/header');
-		$data['column_left'] = $this->load->controller('common/column_left');
-		$data['footer'] = $this->load->controller('common/footer');
-
-		$this->response->setOutput($this->load->view('catalog/manufacturer_form.tpl', $data));
-	}
-
-	protected function validateForm() {
-		if (!$this->user->hasPermission('modify', 'catalog/manufacturer')) {
-			$this->error['warning'] = $this->language->get('error_permission');
-		}
-
-		if ((utf8_strlen($this->request->post['name']) < 2) || (utf8_strlen($this->request->post['name']) > 64)) {
-			$this->error['name'] = $this->language->get('error_name');
-		}
-
-        if (isset($this->request->post['manufacturer_description']) && is_array($this->request->post['manufacturer_description'])) {
-            foreach ($this->request->post['manufacturer_description'] as $language_id => $value) {
-                if (isset($value['meta_title']) && (utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255)) {
-                    $this->error['meta_title'][$language_id] = $this->language->get('error_meta_title');
-                }
-            }
-        }
-		if (utf8_strlen($this->request->post['keyword']) > 0) {
-			$this->load->model('catalog/url_alias');
-
-			$url_alias_info = $this->model_catalog_url_alias->getUrlAlias($this->request->post['keyword']);
-
-			if ($url_alias_info && isset($this->request->get['manufacturer_id']) && $url_alias_info['query'] != 'manufacturer_id=' . $this->request->get['manufacturer_id']) {
-				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
-			}
-
-			if ($url_alias_info && !isset($this->request->get['manufacturer_id'])) {
-				$this->error['keyword'] = sprintf($this->language->get('error_keyword'));
-			}
-		}
-
-		return !$this->error;
-	}
-
-	protected function validateDelete() {
-		if (!$this->user->hasPermission('modify', 'catalog/manufacturer')) {
-			$this->error['warning'] = $this->language->get('error_permission');
-			return false;
-		}
-
-		// Check if products are linked, but allow deletion anyway (we'll unlink them)
-		$this->load->model('catalog/product');
-		$manufacturers_with_products = array();
-
-		foreach ($this->request->post['selected'] as $manufacturer_id) {
-			$product_total = $this->model_catalog_product->getTotalProductsByManufacturerId($manufacturer_id);
-			if ($product_total > 0) {
-				$manufacturers_with_products[] = array(
-					'id' => $manufacturer_id,
-					'count' => $product_total
-				);
-			}
-		}
-
-		// Log warning but don't prevent deletion
-		if (!empty($manufacturers_with_products)) {
-			$log_file = DIR_LOGS . 'manufacturer_error.log';
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Attempting to delete manufacturers with linked products:' . PHP_EOL, FILE_APPEND);
-			foreach ($manufacturers_with_products as $mfg) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . '   - Manufacturer ID ' . $mfg['id'] . ' has ' . $mfg['count'] . ' products (will be unlinked)' . PHP_EOL, FILE_APPEND);
-			}
-		}
-
-		return true; // Always allow deletion (we'll handle unlinking products)
-	}
-
-	public function autocomplete() {
-		$json = array();
-
-		if (isset($this->request->get['filter_name'])) {
-			$this->load->model('catalog/manufacturer');
-
-			$filter_data = array(
-				'filter_name' => $this->request->get['filter_name'],
-				'start'       => 0,
-				'limit'       => 5
-			);
-
-			$results = $this->model_catalog_manufacturer->getManufacturers($filter_data);
-
-			foreach ($results as $result) {
-				$json[] = array(
-					'manufacturer_id' => $result['manufacturer_id'],
-					'name'            => strip_tags(html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8'))
-				);
-			}
-		}
-
-		$sort_order = array();
-
-		foreach ($json as $key => $value) {
-			$sort_order[$key] = $value['name'];
-		}
-
-		array_multisort($sort_order, SORT_ASC, $json);
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
-	}
-}
 		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
 			$data['image_thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
 		} elseif (!empty($manufacturer_info) && is_file(DIR_IMAGE . $manufacturer_info['image'])) {

@@ -551,42 +551,6 @@ input.custom-checkbox[type="checkbox"]:checked:after {
 	border-color: #e8e8e8;
 	background: #fcfcfc;
 }
-/* Consistent image sizes for manufacturer and product forms */
-.img-thumbnail {
-	display: inline-block;
-	padding: 4px;
-	line-height: 1.42857143;
-	background-color: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	width: 100px;
-	height: 100px;
-	overflow: hidden;
-	text-align: center;
-	vertical-align: middle;
-}
-
-.img-thumbnail img {
-	width: 100px !important;
-	height: 100px !important;
-	object-fit: cover;
-	display: block;
-	margin: 0 auto;
-	max-width: 100px;
-	max-height: 100px;
-}
-
-/* Ensure manufacturer and product image thumbnails are the same size */
-#thumb-image img,
-#thumb-thumb img,
-#featured-thumb img,
-.thumb img,
-.image img {
-	width: 100px !important;
-	height: 100px !important;
-	object-fit: cover;
-}
-
 .img-thumbnail i {
 	color: #FFFFFF;
 	background-color: #EEEEEE;
@@ -713,42 +677,6 @@ input.custom-checkbox[type="checkbox"]:checked:after {
 	background: #fff;
 	padding: 5px 15px;
 	border-radius: 4px;
-	margin: 0 10px 10px 0;
-	box-shadow: 0 0 3px rgba(0,0,0,0.2);
-}
-.well.well-sm .order-id i.fa {
-	  color: #f02849;
-	  margin-right: 5px;
-}
-
-.print-button-wrap {
-	position: absolute;
-	right: 15px;
-}
-
-#printpagebutton {
-	background: #5bc0de;
-	font-size: 14px;
-	color: #fff;
-	border: none;
-	padding: 8px 18px;
-	border-radius: 5px;
-	margin-top: 50px;
-}
-#printpagebutton i{
-	margin-right: 5px;
-}
-
-#printpagebutton:hover{
-	background: #459bb6;
-}
-
-.position-relative{
-	position: relative;
-}
-input#input-notify{
-	margin-top: 12px;
-}
 	margin: 0 10px 10px 0;
 	box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
