@@ -79,24 +79,52 @@ class ModelCatalogManufacturer extends Model {
 			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
 		}
 		
-		// Final verification: ensure no ID 0 exists
+		// Final verification: ensure no ID 0 exists - do this RIGHT before insert
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 		$final_check = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0 LIMIT 1");
 		if ($final_check && $final_check->num_rows > 0) {
 			throw new Exception('CRITICAL: Record with manufacturer_id = 0 still exists after cleanup. Cannot proceed with insert.');
 		}
 		
-		// Insert with explicit ID if AUTO_INCREMENT is not available, otherwise let AUTO_INCREMENT handle it
-		if (!$has_auto_increment) {
-			// Use explicit ID insertion
-			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
-			$manufacturer_id = $next_id; // Set expected ID
-		} else {
-			// Insert without specifying manufacturer_id - let AUTO_INCREMENT handle it
-			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
-			$manufacturer_id = null; // Will be retrieved after insert
+		// CRITICAL: Always ensure AUTO_INCREMENT is set correctly right before insert
+		if ($has_auto_increment) {
+			// Double-check AUTO_INCREMENT value and force it if needed
+			$ai_status = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "manufacturer'");
+			if ($ai_status && $ai_status->num_rows) {
+				$current_ai = isset($ai_status->row['Auto_increment']) ? $ai_status->row['Auto_increment'] : (isset($ai_status->row['AUTO_INCREMENT']) ? $ai_status->row['AUTO_INCREMENT'] : null);
+				if ($current_ai === null || (int)$current_ai <= $max_id) {
+					// Force AUTO_INCREMENT to next_id
+					$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+				}
+			}
 		}
 		
+		// ALWAYS use explicit ID insertion to avoid AUTO_INCREMENT issues
+		// This ensures we never get ID 0, even if AUTO_INCREMENT has problems
+		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+		$manufacturer_id = $next_id; // Set expected ID
+		
 		$insert_result = $this->db->query($insert_sql);
+		
+		// If insert failed, it might be because the ID already exists (race condition)
+		// In that case, recalculate next_id and retry
+		if (!$insert_result) {
+			// Get the current max ID again
+			$max_check_retry = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
+			$max_id_retry = 0;
+			if ($max_check_retry && $max_check_retry->num_rows && isset($max_check_retry->row['max_id']) && $max_check_retry->row['max_id'] !== null) {
+				$max_id_retry = (int)$max_check_retry->row['max_id'];
+			}
+			$next_id_retry = max($max_id_retry + 1, 1);
+			
+			// Clean up any ID 0 that might have been created
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			
+			// Retry with new ID
+			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id_retry . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+			$insert_result = $this->db->query($insert_sql);
+			$manufacturer_id = $next_id_retry;
+		}
 		
 		if (!$insert_result) {
 			// Get detailed error information
@@ -144,22 +172,8 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception($error_msg);
 		}
 		
-		// Get the inserted manufacturer_id
-		if ($manufacturer_id === null) {
-			// AUTO_INCREMENT was used, get the ID
-			$manufacturer_id = $this->db->getLastId();
-			
-			// If getLastId() returns 0 or false, query the database to get the actual ID
-			if (!$manufacturer_id || $manufacturer_id <= 0) {
-				$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
-				if ($find && $find->num_rows) {
-					$manufacturer_id = (int)$find->row['manufacturer_id'];
-				} else {
-					throw new Exception('Failed to insert manufacturer - could not retrieve manufacturer_id after insert');
-				}
-			}
-		}
-		// else: manufacturer_id was set explicitly, use that value
+		// manufacturer_id was set explicitly, verify it's correct
+		// No need to retrieve it since we set it explicitly
 		
 		// Verify the insert was successful
 		if ($manufacturer_id <= 0) {
@@ -170,6 +184,12 @@ class ModelCatalogManufacturer extends Model {
 		$verify_insert = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "' LIMIT 1");
 		if (!$verify_insert || !$verify_insert->num_rows) {
 			throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $manufacturer_id . ')');
+		}
+		
+		// Update AUTO_INCREMENT to be higher than the inserted ID to keep it in sync
+		if ($has_auto_increment) {
+			$next_ai = $manufacturer_id + 1;
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_ai);
 		}
 
 		// CRITICAL: Delete any existing records for this manufacturer_id first (in case of retry or orphaned data)
