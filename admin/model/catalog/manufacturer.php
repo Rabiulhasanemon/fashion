@@ -130,14 +130,19 @@ class ModelCatalogManufacturer extends Model {
 			}
 		}
 		
-		// ALWAYS use explicit ID insertion to avoid AUTO_INCREMENT issues
-		// This ensures we never get ID 0, even if AUTO_INCREMENT has problems
-		
 		// CRITICAL: Verify next_id is valid before building SQL
 		if ($next_id <= 0) {
 			throw new Exception('CRITICAL: Invalid next_id calculated: ' . $next_id . '. Cannot proceed with insert.');
 		}
 		
+		// Use a transaction-like approach: temporarily modify AUTO_INCREMENT behavior
+		// First, ensure AUTO_INCREMENT is higher than our target ID
+		if ($has_auto_increment) {
+			$target_ai = $next_id + 1;
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $target_ai);
+		}
+		
+		// Try INSERT with explicit ID - MySQL should accept it if AUTO_INCREMENT is higher
 		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
 		
 		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
@@ -156,6 +161,32 @@ class ModelCatalogManufacturer extends Model {
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
 		
 		$insert_result = $this->db->query($insert_sql);
+		
+		// If that fails, try without explicit ID and let AUTO_INCREMENT handle it
+		if (!$insert_result && $has_auto_increment) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Explicit ID insert failed, trying with AUTO_INCREMENT...' . PHP_EOL, FILE_APPEND);
+			
+			// Clean up any ID 0 that might have been created
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			
+			// Insert without explicit ID
+			$insert_sql2 = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+			$insert_result = $this->db->query($insert_sql2);
+			
+			if ($insert_result) {
+				$manufacturer_id = $this->db->getLastId();
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT insert succeeded, got ID: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+				
+				if (!$manufacturer_id || $manufacturer_id <= 0) {
+					// Query to get the actual ID
+					$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
+					if ($find && $find->num_rows) {
+						$manufacturer_id = (int)$find->row['manufacturer_id'];
+					}
+				}
+			}
+		}
 		
 		// If insert failed, it might be because the ID already exists (race condition)
 		// In that case, recalculate next_id and retry
