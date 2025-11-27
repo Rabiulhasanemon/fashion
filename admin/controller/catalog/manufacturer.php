@@ -176,7 +176,13 @@ class ControllerCatalogManufacturer extends Controller {
 					$this->error['warning'] .= '<br />' . implode('<br />', $errors);
 				}
 			} else {
-				$this->session->data['success'] = $this->language->get('text_success');
+				// Set success message
+				$success_msg = $this->language->get('text_success');
+				if (empty($success_msg) || $success_msg == 'text_success') {
+					$success_msg = 'Success: You have modified manufacturers!';
+				}
+				$this->session->data['success'] = $success_msg;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Success message set: ' . $success_msg . PHP_EOL, FILE_APPEND);
 			}
 
 			$url = '';
@@ -193,12 +199,24 @@ class ControllerCatalogManufacturer extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
+			// Build redirect URL
+			$redirect_url = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL');
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Redirecting to: ' . $redirect_url . PHP_EOL, FILE_APPEND);
+			
+			// Ensure no output before redirect
+			if (ob_get_level()) {
+				ob_end_clean();
+			}
+			
 			try {
-				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+				$this->response->redirect($redirect_url);
+				// If redirect doesn't work, output JavaScript redirect as fallback
+				exit('<script>window.location.href="' . htmlspecialchars($redirect_url, ENT_QUOTES, 'UTF-8') . '";</script>');
 			} catch (Exception $e) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR during redirect: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-				// Fallback: just show the list
-				$this->getList();
+				// Fallback: JavaScript redirect
+				echo '<script>window.location.href="' . htmlspecialchars($redirect_url, ENT_QUOTES, 'UTF-8') . '";</script>';
+				exit;
 			}
 		} else {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed or no selected items' . PHP_EOL, FILE_APPEND);

@@ -551,6 +551,42 @@ input.custom-checkbox[type="checkbox"]:checked:after {
 	border-color: #e8e8e8;
 	background: #fcfcfc;
 }
+/* Consistent image sizes for manufacturer and product forms */
+.img-thumbnail {
+	display: inline-block;
+	padding: 4px;
+	line-height: 1.42857143;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	width: 100px;
+	height: 100px;
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.img-thumbnail img {
+	width: 100px !important;
+	height: 100px !important;
+	object-fit: cover;
+	display: block;
+	margin: 0 auto;
+	max-width: 100px;
+	max-height: 100px;
+}
+
+/* Ensure manufacturer and product image thumbnails are the same size */
+#thumb-image img,
+#thumb-thumb img,
+#featured-thumb img,
+.thumb img,
+.image img {
+	width: 100px !important;
+	height: 100px !important;
+	object-fit: cover;
+}
+
 .img-thumbnail i {
 	color: #FFFFFF;
 	background-color: #EEEEEE;
