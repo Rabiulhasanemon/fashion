@@ -147,22 +147,33 @@ class ModelCatalogManufacturer extends Model {
 		$thumb = isset($data['thumb']) ? html_entity_decode($data['thumb'], ENT_QUOTES, 'UTF-8') : '';
 		
 		// Try INSERT with explicit ID - MySQL should accept it if AUTO_INCREMENT is higher
-		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+		// Use proper integer casting to ensure no string issues
+		$manufacturer_id_value = (int)$next_id;
 		
-		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
-		if (strpos($insert_sql, "manufacturer_id = '0'") !== false || strpos($insert_sql, "manufacturer_id = 0") !== false) {
+		// Double-check the value is valid
+		if ($manufacturer_id_value <= 0 || $manufacturer_id_value != $next_id) {
 			$log_file = DIR_LOGS . 'manufacturer_error.log';
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: SQL contains manufacturer_id = 0! SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - next_id value: ' . $next_id . PHP_EOL, FILE_APPEND);
-			throw new Exception('CRITICAL: SQL contains manufacturer_id = 0! This should never happen. next_id: ' . $next_id);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Invalid manufacturer_id_value: ' . $manufacturer_id_value . ' (next_id: ' . $next_id . ')' . PHP_EOL, FILE_APPEND);
+			throw new Exception('CRITICAL: Invalid manufacturer_id value: ' . $manufacturer_id_value);
 		}
 		
-		$manufacturer_id = $next_id; // Set expected ID
+		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = " . $manufacturer_id_value . ", name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
+		
+		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
+		if (strpos($insert_sql, "manufacturer_id = 0") !== false || preg_match("/manufacturer_id\s*=\s*['\"]?0['\"]?/", $insert_sql)) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: SQL contains manufacturer_id = 0! SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - next_id value: ' . $next_id . ', manufacturer_id_value: ' . $manufacturer_id_value . PHP_EOL, FILE_APPEND);
+			throw new Exception('CRITICAL: SQL contains manufacturer_id = 0! This should never happen. next_id: ' . $next_id . ', value: ' . $manufacturer_id_value);
+		}
+		
+		$manufacturer_id = $manufacturer_id_value; // Set expected ID
 		
 		// Log the insert attempt
 		$log_file = DIR_LOGS . 'manufacturer_error.log';
-		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting insert with manufacturer_id = ' . $next_id . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting insert with manufacturer_id = ' . $manufacturer_id_value . PHP_EOL, FILE_APPEND);
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image length: ' . strlen($image) . ', Thumb length: ' . strlen($thumb) . PHP_EOL, FILE_APPEND);
 		
 		$insert_result = $this->db->query($insert_sql);
 		
@@ -171,11 +182,47 @@ class ModelCatalogManufacturer extends Model {
 			$log_file = DIR_LOGS . 'manufacturer_error.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Explicit ID insert failed, trying with AUTO_INCREMENT...' . PHP_EOL, FILE_APPEND);
 			
+			// Get MySQL error before cleanup
+			$error_before = '';
+			$errno_before = 0;
+			try {
+				$reflection = new ReflectionClass($this->db);
+				$db_property = $reflection->getProperty('db');
+				$db_property->setAccessible(true);
+				$db_driver = $db_property->getValue($this->db);
+				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+					$link_reflection = new ReflectionProperty($db_driver, 'link');
+					$link_reflection->setAccessible(true);
+					$link = $link_reflection->getValue($db_driver);
+					if (is_object($link)) {
+						if (method_exists($link, 'error')) {
+							$error_before = $link->error;
+						}
+						if (method_exists($link, 'errno')) {
+							$errno_before = $link->errno;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				// Ignore
+			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error from explicit insert: ' . $error_before . ' (Code: ' . $errno_before . ')' . PHP_EOL, FILE_APPEND);
+			
 			// Clean up any ID 0 that might have been created
 			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 			
-			// Insert without explicit ID
-			$insert_sql2 = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+			// Ensure AUTO_INCREMENT is set correctly
+			$max_check_ai = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
+			$max_id_ai = 0;
+			if ($max_check_ai && $max_check_ai->num_rows && isset($max_check_ai->row['max_id']) && $max_check_ai->row['max_id'] !== null) {
+				$max_id_ai = (int)$max_check_ai->row['max_id'];
+			}
+			$next_ai = max($max_id_ai + 1, 1);
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_ai);
+			
+			// Insert without explicit ID - use decoded image paths
+			$insert_sql2 = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Fallback SQL: ' . $insert_sql2 . PHP_EOL, FILE_APPEND);
 			$insert_result = $this->db->query($insert_sql2);
 			
 			if ($insert_result) {
@@ -254,10 +301,12 @@ class ModelCatalogManufacturer extends Model {
 				// Clean up any ID 0 that might have been created
 				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 				
-				// Retry with new ID
-				$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id_retry . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+				// Retry with new ID - use integer directly, not quoted
+				$retry_id = (int)$next_id_retry;
+				$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = " . $retry_id . ", name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
 				$insert_result = $this->db->query($insert_sql);
-				$manufacturer_id = $next_id_retry;
+				$manufacturer_id = $retry_id;
 				
 				if ($insert_result) {
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry successful with ID: ' . $next_id_retry . PHP_EOL, FILE_APPEND);
