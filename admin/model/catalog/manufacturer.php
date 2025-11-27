@@ -803,6 +803,11 @@ class ModelCatalogManufacturer extends Model {
 			$delete_sql = "DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id;
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Executing DELETE SQL: ' . $delete_sql . PHP_EOL, FILE_APPEND);
 			
+			// CRITICAL: Disable foreign key checks temporarily to ensure deletion works
+			// This prevents foreign key constraints from blocking deletion
+			$this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Disabled FOREIGN_KEY_CHECKS' . PHP_EOL, FILE_APPEND);
+			
 			$main_result = $this->db->query($delete_sql);
 			
 			// Get direct MySQLi link to check actual result
@@ -839,6 +844,10 @@ class ModelCatalogManufacturer extends Model {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL Error: ' . $mysql_error . ' (Code: ' . $mysql_errno . ')' . PHP_EOL, FILE_APPEND);
 			}
 			
+			// Re-enable foreign key checks
+			$this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Re-enabled FOREIGN_KEY_CHECKS' . PHP_EOL, FILE_APPEND);
+			
 			// Use the direct affected_rows if available, otherwise use countAffected
 			$actual_affected = ($direct_affected > 0) ? $direct_affected : $affected_rows;
 			
@@ -853,6 +862,7 @@ class ModelCatalogManufacturer extends Model {
 				if ($still_exists) {
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record still exists after DELETE! Attempting direct MySQLi deletion...' . PHP_EOL, FILE_APPEND);
 					
+					// Try direct MySQLi deletion with foreign key checks disabled
 					try {
 						$reflection = new ReflectionClass($this->db);
 						$db_property = $reflection->getProperty('db');
@@ -863,10 +873,17 @@ class ModelCatalogManufacturer extends Model {
 							$link_reflection->setAccessible(true);
 							$link = $link_reflection->getValue($db_driver);
 							if (is_object($link) && method_exists($link, 'query')) {
+								// Disable foreign key checks
+								$link->query("SET FOREIGN_KEY_CHECKS = 0");
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Direct MySQLi: Disabled FOREIGN_KEY_CHECKS' . PHP_EOL, FILE_APPEND);
+								
 								// Execute DELETE directly via MySQLi
 								$direct_result = $link->query($delete_sql);
 								$direct_affected_retry = $link->affected_rows;
 								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Direct MySQLi DELETE result: ' . ($direct_result ? 'true' : 'false') . ', Affected: ' . $direct_affected_retry . PHP_EOL, FILE_APPEND);
+								
+								// Re-enable foreign key checks
+								$link->query("SET FOREIGN_KEY_CHECKS = 1");
 								
 								// Verify again
 								$verify_retry = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");

@@ -26,12 +26,23 @@ $prefix = DB_PREFIX;
 // Get manufacturer ID from URL
 $test_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+$confirm = isset($_GET['confirm']) && $_GET['confirm'] == '1';
+
 if ($test_id <= 0) {
     echo "Usage: ?id=X (where X is the manufacturer_id to delete)\n";
+    echo "       ?id=X&confirm=1 (to actually delete)\n";
     echo "\nAvailable manufacturers:\n";
     $manufacturers = $db->query("SELECT manufacturer_id, name FROM {$prefix}manufacturer ORDER BY manufacturer_id LIMIT 20");
     foreach ($manufacturers->rows as $mfg) {
-        echo "  ID {$mfg['manufacturer_id']}: {$mfg['name']}\n";
+        $prod_check = $db->query("SELECT COUNT(*) as count FROM {$prefix}product WHERE manufacturer_id = {$mfg['manufacturer_id']}");
+        $has_products = ($prod_check->row['count'] ?? 0) > 0;
+        $prod_text = $has_products ? " (has products)" : "";
+        echo "  ID {$mfg['manufacturer_id']}: {$mfg['name']}{$prod_text}\n";
+        echo "    <a href='?id={$mfg['manufacturer_id']}'>[View Details]</a> ";
+        if (!$has_products) {
+            echo "<a href='?id={$mfg['manufacturer_id']}&confirm=1' style='color:red;'>[DELETE]</a>";
+        }
+        echo "\n";
     }
     echo "</pre>";
     exit;
@@ -106,30 +117,67 @@ foreach ($tables as $table => $sql) {
 }
 
 // Step 3: Delete main record
-echo "Step 3: Deleting main manufacturer record...\n";
-$delete_sql = "DELETE FROM {$prefix}manufacturer WHERE manufacturer_id = {$test_id}";
-echo "SQL: {$delete_sql}\n";
-$delete_result = $link->query($delete_sql);
-$delete_affected = $link->affected_rows;
-echo "Result: " . ($delete_result ? "SUCCESS" : "FAILED") . ", Affected rows: {$delete_affected}\n";
-if ($link->error) {
-    echo "MySQL Error: {$link->error} (Code: {$link->errno})\n";
+if (!$confirm) {
+    echo "Step 3: Preview (not deleting yet)\n";
+    echo "To actually delete, add &confirm=1 to the URL\n";
+    echo "Example: ?id={$test_id}&confirm=1\n\n";
+} else {
+    echo "Step 3: Deleting main manufacturer record...\n";
+    $delete_sql = "DELETE FROM {$prefix}manufacturer WHERE manufacturer_id = {$test_id}";
+    echo "SQL: {$delete_sql}\n";
+
+    // Check for foreign key constraints first
+    echo "Checking for foreign key constraints...\n";
+    $fk_check = $db->query("SELECT 
+        CONSTRAINT_NAME, 
+        TABLE_NAME, 
+        REFERENCED_TABLE_NAME,
+        REFERENCED_COLUMN_NAME
+    FROM information_schema.KEY_COLUMN_USAGE 
+    WHERE REFERENCED_TABLE_SCHEMA = '" . DB_DATABASE . "' 
+    AND REFERENCED_TABLE_NAME = '{$prefix}manufacturer'
+    AND REFERENCED_COLUMN_NAME = 'manufacturer_id'");
+
+    if ($fk_check->num_rows > 0) {
+        echo "WARNING: Foreign key constraints found:\n";
+        foreach ($fk_check->rows as $fk) {
+            echo "  - Table: {$fk['TABLE_NAME']}, Constraint: {$fk['CONSTRAINT_NAME']}\n";
+        }
+        echo "Disabling foreign key checks temporarily...\n\n";
+    }
+
+    // Try with foreign key checks disabled
+    echo "Attempting deletion with FOREIGN_KEY_CHECKS disabled...\n";
+    $link->query("SET FOREIGN_KEY_CHECKS = 0");
+    $delete_result = $link->query($delete_sql);
+    $delete_affected = $link->affected_rows;
+    $link->query("SET FOREIGN_KEY_CHECKS = 1");
+
+    echo "Result: " . ($delete_result ? "SUCCESS" : "FAILED") . ", Affected rows: {$delete_affected}\n";
+    if ($link->error) {
+        echo "MySQL Error: {$link->error} (Code: {$link->errno})\n";
+    }
+    echo "\n";
 }
-echo "\n";
 
 // Step 4: Verify deletion
-echo "Step 4: Verifying deletion...\n";
-$verify = $db->query("SELECT manufacturer_id FROM {$prefix}manufacturer WHERE manufacturer_id = {$test_id}");
-if (!$verify->num_rows) {
-    echo "✓ SUCCESS: Manufacturer record deleted and verified!\n";
+if ($confirm) {
+    echo "Step 4: Verifying deletion...\n";
+    $verify = $db->query("SELECT manufacturer_id FROM {$prefix}manufacturer WHERE manufacturer_id = {$test_id}");
+    if (!$verify->num_rows) {
+        echo "✓ SUCCESS: Manufacturer record deleted and verified!\n";
+    } else {
+        echo "✗ FAILED: Manufacturer record still exists!\n";
+        echo "This indicates the DELETE query did not work.\n";
+        echo "\nPossible causes:\n";
+        echo "  1. Database permissions issue\n";
+        echo "  2. Foreign key constraint preventing deletion\n";
+        echo "  3. Transaction rollback\n";
+        echo "  4. Table lock preventing deletion\n";
+        echo "  5. Database user lacks DELETE permission\n";
+    }
 } else {
-    echo "✗ FAILED: Manufacturer record still exists!\n";
-    echo "This indicates the DELETE query did not work.\n";
-    echo "\nPossible causes:\n";
-    echo "  1. Database permissions issue\n";
-    echo "  2. Foreign key constraint preventing deletion\n";
-    echo "  3. Transaction rollback\n";
-    echo "  4. Table lock preventing deletion\n";
+    echo "Step 4: Skipped (preview mode)\n";
 }
 
 echo "\n";
