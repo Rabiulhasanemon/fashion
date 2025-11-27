@@ -12,7 +12,7 @@ class ModelCatalogManufacturer extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
 		
-		// Calculate next manufacturer_id explicitly
+		// Ensure AUTO_INCREMENT is set correctly
 		$max_check = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
 		$max_id = 0;
 		if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
@@ -20,76 +20,66 @@ class ModelCatalogManufacturer extends Model {
 		}
 		$next_id = max($max_id + 1, 1);
 		
-		// Set AUTO_INCREMENT for consistency
-		$alter_result = $this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
-		if (!$alter_result) {
-			$error = '';
-			if (property_exists($this->db, 'link') && is_object($this->db->link)) {
-				if (property_exists($this->db->link, 'error')) {
-					$error = $this->db->link->error;
-				}
-			}
-			throw new Exception('Failed to set AUTO_INCREMENT: ' . $error);
-		}
+		// Set AUTO_INCREMENT to ensure it's higher than any existing ID
+		$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
 
-		// Try to insert with explicit manufacturer_id first
-		$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+		// Verify AUTO_INCREMENT is set correctly before insert
+		$ai_check = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "manufacturer'");
+		if ($ai_check && $ai_check->num_rows) {
+			$ai_value = isset($ai_check->row['Auto_increment']) ? $ai_check->row['Auto_increment'] : (isset($ai_check->row['AUTO_INCREMENT']) ? $ai_check->row['AUTO_INCREMENT'] : null);
+			if ($ai_value !== null && (int)$ai_value <= 0) {
+				// AUTO_INCREMENT is invalid, force it to next_id
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+			}
+		}
+		
+		// Insert without specifying manufacturer_id - let AUTO_INCREMENT handle it
+		$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
 		
 		if (!$insert_result) {
-			// Get error details
-			$error = '';
-			$errno = 0;
-			if (property_exists($this->db, 'link') && is_object($this->db->link)) {
-				if (property_exists($this->db->link, 'error')) {
-					$error = $this->db->link->error;
-				}
-				if (property_exists($this->db->link, 'errno')) {
-					$errno = $this->db->link->errno;
-				}
+			// Check if there's still a record with ID 0 that might be causing issues
+			$check_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			$zero_count = 0;
+			if ($check_zero && $check_zero->num_rows) {
+				$zero_count = (int)$check_zero->row['count'];
 			}
 			
-			// If explicit ID failed, try without it (let AUTO_INCREMENT handle it)
-			// This handles cases where explicit ID insertion is not allowed
-			if ($errno == 1062 || stripos($error, 'Duplicate') !== false || stripos($error, 'PRIMARY') !== false) {
-				// Duplicate key - try without explicit ID
-				$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+			if ($zero_count > 0) {
+				// Try to delete it again and retry
+				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
 				
-				if ($insert_result) {
-					// Get the actual inserted ID
-					$manufacturer_id = $this->db->getLastId();
-					if (!$manufacturer_id || $manufacturer_id <= 0) {
-						// Query database directly to get the ID
-						$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
-						if ($find && $find->num_rows) {
-							$manufacturer_id = (int)$find->row['manufacturer_id'];
-						} else {
-							throw new Exception('Failed to insert manufacturer - could not retrieve manufacturer_id after insert');
-						}
-					}
+				// Retry the insert
+				$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+			}
+			
+			if (!$insert_result) {
+				$error_msg = 'Duplicate entry for key PRIMARY';
+				if ($zero_count > 0) {
+					$error_msg .= ' (Found and attempted to clean up record with manufacturer_id = 0, but insert still failed)';
 				} else {
-					// Get new error
-					$error2 = '';
-					$errno2 = 0;
-					if (property_exists($this->db, 'link') && is_object($this->db->link)) {
-						if (property_exists($this->db->link, 'error')) {
-							$error2 = $this->db->link->error;
-						}
-						if (property_exists($this->db->link, 'errno')) {
-							$errno2 = $this->db->link->errno;
-						}
-					}
-					throw new Exception('Failed to insert manufacturer (both explicit and auto methods): ' . $error2 . ' (Error Code: ' . $errno2 . ')');
+					$error_msg .= ' (Possible AUTO_INCREMENT issue or database constraint violation)';
 				}
+				throw new Exception($error_msg);
+			}
+		}
+		
+		// Get the inserted manufacturer_id
+		$manufacturer_id = $this->db->getLastId();
+		
+		// If getLastId() returns 0 or false, query the database to get the actual ID
+		if (!$manufacturer_id || $manufacturer_id <= 0) {
+			$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
+			if ($find && $find->num_rows) {
+				$manufacturer_id = (int)$find->row['manufacturer_id'];
 			} else {
-				throw new Exception('Failed to insert manufacturer: ' . $error . ' (Error Code: ' . $errno . ')');
+				throw new Exception('Failed to insert manufacturer - could not retrieve manufacturer_id after insert');
 			}
-		} else {
-			// Explicit ID insert succeeded - verify it
-			$verify = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$next_id . "' LIMIT 1");
-			if (!$verify || !$verify->num_rows) {
-				throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $next_id . ')');
-			}
-			$manufacturer_id = (int)$next_id;
+		}
+		
+		// Verify the insert was successful
+		if ($manufacturer_id <= 0) {
+			throw new Exception('Invalid manufacturer_id after insert: ' . $manufacturer_id);
 		}
 
 		// CRITICAL: Delete any existing records for this manufacturer_id first (in case of retry or orphaned data)
