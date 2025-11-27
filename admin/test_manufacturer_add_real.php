@@ -25,6 +25,10 @@ $registry->set('load', $loader);
 $log = new Log('test_manufacturer.log');
 $registry->set('log', $log);
 
+// Cache (required by model)
+$cache = new Cache('file', 3600);
+$registry->set('cache', $cache);
+
 // Session (minimal)
 $session = new Session();
 $registry->set('session', $session);
