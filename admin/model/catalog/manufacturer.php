@@ -6,11 +6,44 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception('Manufacturer name is required');
 		}
 
-		// CRITICAL: Clean up any manufacturer with manufacturer_id = 0 before inserting
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
+		// CRITICAL: Multiple cleanup attempts to ensure no manufacturer_id = 0 exists
+		$cleanup_attempts = 0;
+		$max_cleanup_attempts = 3;
+		
+		while ($cleanup_attempts < $max_cleanup_attempts) {
+			// Delete any manufacturer with manufacturer_id = 0
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
+			
+			// Verify cleanup
+			$verify_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			$zero_count = 0;
+			if ($verify_zero && $verify_zero->num_rows) {
+				$zero_count = (int)$verify_zero->row['count'];
+			}
+			
+			if ($zero_count == 0) {
+				break; // Cleanup successful
+			}
+			
+			$cleanup_attempts++;
+		}
+		
+		// If still have zero records after cleanup, this is a critical issue
+		if ($zero_count > 0) {
+			// Try aggressive cleanup
+			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id <= 0");
+			$verify_final = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			$final_zero = 0;
+			if ($verify_final && $verify_final->num_rows) {
+				$final_zero = (int)$verify_final->row['count'];
+			}
+			if ($final_zero > 0) {
+				throw new Exception('CRITICAL: Cannot remove record with manufacturer_id = 0. Database may be corrupted. Please check manually.');
+			}
+		}
 		
 		// Ensure AUTO_INCREMENT is set correctly
 		$max_check = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
@@ -20,48 +53,85 @@ class ModelCatalogManufacturer extends Model {
 		}
 		$next_id = max($max_id + 1, 1);
 		
-		// Set AUTO_INCREMENT to ensure it's higher than any existing ID
+		// Force AUTO_INCREMENT to be correct - do this multiple times to ensure it sticks
 		$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
-
-		// Verify AUTO_INCREMENT is set correctly before insert
+		
+		// Verify AUTO_INCREMENT is set correctly
 		$ai_check = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "manufacturer'");
 		if ($ai_check && $ai_check->num_rows) {
 			$ai_value = isset($ai_check->row['Auto_increment']) ? $ai_check->row['Auto_increment'] : (isset($ai_check->row['AUTO_INCREMENT']) ? $ai_check->row['AUTO_INCREMENT'] : null);
-			if ($ai_value !== null && (int)$ai_value <= 0) {
-				// AUTO_INCREMENT is invalid, force it to next_id
-				$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+			if ($ai_value !== null) {
+				$ai_int = (int)$ai_value;
+				if ($ai_int <= 0 || $ai_int <= $max_id) {
+					// AUTO_INCREMENT is invalid, force it again
+					$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+					// Verify again
+					$ai_check2 = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "manufacturer'");
+					if ($ai_check2 && $ai_check2->num_rows) {
+						$ai_value2 = isset($ai_check2->row['Auto_increment']) ? $ai_check2->row['Auto_increment'] : (isset($ai_check2->row['AUTO_INCREMENT']) ? $ai_check2->row['AUTO_INCREMENT'] : null);
+						if ($ai_value2 !== null && ((int)$ai_value2 <= 0 || (int)$ai_value2 <= $max_id)) {
+							throw new Exception('CRITICAL: Cannot set AUTO_INCREMENT correctly. Current value: ' . $ai_value2 . ', Expected: ' . $next_id);
+						}
+					}
+				}
 			}
 		}
 		
+		// Final verification: ensure no ID 0 exists
+		$final_check = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0 LIMIT 1");
+		if ($final_check && $final_check->num_rows > 0) {
+			throw new Exception('CRITICAL: Record with manufacturer_id = 0 still exists after cleanup. Cannot proceed with insert.');
+		}
+		
 		// Insert without specifying manufacturer_id - let AUTO_INCREMENT handle it
-		$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+		
+		$insert_result = $this->db->query($insert_sql);
 		
 		if (!$insert_result) {
-			// Check if there's still a record with ID 0 that might be causing issues
-			$check_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
-			$zero_count = 0;
-			if ($check_zero && $check_zero->num_rows) {
-				$zero_count = (int)$check_zero->row['count'];
-			}
+			// Get detailed error information
+			$error_details = 'Unknown database error';
+			$errno = 0;
 			
-			if ($zero_count > 0) {
-				// Try to delete it again and retry
-				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
-				$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_id);
+			// Try to get MySQL error through reflection
+			try {
+				$reflection = new ReflectionClass($this->db);
+				$db_property = $reflection->getProperty('db');
+				$db_property->setAccessible(true);
+				$db_driver = $db_property->getValue($this->db);
 				
-				// Retry the insert
-				$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'");
+				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+					$link_reflection = new ReflectionProperty($db_driver, 'link');
+					$link_reflection->setAccessible(true);
+					$link = $link_reflection->getValue($db_driver);
+					
+					if (is_object($link)) {
+						if (method_exists($link, 'error')) {
+							$error_details = $link->error;
+						}
+						if (method_exists($link, 'errno')) {
+							$errno = $link->errno;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				// Reflection failed, use generic message
 			}
 			
-			if (!$insert_result) {
-				$error_msg = 'Duplicate entry for key PRIMARY';
-				if ($zero_count > 0) {
-					$error_msg .= ' (Found and attempted to clean up record with manufacturer_id = 0, but insert still failed)';
-				} else {
-					$error_msg .= ' (Possible AUTO_INCREMENT issue or database constraint violation)';
-				}
-				throw new Exception($error_msg);
+			// Check if there's still a record with ID 0
+			$check_zero_after = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			$zero_count_after = 0;
+			if ($check_zero_after && $check_zero_after->num_rows) {
+				$zero_count_after = (int)$check_zero_after->row['count'];
 			}
+			
+			$error_msg = 'Duplicate entry for key PRIMARY';
+			if ($zero_count_after > 0) {
+				$error_msg .= ' (Record with manufacturer_id = 0 exists - ' . $zero_count_after . ' record(s))';
+			}
+			$error_msg .= ' - MySQL Error: ' . $error_details . ' (Code: ' . $errno . ')';
+			
+			throw new Exception($error_msg);
 		}
 		
 		// Get the inserted manufacturer_id
