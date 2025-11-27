@@ -1,15 +1,21 @@
 <?php
 class ModelCatalogManufacturer extends Model {
 	public function addManufacturer($data) {
+		// Start logging immediately
+		$log_file = DIR_LOGS . 'manufacturer_error.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== addManufacturer() CALLED ==========' . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Data keys: ' . implode(', ', array_keys($data)) . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Data: ' . print_r($data, true) . PHP_EOL, FILE_APPEND);
+		
 		// Validate required data
 		if (!isset($data['name']) || empty(trim($data['name']))) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Manufacturer name is required' . PHP_EOL, FILE_APPEND);
 			throw new Exception('Manufacturer name is required');
 		}
 		
 		// CRITICAL: Remove any manufacturer_id from data to prevent using a provided ID
 		// We always calculate the next ID ourselves
 		if (isset($data['manufacturer_id'])) {
-			$log_file = DIR_LOGS . 'manufacturer_error.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: manufacturer_id provided in data (' . $data['manufacturer_id'] . '), ignoring it' . PHP_EOL, FILE_APPEND);
 			unset($data['manufacturer_id']);
 		}
