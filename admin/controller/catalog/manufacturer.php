@@ -126,22 +126,34 @@ class ControllerCatalogManufacturer extends Controller {
 			$failed_count = 0;
 			$errors = array();
 			
+			// Log deletion attempt
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== DELETE REQUEST ==========' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Selected manufacturers: ' . implode(', ', $this->request->post['selected']) . PHP_EOL, FILE_APPEND);
+			
 			foreach ($this->request->post['selected'] as $manufacturer_id) {
 				try {
 					$this->model_catalog_manufacturer->deleteManufacturer($manufacturer_id);
 					$deleted_count++;
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Successfully deleted manufacturer ID: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 				} catch (Exception $e) {
 					$failed_count++;
 					$errors[] = 'Manufacturer ID ' . $manufacturer_id . ': ' . $e->getMessage();
 					
 					// Log the error
-					$log_file = DIR_LOGS . 'manufacturer_error.log';
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error deleting manufacturer ID ' . $manufacturer_id . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✗ Error deleting manufacturer ID ' . $manufacturer_id . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 				}
 			}
 			
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deletion complete: ' . $deleted_count . ' succeeded, ' . $failed_count . ' failed' . PHP_EOL, FILE_APPEND);
+			
 			if ($failed_count > 0) {
-				$this->error['warning'] = sprintf($this->language->get('text_error'), $deleted_count, $failed_count);
+				// Use language key if exists, otherwise use fallback
+				$error_text = $this->language->get('text_error');
+				if (empty($error_text) || $error_text == 'text_error') {
+					$error_text = 'Warning: %s manufacturer(s) deleted successfully, but %s failed to delete.';
+				}
+				$this->error['warning'] = sprintf($error_text, $deleted_count, $failed_count);
 				if (!empty($errors)) {
 					$this->error['warning'] .= '<br />' . implode('<br />', $errors);
 				}

@@ -4,6 +4,7 @@ $_['heading_title']      = 'Manufacturers';
 
 // Text
 $_['text_success']       = 'Success: You have modified manufacturers!';
+$_['text_error']         = 'Warning: %s manufacturer(s) deleted successfully, but %s failed to delete.';
 $_['text_list']          = 'Manufacturer List';
 $_['text_add']           = 'Add Manufacturer';
 $_['text_edit']          = 'Edit Manufacturer';
