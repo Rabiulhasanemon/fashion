@@ -135,107 +135,82 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception('CRITICAL: Invalid next_id calculated: ' . $next_id . '. Cannot proceed with insert.');
 		}
 		
-		// Use a transaction-like approach: temporarily modify AUTO_INCREMENT behavior
-		// First, ensure AUTO_INCREMENT is higher than our target ID
-		if ($has_auto_increment) {
-			$target_ai = $next_id + 1;
-			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $target_ai);
-		}
-		
 		// CRITICAL: Decode HTML entities in image paths before escaping
 		$image = isset($data['image']) ? html_entity_decode($data['image'], ENT_QUOTES, 'UTF-8') : '';
 		$thumb = isset($data['thumb']) ? html_entity_decode($data['thumb'], ENT_QUOTES, 'UTF-8') : '';
 		
-		// Try INSERT with explicit ID - MySQL should accept it if AUTO_INCREMENT is higher
-		// Use proper integer casting to ensure no string issues
-		$manufacturer_id_value = (int)$next_id;
-		
-		// Double-check the value is valid
-		if ($manufacturer_id_value <= 0 || $manufacturer_id_value != $next_id) {
-			$log_file = DIR_LOGS . 'manufacturer_error.log';
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Invalid manufacturer_id_value: ' . $manufacturer_id_value . ' (next_id: ' . $next_id . ')' . PHP_EOL, FILE_APPEND);
-			throw new Exception('CRITICAL: Invalid manufacturer_id value: ' . $manufacturer_id_value);
-		}
-		
-		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = " . $manufacturer_id_value . ", name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
-		
-		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
-		if (strpos($insert_sql, "manufacturer_id = 0") !== false || preg_match("/manufacturer_id\s*=\s*['\"]?0['\"]?/", $insert_sql)) {
-			$log_file = DIR_LOGS . 'manufacturer_error.log';
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: SQL contains manufacturer_id = 0! SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - next_id value: ' . $next_id . ', manufacturer_id_value: ' . $manufacturer_id_value . PHP_EOL, FILE_APPEND);
-			throw new Exception('CRITICAL: SQL contains manufacturer_id = 0! This should never happen. next_id: ' . $next_id . ', value: ' . $manufacturer_id_value);
-		}
-		
-		$manufacturer_id = $manufacturer_id_value; // Set expected ID
-		
-		// Log the insert attempt
-		$log_file = DIR_LOGS . 'manufacturer_error.log';
-		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting insert with manufacturer_id = ' . $manufacturer_id_value . PHP_EOL, FILE_APPEND);
-		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
-		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image length: ' . strlen($image) . ', Thumb length: ' . strlen($thumb) . PHP_EOL, FILE_APPEND);
-		
-		$insert_result = $this->db->query($insert_sql);
-		
-		// If that fails, try without explicit ID and let AUTO_INCREMENT handle it
-		if (!$insert_result && $has_auto_increment) {
-			$log_file = DIR_LOGS . 'manufacturer_error.log';
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Explicit ID insert failed, trying with AUTO_INCREMENT...' . PHP_EOL, FILE_APPEND);
+		// ALWAYS use AUTO_INCREMENT - never specify manufacturer_id explicitly
+		// This avoids all issues with explicit IDs and duplicate key errors
+		if ($has_auto_increment) {
+			// Ensure AUTO_INCREMENT is set correctly
+			$target_ai = $next_id;
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $target_ai);
 			
-			// Get MySQL error before cleanup
-			$error_before = '';
-			$errno_before = 0;
-			try {
-				$reflection = new ReflectionClass($this->db);
-				$db_property = $reflection->getProperty('db');
-				$db_property->setAccessible(true);
-				$db_driver = $db_property->getValue($this->db);
-				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
-					$link_reflection = new ReflectionProperty($db_driver, 'link');
-					$link_reflection->setAccessible(true);
-					$link = $link_reflection->getValue($db_driver);
-					if (is_object($link)) {
-						if (method_exists($link, 'error')) {
-							$error_before = $link->error;
-						}
-						if (method_exists($link, 'errno')) {
-							$errno_before = $link->errno;
-						}
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Using AUTO_INCREMENT insert. Expected ID: ' . $next_id . PHP_EOL, FILE_APPEND);
+			
+			// Insert without specifying manufacturer_id - let AUTO_INCREMENT handle it
+			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image length: ' . strlen($image) . ', Thumb length: ' . strlen($thumb) . PHP_EOL, FILE_APPEND);
+			
+			$insert_result = $this->db->query($insert_sql);
+			
+			if ($insert_result) {
+				$manufacturer_id = $this->db->getLastId();
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Insert succeeded. getLastId() returned: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+				
+				// If getLastId() returns 0 or invalid, query the database
+				if (!$manufacturer_id || $manufacturer_id <= 0) {
+					$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
+					if ($find && $find->num_rows) {
+						$manufacturer_id = (int)$find->row['manufacturer_id'];
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrieved manufacturer_id from database: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+					} else {
+						$log_file = DIR_LOGS . 'manufacturer_error.log';
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Could not retrieve manufacturer_id after insert!' . PHP_EOL, FILE_APPEND);
+						$insert_result = false;
 					}
 				}
-			} catch (Exception $e) {
-				// Ignore
+			} else {
+				$log_file = DIR_LOGS . 'manufacturer_error.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT insert failed!' . PHP_EOL, FILE_APPEND);
 			}
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Error from explicit insert: ' . $error_before . ' (Code: ' . $errno_before . ')' . PHP_EOL, FILE_APPEND);
+		} else {
+			// No AUTO_INCREMENT - use explicit ID (fallback)
+			$manufacturer_id_value = (int)$next_id;
+			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = " . $manufacturer_id_value . ", name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
+			$manufacturer_id = $manufacturer_id_value;
+			$insert_result = $this->db->query($insert_sql);
+		}
+		
+		// If AUTO_INCREMENT insert failed, try fallback with explicit ID
+		if (!$insert_result && $has_auto_increment) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT insert failed, trying with explicit ID...' . PHP_EOL, FILE_APPEND);
 			
 			// Clean up any ID 0 that might have been created
 			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 			
-			// Ensure AUTO_INCREMENT is set correctly
-			$max_check_ai = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
-			$max_id_ai = 0;
-			if ($max_check_ai && $max_check_ai->num_rows && isset($max_check_ai->row['max_id']) && $max_check_ai->row['max_id'] !== null) {
-				$max_id_ai = (int)$max_check_ai->row['max_id'];
+			// Recalculate next_id in case something changed
+			$max_check_fallback = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
+			$max_id_fallback = 0;
+			if ($max_check_fallback && $max_check_fallback->num_rows && isset($max_check_fallback->row['max_id']) && $max_check_fallback->row['max_id'] !== null) {
+				$max_id_fallback = (int)$max_check_fallback->row['max_id'];
 			}
-			$next_ai = max($max_id_ai + 1, 1);
-			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_ai);
+			$next_id_fallback = max($max_id_fallback + 1, 1);
 			
-			// Insert without explicit ID - use decoded image paths
-			$insert_sql2 = "INSERT INTO " . DB_PREFIX . "manufacturer SET name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+			// Set AUTO_INCREMENT higher than our target to allow explicit insert
+			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . ($next_id_fallback + 1));
+			
+			// Insert with explicit ID
+			$insert_sql2 = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = " . (int)$next_id_fallback . ", name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = " . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Fallback SQL: ' . $insert_sql2 . PHP_EOL, FILE_APPEND);
 			$insert_result = $this->db->query($insert_sql2);
 			
 			if ($insert_result) {
-				$manufacturer_id = $this->db->getLastId();
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT insert succeeded, got ID: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
-				
-				if (!$manufacturer_id || $manufacturer_id <= 0) {
-					// Query to get the actual ID
-					$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
-					if ($find && $find->num_rows) {
-						$manufacturer_id = (int)$find->row['manufacturer_id'];
-					}
-				}
+				$manufacturer_id = $next_id_fallback;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Explicit ID insert succeeded, manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 			}
 		}
 		
@@ -372,8 +347,9 @@ class ModelCatalogManufacturer extends Model {
 			throw new Exception('Invalid manufacturer_id after insert: ' . $manufacturer_id);
 		}
 		
-		// Verify the record actually exists
-		$verify_insert = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "' LIMIT 1");
+		// CRITICAL: Verify the insert actually succeeded by checking the database
+		// MySQLi might return false but the insert could have partially succeeded
+		$verify_insert = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
 		if (!$verify_insert || !$verify_insert->num_rows) {
 			$log_file = DIR_LOGS . 'manufacturer_error.log';
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record not found after insert. manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
@@ -383,13 +359,45 @@ class ModelCatalogManufacturer extends Model {
 			if ($check_zero_created && $check_zero_created->num_rows > 0) {
 				$log_file = DIR_LOGS . 'manufacturer_error.log';
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: A record with manufacturer_id = 0 was created instead!' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Zero record details: ' . print_r($check_zero_created->row, true) . PHP_EOL, FILE_APPEND);
 				// Delete it
 				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 				throw new Exception('CRITICAL: Record with manufacturer_id = 0 was created instead of ' . $manufacturer_id . '. This indicates a database-level issue.');
 			}
 			
-			throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $manufacturer_id . ')');
+			// Check if maybe the insert failed but MySQL didn't report it correctly
+			// Try to get the actual MySQL error
+			$mysql_error = '';
+			$mysql_errno = 0;
+			try {
+				$reflection = new ReflectionClass($this->db);
+				$db_property = $reflection->getProperty('db');
+				$db_property->setAccessible(true);
+				$db_driver = $db_property->getValue($this->db);
+				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+					$link_reflection = new ReflectionProperty($db_driver, 'link');
+					$link_reflection->setAccessible(true);
+					$link = $link_reflection->getValue($db_driver);
+					if (is_object($link)) {
+						if (method_exists($link, 'error')) {
+							$mysql_error = $link->error;
+						}
+						if (method_exists($link, 'errno')) {
+							$mysql_errno = $link->errno;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				// Ignore
+			}
+			
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL error after failed verify: ' . $mysql_error . ' (Code: ' . $mysql_errno . ')' . PHP_EOL, FILE_APPEND);
+			
+			throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $manufacturer_id . '). MySQL Error: ' . $mysql_error);
 		}
+		
+		$log_file = DIR_LOGS . 'manufacturer_error.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer insert verified successfully. manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 		
 		// Update AUTO_INCREMENT to be higher than the inserted ID to keep it in sync
 		if ($has_auto_increment) {
@@ -404,11 +412,43 @@ class ModelCatalogManufacturer extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: manufacturer_id became 0 before related table inserts!' . PHP_EOL, FILE_APPEND);
 			throw new Exception('CRITICAL: manufacturer_id is 0 before related table inserts. Cannot proceed.');
 		}
+		
+		// CRITICAL: Clear any MySQL errors from previous queries before proceeding
+		// MySQLi can have "sticky" errors that show up on the next query
+		try {
+			$reflection = new ReflectionClass($this->db);
+			$db_property = $reflection->getProperty('db');
+			$db_property->setAccessible(true);
+			$db_driver = $db_property->getValue($this->db);
+			if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+				$link_reflection = new ReflectionProperty($db_driver, 'link');
+				$link_reflection->setAccessible(true);
+				$link = $link_reflection->getValue($db_driver);
+				if (is_object($link) && method_exists($link, 'more_results')) {
+					// Clear any pending results/errors
+					while ($link->more_results() && $link->next_result()) {
+						if ($result = $link->store_result()) {
+							$result->free();
+						}
+					}
+				}
+			}
+		} catch (Exception $e) {
+			// Ignore reflection errors
+		}
+		
+		// Double-check the manufacturer record exists before proceeding
+		$final_verify = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
+		if (!$final_verify || !$final_verify->num_rows) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Manufacturer record not found before related table inserts! manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+			throw new Exception('CRITICAL: Manufacturer record not found before related table inserts. manufacturer_id: ' . $manufacturer_id);
+		}
 
 		// CRITICAL: Delete any existing records for this manufacturer_id first (in case of retry or orphaned data)
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . $manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . $manufacturer_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = '" . $manufacturer_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = " . (int)$manufacturer_id);
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = " . (int)$manufacturer_id);
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_layout WHERE manufacturer_id = " . (int)$manufacturer_id);
 
 		if (isset($data['manufacturer_description']) && is_array($data['manufacturer_description'])) {
 			foreach ($data['manufacturer_description'] as $language_id => $value) {

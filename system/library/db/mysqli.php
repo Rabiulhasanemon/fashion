@@ -40,6 +40,14 @@ final class MySQLi {
 		} else {
 			// Suppress duplicate key errors (1062) for INSERT statements to allow graceful handling
 			if ($this->link->errno == 1062 && (stripos($sql, 'INSERT') === 0 || stripos($sql, 'INSERT IGNORE') === 0 || stripos($sql, 'REPLACE') === 0)) {
+				// CRITICAL: Clear the MySQL error state to prevent it from affecting the next query
+				// MySQLi can have "sticky" errors that show up on subsequent queries
+				$error_message = $this->link->error;
+				$error_code = $this->link->errno;
+				
+				// Clear the error by executing a simple query that always succeeds
+				$this->link->query("SELECT 1");
+				
 				// Return false to indicate the insert failed, but don't trigger error
 				return false;
 			}
