@@ -559,19 +559,33 @@ class ControllerCatalogManufacturer extends Controller {
 	protected function validateDelete() {
 		if (!$this->user->hasPermission('modify', 'catalog/manufacturer')) {
 			$this->error['warning'] = $this->language->get('error_permission');
+			return false;
 		}
 
+		// Check if products are linked, but allow deletion anyway (we'll unlink them)
 		$this->load->model('catalog/product');
+		$manufacturers_with_products = array();
 
 		foreach ($this->request->post['selected'] as $manufacturer_id) {
 			$product_total = $this->model_catalog_product->getTotalProductsByManufacturerId($manufacturer_id);
-
-			if ($product_total) {
-				$this->error['warning'] = sprintf($this->language->get('error_product'), $product_total);
+			if ($product_total > 0) {
+				$manufacturers_with_products[] = array(
+					'id' => $manufacturer_id,
+					'count' => $product_total
+				);
 			}
 		}
 
-		return !$this->error;
+		// Log warning but don't prevent deletion
+		if (!empty($manufacturers_with_products)) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Attempting to delete manufacturers with linked products:' . PHP_EOL, FILE_APPEND);
+			foreach ($manufacturers_with_products as $mfg) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . '   - Manufacturer ID ' . $mfg['id'] . ' has ' . $mfg['count'] . ' products (will be unlinked)' . PHP_EOL, FILE_APPEND);
+			}
+		}
+
+		return true; // Always allow deletion (we'll handle unlinking products)
 	}
 
 	public function autocomplete() {

@@ -744,6 +744,21 @@ class ModelCatalogManufacturer extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Deleting manufacturer: ' . $manufacturer_name . ' (ID: ' . $manufacturer_id . ')' . PHP_EOL, FILE_APPEND);
 		}
 		
+		// CRITICAL: Unlink products from this manufacturer before deleting
+		// This prevents foreign key constraint issues and allows deletion
+		$product_check = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product WHERE manufacturer_id = " . (int)$manufacturer_id);
+		$product_count = $product_check->row['count'] ?? 0;
+		if ($product_count > 0) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Found ' . $product_count . ' products linked to this manufacturer, unlinking them...' . PHP_EOL, FILE_APPEND);
+			try {
+				$this->db->query("UPDATE " . DB_PREFIX . "product SET manufacturer_id = 0 WHERE manufacturer_id = " . (int)$manufacturer_id);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Unlinked ' . $product_count . ' products from manufacturer' . PHP_EOL, FILE_APPEND);
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Error unlinking products: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				// Continue anyway - try to delete manufacturer
+			}
+		}
+		
 		// Delete in order: related tables first, then main table
 		// This prevents foreign key constraint issues
 		try {
