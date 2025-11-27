@@ -5,6 +5,14 @@ class ModelCatalogManufacturer extends Model {
 		if (!isset($data['name']) || empty(trim($data['name']))) {
 			throw new Exception('Manufacturer name is required');
 		}
+		
+		// CRITICAL: Remove any manufacturer_id from data to prevent using a provided ID
+		// We always calculate the next ID ourselves
+		if (isset($data['manufacturer_id'])) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: manufacturer_id provided in data (' . $data['manufacturer_id'] . '), ignoring it' . PHP_EOL, FILE_APPEND);
+			unset($data['manufacturer_id']);
+		}
 
 		// CRITICAL: Multiple cleanup attempts to ensure no manufacturer_id = 0 exists
 		$cleanup_attempts = 0;
@@ -52,6 +60,23 @@ class ModelCatalogManufacturer extends Model {
 			$max_id = (int)$max_check->row['max_id'];
 		}
 		$next_id = max($max_id + 1, 1);
+		
+		// CRITICAL: Double-check next_id is valid - if it's 0 or negative, something is wrong
+		if ($next_id <= 0) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: next_id is invalid (' . $next_id . '). max_id was: ' . $max_id . PHP_EOL, FILE_APPEND);
+			// Force it to at least 1
+			$next_id = 1;
+			// But check if 1 already exists
+			$check_one = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 1 LIMIT 1");
+			if ($check_one && $check_one->num_rows) {
+				// If 1 exists, use max + 1 again, but ensure it's positive
+				$next_id = max($max_id + 1, 1);
+				if ($next_id <= 0) {
+					throw new Exception('CRITICAL: Cannot calculate valid next_id. max_id: ' . $max_id . ', next_id: ' . $next_id);
+				}
+			}
+		}
 		
 		// Check if AUTO_INCREMENT is available on the column
 		$column_check = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "manufacturer WHERE Field = 'manufacturer_id'");

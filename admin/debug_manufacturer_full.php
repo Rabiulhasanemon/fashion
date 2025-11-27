@@ -309,10 +309,27 @@ if ($model) {
     echo "<pre>" . print_r($test_data, true) . "</pre>";
     
     echo "<p>Calling addManufacturer()...</p>";
+    echo "<p class='info'>Setting execution time limit to 30 seconds...</p>";
+    set_time_limit(30);
+    
+    // Enable error reporting
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
     
     try {
+        ob_start();
+        $start_time = microtime(true);
         $manufacturer_id = $model->addManufacturer($test_data);
+        $end_time = microtime(true);
+        $execution_time = round(($end_time - $start_time) * 1000, 2);
+        $output = ob_get_clean();
+        
+        echo "<p class='success'>✓ addManufacturer() completed in {$execution_time}ms</p>";
         echo "<p class='success'>✓ addManufacturer() returned: <strong>{$manufacturer_id}</strong></p>";
+        
+        if (!empty($output)) {
+            echo "<p class='warning'>Output captured: " . htmlspecialchars($output) . "</p>";
+        }
         
         // Verify
         $verify_model = $db->query("SELECT * FROM `{$table_name}` WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
