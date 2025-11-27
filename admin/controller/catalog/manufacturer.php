@@ -210,13 +210,13 @@ class ControllerCatalogManufacturer extends Controller {
 			
 			try {
 				$this->response->redirect($redirect_url);
-				// If redirect doesn't work, output JavaScript redirect as fallback
-				exit('<script>window.location.href="' . htmlspecialchars($redirect_url, ENT_QUOTES, 'UTF-8') . '";</script>');
+				return; // Exit the function after redirect
 			} catch (Exception $e) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR during redirect: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-				// Fallback: JavaScript redirect
-				echo '<script>window.location.href="' . htmlspecialchars($redirect_url, ENT_QUOTES, 'UTF-8') . '";</script>';
-				exit;
+				// Fallback: show list with error message
+				$this->error['warning'] = 'Redirect failed, but deletion completed. ' . $e->getMessage();
+				$this->getList();
+				return;
 			}
 		} else {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed or no selected items' . PHP_EOL, FILE_APPEND);
