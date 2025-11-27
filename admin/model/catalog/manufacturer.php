@@ -101,29 +101,104 @@ class ModelCatalogManufacturer extends Model {
 		
 		// ALWAYS use explicit ID insertion to avoid AUTO_INCREMENT issues
 		// This ensures we never get ID 0, even if AUTO_INCREMENT has problems
+		
+		// CRITICAL: Verify next_id is valid before building SQL
+		if ($next_id <= 0) {
+			throw new Exception('CRITICAL: Invalid next_id calculated: ' . $next_id . '. Cannot proceed with insert.');
+		}
+		
 		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+		
+		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
+		if (strpos($insert_sql, "manufacturer_id = '0'") !== false || strpos($insert_sql, "manufacturer_id = 0") !== false) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: SQL contains manufacturer_id = 0! SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - next_id value: ' . $next_id . PHP_EOL, FILE_APPEND);
+			throw new Exception('CRITICAL: SQL contains manufacturer_id = 0! This should never happen. next_id: ' . $next_id);
+		}
+		
 		$manufacturer_id = $next_id; // Set expected ID
+		
+		// Log the insert attempt
+		$log_file = DIR_LOGS . 'manufacturer_error.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Attempting insert with manufacturer_id = ' . $next_id . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - SQL: ' . $insert_sql . PHP_EOL, FILE_APPEND);
 		
 		$insert_result = $this->db->query($insert_sql);
 		
 		// If insert failed, it might be because the ID already exists (race condition)
 		// In that case, recalculate next_id and retry
 		if (!$insert_result) {
-			// Get the current max ID again
-			$max_check_retry = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
-			$max_id_retry = 0;
-			if ($max_check_retry && $max_check_retry->num_rows && isset($max_check_retry->row['max_id']) && $max_check_retry->row['max_id'] !== null) {
-				$max_id_retry = (int)$max_check_retry->row['max_id'];
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Insert failed! Checking error details...' . PHP_EOL, FILE_APPEND);
+			
+			// Get detailed error information
+			$error_details = 'Unknown database error';
+			$errno = 0;
+			
+			// Try to get MySQL error through reflection
+			try {
+				$reflection = new ReflectionClass($this->db);
+				$db_property = $reflection->getProperty('db');
+				$db_property->setAccessible(true);
+				$db_driver = $db_property->getValue($this->db);
+				
+				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+					$link_reflection = new ReflectionProperty($db_driver, 'link');
+					$link_reflection->setAccessible(true);
+					$link = $link_reflection->getValue($db_driver);
+					
+					if (is_object($link)) {
+						if (method_exists($link, 'error')) {
+							$error_details = $link->error;
+						}
+						if (method_exists($link, 'errno')) {
+							$errno = $link->errno;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				// Reflection failed
 			}
-			$next_id_retry = max($max_id_retry + 1, 1);
 			
-			// Clean up any ID 0 that might have been created
-			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL Error: ' . $error_details . ' (Code: ' . $errno . ')' . PHP_EOL, FILE_APPEND);
 			
-			// Retry with new ID
-			$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id_retry . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
-			$insert_result = $this->db->query($insert_sql);
-			$manufacturer_id = $next_id_retry;
+			// Check if a record with ID 0 was created
+			$check_zero_created = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0 LIMIT 1");
+			if ($check_zero_created && $check_zero_created->num_rows > 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: A record with manufacturer_id = 0 was created!' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Record details: ' . print_r($check_zero_created->row, true) . PHP_EOL, FILE_APPEND);
+			}
+			
+			// Check if the ID we tried to use already exists
+			$check_id_exists = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$next_id . "' LIMIT 1");
+			if ($check_id_exists && $check_id_exists->num_rows > 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ID ' . $next_id . ' already exists. Recalculating...' . PHP_EOL, FILE_APPEND);
+				
+				// Get the current max ID again
+				$max_check_retry = $this->db->query("SELECT MAX(manufacturer_id) as max_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id > 0");
+				$max_id_retry = 0;
+				if ($max_check_retry && $max_check_retry->num_rows && isset($max_check_retry->row['max_id']) && $max_check_retry->row['max_id'] !== null) {
+					$max_id_retry = (int)$max_check_retry->row['max_id'];
+				}
+				$next_id_retry = max($max_id_retry + 1, 1);
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrying with ID: ' . $next_id_retry . PHP_EOL, FILE_APPEND);
+				
+				// Clean up any ID 0 that might have been created
+				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+				
+				// Retry with new ID
+				$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id_retry . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+				$insert_result = $this->db->query($insert_sql);
+				$manufacturer_id = $next_id_retry;
+				
+				if ($insert_result) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry successful with ID: ' . $next_id_retry . PHP_EOL, FILE_APPEND);
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry also failed!' . PHP_EOL, FILE_APPEND);
+				}
+			}
 		}
 		
 		if (!$insert_result) {
