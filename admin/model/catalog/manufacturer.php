@@ -799,57 +799,100 @@ class ModelCatalogManufacturer extends Model {
 		
 		try {
 			// Finally delete the main manufacturer record
-			$main_result = $this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id);
+			// Use direct MySQLi access to ensure deletion happens
+			$delete_sql = "DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id;
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Executing DELETE SQL: ' . $delete_sql . PHP_EOL, FILE_APPEND);
 			
-			// Check affected rows to verify deletion actually happened
+			$main_result = $this->db->query($delete_sql);
+			
+			// Get direct MySQLi link to check actual result
+			$direct_affected = 0;
+			$mysql_error = '';
+			$mysql_errno = 0;
+			try {
+				$reflection = new ReflectionClass($this->db);
+				$db_property = $reflection->getProperty('db');
+				$db_property->setAccessible(true);
+				$db_driver = $db_property->getValue($this->db);
+				if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+					$link_reflection = new ReflectionProperty($db_driver, 'link');
+					$link_reflection->setAccessible(true);
+					$link = $link_reflection->getValue($db_driver);
+					if (is_object($link)) {
+						$direct_affected = $link->affected_rows;
+						if (method_exists($link, 'error')) {
+							$mysql_error = $link->error;
+						}
+						if (method_exists($link, 'errno')) {
+							$mysql_errno = $link->errno;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: Could not get direct MySQLi link: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			}
+			
+			// Check affected rows using both methods
 			$affected_rows = $this->db->countAffected();
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - DELETE query result: ' . ($main_result ? 'true' : 'false') . ', Affected rows: ' . $affected_rows . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - DELETE query result: ' . ($main_result ? 'true' : 'false') . ', Affected rows (countAffected): ' . $affected_rows . ', Direct MySQLi affected_rows: ' . $direct_affected . PHP_EOL, FILE_APPEND);
+			if ($mysql_error) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - MySQL Error: ' . $mysql_error . ' (Code: ' . $mysql_errno . ')' . PHP_EOL, FILE_APPEND);
+			}
+			
+			// Use the direct affected_rows if available, otherwise use countAffected
+			$actual_affected = ($direct_affected > 0) ? $direct_affected : $affected_rows;
 			
 			// Verify the record was actually deleted
 			$verify_delete = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
 			$still_exists = ($verify_delete && $verify_delete->num_rows > 0);
 			
-			if ($main_result && $affected_rows > 0 && !$still_exists) {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer record deleted successfully (verified)' . PHP_EOL, FILE_APPEND);
+			if ($main_result && $actual_affected > 0 && !$still_exists) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Main manufacturer record deleted successfully (verified, ' . $actual_affected . ' row(s) deleted)' . PHP_EOL, FILE_APPEND);
 			} else {
-				// Get MySQL error
-				$error_msg = 'Unknown error';
-				$error_code = 0;
-				try {
-					$reflection = new ReflectionClass($this->db);
-					$db_property = $reflection->getProperty('db');
-					$db_property->setAccessible(true);
-					$db_driver = $db_property->getValue($this->db);
-					if (is_object($db_driver) && property_exists($db_driver, 'link')) {
-						$link_reflection = new ReflectionProperty($db_driver, 'link');
-						$link_reflection->setAccessible(true);
-						$link = $link_reflection->getValue($db_driver);
-						if (is_object($link)) {
-							if (method_exists($link, 'error')) {
-								$error_msg = $link->error;
-							}
-							if (method_exists($link, 'errno')) {
-								$error_code = $link->errno;
+				// If still exists, try direct MySQLi deletion
+				if ($still_exists) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record still exists after DELETE! Attempting direct MySQLi deletion...' . PHP_EOL, FILE_APPEND);
+					
+					try {
+						$reflection = new ReflectionClass($this->db);
+						$db_property = $reflection->getProperty('db');
+						$db_property->setAccessible(true);
+						$db_driver = $db_property->getValue($this->db);
+						if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+							$link_reflection = new ReflectionProperty($db_driver, 'link');
+							$link_reflection->setAccessible(true);
+							$link = $link_reflection->getValue($db_driver);
+							if (is_object($link) && method_exists($link, 'query')) {
+								// Execute DELETE directly via MySQLi
+								$direct_result = $link->query($delete_sql);
+								$direct_affected_retry = $link->affected_rows;
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Direct MySQLi DELETE result: ' . ($direct_result ? 'true' : 'false') . ', Affected: ' . $direct_affected_retry . PHP_EOL, FILE_APPEND);
+								
+								// Verify again
+								$verify_retry = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = " . (int)$manufacturer_id . " LIMIT 1");
+								$still_exists_retry = ($verify_retry && $verify_retry->num_rows > 0);
+								
+								if (!$still_exists_retry) {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✓ Direct MySQLi deletion succeeded!' . PHP_EOL, FILE_APPEND);
+								} else {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ✗ Direct MySQLi deletion also failed - record still exists' . PHP_EOL, FILE_APPEND);
+									throw new Exception('Failed to delete manufacturer: Record still exists after direct MySQLi deletion attempt. MySQL Error: ' . ($link->error ?: 'None'));
+								}
 							}
 						}
+					} catch (Exception $e) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR in direct MySQLi deletion: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+						throw new Exception('Failed to delete manufacturer: ' . $e->getMessage());
 					}
-				} catch (Exception $e) {
-					// Ignore
-				}
-				
-				if ($still_exists) {
-					$error_msg = 'Record still exists after DELETE query (affected_rows: ' . $affected_rows . ')';
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record still exists after deletion attempt!' . PHP_EOL, FILE_APPEND);
-				} else if ($affected_rows == 0) {
-					$error_msg = 'No rows affected by DELETE query (record may not exist)';
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: No rows affected by DELETE query' . PHP_EOL, FILE_APPEND);
+				} else if ($actual_affected == 0) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - WARNING: No rows affected by DELETE query (record may not exist or already deleted)' . PHP_EOL, FILE_APPEND);
+					// Don't throw error if record doesn't exist - it's already deleted
 				} else {
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Failed to delete main manufacturer record! Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
-				}
-				
-				// Only throw exception if record still exists
-				if ($still_exists) {
-					throw new Exception('Failed to delete manufacturer: ' . $error_msg);
+					$error_msg = 'Unknown error during deletion';
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Failed to delete main manufacturer record! Error: ' . ($mysql_error ?: $error_msg) . ' (Code: ' . $mysql_errno . ')' . PHP_EOL, FILE_APPEND);
+					if ($mysql_errno > 0) {
+						throw new Exception('Failed to delete manufacturer: ' . ($mysql_error ?: $error_msg));
+					}
 				}
 			}
 		} catch (Exception $e) {
