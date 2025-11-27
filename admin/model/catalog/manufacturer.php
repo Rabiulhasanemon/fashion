@@ -142,8 +142,12 @@ class ModelCatalogManufacturer extends Model {
 			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $target_ai);
 		}
 		
+		// CRITICAL: Decode HTML entities in image paths before escaping
+		$image = isset($data['image']) ? html_entity_decode($data['image'], ENT_QUOTES, 'UTF-8') : '';
+		$thumb = isset($data['thumb']) ? html_entity_decode($data['thumb'], ENT_QUOTES, 'UTF-8') : '';
+		
 		// Try INSERT with explicit ID - MySQL should accept it if AUTO_INCREMENT is higher
-		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape(isset($data['image']) ? $data['image'] : '') . "', thumb = '" . $this->db->escape(isset($data['thumb']) ? $data['thumb'] : '') . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
+		$insert_sql = "INSERT INTO " . DB_PREFIX . "manufacturer SET manufacturer_id = '" . (int)$next_id . "', name = '" . $this->db->escape($data['name']) . "', image = '" . $this->db->escape($image) . "', thumb = '" . $this->db->escape($thumb) . "', sort_order = '" . (int)(isset($data['sort_order']) ? $data['sort_order'] : 0) . "'";
 		
 		// CRITICAL: Verify SQL doesn't contain manufacturer_id = 0
 		if (strpos($insert_sql, "manufacturer_id = '0'") !== false || strpos($insert_sql, "manufacturer_id = 0") !== false) {
@@ -312,14 +316,29 @@ class ModelCatalogManufacturer extends Model {
 		// manufacturer_id was set explicitly, verify it's correct
 		// No need to retrieve it since we set it explicitly
 		
-		// Verify the insert was successful
+		// CRITICAL: Verify manufacturer_id is valid before proceeding
 		if ($manufacturer_id <= 0) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: manufacturer_id is invalid after insert: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 			throw new Exception('Invalid manufacturer_id after insert: ' . $manufacturer_id);
 		}
 		
 		// Verify the record actually exists
 		$verify_insert = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "' LIMIT 1");
 		if (!$verify_insert || !$verify_insert->num_rows) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Record not found after insert. manufacturer_id: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+			
+			// Check if a record with ID 0 was created instead
+			$check_zero_created = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0 LIMIT 1");
+			if ($check_zero_created && $check_zero_created->num_rows > 0) {
+				$log_file = DIR_LOGS . 'manufacturer_error.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: A record with manufacturer_id = 0 was created instead!' . PHP_EOL, FILE_APPEND);
+				// Delete it
+				$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+				throw new Exception('CRITICAL: Record with manufacturer_id = 0 was created instead of ' . $manufacturer_id . '. This indicates a database-level issue.');
+			}
+			
 			throw new Exception('Failed to insert manufacturer - record not found after insert (manufacturer_id: ' . $manufacturer_id . ')');
 		}
 		
@@ -327,6 +346,14 @@ class ModelCatalogManufacturer extends Model {
 		if ($has_auto_increment) {
 			$next_ai = $manufacturer_id + 1;
 			$this->db->query("ALTER TABLE " . DB_PREFIX . "manufacturer AUTO_INCREMENT = " . $next_ai);
+		}
+		
+		// CRITICAL: Final validation before related table inserts
+		// Ensure manufacturer_id is still valid (not 0)
+		if ($manufacturer_id <= 0) {
+			$log_file = DIR_LOGS . 'manufacturer_error.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: manufacturer_id became 0 before related table inserts!' . PHP_EOL, FILE_APPEND);
+			throw new Exception('CRITICAL: manufacturer_id is 0 before related table inserts. Cannot proceed.');
 		}
 
 		// CRITICAL: Delete any existing records for this manufacturer_id first (in case of retry or orphaned data)
@@ -389,11 +416,25 @@ class ModelCatalogManufacturer extends Model {
 		}
 
 		if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+			// CRITICAL: Validate manufacturer_id before insert
+			if ($manufacturer_id <= 0) {
+				$log_file = DIR_LOGS . 'manufacturer_error.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: manufacturer_id is 0 before url_alias insert!' . PHP_EOL, FILE_APPEND);
+				throw new Exception('CRITICAL: manufacturer_id is 0 before url_alias insert. Cannot proceed.');
+			}
+			
 			$keyword = trim($data['keyword']);
 			// Check if keyword already exists
 			$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
 			if (!$existing->num_rows) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . $manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+				$log_file = DIR_LOGS . 'manufacturer_error.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Inserting url_alias with manufacturer_id = ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
+				$url_result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+				if (!$url_result) {
+					$log_file = DIR_LOGS . 'manufacturer_error.log';
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: url_alias insert failed!' . PHP_EOL, FILE_APPEND);
+					// Don't throw - url_alias is optional
+				}
 			}
 		}
 
