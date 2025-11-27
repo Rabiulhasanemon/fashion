@@ -749,3 +749,39 @@ input.custom-checkbox[type="checkbox"]:checked:after {
 input#input-notify{
 	margin-top: 12px;
 }
+	margin: 0 10px 10px 0;
+	box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+.well.well-sm .order-id i.fa {
+	  color: #f02849;
+	  margin-right: 5px;
+}
+
+.print-button-wrap {
+	position: absolute;
+	right: 15px;
+}
+
+#printpagebutton {
+	background: #5bc0de;
+	font-size: 14px;
+	color: #fff;
+	border: none;
+	padding: 8px 18px;
+	border-radius: 5px;
+	margin-top: 50px;
+}
+#printpagebutton i{
+	margin-right: 5px;
+}
+
+#printpagebutton:hover{
+	background: #459bb6;
+}
+
+.position-relative{
+	position: relative;
+}
+input#input-notify{
+	margin-top: 12px;
+}
