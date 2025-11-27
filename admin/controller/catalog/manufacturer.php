@@ -115,13 +115,31 @@ class ControllerCatalogManufacturer extends Controller {
 	}
 
 	public function delete() {
-		$this->load->language('catalog/manufacturer');
+		$log_file = DIR_LOGS . 'manufacturer_error.log';
+		
+		// Set up error handler to catch fatal errors
+		register_shutdown_function(function() use ($log_file) {
+			$error = error_get_last();
+			if ($error !== NULL && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - FATAL ERROR: ' . $error['message'] . ' in ' . $error['file'] . ' on line ' . $error['line'] . PHP_EOL, FILE_APPEND);
+			}
+		});
+		
+		try {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== DELETE CONTROLLER CALLED ==========' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data: ' . print_r(isset($this->request->post) ? $this->request->post : 'NO POST DATA', true) . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - GET data: ' . print_r(isset($this->request->get) ? $this->request->get : 'NO GET DATA', true) . PHP_EOL, FILE_APPEND);
+			
+			$this->load->language('catalog/manufacturer');
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Language loaded successfully' . PHP_EOL, FILE_APPEND);
 
-		$this->document->setTitle($this->language->get('heading_title'));
+			$this->document->setTitle($this->language->get('heading_title'));
 
-		$this->load->model('catalog/manufacturer');
+			$this->load->model('catalog/manufacturer');
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Model loaded successfully' . PHP_EOL, FILE_APPEND);
 
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation passed, proceeding with deletion' . PHP_EOL, FILE_APPEND);
 			$deleted_count = 0;
 			$failed_count = 0;
 			$errors = array();
@@ -175,10 +193,59 @@ class ControllerCatalogManufacturer extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			try {
+				$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			} catch (Exception $e) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR during redirect: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				// Fallback: just show the list
+				$this->getList();
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation failed or no selected items' . PHP_EOL, FILE_APPEND);
+			if (!isset($this->request->post['selected'])) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - No selected items in POST' . PHP_EOL, FILE_APPEND);
+			}
+			if (isset($this->error) && !empty($this->error)) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Validation errors: ' . print_r($this->error, true) . PHP_EOL, FILE_APPEND);
+			}
 		}
 
-		$this->getList();
+		try {
+			$this->getList();
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - FATAL ERROR in getList(): ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+			// Show a basic error page
+			if (isset($this->response)) {
+				$this->response->addHeader('Content-Type: text/html; charset=utf-8');
+				$this->response->setOutput('Error: ' . htmlspecialchars($e->getMessage()) . '<br />Check log file: ' . DIR_LOGS . 'manufacturer_error.log');
+			}
+		} catch (Error $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - FATAL PHP ERROR: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+			// Show a basic error page
+			if (isset($this->response)) {
+				$this->response->addHeader('Content-Type: text/html; charset=utf-8');
+				$this->response->setOutput('Fatal Error: ' . htmlspecialchars($e->getMessage()) . '<br />File: ' . $e->getFile() . ' Line: ' . $e->getLine() . '<br />Check log file: ' . DIR_LOGS . 'manufacturer_error.log');
+			}
+		}
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - EXCEPTION in delete(): ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+			// Try to show error
+			if (isset($this->response)) {
+				$this->response->addHeader('Content-Type: text/html; charset=utf-8');
+				$this->response->setOutput('Error deleting manufacturer: ' . htmlspecialchars($e->getMessage()) . '<br />Check log file: ' . DIR_LOGS . 'manufacturer_error.log');
+			}
+		} catch (Error $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - FATAL PHP ERROR in delete(): ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine() . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Stack trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+			// Try to show error
+			if (isset($this->response)) {
+				$this->response->addHeader('Content-Type: text/html; charset=utf-8');
+				$this->response->setOutput('Fatal Error: ' . htmlspecialchars($e->getMessage()) . '<br />File: ' . $e->getFile() . ' Line: ' . $e->getLine() . '<br />Check log file: ' . DIR_LOGS . 'manufacturer_error.log');
+			}
+		}
 	}
 
 	protected function getList() {
