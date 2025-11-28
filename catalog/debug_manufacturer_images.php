@@ -13,12 +13,13 @@ if (!ob_get_level()) {
 // Version
 define('VERSION', '2.4.0');
 
-// Bootstrap OpenCart - use catalog config
-if (!file_exists(__DIR__ . '/config.php')) {
-	die("Error: config.php not found in " . __DIR__);
+// Bootstrap OpenCart - config.php is in parent directory
+$config_path = dirname(__DIR__) . '/config.php';
+if (!file_exists($config_path)) {
+	die("Error: config.php not found at " . $config_path . "<br>Current directory: " . __DIR__);
 }
 
-require_once(__DIR__ . '/config.php');
+require_once($config_path);
 
 if (!defined('DIR_SYSTEM')) {
 	die("Error: DIR_SYSTEM not defined after loading config.php");
