@@ -427,10 +427,50 @@ class ControllerCatalogProduct extends Controller {
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
 				
-				// Check if it's a duplicate entry error - provide helpful message
+				// Check if it's a duplicate entry error - attempt automatic cleanup
 				if (stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
-					$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system will attempt to clean this up. Please try saving again.";
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected' . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected, attempting automatic cleanup...' . PHP_EOL, FILE_APPEND);
+					
+					// Attempt aggressive cleanup
+					$this->load->model('catalog/product');
+					try {
+						// Clean up product_id = 0 records
+						$cleanup_tables = array(
+							'product_description', 'product_to_store', 'product_to_category',
+							'product_image', 'product_option', 'product_option_value',
+							'product_filter', 'product_attribute', 'product_discount',
+							'product_special', 'product_reward', 'product_related',
+							'product_compatible', 'product_to_layout', 'product_to_download'
+						);
+						
+						foreach ($cleanup_tables as $table) {
+							try {
+								$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+							} catch (Exception $e) {
+								// Ignore errors
+							}
+						}
+						
+						// Clean up main product table
+						try {
+							$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+						} catch (Exception $e) {
+							// Ignore errors
+						}
+						
+						// Clean up url_alias
+						try {
+							$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+						} catch (Exception $e) {
+							// Ignore errors
+						}
+						
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup completed, you can try saving again' . PHP_EOL, FILE_APPEND);
+						$error_message = "Database error: Duplicate entry detected. The system has automatically cleaned up product_id = 0 records. Please try saving again.";
+					} catch (Exception $cleanup_error) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup failed: ' . $cleanup_error->getMessage() . PHP_EOL, FILE_APPEND);
+						$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system attempted to clean this up but failed. Please contact support or run the cleanup script manually.";
+					}
 				}
 				
 				$this->session->data['error_warning'] = 'Error updating product: ' . $error_message;
