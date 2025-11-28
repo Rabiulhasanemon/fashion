@@ -36,13 +36,20 @@ class ControllerModuleManufacturer extends Controller {
 				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
 
 				if ($manufacturer_info) {
-					// Check for thumb first, then image, then use placeholder
+					$image = null;
+					
+					// Check for thumb first, then image
 					if (!empty($manufacturer_info['thumb'])) {
 						$image = $this->model_tool_image->resize($manufacturer_info['thumb'], $setting['width'], $setting['height']);
 					} elseif (!empty($manufacturer_info['image'])) {
 						$image = $this->model_tool_image->resize($manufacturer_info['image'], $setting['width'], $setting['height']);
-					} else {
-						$image = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
+					}
+					
+					// If resize returned null (file missing) or no image found, use SVG placeholder
+					if (!$image) {
+						// Generate SVG placeholder data URI
+						$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'.$setting['width'].'" height="'.$setting['height'].'" viewBox="0 0 '.$setting['width'].' '.$setting['height'].'"><rect width="100%" height="100%" fill="#f8f9fa"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="12" fill="#adb5bd" text-anchor="middle" dy=".3em">' . htmlspecialchars($manufacturer_info['name']) . '</text></svg>';
+						$image = 'data:image/svg+xml;base64,' . base64_encode($svg);
 					}
 
 					$data['manufacturers'][] = array(

@@ -3,20 +3,12 @@
     <div class="brandloop24_track manufacturer-track-container">
       <?php foreach ($manufacturers as $manufacturer) { ?>
       <a class="brandloop24_card manufacturer-brand-card" href="<?php echo $manufacturer['href']; ?>" title="<?php echo $manufacturer['name']; ?>">
-        <?php if (!empty($manufacturer['thumb'])) { ?>
-        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" onerror="this.src='image/placeholder.png'; this.onerror=null;" />
-        <?php } else { ?>
-        <span class="manufacturer-brand-name"><?php echo $manufacturer['name']; ?></span>
-        <?php } ?>
+        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" />
       </a>
       <?php } ?>
       <?php foreach ($manufacturers as $manufacturer) { ?>
       <a class="brandloop24_card manufacturer-brand-card" href="<?php echo $manufacturer['href']; ?>" title="<?php echo $manufacturer['name']; ?>">
-        <?php if (!empty($manufacturer['thumb'])) { ?>
-        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" onerror="this.src='image/placeholder.png'; this.onerror=null;" />
-        <?php } else { ?>
-        <span class="manufacturer-brand-name"><?php echo $manufacturer['name']; ?></span>
-        <?php } ?>
+        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" />
       </a>
       <?php } ?>
     </div>
