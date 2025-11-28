@@ -2,10 +2,10 @@
   <div class="latest-products__top">
     <div class="latest-products__top-main">
       <div class="latest-products__top-text">
-        <h2 class="latest-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $name; ?></h2>
+        <h2 class="latest-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
 <style>
-.latest-products__title.unified-module-heading.cosmetics-module-heading,
-.section-title.unified-module-heading.cosmetics-module-heading {
+/* Consistent Premium Module Headings */
+.cosmetics-module-heading {
   font-size: 28px !important;
   font-weight: 600 !important;
   color: #1a1a1a !important;
@@ -16,8 +16,7 @@
   position: relative !important;
   margin: 0 !important;
 }
-.latest-products__title.unified-module-heading.cosmetics-module-heading::after,
-.section-title.unified-module-heading.cosmetics-module-heading::after {
+.cosmetics-module-heading::after {
   content: '' !important;
   position: absolute !important;
   bottom: 8px !important;
@@ -28,29 +27,18 @@
   border-radius: 2px !important;
 }
 @media (max-width: 992px) {
-  .latest-products__title.unified-module-heading.cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
-  .latest-products__title.unified-module-heading.cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
+  .cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
+  .cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
 }
 @media (max-width: 749px) {
-  .latest-products__title.unified-module-heading.cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
-  .latest-products__title.unified-module-heading.cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
-}
-@media (max-width: 576px) {
-  .latest-products__title.unified-module-heading.cosmetics-module-heading { font-size: 20px !important; padding: 14px 0 10px 0 !important; }
-  .latest-products__title.unified-module-heading.cosmetics-module-heading::after { width: 40px !important; height: 2px !important; bottom: 4px !important; }
+  .cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
+  .cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
 }
 </style>
       </div>
-      <div class="latest-products__top-right">
-        <a href="<?php echo $shop_all_url; ?>" class="latest-products__button link--underline_arrow">
-          <span>Shop All</span>
-          <svg class="icon icon-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M13.6333 12.5L8 6.86673L8.86673 6L15.3667 12.5L8.86673 19L8 18.1333L13.6333 12.5Z" fill="currentColor" stroke="currentColor" stroke-width="0.3"></path>
-          </svg>
-        </a>
-      </div>
     </div>
   </div>
+  
   <div class="latest-products__wrapper content">
     <div class="latest-products__layout">
       <?php $latest_module_id = 'latest-' . uniqid(); ?>
@@ -59,36 +47,49 @@
         $product_count = 0;
         foreach ($products as $product) { 
           $product_count++;
-          $is_hidden = ($product_count > 4) ? 'latest-product-hidden' : '';
+          $is_hidden = ($product_count > 6) ? 'latest-product-hidden' : '';
         ?>
         <li class="latest-products__item column-animation cart-content-center animate <?php echo $is_hidden; ?>" data-product-index="<?php echo $product_count; ?>">
           <div class="latest-card-wrapper color-background-1" data-product="<?php echo $product['product_id']; ?>">
-            <span class="visually-hidden"><?php echo $product['name']; ?></span>
-            <a href="<?php echo $product['href']; ?>" class="link link--overlay latest-card__link--overlay focus-inset" aria-label="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>"></a>
             <div class="latest-card-wrapper__inner">
               <div class="latest-card__image-wrapper">
-                <div class="latest-card__image" tabindex="-1">
-                  <div class="media" style="padding-bottom: 133.3%; --object-fit: cover;">
-                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" width="200" height="267" loading="lazy" sizes="calc(200px * 1)" class="motion-reduce media--first latest-product-img">
+                <div class="latest-card__image">
+                  <a href="<?php echo $product['href']; ?>">
+                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" loading="lazy" class="latest-product-img">
+                  </a>
+                  <div class="latest-card__actions">
+                    <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_cart; ?>"><i class="fa fa-shopping-cart"></i></button>
+                    <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_wishlist; ?>"><i class="fa fa-heart"></i></button>
+                    <button type="button" onclick="compare.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_compare; ?>"><i class="fa fa-exchange"></i></button>
                   </div>
                 </div>
               </div>
               <div class="latest-card__information">
-                <div class="latest-card__text">
-                  <?php if (!empty($product['manufacturer'])) { ?>
-                  <div class="latest-card__vendor"><?php echo $product['manufacturer']; ?></div>
+                <h3 class="latest-card__title">
+                  <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                </h3>
+                
+                <?php if ($product['rating']) { ?>
+                <div class="rating">
+                  <?php for ($i = 1; $i <= 5; $i++) { ?>
+                  <?php if ($product['rating'] < $i) { ?>
+                  <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+                  <?php } else { ?>
+                  <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
                   <?php } ?>
-                  <h3 class="latest-card__title">
-                    <span class="link--hover-underline"><?php echo $product['name']; ?></span>
-                  </h3>
-                  <div class="latest-price <?php if ($product['special']) { ?>latest-price--on-sale<?php } ?>">
-                    <?php if ($product['special']) { ?>
-                    <span class="latest-price-item latest-price-item--sale"><?php echo $product['special']; ?></span>
-                    <span class="latest-price-item latest-price-item--regular"><s><?php echo $product['price']; ?></s></span>
+                  <?php } ?>
+                </div>
+                <?php } ?>
+                
+                <div class="latest-price">
+                  <?php if ($product['price']) { ?>
+                    <?php if (!$product['special']) { ?>
+                      <span class="price-regular"><?php echo $product['price']; ?></span>
                     <?php } else { ?>
-                    <span class="latest-price-item latest-price-item--regular"><?php echo $product['price']; ?></span>
+                      <span class="price-new"><?php echo $product['special']; ?></span> 
+                      <span class="price-old"><?php echo $product['price']; ?></span>
                     <?php } ?>
-                  </div>
+                  <?php } ?>
                 </div>
               </div>
             </div>
@@ -96,234 +97,189 @@
         </li>
         <?php } ?>
       </ul>
-      
-      <?php if (count($products) > 4) { ?>
-      <div class="latest-products__show-more-wrapper" id="latest-show-more-<?php echo $latest_module_id; ?>" style="text-align: center; margin-top: 30px; display: none;">
-        <button class="latest-products__show-more-btn" style="background: #FF6A00; color: #fff; border: none; padding: 12px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);">
-          Show More Products
-        </button>
-      </div>
-      
-      <div class="latest-products__show-less-wrapper" id="latest-show-less-<?php echo $latest_module_id; ?>" style="text-align: center; margin-top: 20px; display: none;">
-        <button class="latest-products__show-less-btn" style="background: #666; color: #fff; border: none; padding: 12px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);">
-          Show Less Products
-        </button>
-      </div>
-      
-      <div class="latest-products__slider-wrapper" id="latest-slider-<?php echo $latest_module_id; ?>" style="display: none; margin-top: 20px;">
-        <div class="latest-products-slider owl-carousel">
-          <!-- Remaining products will be loaded here -->
-        </div>
-      </div>
-      <?php } ?>
     </div>
   </div>
 </div>
 
 <style>
-/* Mobile and Tablet - Hide products beyond 4 */
-@media (max-width: 991px) {
-  .latest-products-section {
-    padding: 0 5px !important;
-  }
-  
-  .latest-products__wrapper {
-    padding: 0 !important;
-  }
-  
-  .latest-products__layout {
-    padding: 0 !important;
-  }
-  
-  .latest-products__list {
-    margin: 0 -2px !important;
-    padding: 0 !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
-  }
-  
-  .latest-product-hidden {
-    display: none !important;
-  }
-  
-  .latest-products__show-more-wrapper {
-    display: block !important;
-    width: 100%;
-    padding: 0 10px;
-  }
-  
-  .latest-products__show-less-wrapper {
-    width: 100%;
-    padding: 0 10px;
-  }
-  
-  /* Premium small design for mobile/tablet */
-  .latest-products__item {
-    padding: 3px !important;
-    width: calc(50% - 6px) !important;
-    margin: 0 !important;
-    flex: 0 0 calc(50% - 6px) !important;
-  }
-  
-  .latest-card-wrapper {
-    padding: 6px !important;
-    border-radius: 6px !important;
-    margin: 0 !important;
-  }
-  
-  .latest-card__image-wrapper {
-    margin-bottom: 6px !important;
-  }
-  
-  .latest-card__information {
-    padding: 6px 3px !important;
-  }
-  
-  .latest-card__vendor {
-    font-size: 10px !important;
-    margin-bottom: 3px !important;
-  }
-  
-  .latest-card__title {
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    margin-bottom: 4px !important;
-  }
-  
-  .latest-price-item {
-    font-size: 12px !important;
-  }
-  
-  .latest-price-item--regular {
-    font-size: 11px !important;
-  }
-  
-  .latest-products__slider-wrapper {
-    padding: 0 5px !important;
-    width: 100% !important;
-  }
-  
-  .latest-products-slider .latest-products__item {
-    width: 100% !important;
-    flex: 0 0 auto !important;
-  }
+/* Premium Product Grid Styles */
+.latest-products__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
 }
 
-/* Desktop - Show all products */
-@media (min-width: 992px) {
-  .latest-product-hidden {
-    display: block !important;
-  }
-  
-  .latest-products__show-more-wrapper {
-    display: none !important;
-  }
-  
-  .latest-products__slider-wrapper {
-    display: none !important;
-  }
+.latest-products__item {
+    list-style: none;
+}
+
+.latest-card-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.latest-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.latest-card-wrapper__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.latest-card__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+
+.latest-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.latest-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.latest-card-wrapper:hover .latest-product-img {
+    transform: scale(1.05);
+}
+
+.latest-card__actions {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    transition: bottom 0.3s ease;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(5px);
+}
+
+.latest-card-wrapper:hover .latest-card__actions {
+    bottom: 0;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #ff6b9d;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.latest-card__information {
+    padding: 15px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.latest-card__title {
+    font-size: 15px;
+    margin: 0 0 8px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.latest-card__title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.latest-card__title a:hover {
+    color: #ff6b9d;
+}
+
+.latest-price {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.price-new {
+    color: #ff6b9d;
+    margin-right: 5px;
+}
+
+.price-old {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.rating {
+    color: #ffc107;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .latest-products__list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .latest-card-wrapper:hover {
+        transform: none;
+    }
+    
+    .latest-card__actions {
+        bottom: 0;
+        background: transparent;
+        position: absolute;
+        top: 10px;
+        bottom: auto;
+        right: 10px;
+        left: auto;
+        flex-direction: column;
+        width: auto;
+        padding: 0;
+    }
+    
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
 }
 </style>
-
-<script>
-jQuery(document).ready(function($) {
-  var moduleId = '<?php echo $latest_module_id; ?>';
-  var $list = $('#latest-products-list-' + moduleId);
-  var $showMoreBtn = $('#latest-show-more-' + moduleId);
-  var $showLessBtn = $('#latest-show-less-' + moduleId);
-  var $sliderWrapper = $('#latest-slider-' + moduleId);
-  var $slider = $sliderWrapper.find('.latest-products-slider');
-  var hiddenProducts = [];
-  var sliderInitialized = false;
-  var owlCarouselInstance = null;
-  
-  // Collect hidden products
-  $list.find('.latest-product-hidden').each(function() {
-    hiddenProducts.push($(this).clone().removeClass('latest-product-hidden'));
-  });
-  
-  // Show More button click
-  $showMoreBtn.find('.latest-products__show-more-btn').on('click', function() {
-    if (hiddenProducts.length === 0) return;
-    
-    // Hide the Show More button
-    $showMoreBtn.fadeOut(300);
-    
-    // Show slider wrapper
-    $sliderWrapper.fadeIn(300, function() {
-      // Show Show Less button after slider is visible
-      $showLessBtn.fadeIn(300);
-    });
-    
-    // Initialize Owl Carousel if not already done
-    if (!sliderInitialized && typeof $.fn.owlCarousel !== 'undefined') {
-      // Clear any existing content
-      $slider.empty();
-      
-      // Add hidden products to slider
-      hiddenProducts.forEach(function($product) {
-        $slider.append($product);
-      });
-      
-      // Initialize carousel
-      owlCarouselInstance = $slider.addClass('owl-carousel').owlCarousel({
-        loop: false,
-        margin: 8,
-        nav: true,
-        dots: false,
-        autoplay: false,
-        responsive: {
-          0: {
-            items: 2,
-            margin: 6,
-            slideBy: 2
-          },
-          576: {
-            items: 2,
-            margin: 8,
-            slideBy: 2
-          },
-          768: {
-            items: 4,
-            margin: 10,
-            slideBy: 2
-          },
-          992: {
-            items: 4,
-            margin: 12
-          }
-        },
-        navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>']
-      });
-      
-      sliderInitialized = true;
-    }
-  });
-  
-  // Show Less button click
-  $showLessBtn.find('.latest-products__show-less-btn').on('click', function() {
-    // Hide slider wrapper
-    $sliderWrapper.fadeOut(300);
-    
-    // Hide Show Less button
-    $showLessBtn.fadeOut(300, function() {
-      // Show Show More button after slider is hidden
-      $showMoreBtn.fadeIn(300);
-    });
-    
-    // Destroy carousel if initialized
-    if (sliderInitialized && owlCarouselInstance) {
-      try {
-        owlCarouselInstance.trigger('destroy.owl.carousel');
-        $slider.removeClass('owl-carousel owl-loaded');
-        $slider.empty();
-        sliderInitialized = false;
-        owlCarouselInstance = null;
-      } catch(e) {
-        console.log('Carousel already destroyed');
-      }
-    }
-  });
-});
-</script>
