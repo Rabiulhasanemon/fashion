@@ -1,37 +1,152 @@
 <?php 
-// DEBUG: Log template rendering
-$debug_log = DIR_LOGS . 'manufacturer_debug.log';
-file_put_contents($debug_log, date('Y-m-d H:i:s') . " === TEMPLATE RENDERED ===\n", FILE_APPEND);
-file_put_contents($debug_log, date('Y-m-d H:i:s') . " Manufacturers count: " . (isset($manufacturers) ? count($manufacturers) : 0) . "\n", FILE_APPEND);
-if (isset($manufacturers) && !empty($manufacturers)) {
-	file_put_contents($debug_log, date('Y-m-d H:i:s') . " First manufacturer data: " . print_r($manufacturers[0], true) . "\n", FILE_APPEND);
-}
+// VISUAL DEBUG: Show debug info on page
+$template_debug = array();
+$template_debug['manufacturers_count'] = isset($manufacturers) ? count($manufacturers) : 0;
+$template_debug['manufacturers_data'] = isset($manufacturers) ? $manufacturers : array();
+$controller_debug = isset($debug_info) ? $debug_info : array();
 ?>
+<!-- MANUFACTURER DEBUG INFO START -->
+<script>
+console.group('🔍 Manufacturer Module Debug');
+<?php if (!empty($controller_debug)) { ?>
+console.group('Controller Debug');
+console.log('Settings:', <?php echo json_encode(isset($controller_debug['settings']) ? $controller_debug['settings'] : array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>);
+console.log('Action:', '<?php echo isset($controller_debug['action']) ? htmlspecialchars($controller_debug['action']) : 'N/A'; ?>');
+console.log('Final Count:', <?php echo isset($controller_debug['final_count']) ? $controller_debug['final_count'] : 0; ?>);
+<?php if (!empty($controller_debug['manufacturers_found'])) { ?>
+console.log('Manufacturers Found:', <?php echo json_encode($controller_debug['manufacturers_found'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>);
+<?php } ?>
+console.groupEnd();
+<?php } ?>
+console.group('Template Debug');
+console.log('Manufacturers Count:', <?php echo $template_debug['manufacturers_count']; ?>);
+console.log('Manufacturers Data:', <?php echo json_encode($template_debug['manufacturers_data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>);
+<?php if (!empty($template_debug['manufacturers_data'])) { ?>
+console.log('First Manufacturer:', <?php echo json_encode($template_debug['manufacturers_data'][0], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>);
+<?php } ?>
+console.groupEnd();
+console.groupEnd();
+</script>
+<!-- MANUFACTURER DEBUG INFO END -->
+<!-- VISUAL DEBUG PANEL -->
+<div id="manufacturer-debug-panel" style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.9); color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 11px; z-index: 9999; max-width: 400px; max-height: 300px; overflow: auto; display: none; border: 2px solid #0f0;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+    <strong style="color: #0f0;">🔍 Manufacturer Debug</strong>
+    <button onclick="document.getElementById('manufacturer-debug-panel').style.display='none'" style="background: #f00; color: #fff; border: none; padding: 2px 8px; cursor: pointer; border-radius: 3px;">✕</button>
+  </div>
+  <div id="debug-content">
+    <div><strong>Count:</strong> <span id="debug-count"><?php echo $template_debug['manufacturers_count']; ?></span></div>
+    <?php if (!empty($controller_debug)) { ?>
+    <div><strong>Action:</strong> <span style="color: #0ff;"><?php echo isset($controller_debug['action']) ? htmlspecialchars($controller_debug['action']) : 'N/A'; ?></span></div>
+    <?php } ?>
+    <div><strong>Images:</strong> <span id="debug-images-loaded" style="color: #0f0;">0</span> loaded, <span id="debug-images-failed" style="color: #f00;">0</span> failed</div>
+    <div id="debug-details" style="margin-top: 10px; font-size: 10px;"></div>
+  </div>
+</div>
+<button onclick="document.getElementById('manufacturer-debug-panel').style.display=document.getElementById('manufacturer-debug-panel').style.display==='none'?'block':'none'" style="position: fixed; bottom: 10px; right: 420px; background: #007bff; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; z-index: 9998; font-weight: bold;">🔍 Debug</button>
+<script>
+(function() {
+  let imagesLoaded = 0;
+  let imagesFailed = 0;
+  const debugDetails = document.getElementById('debug-details');
+  const debugImagesLoaded = document.getElementById('debug-images-loaded');
+  const debugImagesFailed = document.getElementById('debug-images-failed');
+  
+  // Track all images
+  document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.manufacturer-brand-image');
+    console.log('📸 Found', images.length, 'manufacturer images to track');
+    
+    images.forEach((img, index) => {
+      const card = img.closest('.manufacturer-brand-card');
+      const manufacturerId = card ? card.getAttribute('data-manufacturer-id') : 'unknown';
+      const manufacturerName = card ? card.getAttribute('title') : 'unknown';
+      
+      // Add to debug panel
+      const detailDiv = document.createElement('div');
+      detailDiv.style.marginBottom = '5px';
+      detailDiv.style.padding = '5px';
+      detailDiv.style.background = 'rgba(255,255,255,0.1)';
+      detailDiv.style.borderRadius = '3px';
+      detailDiv.id = 'debug-img-' + index;
+      detailDiv.innerHTML = `<strong>#${index + 1}:</strong> ${manufacturerName}<br><small style="color: #aaa;">ID: ${manufacturerId}</small><br><small style="color: #ff0;">Loading...</small>`;
+      debugDetails.appendChild(detailDiv);
+      
+      // Track load success
+      img.addEventListener('load', function() {
+        imagesLoaded++;
+        debugImagesLoaded.textContent = imagesLoaded;
+        const detail = document.getElementById('debug-img-' + index);
+        if (detail) {
+          detail.querySelector('small:last-child').textContent = '✅ Loaded: ' + this.src.substring(0, 50) + '...';
+          detail.querySelector('small:last-child').style.color = '#0f0';
+        }
+        console.log('✅ Image #' + (index + 1) + ' loaded:', this.src);
+      });
+      
+      // Track load failure
+      img.addEventListener('error', function() {
+        imagesFailed++;
+        debugImagesFailed.textContent = imagesFailed;
+        const detail = document.getElementById('debug-img-' + index);
+        if (detail) {
+          detail.querySelector('small:last-child').textContent = '❌ FAILED: ' + this.src.substring(0, 50) + '...';
+          detail.querySelector('small:last-child').style.color = '#f00';
+        }
+        console.error('❌ Image #' + (index + 1) + ' FAILED:', this.src);
+      });
+    });
+  });
+})();
+</script>
 <div id="manufacturer-brand-section" class="brandloop24_section manufacturer-display-wrapper">
   <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
-        <?php foreach ($manufacturers as $manufacturer) { ?>
-        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>">
+        <?php foreach ($manufacturers as $index => $manufacturer) { ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index; ?>">
           <?php if (!empty($manufacturer['thumb'])) { ?>
-          <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';" />
+          <img class="manufacturer-brand-image" 
+               src="<?php echo $manufacturer['thumb']; ?>" 
+               alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               loading="lazy" 
+               data-src="<?php echo htmlspecialchars($manufacturer['thumb']); ?>"
+               onload="console.log('✅ Image loaded:', this.src);"
+               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>'); this.style.border='2px solid red'; this.alt='FAILED: ' + this.src;" />
           <?php } else { ?>
-          <div class="manufacturer-brand-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?></div>
+          <div class="manufacturer-brand-name" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
+            <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?>
+            <small style="display: block; color: #999; font-size: 10px;">No image</small>
+          </div>
           <?php } ?>
         </a>
         <?php } ?>
-        <?php foreach ($manufacturers as $manufacturer) { ?>
-        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>">
+        <?php foreach ($manufacturers as $index => $manufacturer) { ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index + count($manufacturers); ?>">
           <?php if (!empty($manufacturer['thumb'])) { ?>
-          <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';" />
+          <img class="manufacturer-brand-image" 
+               src="<?php echo $manufacturer['thumb']; ?>" 
+               alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               loading="lazy" 
+               data-src="<?php echo htmlspecialchars($manufacturer['thumb']); ?>"
+               onload="console.log('✅ Image loaded:', this.src);"
+               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>'); this.style.border='2px solid red'; this.alt='FAILED: ' + this.src;" />
           <?php } else { ?>
-          <div class="manufacturer-brand-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?></div>
+          <div class="manufacturer-brand-name" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
+            <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?>
+            <small style="display: block; color: #999; font-size: 10px;">No image</small>
+          </div>
           <?php } ?>
         </a>
         <?php } ?>
       <?php } else { ?>
         <!-- DEBUG: No manufacturers found -->
-        <div style="padding: 20px; text-align: center; color: #999;">No manufacturers to display</div>
+        <div style="padding: 20px; text-align: center; color: #999; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; margin: 20px;">
+          <strong>⚠️ DEBUG: No manufacturers found</strong><br>
+          <small>Check console for details</small>
+        </div>
       <?php } ?>
     </div>
   </div>
