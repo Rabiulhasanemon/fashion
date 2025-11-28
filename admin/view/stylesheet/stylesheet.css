@@ -567,6 +567,39 @@ input.custom-checkbox[type="checkbox"]:checked:after {
 	height: 40px;
 	padding-top: 10px;
 }
+/* Ensure images in img-thumbnail display at consistent size */
+.img-thumbnail {
+	display: inline-block;
+	width: 100px;
+	height: 100px;
+	padding: 2px;
+	line-height: 1.42857143;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	overflow: hidden;
+	text-align: center;
+}
+.img-thumbnail img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	display: block;
+	margin: 0 auto;
+}
+.img-thumbnail.list {
+	width: 40px;
+	height: 40px;
+}
+.img-thumbnail.list img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+}
 /* Tiles */
 .tile {
 	margin-bottom: 15px;
