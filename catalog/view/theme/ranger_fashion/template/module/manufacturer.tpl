@@ -103,39 +103,55 @@ console.groupEnd();
   <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
-        <?php foreach ($manufacturers as $index => $manufacturer) { ?>
-        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index; ?>">
-          <?php if (!empty($manufacturer['thumb'])) { ?>
+        <?php foreach ($manufacturers as $index => $manufacturer) { 
+          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
+        ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index; ?>">
+          <?php if ($image_url) { ?>
           <img class="manufacturer-brand-image" 
-               src="<?php echo $manufacturer['thumb']; ?>" 
-               alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
-               title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
+               alt="<?php echo $manufacturer_name; ?>" 
+               title="<?php echo $manufacturer_name . ' - ' . htmlspecialchars($image_url); ?>" 
                loading="lazy" 
-               data-src="<?php echo htmlspecialchars($manufacturer['thumb']); ?>"
-               onload="console.log('✅ Image loaded:', this.src);"
-               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>'); this.style.border='2px solid red'; this.alt='FAILED: ' + this.src;" />
+               data-src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>"
+               style="display: block !important; visibility: visible !important; opacity: 1 !important; min-width: 50px; min-height: 30px; background: #f0f0f0;"
+               onload="console.log('✅ Image loaded:', this.src); this.style.opacity='1'; this.style.background='transparent';"
+               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo $manufacturer_name; ?>'); console.error('Full URL:', this.src); this.style.border='2px solid red'; this.style.background='#ffcccc'; this.style.display='block'; this.nextElementSibling.style.display='block';" />
+          <div class="manufacturer-brand-name" style="display: none; background: #f0f0f0; padding: 10px; border-radius: 4px;">
+            <?php echo $manufacturer_name; ?>
+            <small style="display: block; color: #999; font-size: 10px;">Image failed to load</small>
+          </div>
           <?php } else { ?>
           <div class="manufacturer-brand-name" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
-            <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?>
+            <?php echo $manufacturer_name; ?>
             <small style="display: block; color: #999; font-size: 10px;">No image</small>
           </div>
           <?php } ?>
         </a>
         <?php } ?>
-        <?php foreach ($manufacturers as $index => $manufacturer) { ?>
-        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index + count($manufacturers); ?>">
-          <?php if (!empty($manufacturer['thumb'])) { ?>
+        <?php foreach ($manufacturers as $index => $manufacturer) { 
+          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
+        ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index + count($manufacturers); ?>">
+          <?php if ($image_url) { ?>
           <img class="manufacturer-brand-image" 
-               src="<?php echo $manufacturer['thumb']; ?>" 
-               alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
-               title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+               src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
+               alt="<?php echo $manufacturer_name; ?>" 
+               title="<?php echo $manufacturer_name . ' - ' . htmlspecialchars($image_url); ?>" 
                loading="lazy" 
-               data-src="<?php echo htmlspecialchars($manufacturer['thumb']); ?>"
-               onload="console.log('✅ Image loaded:', this.src);"
-               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>'); this.style.border='2px solid red'; this.alt='FAILED: ' + this.src;" />
+               data-src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>"
+               style="display: block !important; visibility: visible !important; opacity: 1 !important; min-width: 50px; min-height: 30px; background: #f0f0f0;"
+               onload="console.log('✅ Image loaded:', this.src); this.style.opacity='1'; this.style.background='transparent';"
+               onerror="console.error('❌ Image FAILED:', this.src, 'for manufacturer:', '<?php echo $manufacturer_name; ?>'); console.error('Full URL:', this.src); this.style.border='2px solid red'; this.style.background='#ffcccc'; this.style.display='block'; this.nextElementSibling.style.display='block';" />
+          <div class="manufacturer-brand-name" style="display: none; background: #f0f0f0; padding: 10px; border-radius: 4px;">
+            <?php echo $manufacturer_name; ?>
+            <small style="display: block; color: #999; font-size: 10px;">Image failed to load</small>
+          </div>
           <?php } else { ?>
           <div class="manufacturer-brand-name" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
-            <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?>
+            <?php echo $manufacturer_name; ?>
             <small style="display: block; color: #999; font-size: 10px;">No image</small>
           </div>
           <?php } ?>

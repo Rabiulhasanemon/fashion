@@ -93,9 +93,11 @@ class ControllerModuleManufacturer extends Controller {
 							$encoded_path = implode('/', $encoded_parts);
 							
 							if ($this->request->server['HTTPS']) {
-								$image = $this->config->get('config_ssl') . 'image/' . $encoded_path;
+								$base_url = rtrim($this->config->get('config_ssl'), '/');
+								$image = $base_url . '/image/' . $encoded_path;
 							} else {
-								$image = $this->config->get('config_url') . 'image/' . $encoded_path;
+								$base_url = rtrim($this->config->get('config_url'), '/');
+								$image = $base_url . '/image/' . $encoded_path;
 							}
 							$debug_entry['resize_result'] = 'USING ORIGINAL IMAGE (cache failed)';
 							$debug_entry['resized_url'] = $image;
