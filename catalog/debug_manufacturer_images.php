@@ -63,6 +63,15 @@ foreach ($query->rows as $result) {
 $config->set('config_url', HTTP_SERVER);
 $config->set('config_ssl', HTTPS_SERVER);
 
+// Ensure config_store_id is set
+if (!$config->get('config_store_id')) {
+	$config->set('config_store_id', 0);
+}
+
+// Cache - must be set before loading models
+$cache = new Cache('file');
+$registry->set('cache', $cache);
+
 // URL
 $url = new SiteUrl($config->get('config_url'), $config->get('config_secure') ? $config->get('config_ssl') : $config->get('config_url'));
 $registry->set('url', $url);
@@ -93,7 +102,22 @@ $registry->set('language', $language);
 // Document
 $registry->set('document', new Document());
 
-// Load models using Loader
+// Log
+$log = new Log($config->get('config_error_filename'));
+$registry->set('log', $log);
+
+// Verify registry has required components
+if (!$registry->get('config')) {
+	die("Error: Config not found in registry!");
+}
+if (!$registry->get('cache')) {
+	die("Error: Cache not found in registry!");
+}
+if (!$registry->get('db')) {
+	die("Error: Database not found in registry!");
+}
+
+// Load models using Loader (this will inject registry dependencies)
 $loader->model('catalog/manufacturer');
 $loader->model('tool/image');
 
@@ -101,8 +125,16 @@ $loader->model('tool/image');
 $model_manufacturer = $registry->get('model_catalog_manufacturer');
 $model_image = $registry->get('model_tool_image');
 
-// Get all manufacturers
-$manufacturers_data = $model_manufacturer->getManufacturers();
+if (!$model_manufacturer) {
+	die("Error: Manufacturer model not loaded!");
+}
+
+// Get all manufacturers - pass data to avoid cache branch
+try {
+	$manufacturers_data = $model_manufacturer->getManufacturers(array('sort' => 'name', 'order' => 'ASC'));
+} catch (Exception $e) {
+	die("Error getting manufacturers: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 ?>
 <!DOCTYPE html>
 <html>
