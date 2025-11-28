@@ -2579,10 +2579,17 @@ class ControllerCatalogProduct extends Controller {
             $product_filters = array();
         }
         
+        // Log for debugging
+        $log_file = DIR_LOGS . 'product_filter_debug.log';
+        file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER-CONTROLLER] product_id: $product_id" . PHP_EOL, FILE_APPEND);
+        file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER-CONTROLLER] Raw product_filters: " . print_r($product_filters, true) . PHP_EOL, FILE_APPEND);
+        
         // Normalize product_filters to integers for proper comparison
         $product_filters = array_map('intval', $product_filters);
         $product_filters = array_filter($product_filters, function($id) { return $id > 0; });
         $product_filters = array_values($product_filters); // Re-index array
+        
+        file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER-CONTROLLER] Normalized product_filters: " . print_r($product_filters, true) . PHP_EOL, FILE_APPEND);
 
         if($filter_profile_ids) {
             $filters = $this->model_catalog_filter->getFiltersByProfiles($filter_profile_ids);
@@ -2629,6 +2636,10 @@ class ControllerCatalogProduct extends Controller {
                     $current_filter_id = (int)(isset($filter_info['filter_id']) ? $filter_info['filter_id'] : $product_filter['filter_id']);
                     // Check if this filter is in the product's saved filters (strict comparison with integers)
                     $is_checked = in_array($current_filter_id, $product_filters, true);
+                    
+                    // Log for debugging
+                    $log_file = DIR_LOGS . 'product_filter_debug.log';
+                    file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER-CONTROLLER] Checking filter_id: $current_filter_id, is_checked: " . ($is_checked ? 'YES' : 'NO') . PHP_EOL, FILE_APPEND);
                     
                     $filter_groups[$filter_group_id]['product_filters'][] = array(
                         'filter_id' => $current_filter_id,
