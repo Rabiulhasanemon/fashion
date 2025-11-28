@@ -12,7 +12,7 @@ class ModelCatalogManufacturer extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ERROR: Manufacturer name is required' . PHP_EOL, FILE_APPEND);
 			throw new Exception('Manufacturer name is required');
 		}
-		
+
 		// CRITICAL: Remove any manufacturer_id from data to prevent using a provided ID
 		// We always calculate the next ID ourselves
 		if (isset($data['manufacturer_id'])) {
@@ -26,11 +26,11 @@ class ModelCatalogManufacturer extends Model {
 		
 		while ($cleanup_attempts < $max_cleanup_attempts) {
 			// Delete any manufacturer with manufacturer_id = 0
-			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
-			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
-			$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
-			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
-			
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = 0");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=0'");
+		
 			// Verify cleanup
 			$verify_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = 0");
 			$zero_count = 0;
@@ -155,24 +155,24 @@ class ModelCatalogManufacturer extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Image length: ' . strlen($image) . ', Thumb length: ' . strlen($thumb) . PHP_EOL, FILE_APPEND);
 			
 			$insert_result = $this->db->query($insert_sql);
-			
-			if ($insert_result) {
-				$manufacturer_id = $this->db->getLastId();
+				
+				if ($insert_result) {
+					$manufacturer_id = $this->db->getLastId();
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Insert succeeded. getLastId() returned: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
 				
 				// If getLastId() returns 0 or invalid, query the database
-				if (!$manufacturer_id || $manufacturer_id <= 0) {
-					$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
-					if ($find && $find->num_rows) {
-						$manufacturer_id = (int)$find->row['manufacturer_id'];
+					if (!$manufacturer_id || $manufacturer_id <= 0) {
+						$find = $this->db->query("SELECT manufacturer_id FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $this->db->escape($data['name']) . "' ORDER BY manufacturer_id DESC LIMIT 1");
+						if ($find && $find->num_rows) {
+							$manufacturer_id = (int)$find->row['manufacturer_id'];
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retrieved manufacturer_id from database: ' . $manufacturer_id . PHP_EOL, FILE_APPEND);
-					} else {
+						} else {
 						$log_file = DIR_LOGS . 'manufacturer_error.log';
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - CRITICAL: Could not retrieve manufacturer_id after insert!' . PHP_EOL, FILE_APPEND);
 						$insert_result = false;
+						}
 					}
-				}
-			} else {
+				} else {
 				$log_file = DIR_LOGS . 'manufacturer_error.log';
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - AUTO_INCREMENT insert failed!' . PHP_EOL, FILE_APPEND);
 			}
@@ -285,7 +285,7 @@ class ModelCatalogManufacturer extends Model {
 				
 				if ($insert_result) {
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry successful with ID: ' . $next_id_retry . PHP_EOL, FILE_APPEND);
-				} else {
+			} else {
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Retry also failed!' . PHP_EOL, FILE_APPEND);
 				}
 			}

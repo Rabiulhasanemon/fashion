@@ -122,18 +122,9 @@ class ControllerCatalogProduct extends Controller {
 			
 			if ($validation_result) {
 				try {
-					// Log all relevant data before calling addProduct
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] About to call addProduct()' . PHP_EOL, FILE_APPEND);
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] product_filter in POST: ' . (isset($this->request->post['product_filter']) ? 'YES (count: ' . (is_array($this->request->post['product_filter']) ? count($this->request->post['product_filter']) : 'not array') . ')' : 'NO') . PHP_EOL, FILE_APPEND);
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] product_attribute in POST: ' . (isset($this->request->post['product_attribute']) ? 'YES (count: ' . (is_array($this->request->post['product_attribute']) ? count($this->request->post['product_attribute']) : 'not array') . ')' : 'NO') . PHP_EOL, FILE_APPEND);
-					
-					if (isset($this->request->post['product_filter']) && is_array($this->request->post['product_filter'])) {
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] Filter IDs: ' . implode(', ', $this->request->post['product_filter']) . PHP_EOL, FILE_APPEND);
-					}
-					
 					// Log attribute data before processing
 					if (isset($this->request->post['product_attribute'])) {
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] Raw POST attribute data structure: ' . print_r($this->request->post['product_attribute'], true) . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Raw POST data structure: ' . print_r($this->request->post['product_attribute'], true) . PHP_EOL, FILE_APPEND);
 					}
 					
 					$product_id = $this->model_catalog_product->addProduct($this->request->post);
