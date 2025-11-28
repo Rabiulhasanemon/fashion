@@ -1,49 +1,136 @@
 <?php if ($banners) { ?>
-  <div class="customer-banner-area banner-fullscreen" style="width: 95vw; margin-left: calc(-47.5vw + 50%); margin-right: calc(-47.5vw + 50%); padding: 0; margin-top: 0; margin-bottom: 0;">
-    <div class="container" style="padding: 0; max-width: 80%;">
-<style>
-@media (max-width: 767px) {
-  .customer-banner-area .container {
-    max-width: 100% !important;
-    padding: 0 !important;
-  }
-}
-</style>
+<div class="banner-module-section">
+  <div class="container">
+    <div class="banner-grid">
       <?php foreach ($banners as $banner) { ?>
         <?php if (isset($banner['group_class'])) { ?>
-          <div class="<?php echo $banner['group_class'] ?>">
-            <?php foreach ($banner['banners'] as $banner_child) { ?>
-              <div class="<?php echo $banner_child['image_class'] ?>" style="margin: 0; padding: 0;">
-                <div class="banner-type <?php echo isset($class) ? $class : ''; ?>" style="margin: 0; padding: 0; line-height: 0;">
-                  <?php if ($banner_child['link']) { ?>
-                    <a href="<?php echo $banner_child['link']; ?>" style="display: block; margin: 0; padding: 0;">
-                      <img class="img-fluid" src="<?php echo $banner_child['image']; ?>" title="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" alt="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />
-                    </a>
-                  <?php } else { ?>
-                    <div class="effect" style="margin: 0; padding: 0; line-height: 0;">
-                      <img class="img-fluid" src="<?php echo $banner_child['image']; ?>" title="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" alt="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />
-                    </div>
-                  <?php } ?>
+          <?php foreach ($banner['banners'] as $banner_child) { ?>
+            <div class="banner-item">
+              <?php if ($banner_child['link']) { ?>
+              <a href="<?php echo $banner_child['link']; ?>" class="banner-link">
+                <img src="<?php echo $banner_child['image']; ?>" alt="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" loading="lazy" class="banner-img">
+                <div class="banner-overlay">
+                  <span class="banner-btn">Shop Now</span>
                 </div>
-              </div>
-            <?php } ?>
-          </div>
-        <?php } else { ?>
-          <div class="<?php echo $banner['image_class'] ?>" style="margin: 0; padding: 0;">
-            <div class="banner-type <?php echo isset($class) ? $class : ''; ?>" style="margin: 0; padding: 0; line-height: 0;">
-              <?php if ($banner['link']) { ?>
-                <a href="<?php echo $banner['link']; ?>" style="display: block; margin: 0; padding: 0;">
-                  <img class="img-fluid" src="<?php echo $banner['image']; ?>" title="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" alt="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />
-                </a>
+              </a>
               <?php } else { ?>
-                <div class="effect" style="margin: 0; padding: 0; line-height: 0;">
-                  <img class="img-fluid" src="<?php echo $banner['image']; ?>" title="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" alt="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" loading="eager" />
-                </div>
+              <div class="banner-content">
+                <img src="<?php echo $banner_child['image']; ?>" alt="<?php echo isset($banner_child['title']) ? $banner_child['title'] : ''; ?>" loading="lazy" class="banner-img">
+              </div>
               <?php } ?>
             </div>
+          <?php } ?>
+        <?php } else { ?>
+          <div class="banner-item">
+            <?php if ($banner['link']) { ?>
+            <a href="<?php echo $banner['link']; ?>" class="banner-link">
+              <img src="<?php echo $banner['image']; ?>" alt="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" loading="lazy" class="banner-img">
+              <div class="banner-overlay">
+                <span class="banner-btn">Shop Now</span>
+              </div>
+            </a>
+            <?php } else { ?>
+            <div class="banner-content">
+              <img src="<?php echo $banner['image']; ?>" alt="<?php echo isset($banner['title']) ? $banner['title'] : ''; ?>" loading="lazy" class="banner-img">
+            </div>
+            <?php } ?>
           </div>
         <?php } ?>
       <?php } ?>
     </div>
   </div>
+</div>
+
+<style>
+/* Premium Banner Module */
+.banner-module-section {
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.banner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.banner-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.banner-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.banner-link, .banner-content {
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+    object-fit: cover;
+}
+
+.banner-link:hover .banner-img {
+    transform: scale(1.05);
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.banner-link:hover .banner-overlay {
+    opacity: 1;
+}
+
+.banner-btn {
+    background: #fff;
+    color: #333;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.banner-link:hover .banner-btn {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .banner-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .banner-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+}
+</style>
 <?php } ?>
