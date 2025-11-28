@@ -1433,6 +1433,26 @@ class ModelCatalogProduct extends Model {
 		if (isset($data['keyword']) && $data['keyword']) {
 			$keyword = trim($data['keyword']);
 			if ($keyword && $keyword !== '') {
+				// CRITICAL: Clean up url_alias_id = 0 records and fix AUTO_INCREMENT
+				try {
+					// Delete any url_alias_id = 0 records
+					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
+					
+					// Fix AUTO_INCREMENT for url_alias table
+					$max_url_alias = $this->db->query("SELECT MAX(url_alias_id) as max_id FROM " . DB_PREFIX . "url_alias WHERE url_alias_id > 0");
+					$next_url_alias_id = 1;
+					if ($max_url_alias && $max_url_alias->num_rows && isset($max_url_alias->row['max_id']) && $max_url_alias->row['max_id'] !== null) {
+						$next_url_alias_id = (int)$max_url_alias->row['max_id'] + 1;
+					}
+					$next_url_alias_id = max($next_url_alias_id, 1);
+					
+					// Set AUTO_INCREMENT
+					$this->db->query("ALTER TABLE " . DB_PREFIX . "url_alias AUTO_INCREMENT = " . $next_url_alias_id);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Fixed url_alias AUTO_INCREMENT to ' . $next_url_alias_id . PHP_EOL, FILE_APPEND);
+				} catch (Exception $e) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning fixing url_alias AUTO_INCREMENT: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				}
+				
 				// Delete any existing url_alias for this product first
 				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
 				// Check if keyword already exists for a different product
@@ -1450,6 +1470,51 @@ class ModelCatalogProduct extends Model {
 				$check_existing = $this->db->query("SELECT url_alias_id FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "' AND keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
 				if (!$check_existing || !$check_existing->num_rows) {
 					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+					if (!$result) {
+						// Get error details
+						$db_error = '';
+						$db_errno = 0;
+						try {
+							$reflection = new ReflectionClass($this->db);
+							$db_property = $reflection->getProperty('db');
+							$db_property->setAccessible(true);
+							$db_driver = $db_property->getValue($this->db);
+							if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+								$link_reflection = new ReflectionProperty($db_driver, 'link');
+								$link_reflection->setAccessible(true);
+								$link = $link_reflection->getValue($db_driver);
+								if (is_object($link)) {
+									if (method_exists($link, 'error')) {
+										$db_error = $link->error;
+									}
+									if (method_exists($link, 'errno')) {
+										$db_errno = $link->errno;
+									}
+								}
+							}
+						} catch (Exception $e) {
+							// Ignore
+						}
+						
+						// If duplicate entry error, clean up and retry
+						if ($db_errno == 1062) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - url_alias duplicate entry error, cleaning up and retrying...' . PHP_EOL, FILE_APPEND);
+							// Clean up url_alias_id = 0 again
+							$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
+							// Fix AUTO_INCREMENT again
+							$max_retry = $this->db->query("SELECT MAX(url_alias_id) as max_id FROM " . DB_PREFIX . "url_alias WHERE url_alias_id > 0");
+							$next_retry = 1;
+							if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
+								$next_retry = (int)$max_retry->row['max_id'] + 1;
+							}
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "url_alias AUTO_INCREMENT = " . $next_retry);
+							// Retry insert
+							$result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+							if (!$result) {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - url_alias insert failed even after retry: ' . $db_error . PHP_EOL, FILE_APPEND);
+							}
+						}
+					}
 					// If insert failed due to duplicate key, it's okay - record already exists
 				}
 			}
