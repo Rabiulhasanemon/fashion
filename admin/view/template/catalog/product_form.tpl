@@ -1331,15 +1331,27 @@ $('#option a:first').tab('show');
   });
 
 // Ensure all form data is collected before submission, especially from hidden tabs
-$('#form-product').on('submit', function(e) {
-    console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
+// Use document ready to ensure jQuery is loaded
+$(document).ready(function() {
+    console.log('Form submit handler script loaded');
     
-    // Prevent default submission so we can collect all data first
-    e.preventDefault();
-    e.stopPropagation();
+    // Handle both form submit event AND button click (since button is outside form)
+    var handleFormSubmit = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
     
-    var form = this;
-    var formSubmitted = false;
+        var form = document.getElementById('form-product');
+        if (!form) {
+            console.error('Form not found!');
+            return false;
+        }
+        var formSubmitted = false;
+        
+        console.log('Form element found:', form);
     
     // CRITICAL: Show ALL tabs and ensure they're visible BEFORE collecting data
     // This is necessary because some browsers don't include fields from hidden tabs
@@ -1503,7 +1515,34 @@ $('#form-product').on('submit', function(e) {
         }, 100);
     }, 200); // Increased delay to ensure all tabs are visible and DOM is updated
     
-    return false;
+        return false;
+    };
+    
+    // Attach to form submit event
+    $('#form-product').on('submit', handleFormSubmit);
+    
+    // Also attach to submit button click (since button is outside form with form="form-product")
+    $('button[type="submit"][form="form-product"]').on('click', function(e) {
+        console.log('Submit button clicked');
+        e.preventDefault();
+        e.stopPropagation();
+        handleFormSubmit(e);
+        return false;
+    });
+    
+    // Also handle Enter key in form
+    $('#form-product').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            var $target = $(e.target);
+            if (!$target.is('textarea') && !$target.is('button')) {
+                e.preventDefault();
+                handleFormSubmit(e);
+                return false;
+            }
+        }
+    });
+    
+    console.log('Form submit handlers attached');
 });
 
 //--></script></div>
