@@ -42,9 +42,15 @@ if ($product_id > 0) {
     
     // Check filters
     echo "=== FILTERS ===\n";
-    // Get default language ID
-    $config_query = $db->query("SELECT config_language_id FROM {$prefix}setting WHERE `key` = 'config_language_id' LIMIT 1");
-    $default_lang_id = isset($config_query->row['config_language_id']) ? (int)$config_query->row['config_language_id'] : 1;
+    // Get default language ID from setting table
+    $config_query = $db->query("SELECT `value` FROM {$prefix}setting WHERE `key` = 'config_language_id' AND store_id = 0 LIMIT 1");
+    $default_lang_id = isset($config_query->row['value']) ? (int)$config_query->row['value'] : 1;
+    
+    // If not found, try to get any language ID
+    if ($default_lang_id <= 0) {
+        $lang_query = $db->query("SELECT language_id FROM {$prefix}language WHERE status = 1 ORDER BY sort_order ASC LIMIT 1");
+        $default_lang_id = isset($lang_query->row['language_id']) ? (int)$lang_query->row['language_id'] : 1;
+    }
     
     $filters = $db->query("SELECT pf.filter_id, 
                                   fd.name as filter_name,
