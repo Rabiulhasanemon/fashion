@@ -2,12 +2,40 @@
 // Debug page for manufacturer images
 // Access: http://yoursite.com/catalog/debug_manufacturer_images.php
 
-// Bootstrap OpenCart
-require_once('config.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Start output buffering
+if (!ob_get_level()) {
+	ob_start();
+}
+
+// Version
+define('VERSION', '2.4.0');
+
+// Bootstrap OpenCart - use catalog config
+if (!file_exists(__DIR__ . '/config.php')) {
+	die("Error: config.php not found in " . __DIR__);
+}
+
+require_once(__DIR__ . '/config.php');
+
+if (!defined('DIR_SYSTEM')) {
+	die("Error: DIR_SYSTEM not defined after loading config.php");
+}
+
+if (!file_exists(DIR_SYSTEM . 'startup.php')) {
+	die("Error: startup.php not found at " . DIR_SYSTEM . 'startup.php');
+}
+
 require_once(DIR_SYSTEM . 'startup.php');
 
 // Registry
 $registry = new Registry();
+
+// Loader
+$loader = new Loader($registry);
+$registry->set('load', $loader);
 
 // Config
 $config = new Config();
@@ -19,15 +47,24 @@ $registry->set('db', $db);
 
 // Store
 $config->set('config_store_id', 0);
-$query = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
 
-foreach ($query->rows as $setting) {
-	if (!$setting['serialized']) {
-		$config->set($setting['key'], $setting['value']);
+// Settings
+$query = $db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
+
+foreach ($query->rows as $result) {
+	if (!$result['serialized']) {
+		$config->set($result['key'], $result['value']);
 	} else {
-		$config->set($setting['key'], json_decode($setting['value'], true));
+		$config->set($result['key'], unserialize($result['value']));
 	}
 }
+
+$config->set('config_url', HTTP_SERVER);
+$config->set('config_ssl', HTTPS_SERVER);
+
+// URL
+$url = new SiteUrl($config->get('config_url'), $config->get('config_secure') ? $config->get('config_ssl') : $config->get('config_url'));
+$registry->set('url', $url);
 
 // Request
 $request = new Request();
@@ -55,34 +92,16 @@ $registry->set('language', $language);
 // Document
 $registry->set('document', new Document());
 
-// Load models
-require_once(DIR_SYSTEM . 'library/cart.php');
-$registry->set('cart', new Cart($registry));
+// Load models using Loader
+$loader->model('catalog/manufacturer');
+$loader->model('tool/image');
 
-require_once(DIR_SYSTEM . 'library/currency.php');
-$registry->set('currency', new Currency($registry));
-
-require_once(DIR_SYSTEM . 'library/tax.php');
-$registry->set('tax', new Tax($registry));
-
-require_once(DIR_SYSTEM . 'library/user.php');
-$registry->set('user', new User($registry));
-
-require_once(DIR_SYSTEM . 'library/weight.php');
-$registry->set('weight', new Weight($registry));
-
-require_once(DIR_SYSTEM . 'library/length.php');
-$registry->set('length', new Length($registry));
-
-// Front Controller
-$controller = new Front($registry);
-
-// Load models
-$controller->load->model('catalog/manufacturer');
-$controller->load->model('tool/image');
+// Get models from registry
+$model_manufacturer = $registry->get('model_catalog_manufacturer');
+$model_image = $registry->get('model_tool_image');
 
 // Get all manufacturers
-$manufacturers_data = $controller->model_catalog_manufacturer->getManufacturers();
+$manufacturers_data = $model_manufacturer->getManufacturers();
 ?>
 <!DOCTYPE html>
 <html>
@@ -346,10 +365,10 @@ $manufacturers_data = $controller->model_catalog_manufacturer->getManufacturers(
                 $resized_image = null;
                 
                 if ($thumb) {
-                    $resized_thumb = $controller->model_tool_image->resize($thumb, 200, 200);
+                    $resized_thumb = $model_image->resize($thumb, 200, 200);
                     if ($resized_thumb) $with_images++;
                 } elseif ($image) {
-                    $resized_image = $controller->model_tool_image->resize($image, 200, 200);
+                    $resized_image = $model_image->resize($image, 200, 200);
                     if ($resized_image) $with_images++;
                 } else {
                     $without_images++;
