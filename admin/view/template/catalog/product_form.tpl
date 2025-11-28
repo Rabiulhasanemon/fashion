@@ -1330,5 +1330,56 @@ $('#option a:first').tab('show');
         }
   });
 
+// Ensure all form data is collected before submission, especially from hidden tabs
+$('#form-product').on('submit', function(e) {
+    // Make sure all tabs are visible temporarily to ensure form fields are included
+    // This is necessary because some browsers don't include fields from hidden tabs
+    
+    // Show all tab panes temporarily
+    $('.tab-pane').each(function() {
+        if (!$(this).hasClass('active')) {
+            $(this).addClass('active').show();
+        }
+    });
+    
+    // Collect all filter checkboxes
+    var product_filters = [];
+    $('input[name="product_filter[]"]:checked').each(function() {
+        product_filters.push($(this).val());
+    });
+    
+    // Ensure product_filter is in the form
+    if (product_filters.length > 0) {
+        // Remove any existing hidden inputs for product_filter
+        $('input[name="product_filter[]"]').not(':checkbox').remove();
+        // Add hidden inputs for checked filters (as backup)
+        product_filters.forEach(function(filter_id) {
+            if ($('input[name="product_filter[]"][value="' + filter_id + '"]').length === 0) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'product_filter[]',
+                    value: filter_id
+                }).appendTo('#form-product');
+            }
+        });
+    }
+    
+    // Ensure all attribute textareas are properly included
+    $('textarea[name*="product_attribute"]').each(function() {
+        // Force update the value to ensure it's current
+        var $textarea = $(this);
+        $textarea.val($textarea.val());
+    });
+    
+    // Log for debugging
+    console.log('Form submission - Filters:', product_filters.length, 'Attributes:', $('textarea[name*="product_attribute"]').length);
+    
+    // Restore tab visibility after a short delay (form will submit before this)
+    setTimeout(function() {
+        $('.tab-pane').not('#tab-general').removeClass('active').hide();
+        $('#tab-general').addClass('active').show();
+    }, 100);
+});
+
 //--></script></div>
 <?php echo $footer; ?> 

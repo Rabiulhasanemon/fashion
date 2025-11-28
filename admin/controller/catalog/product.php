@@ -25,6 +25,14 @@ class ControllerCatalogProduct extends Controller {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' ========== NEW PRODUCT ADD REQUEST ==========' . PHP_EOL, FILE_APPEND);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
 			
+			// Ensure product_filter is always an array (even if empty)
+			if (!isset($this->request->post['product_filter']) || !is_array($this->request->post['product_filter'])) {
+				$this->request->post['product_filter'] = array();
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] product_filter not set or not array, initializing as empty array' . PHP_EOL, FILE_APPEND);
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] product_filter count: ' . count($this->request->post['product_filter']) . PHP_EOL, FILE_APPEND);
+			}
+			
 			// Normalize product_attribute data structure if needed
 			if (isset($this->request->post['product_attribute']) && is_array($this->request->post['product_attribute'])) {
 				$normalized_attributes = array();
@@ -43,6 +51,12 @@ class ControllerCatalogProduct extends Controller {
 				}
 				$this->request->post['product_attribute'] = $normalized_attributes;
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Normalized attribute structure, count: ' . count($normalized_attributes) . PHP_EOL, FILE_APPEND);
+			} else {
+				// Ensure product_attribute is always an array (even if empty)
+				if (!isset($this->request->post['product_attribute'])) {
+					$this->request->post['product_attribute'] = array();
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] product_attribute not set, initializing as empty array' . PHP_EOL, FILE_APPEND);
+				}
 			}
 			
 			// Log detailed information about each tab's data
@@ -322,6 +336,14 @@ class ControllerCatalogProduct extends Controller {
 				}
 			}
 			
+			// Ensure product_filter is always an array (even if empty)
+			if (!isset($this->request->post['product_filter']) || !is_array($this->request->post['product_filter'])) {
+				$this->request->post['product_filter'] = array();
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] product_filter not set or not array, initializing as empty array' . PHP_EOL, FILE_APPEND);
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] product_filter count: ' . count($this->request->post['product_filter']) . PHP_EOL, FILE_APPEND);
+			}
+			
 			// Normalize product_attribute data structure if needed
 			if (isset($this->request->post['product_attribute']) && is_array($this->request->post['product_attribute'])) {
 				$normalized_attributes = array();
@@ -340,6 +362,12 @@ class ControllerCatalogProduct extends Controller {
 				}
 				$this->request->post['product_attribute'] = $normalized_attributes;
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT][ATTRIBUTE] Normalized attribute structure, count: ' . count($normalized_attributes) . PHP_EOL, FILE_APPEND);
+			} else {
+				// Ensure product_attribute is always an array (even if empty)
+				if (!isset($this->request->post['product_attribute'])) {
+					$this->request->post['product_attribute'] = array();
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] product_attribute not set, initializing as empty array' . PHP_EOL, FILE_APPEND);
+				}
 			}
 			
 			if (isset($this->request->post['product_image'])) {
