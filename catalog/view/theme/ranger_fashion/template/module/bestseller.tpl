@@ -1,11 +1,11 @@
-<div class="popular-products color-background-1 background section-template--bestseller-padding section-animation" data-columns="6" data-mobile-column="1">
-  <div class="popular-products__top container">
-    <div class="popular-products__top-main">
-      <div class="popular-products__top-text">
-        <h2 class="popular-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+<div class="bestseller-products-section color-background-1 background section-animation" data-columns="6" data-mobile-column="1">
+  <div class="bestseller-products__top">
+    <div class="bestseller-products__top-main">
+      <div class="bestseller-products__top-text">
+        <h2 class="bestseller-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
 <style>
-.popular-products__title.unified-module-heading.cosmetics-module-heading,
-.section-title.unified-module-heading.cosmetics-module-heading {
+/* Consistent Premium Module Headings */
+.cosmetics-module-heading {
   font-size: 28px !important;
   font-weight: 600 !important;
   color: #1a1a1a !important;
@@ -14,9 +14,9 @@
   letter-spacing: -0.02em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   position: relative !important;
+  margin: 0 !important;
 }
-.popular-products__title.unified-module-heading.cosmetics-module-heading::after,
-.section-title.unified-module-heading.cosmetics-module-heading::after {
+.cosmetics-module-heading::after {
   content: '' !important;
   position: absolute !important;
   bottom: 8px !important;
@@ -27,76 +27,69 @@
   border-radius: 2px !important;
 }
 @media (max-width: 992px) {
-  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
-  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
+  .cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
+  .cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
 }
 @media (max-width: 749px) {
-  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
-  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
-}
-@media (max-width: 576px) {
-  .popular-products__title.unified-module-heading.cosmetics-module-heading { font-size: 20px !important; padding: 14px 0 10px 0 !important; }
-  .popular-products__title.unified-module-heading.cosmetics-module-heading::after { width: 40px !important; height: 2px !important; bottom: 4px !important; }
+  .cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
+  .cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
 }
 </style>
       </div>
-      <div class="popular-products__top-right">
-        <a href="<?php echo $shop_all_url; ?>" class="popular-products__button link--underline_arrow">
-          <span>Shop All</span>
-          <svg class="icon icon-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M13.6333 12.5L8 6.86673L8.86673 6L15.3667 12.5L8.86673 19L8 18.1333L13.6333 12.5Z" fill="currentColor" stroke="currentColor" stroke-width="0.3"></path>
-          </svg>
-        </a>
-      </div>
     </div>
   </div>
-  <div class="popular-products__wrapper container content">
-    <div class="popular-products__layout">
-      <ul class="list-unstyled popular-products__list content grid--6 popular-products__grid popular-products__grid_small">
-        <?php foreach ($products as $product) { ?>
-        <li class="popular-products__item column-animation cart-content-center animate">
-          <div class="card-horizontal-wrapper color-background-1 js-color-swatches-wrapper" data-product="<?php echo $product['product_id']; ?>">
-            <span class="visually-hidden"><?php echo $product['name']; ?></span>
-            <a href="<?php echo $product['href']; ?>" class="link link--overlay card-wrapper__link--overlay js-color-swatches-link focus-inset" aria-label="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>"></a>
-            <div class="card-horizontal-wrapper__inner">
-              <div class="card-horizontal__image" tabindex="-1">
-                <div class="media" style="padding-bottom: 133.3%; --object-fit: cover;">
-                  <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" width="200" height="267" loading="lazy" sizes="calc(200px * 1)" class="motion-reduce media--first">
+  
+  <div class="bestseller-products__wrapper content">
+    <div class="bestseller-products__layout">
+      <?php $bestseller_module_id = 'bestseller-' . uniqid(); ?>
+      <ul class="list-unstyled bestseller-products__list content grid--6" id="bestseller-products-list-<?php echo $bestseller_module_id; ?>">
+        <?php 
+        $product_count = 0;
+        foreach ($products as $product) { 
+          $product_count++;
+          $is_hidden = ($product_count > 6) ? 'bestseller-product-hidden' : '';
+        ?>
+        <li class="bestseller-products__item column-animation cart-content-center animate <?php echo $is_hidden; ?>" data-product-index="<?php echo $product_count; ?>">
+          <div class="bestseller-card-wrapper color-background-1" data-product="<?php echo $product['product_id']; ?>">
+            <div class="bestseller-card-wrapper__inner">
+              <div class="bestseller-card__image-wrapper">
+                <div class="bestseller-card__image">
+                  <a href="<?php echo $product['href']; ?>">
+                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" loading="lazy" class="bestseller-product-img">
+                  </a>
+                  <div class="bestseller-card__actions">
+                    <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_cart; ?>"><i class="fa fa-shopping-cart"></i></button>
+                    <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_wishlist; ?>"><i class="fa fa-heart"></i></button>
+                    <button type="button" onclick="compare.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_compare; ?>"><i class="fa fa-exchange"></i></button>
+                  </div>
                 </div>
               </div>
-              <div class="card-horizontal__information">
-                <div class="card-horizontal__text">
-                  <h3 class="card-horizontal__title">
-                    <span class="link--hover-underline"><?php echo $product['name']; ?></span>
-                  </h3>
-                  <div class="price <?php if ($product['special']) { ?>price--on-sale<?php } ?>">
-                    <dl>
-                      <div class="price__regular">
-                        <dt class="visually-hidden">
-                          <span class="visually-hidden visually-hidden--inline">Regular price</span>
-                        </dt>
-                        <dd>
-                          <span class="price-item price-item--regular"><?php echo $product['price']; ?></span>
-                        </dd>
-                      </div>
-                      <?php if ($product['special']) { ?>
-                      <div class="price__sale">
-                        <dt class="visually-hidden">
-                          <span class="visually-hidden visually-hidden--inline">Sale price</span>
-                        </dt>
-                        <dd>
-                          <span class="price-item price-item--sale"><?php echo $product['special']; ?></span>
-                        </dd>
-                        <dt class="price__compare visually-hidden">
-                          <span class="visually-hidden visually-hidden--inline">Regular price</span>
-                        </dt>
-                        <dd class="price__compare">
-                          <s class="price-item price-item--regular"><?php echo $product['price']; ?></s>
-                        </dd>
-                      </div>
-                      <?php } ?>
-                    </dl>
-                  </div>
+              <div class="bestseller-card__information">
+                <h3 class="bestseller-card__title">
+                  <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+                </h3>
+                
+                <?php if ($product['rating']) { ?>
+                <div class="rating">
+                  <?php for ($i = 1; $i <= 5; $i++) { ?>
+                  <?php if ($product['rating'] < $i) { ?>
+                  <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+                  <?php } else { ?>
+                  <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                  <?php } ?>
+                  <?php } ?>
+                </div>
+                <?php } ?>
+                
+                <div class="bestseller-price">
+                  <?php if ($product['price']) { ?>
+                    <?php if (!$product['special']) { ?>
+                      <span class="price-regular"><?php echo $product['price']; ?></span>
+                    <?php } else { ?>
+                      <span class="price-new"><?php echo $product['special']; ?></span> 
+                      <span class="price-old"><?php echo $product['price']; ?></span>
+                    <?php } ?>
+                  <?php } ?>
                 </div>
               </div>
             </div>
@@ -107,3 +100,186 @@
     </div>
   </div>
 </div>
+
+<style>
+/* Premium Product Grid Styles */
+.bestseller-products__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.bestseller-products__item {
+    list-style: none;
+}
+
+.bestseller-card-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.bestseller-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.bestseller-card-wrapper__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.bestseller-card__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding-top: 100%;
+}
+
+.bestseller-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.bestseller-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.bestseller-card-wrapper:hover .bestseller-product-img {
+    transform: scale(1.05);
+}
+
+.bestseller-card__actions {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    transition: bottom 0.3s ease;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(5px);
+}
+
+.bestseller-card-wrapper:hover .bestseller-card__actions {
+    bottom: 0;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #ff6b9d;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.bestseller-card__information {
+    padding: 15px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bestseller-card__title {
+    font-size: 15px;
+    margin: 0 0 8px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.bestseller-card__title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.bestseller-card__title a:hover {
+    color: #ff6b9d;
+}
+
+.bestseller-price {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.price-new {
+    color: #ff6b9d;
+    margin-right: 5px;
+}
+
+.price-old {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.rating {
+    color: #ffc107;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bestseller-products__list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .bestseller-card-wrapper:hover {
+        transform: none;
+    }
+    
+    .bestseller-card__actions {
+        bottom: 0;
+        background: transparent;
+        position: absolute;
+        top: 10px;
+        bottom: auto;
+        right: 10px;
+        left: auto;
+        flex-direction: column;
+        width: auto;
+        padding: 0;
+    }
+    
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+}
+</style>
