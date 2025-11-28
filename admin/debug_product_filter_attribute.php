@@ -18,6 +18,17 @@ $registry->set('config', $config);
 $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
 $registry->set('db', $db);
 
+// Get default language ID
+$default_language_id = 1; // Default fallback
+try {
+    $lang_check = $db->query("SELECT language_id FROM " . DB_PREFIX . "language WHERE status = 1 ORDER BY sort_order ASC LIMIT 1");
+    if ($lang_check->num_rows) {
+        $default_language_id = (int)$lang_check->row['language_id'];
+    }
+} catch (Exception $e) {
+    // Use default
+}
+
 echo "<h1>Product Filter & Attribute Debug</h1>";
 echo "<pre>";
 
@@ -42,44 +53,122 @@ if ($product_id > 0) {
     
     // Check filters
     echo "=== FILTERS ===\n";
-    $filters = $db->query("SELECT pf.filter_id, f.name, fg.name as group_name 
-                           FROM {$prefix}product_filter pf 
-                           LEFT JOIN {$prefix}filter f ON pf.filter_id = f.filter_id 
-                           LEFT JOIN {$prefix}filter_group fg ON f.filter_group_id = fg.filter_group_id 
-                           WHERE pf.product_id = {$product_id} 
-                           ORDER BY fg.sort_order, f.sort_order");
     
-    if ($filters->num_rows > 0) {
+    // First check what columns exist in the filter table
+    $filter_columns = $db->query("SHOW COLUMNS FROM {$prefix}filter");
+    $filter_has_name = false;
+    $filter_has_description = false;
+    if ($filter_columns->num_rows > 0) {
+        foreach ($filter_columns->rows as $col) {
+            if ($col['Field'] == 'name') $filter_has_name = true;
+            if ($col['Field'] == 'filter_description') $filter_has_description = true;
+        }
+    }
+    
+    // Build query based on available columns
+    if ($filter_has_name) {
+        $filters = $db->query("SELECT pf.filter_id, f.name, fg.name as group_name 
+                               FROM {$prefix}product_filter pf 
+                               LEFT JOIN {$prefix}filter f ON pf.filter_id = f.filter_id 
+                               LEFT JOIN {$prefix}filter_group fg ON f.filter_group_id = fg.filter_group_id 
+                               WHERE pf.product_id = {$product_id} 
+                               ORDER BY fg.sort_order, f.sort_order");
+    } else {
+        // Try with filter_description table
+        $filters = $db->query("SELECT pf.filter_id, fd.name, fg.name as group_name 
+                               FROM {$prefix}product_filter pf 
+                               LEFT JOIN {$prefix}filter_description fd ON pf.filter_id = fd.filter_id AND fd.language_id = {$default_language_id}
+                               LEFT JOIN {$prefix}filter f ON pf.filter_id = f.filter_id 
+                               LEFT JOIN {$prefix}filter_group fg ON f.filter_group_id = fg.filter_group_id 
+                               WHERE pf.product_id = {$product_id} 
+                               ORDER BY fg.sort_order, f.sort_order");
+    }
+    
+    if ($filters && $filters->num_rows > 0) {
         echo "Found {$filters->num_rows} filter(s):\n";
         foreach ($filters->rows as $filter) {
-            echo "  - Filter ID {$filter['filter_id']}: {$filter['name']} (Group: {$filter['group_name']})\n";
+            $filter_name = isset($filter['name']) ? $filter['name'] : 'Unknown';
+            $group_name = isset($filter['group_name']) ? $filter['group_name'] : 'Unknown';
+            echo "  - Filter ID {$filter['filter_id']}: {$filter_name} (Group: {$group_name})\n";
         }
     } else {
-        echo "No filters found for this product.\n";
+        // Just show filter IDs if join fails
+        $simple_filters = $db->query("SELECT filter_id FROM {$prefix}product_filter WHERE product_id = {$product_id}");
+        if ($simple_filters->num_rows > 0) {
+            echo "Found {$simple_filters->num_rows} filter(s) (names unavailable):\n";
+            foreach ($simple_filters->rows as $filter) {
+                echo "  - Filter ID: {$filter['filter_id']}\n";
+            }
+        } else {
+            echo "No filters found for this product.\n";
+        }
     }
     
     // Check attributes
     echo "\n=== ATTRIBUTES ===\n";
-    $attributes = $db->query("SELECT pa.attribute_id, pa.language_id, pa.text, a.name, ag.name as group_name 
-                               FROM {$prefix}product_attribute pa 
-                               LEFT JOIN {$prefix}attribute a ON pa.attribute_id = a.attribute_id 
-                               LEFT JOIN {$prefix}attribute_group ag ON a.attribute_group_id = ag.attribute_group_id 
-                               WHERE pa.product_id = {$product_id} 
-                               ORDER BY ag.sort_order, a.sort_order, pa.language_id");
     
-    if ($attributes->num_rows > 0) {
+    // First check what columns exist in the attribute table
+    $attr_columns = $db->query("SHOW COLUMNS FROM {$prefix}attribute");
+    $attr_has_name = false;
+    $attr_has_description = false;
+    if ($attr_columns->num_rows > 0) {
+        foreach ($attr_columns->rows as $col) {
+            if ($col['Field'] == 'name') $attr_has_name = true;
+            if ($col['Field'] == 'attribute_description') $attr_has_description = true;
+        }
+    }
+    
+    // Build query based on available columns
+    if ($attr_has_name) {
+        $attributes = $db->query("SELECT pa.attribute_id, pa.language_id, pa.text, a.name, ag.name as group_name 
+                                   FROM {$prefix}product_attribute pa 
+                                   LEFT JOIN {$prefix}attribute a ON pa.attribute_id = a.attribute_id 
+                                   LEFT JOIN {$prefix}attribute_group ag ON a.attribute_group_id = ag.attribute_group_id 
+                                   WHERE pa.product_id = {$product_id} 
+                                   ORDER BY ag.sort_order, a.sort_order, pa.language_id");
+    } else {
+        // Try with attribute_description table
+        $attributes = $db->query("SELECT pa.attribute_id, pa.language_id, pa.text, ad.name, ag.name as group_name 
+                                   FROM {$prefix}product_attribute pa 
+                                   LEFT JOIN {$prefix}attribute_description ad ON pa.attribute_id = ad.attribute_id AND ad.language_id = {$default_language_id}
+                                   LEFT JOIN {$prefix}attribute a ON pa.attribute_id = a.attribute_id 
+                                   LEFT JOIN {$prefix}attribute_group ag ON a.attribute_group_id = ag.attribute_group_id 
+                                   WHERE pa.product_id = {$product_id} 
+                                   ORDER BY ag.sort_order, a.sort_order, pa.language_id");
+    }
+    
+    if ($attributes && $attributes->num_rows > 0) {
         echo "Found {$attributes->num_rows} attribute record(s):\n";
         $current_attr_id = 0;
         foreach ($attributes->rows as $attr) {
             if ($current_attr_id != $attr['attribute_id']) {
                 if ($current_attr_id > 0) echo "\n";
-                echo "  Attribute ID {$attr['attribute_id']}: {$attr['name']} (Group: {$attr['group_name']})\n";
+                $attr_name = isset($attr['name']) ? $attr['name'] : 'Unknown';
+                $group_name = isset($attr['group_name']) ? $attr['group_name'] : 'Unknown';
+                echo "  Attribute ID {$attr['attribute_id']}: {$attr_name} (Group: {$group_name})\n";
                 $current_attr_id = $attr['attribute_id'];
             }
-            echo "    Language {$attr['language_id']}: " . (strlen($attr['text']) > 0 ? substr($attr['text'], 0, 50) . '...' : '(empty)') . "\n";
+            $text = isset($attr['text']) ? $attr['text'] : '';
+            echo "    Language {$attr['language_id']}: " . (strlen($text) > 0 ? substr($text, 0, 50) . '...' : '(empty)') . "\n";
         }
     } else {
-        echo "No attributes found for this product.\n";
+        // Just show attribute IDs if join fails
+        $simple_attrs = $db->query("SELECT attribute_id, language_id, text FROM {$prefix}product_attribute WHERE product_id = {$product_id} ORDER BY attribute_id, language_id");
+        if ($simple_attrs->num_rows > 0) {
+            echo "Found {$simple_attrs->num_rows} attribute record(s) (names unavailable):\n";
+            $current_attr_id = 0;
+            foreach ($simple_attrs->rows as $attr) {
+                if ($current_attr_id != $attr['attribute_id']) {
+                    if ($current_attr_id > 0) echo "\n";
+                    echo "  Attribute ID {$attr['attribute_id']}:\n";
+                    $current_attr_id = $attr['attribute_id'];
+                }
+                $text = isset($attr['text']) ? $attr['text'] : '';
+                echo "    Language {$attr['language_id']}: " . (strlen($text) > 0 ? substr($text, 0, 50) . '...' : '(empty)') . "\n";
+            }
+        } else {
+            echo "No attributes found for this product.\n";
+        }
     }
     
     // Check for product_id = 0 records
