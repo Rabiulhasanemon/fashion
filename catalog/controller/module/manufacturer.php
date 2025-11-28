@@ -65,21 +65,46 @@ class ControllerModuleManufacturer extends Controller {
 
 				if ($manufacturer_info) {
 					$image = null;
+					$original_image_path = null;
 					
 					// Check for thumb first, then image
 					if (!empty($manufacturer_info['thumb'])) {
+						$original_image_path = $manufacturer_info['thumb'];
 						$image = $this->model_tool_image->resize($manufacturer_info['thumb'], $setting['width'], $setting['height']);
-						$debug_entry['resize_result'] = $image ? 'SUCCESS' : 'FAILED (file missing)';
+						$debug_entry['resize_result'] = $image ? 'SUCCESS' : 'FAILED (file missing or cache issue)';
 						$debug_entry['resized_url'] = $image;
 					} elseif (!empty($manufacturer_info['image'])) {
+						$original_image_path = $manufacturer_info['image'];
 						$image = $this->model_tool_image->resize($manufacturer_info['image'], $setting['width'], $setting['height']);
-						$debug_entry['resize_result'] = $image ? 'SUCCESS' : 'FAILED (file missing)';
+						$debug_entry['resize_result'] = $image ? 'SUCCESS' : 'FAILED (file missing or cache issue)';
 						$debug_entry['resized_url'] = $image;
 					} else {
 						$debug_entry['resize_result'] = 'NO IMAGE FOUND';
 					}
 					
-					// If resize returned null (file missing) or no image found, use SVG placeholder
+					// If resize failed but original file exists, use original image directly
+					if (!$image && $original_image_path) {
+						// Check if original file actually exists
+						if (is_file(DIR_IMAGE . $original_image_path)) {
+							// Use original image directly with proper URL encoding
+							// Split the path and encode each segment properly
+							$path_parts = explode('/', $original_image_path);
+							$encoded_parts = array_map('rawurlencode', $path_parts);
+							$encoded_path = implode('/', $encoded_parts);
+							
+							if ($this->request->server['HTTPS']) {
+								$image = $this->config->get('config_ssl') . 'image/' . $encoded_path;
+							} else {
+								$image = $this->config->get('config_url') . 'image/' . $encoded_path;
+							}
+							$debug_entry['resize_result'] = 'USING ORIGINAL IMAGE (cache failed)';
+							$debug_entry['resized_url'] = $image;
+						} else {
+							$debug_entry['resize_result'] = 'ORIGINAL FILE NOT FOUND';
+						}
+					}
+					
+					// If still no image, use SVG placeholder
 					if (!$image) {
 						// Generate SVG placeholder data URI
 						$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'.$setting['width'].'" height="'.$setting['height'].'" viewBox="0 0 '.$setting['width'].' '.$setting['height'].'"><rect width="100%" height="100%" fill="#f8f9fa"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="12" fill="#adb5bd" text-anchor="middle" dy=".3em">' . htmlspecialchars($manufacturer_info['name']) . '</text></svg>';
