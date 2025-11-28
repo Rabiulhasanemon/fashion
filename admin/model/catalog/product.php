@@ -1482,9 +1482,20 @@ class ModelCatalogProduct extends Model {
 			$filter_count = 0;
 			if (isset($data['product_filter']) && is_array($data['product_filter'])) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
+				
+				// Track processed filters to prevent duplicates
+				$processed_filters = array();
+				
 				foreach ($data['product_filter'] as $filter_id) {
 					$filter_id = (int)$filter_id;
 					if ($filter_id > 0) {
+						// Skip if already processed
+						if (in_array($filter_id, $processed_filters)) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Skipping duplicate filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
+							continue;
+						}
+						$processed_filters[] = $filter_id;
+						
 						// Check if this filter already exists for this product
 						$check_filter = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "' AND filter_id = '" . $filter_id . "' LIMIT 1");
 						if (!$check_filter || !$check_filter->num_rows) {
@@ -1523,6 +1534,9 @@ class ModelCatalogProduct extends Model {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Processing ' . count($data['product_attribute']) . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Data structure: ' . print_r($data['product_attribute'], true) . PHP_EOL, FILE_APPEND);
 				
+				// Track processed attributes to prevent duplicates
+				$processed_attributes = array();
+				
 				foreach ($data['product_attribute'] as $key => $attribute) {
 					// Handle both numeric keys and attribute_id keys
 					$attribute_id = 0;
@@ -1533,6 +1547,13 @@ class ModelCatalogProduct extends Model {
 					}
 					
 					if ($attribute_id > 0) {
+						// Skip if already processed
+						if (in_array($attribute_id, $processed_attributes)) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Skipping duplicate attribute_id: ' . $attribute_id . PHP_EOL, FILE_APPEND);
+							continue;
+						}
+						$processed_attributes[] = $attribute_id;
+						
 						// Check if product_attribute_description exists
 						if (isset($attribute['product_attribute_description']) && is_array($attribute['product_attribute_description'])) {
 							foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
@@ -2284,6 +2305,9 @@ class ModelCatalogProduct extends Model {
 		if (isset($data['product_attribute']) && is_array($data['product_attribute'])) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_attribute']) . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 			
+			// Track processed attributes to prevent duplicates
+			$processed_attributes = array();
+			
 			foreach ($data['product_attribute'] as $key => $attribute) {
 				// Handle both numeric keys and attribute_id keys
 				$attribute_id = 0;
@@ -2294,6 +2318,13 @@ class ModelCatalogProduct extends Model {
 				}
 				
 				if ($attribute_id > 0) {
+					// Skip if already processed
+					if (in_array($attribute_id, $processed_attributes)) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Skipping duplicate attribute_id: ' . $attribute_id . PHP_EOL, FILE_APPEND);
+						continue;
+					}
+					$processed_attributes[] = $attribute_id;
+					
 					// Check if product_attribute_description exists
 					if (isset($attribute['product_attribute_description']) && is_array($attribute['product_attribute_description'])) {
 						foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
@@ -2302,6 +2333,9 @@ class ModelCatalogProduct extends Model {
 							
 							// Save attribute even if text is empty (some attributes might be empty)
 							if ($language_id > 0) {
+								// Delete any existing record first (safety against partial inserts or manual DB changes)
+								$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "' AND attribute_id = '" . $attribute_id . "' AND language_id = '" . $language_id . "'");
+								
 								$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_attribute SET product_id = '" . (int)$product_id . "', attribute_id = '" . $attribute_id . "', language_id = '" . $language_id . "', text = '" . $this->db->escape($text) . "'");
 								if ($insert_result) {
 									$attribute_count++;
@@ -2335,11 +2369,26 @@ class ModelCatalogProduct extends Model {
 		$filter_count = 0;
 		if (isset($data['product_filter']) && is_array($data['product_filter'])) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
+			
+			// Track processed filters to prevent duplicates
+			$processed_filters = array();
+			
 			foreach ($data['product_filter'] as $filter_id) {
 				$filter_id = (int)$filter_id;
 				if ($filter_id > 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
-					$filter_count++;
+					// Skip if already processed
+					if (in_array($filter_id, $processed_filters)) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Skipping duplicate filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
+						continue;
+					}
+					$processed_filters[] = $filter_id;
+					
+					// Check if exists (safety)
+					$check_exists = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "' AND filter_id = '" . $filter_id . "'");
+					if (!$check_exists->num_rows) {
+						$this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
+						$filter_count++;
+					}
 				}
 			}
 		} else {
