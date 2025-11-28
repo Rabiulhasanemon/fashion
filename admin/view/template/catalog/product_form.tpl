@@ -1334,6 +1334,12 @@ $('#option a:first').tab('show');
 $('#form-product').on('submit', function(e) {
     console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
     
+    // Prevent default submission so we can collect all data first
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var form = this;
+    
     // Make sure all tabs are visible temporarily to ensure form fields are included
     // This is necessary because some browsers don't include fields from hidden tabs
     
@@ -1416,7 +1422,7 @@ $('#form-product').on('submit', function(e) {
     console.log('  - Attribute data structure:', attribute_data);
     
     // Verify form will include the data
-    var formData = new FormData(this);
+    var formData = new FormData(form);
     var formFilters = [];
     var formAttributes = [];
     
@@ -1434,15 +1440,16 @@ $('#form-product').on('submit', function(e) {
     console.log('  - Attributes:', formAttributes.length, 'fields');
     
     // Small delay to ensure DOM is updated before form submits
-    var form = this;
     setTimeout(function() {
-        // Restore tab visibility (form will submit before this completes)
+        // Restore tab visibility
         $('.tab-pane').not('#tab-general').removeClass('active').hide();
         $('#tab-general').addClass('active').show();
-    }, 50);
+        
+        // Now submit the form programmatically
+        form.submit();
+    }, 100);
     
-    // Don't prevent default - let form submit normally
-    return true;
+    return false;
 });
 
 //--></script></div>
