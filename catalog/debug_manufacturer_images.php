@@ -354,7 +354,106 @@ try {
             <button class="btn btn-primary" onclick="location.reload()">🔄 Refresh Page</button>
             <button class="btn btn-success" onclick="testAllImages()">✅ Test All Images</button>
             <button class="btn btn-danger" onclick="clearCache()">🗑️ Clear Image Cache</button>
+            <a href="?action=create_cache" class="btn btn-success" style="background: #ff6b00;">🔧 Create Missing Cache Files</a>
         </div>
+        
+        <?php
+        // Handle cache creation
+        if (isset($_GET['action']) && $_GET['action'] == 'create_cache') {
+            echo '<div style="background: #d4edda; border: 2px solid #28a745; padding: 20px; margin: 20px 0; border-radius: 8px;">';
+            echo '<h3>🔧 Creating Cache Files...</h3>';
+            $created = 0;
+            $failed = 0;
+            $errors = array();
+            
+            foreach ($manufacturers_data as $manufacturer) {
+                $thumb = isset($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+                $image = isset($manufacturer['image']) ? $manufacturer['image'] : '';
+                $image_path = $thumb ?: $image;
+                $name = $manufacturer['name'];
+                
+                if ($image_path) {
+                    $original_file = DIR_IMAGE . $image_path;
+                    if (file_exists($original_file)) {
+                        // Try to create cache with error handling
+                        try {
+                            // Check cache directory permissions
+                            $cache_dir = DIR_IMAGE . 'cache';
+                            if (!is_dir($cache_dir)) {
+                                if (!@mkdir($cache_dir, 0777, true)) {
+                                    $errors[] = "$name: Cannot create cache directory (permission issue?)";
+                                    echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Cannot create cache directory</div>";
+                                    $failed++;
+                                    continue;
+                                }
+                            }
+                            
+                            // Check if directory is writable
+                            if (!is_writable($cache_dir)) {
+                                $errors[] = "$name: Cache directory is not writable";
+                                echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Cache directory not writable (chmod 777 needed)</div>";
+                                $failed++;
+                                continue;
+                            }
+                            
+                            $resized = $model_image->resize($image_path, 200, 200);
+                            if ($resized) {
+                                // Extract cache path from URL
+                                $cache_path = str_replace($config->get('config_url') . '/image/', '', $resized);
+                                $cache_path = str_replace($config->get('config_ssl') . '/image/', '', $cache_path);
+                                $cache_file = DIR_IMAGE . $cache_path;
+                                
+                                // Create parent directories if they don't exist
+                                $cache_dir_path = dirname($cache_file);
+                                if (!is_dir($cache_dir_path)) {
+                                    if (!@mkdir($cache_dir_path, 0777, true)) {
+                                        $errors[] = "$name: Cannot create cache subdirectory: " . dirname($cache_path);
+                                        echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Cannot create directory: " . htmlspecialchars(dirname($cache_path)) . "</div>";
+                                        $failed++;
+                                        continue;
+                                    }
+                                }
+                                
+                                if (file_exists($cache_file)) {
+                                    $created++;
+                                    echo "<div style='color: #28a745; margin: 5px 0;'>✅ Created cache for: $name</div>";
+                                } else {
+                                    // Try to manually create it
+                                    $errors[] = "$name: Cache file not created - Path: " . $cache_path;
+                                    echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Cache file not created. Expected: " . htmlspecialchars($cache_path) . "</div>";
+                                    $failed++;
+                                }
+                            } else {
+                                $failed++;
+                                $errors[] = "$name: Resize returned null";
+                                echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Resize returned null</div>";
+                            }
+                        } catch (Exception $e) {
+                            $failed++;
+                            $errors[] = "$name: Exception - " . $e->getMessage();
+                            echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - " . htmlspecialchars($e->getMessage()) . "</div>";
+                        }
+                    } else {
+                        $failed++;
+                        $errors[] = "$name: Original file not found";
+                        echo "<div style='color: #dc3545; margin: 5px 0;'>❌ Failed: $name - Original file not found</div>";
+                    }
+                }
+            }
+            
+            echo "<hr style='margin: 20px 0;'>";
+            echo "<div><strong>Summary:</strong> Created: $created, Failed: $failed</div>";
+            if (!empty($errors)) {
+                echo "<div style='margin-top: 10px;'><strong>Errors:</strong><ul>";
+                foreach ($errors as $error) {
+                    echo "<li>$error</li>";
+                }
+                echo "</ul></div>";
+            }
+            echo '<div style="margin-top: 20px;"><a href="?" class="btn btn-primary">← Back to Debug Page</a></div>';
+            echo '</div>';
+        }
+        ?>
 
         <div class="summary">
             <h2>📊 Summary</h2>
