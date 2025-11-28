@@ -503,6 +503,7 @@
                 </div>
               </div>
               <?php echo $filter; ?>
+              <div id="selected-product-filters" style="display:none;"></div>
             </div>
             <div class="tab-pane" id="tab-attribute">
               <div class="form-group">
@@ -1330,219 +1331,44 @@ $('#option a:first').tab('show');
         }
   });
 
-// Ensure all form data is collected before submission, especially from hidden tabs
-// Use document ready to ensure jQuery is loaded
-$(document).ready(function() {
-    console.log('Form submit handler script loaded');
-    
-    // Handle both form submit event AND button click (since button is outside form)
-    var handleFormSubmit = function(e) {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
+// Product filter helper: keep hidden inputs in sync so backend always receives clean data
+$(function() {
+    function syncProductFilters() {
+        var container = $('#selected-product-filters');
+        if (!container.length) {
+            return;
         }
-        
-        console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
-    
-        var form = document.getElementById('form-product');
-        if (!form) {
-            console.error('Form not found!');
-            return false;
-        }
-        var formSubmitted = false;
-        
-        console.log('Form element found:', form);
-    
-    // CRITICAL: Show ALL tabs and ensure they're visible BEFORE collecting data
-    // This is necessary because some browsers don't include fields from hidden tabs
-    $('.tab-pane').each(function() {
-        $(this).addClass('active').show().css('display', 'block');
-    });
-    
-    // Also ensure the filter-wrap and attribute-table are visible
-    $('#filter-wrap, #attribute-table').show();
-    
-    // Small delay to ensure DOM is fully updated after showing tabs
-    setTimeout(function() {
-        // Collect all filter checkboxes - search in ALL tabs, not just visible ones
-        var product_filters = [];
-        var filter_checkboxes = $('#form-product input[name="product_filter[]"]:checked');
-        console.log('Found filter checkboxes:', filter_checkboxes.length);
-        
-        filter_checkboxes.each(function() {
-            var filter_id = $(this).val();
-            if (filter_id && filter_id != '0' && filter_id != '') {
-                product_filters.push(filter_id);
-                console.log('  - Filter ID:', filter_id);
+
+        container.empty();
+
+        var checked = $('input.product-filter-checkbox:checked');
+        checked.each(function() {
+            var filterId = $(this).val();
+            if (filterId && filterId !== '0') {
+                $('<input>')
+                    .attr({
+                        type: 'hidden',
+                        name: 'product_filter[]',
+                        value: filterId
+                    })
+                    .appendTo(container);
             }
         });
-        
-        // Remove duplicates
-        product_filters = product_filters.filter(function(value, index, self) {
-            return self.indexOf(value) === index;
-        });
-        
-        console.log('Unique filters after deduplication:', product_filters.length, 'IDs:', product_filters);
-        
-        // Remove any existing hidden inputs for product_filter (to avoid duplicates)
-        $('input[name="product_filter[]"][type="hidden"]').remove();
-        
-        // Add hidden inputs for ALL checked filters (as backup)
-        product_filters.forEach(function(filter_id) {
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'product_filter[]',
-                value: filter_id
-            }).appendTo('#form-product');
-        });
-        
-        // Ensure all attribute textareas are properly included and have current values
-        var attribute_count = 0;
-        var attribute_data = {};
-        
-        $('#form-product textarea[name*="product_attribute"]').each(function() {
-            var $textarea = $(this);
-            var name = $textarea.attr('name');
-            
-            // Force update the value to ensure it's current
-            var current_value = $textarea.val();
-            $textarea.val(current_value); // Force update
-            
-            // Ensure the textarea is visible and in the form
-            $textarea.show().css('display', 'block');
-            
-            // Parse the name to extract attribute_id and language_id
-            var match = name.match(/product_attribute\[(\d+)\]\[product_attribute_description\]\[(\d+)\]\[text\]/);
-            if (match) {
-                var attr_id = match[1];
-                var lang_id = match[2];
-                if (!attribute_data[attr_id]) {
-                    attribute_data[attr_id] = {};
-                }
-                attribute_data[attr_id][lang_id] = current_value;
-                console.log('  - Attribute ID:', attr_id, 'Language:', lang_id, 'Text length:', current_value.length);
-            }
-            
-            attribute_count++;
-        });
-        
-        // Also ensure attribute_id hidden inputs are visible
-        $('#form-product input[name*="product_attribute"][name*="[attribute_id]"]').each(function() {
-            $(this).show();
-        });
-        
-        // Log for debugging
-        console.log('Form submission summary:');
-        console.log('  - Filters:', product_filters.length, 'IDs:', product_filters);
-        console.log('  - Attributes:', attribute_count, 'textareas found');
-        console.log('  - Attribute data structure:', attribute_data);
-        
-        // Verify form will include the data using FormData
-        var formData = new FormData(form);
-        var formFilters = [];
-        var formAttributes = [];
-        
-        for (var pair of formData.entries()) {
-            if (pair[0] === 'product_filter[]') {
-                formFilters.push(pair[1]);
-            }
-            if (pair[0].indexOf('product_attribute') === 0) {
-                formAttributes.push(pair[0] + '=' + (pair[1].length > 20 ? pair[1].substring(0, 20) + '...' : pair[1]));
-            }
-        }
-        
-        console.log('FormData will include:');
-        console.log('  - Filters:', formFilters.length, 'IDs:', formFilters);
-        console.log('  - Attributes:', formAttributes.length, 'fields');
-        
-        // Final verification - ensure all filters are in the form
-        var allFiltersInForm = true;
-        var missingFilters = [];
-        product_filters.forEach(function(filter_id) {
-            var found = false;
-            $('#form-product input[name="product_filter[]"]').each(function() {
-                if ($(this).val() == filter_id) {
-                    found = true;
-                    return false; // break
-                }
-            });
-            if (!found) {
-                allFiltersInForm = false;
-                missingFilters.push(filter_id);
-                console.warn('Filter ID ' + filter_id + ' not found in form!');
-            }
-        });
-        
-        if (!allFiltersInForm) {
-            console.error('Some filters are missing from form! Re-adding...', missingFilters);
-            // Re-add all missing filters as hidden inputs
-            missingFilters.forEach(function(filter_id) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'product_filter[]',
-                    value: filter_id
-                }).appendTo('#form-product');
-            });
-        }
-        
-        // One more delay to ensure DOM is fully updated
-        setTimeout(function() {
-            // Final check before submission
-            var finalFormData = new FormData(form);
-            var finalFilters = [];
-            var finalAttributes = [];
-            for (var pair of finalFormData.entries()) {
-                if (pair[0] === 'product_filter[]') {
-                    finalFilters.push(pair[1]);
-                }
-                if (pair[0].indexOf('product_attribute') === 0) {
-                    finalAttributes.push(pair[0]);
-                }
-            }
-            console.log('=== FINAL FORM SUBMISSION ===');
-            console.log('  - Filters in form:', finalFilters.length, 'IDs:', finalFilters);
-            console.log('  - Attributes in form:', finalAttributes.length);
-            
-            // Restore tab visibility (form will submit before this completes)
-            $('.tab-pane').not('#tab-general').removeClass('active').hide();
-            $('#tab-general').addClass('active').show();
-            
-            // Now submit the form programmatically
-            if (!formSubmitted) {
-                formSubmitted = true;
-                form.submit();
-            }
-        }, 100);
-    }, 200); // Increased delay to ensure all tabs are visible and DOM is updated
-    
-        return false;
-    };
-    
-    // Attach to form submit event
-    $('#form-product').on('submit', handleFormSubmit);
-    
-    // Also attach to submit button click (since button is outside form with form="form-product")
-    $('button[type="submit"][form="form-product"]').on('click', function(e) {
-        console.log('Submit button clicked');
-        e.preventDefault();
-        e.stopPropagation();
-        handleFormSubmit(e);
-        return false;
-    });
-    
-    // Also handle Enter key in form
-    $('#form-product').on('keypress', function(e) {
-        if (e.which === 13) { // Enter key
-            var $target = $(e.target);
-            if (!$target.is('textarea') && !$target.is('button')) {
-                e.preventDefault();
-                handleFormSubmit(e);
-                return false;
-            }
+
+        console.log('Synced product filters:', checked.length);
+    }
+
+    $(document).on('change', 'input.product-filter-checkbox', syncProductFilters);
+
+    // When filter block reloads through AJAX we need to resync again
+    $(document).ajaxComplete(function(event, xhr, settings) {
+        if (settings && settings.url && settings.url.indexOf('catalog/product/filter') !== -1) {
+            syncProductFilters();
         }
     });
-    
-    console.log('Form submit handlers attached');
+
+    // Initial sync on page load
+    syncProductFilters();
 });
 
 //--></script></div>

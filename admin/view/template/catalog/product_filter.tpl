@@ -5,7 +5,12 @@
         <div class="col-sm-10">
             <?php foreach ($filter_group['product_filters'] as $product_filter) { ?>
             <label class="checkbox-inline">
-                <input type="checkbox" name="product_filter[]" value="<?php echo $product_filter['filter_id'] ?>" <?php echo $product_filter['checked'] ? "checked" : "" ?>> <?php echo $product_filter['name']; ?>
+                <input type="checkbox"
+                       class="product-filter-checkbox"
+                       name="product_filter_checkbox[]"
+                       value="<?php echo $product_filter['filter_id'] ?>"
+                       <?php echo $product_filter['checked'] ? "checked" : "" ?>>
+                <?php echo $product_filter['name']; ?>
             </label>
             <?php } ?>
         </div>
