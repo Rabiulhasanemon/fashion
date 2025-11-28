@@ -95,6 +95,62 @@ if ($product_id > 0) {
         }
     }
     
+    // Check recent log entries for this product
+    echo "\n=== RECENT LOG ENTRIES FOR THIS PRODUCT ===\n";
+    $log_file = DIR_LOGS . 'product_insert_debug.log';
+    if (file_exists($log_file)) {
+        $log_content = file_get_contents($log_file);
+        $lines = explode("\n", $log_content);
+        $relevant_lines = array();
+        
+        // Get last 50 lines that mention this product_id
+        foreach (array_reverse($lines) as $line) {
+            if (strpos($line, "product_id: {$product_id}") !== false || 
+                strpos($line, "[FILTER]") !== false || 
+                strpos($line, "[ATTRIBUTE]") !== false) {
+                $relevant_lines[] = $line;
+                if (count($relevant_lines) >= 20) break;
+            }
+        }
+        
+        if (count($relevant_lines) > 0) {
+            echo "Found " . count($relevant_lines) . " relevant log entries:\n";
+            foreach (array_reverse($relevant_lines) as $line) {
+                echo "  " . substr($line, 0, 100) . "\n";
+            }
+        } else {
+            echo "No recent log entries found for this product.\n";
+        }
+    } else {
+        echo "Log file not found: {$log_file}\n";
+    }
+    
+    // Check if product has attribute_profile_id
+    $product_info = $db->query("SELECT attribute_profile_id FROM {$prefix}product WHERE product_id = {$product_id}");
+    if ($product_info->num_rows && isset($product_info->row['attribute_profile_id'])) {
+        $attr_profile_id = (int)$product_info->row['attribute_profile_id'];
+        echo "\n=== ATTRIBUTE PROFILE ===\n";
+        echo "Product has attribute_profile_id: {$attr_profile_id}\n";
+        if ($attr_profile_id > 0) {
+            $profile = $db->query("SELECT name FROM {$prefix}attribute_profile WHERE attribute_profile_id = {$attr_profile_id}");
+            if ($profile->num_rows) {
+                echo "Profile name: {$profile->row['name']}\n";
+            }
+        }
+    }
+    
+    // Check filter profiles
+    $filter_profiles = $db->query("SELECT fp.filter_profile_id, fp.name 
+                                   FROM {$prefix}product_to_filter_profile ptfp 
+                                   LEFT JOIN {$prefix}filter_profile fp ON ptfp.filter_profile_id = fp.filter_profile_id 
+                                   WHERE ptfp.product_id = {$product_id}");
+    if ($filter_profiles->num_rows > 0) {
+        echo "\n=== FILTER PROFILES ===\n";
+        foreach ($filter_profiles->rows as $fp) {
+            echo "  - Profile ID {$fp['filter_profile_id']}: {$fp['name']}\n";
+        }
+    }
+    
 } else {
     echo "Usage: ?product_id=X (where X is the product_id to debug)\n";
     echo "\nRecent products:\n";
