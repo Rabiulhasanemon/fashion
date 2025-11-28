@@ -1526,31 +1526,17 @@ class ModelCatalogProduct extends Model {
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] ✗ WARNING: Insert reported success but record not found in database!' . PHP_EOL, FILE_APPEND);
 								}
 							} else {
-								// Get MySQL error
-								$error_msg = 'Unknown error';
-								$error_code = 0;
+								// Log failure - try to get error if possible, but don't fail if we can't
+								$error_msg = 'Insert failed';
 								try {
-									$reflection = new ReflectionClass($this->db);
-									$db_property = $reflection->getProperty('db');
-									$db_property->setAccessible(true);
-									$db_driver = $db_property->getValue($this->db);
-									if (is_object($db_driver) && property_exists($db_driver, 'link')) {
-										$link_reflection = new ReflectionProperty($db_driver, 'link');
-										$link_reflection->setAccessible(true);
-										$link = $link_reflection->getValue($db_driver);
-										if (is_object($link)) {
-											if (method_exists($link, 'error')) {
-												$error_msg = $link->error;
-											}
-											if (method_exists($link, 'errno')) {
-												$error_code = $link->errno;
-											}
-										}
+									// Try to get error from database connection
+									if (method_exists($this->db, 'getLastError')) {
+										$error_msg = $this->db->getLastError();
 									}
 								} catch (Exception $e) {
-									// Ignore
+									// Ignore - just use default message
 								}
-								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] ✗ FAILED to insert filter_id: ' . $filter_id . ' - Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] ✗ FAILED to insert filter_id: ' . $filter_id . ' - Error: ' . $error_msg . PHP_EOL, FILE_APPEND);
 							}
 						} else {
 							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Filter_id ' . $filter_id . ' already exists, skipping' . PHP_EOL, FILE_APPEND);
@@ -1650,31 +1636,17 @@ class ModelCatalogProduct extends Model {
 												file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] ✗ WARNING: Insert reported success but record not found in database!' . PHP_EOL, FILE_APPEND);
 											}
 										} else {
-											// Get MySQL error
-											$error_msg = 'Unknown error';
-											$error_code = 0;
+											// Log failure - try to get error if possible, but don't fail if we can't
+											$error_msg = 'Insert failed';
 											try {
-												$reflection = new ReflectionClass($this->db);
-												$db_property = $reflection->getProperty('db');
-												$db_property->setAccessible(true);
-												$db_driver = $db_property->getValue($this->db);
-												if (is_object($db_driver) && property_exists($db_driver, 'link')) {
-													$link_reflection = new ReflectionProperty($db_driver, 'link');
-													$link_reflection->setAccessible(true);
-													$link = $link_reflection->getValue($db_driver);
-													if (is_object($link)) {
-														if (method_exists($link, 'error')) {
-															$error_msg = $link->error;
-														}
-														if (method_exists($link, 'errno')) {
-															$error_code = $link->errno;
-														}
-													}
+												// Try to get error from database connection
+												if (method_exists($this->db, 'getLastError')) {
+													$error_msg = $this->db->getLastError();
 												}
 											} catch (Exception $e) {
-												// Ignore
+												// Ignore - just use default message
 											}
-											file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] ✗ FAILED to insert attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . ' - Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
+											file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] ✗ FAILED to insert attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . ' - Error: ' . $error_msg . PHP_EOL, FILE_APPEND);
 										}
 									} else {
 										file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Already exists, skipping: attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
