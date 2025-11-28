@@ -2574,10 +2574,15 @@ class ControllerCatalogProduct extends Controller {
         if (isset($this->request->post['product_filter'])) {
             $product_filters = $this->request->post['product_filter'];
         } elseif ($product_id) {
-            $product_filters = $this->model_catalog_product->getProductFilters($this->request->get['product_id']);
+            $product_filters = $this->model_catalog_product->getProductFilters($product_id);
         } else {
             $product_filters = array();
         }
+        
+        // Normalize product_filters to integers for proper comparison
+        $product_filters = array_map('intval', $product_filters);
+        $product_filters = array_filter($product_filters, function($id) { return $id > 0; });
+        $product_filters = array_values($product_filters); // Re-index array
 
         if($filter_profile_ids) {
             $filters = $this->model_catalog_filter->getFiltersByProfiles($filter_profile_ids);
@@ -2621,11 +2626,15 @@ class ControllerCatalogProduct extends Controller {
                 
                 // Add filter to the group
                 if (isset($filter_groups[$filter_group_id])) {
+                    $current_filter_id = (int)(isset($filter_info['filter_id']) ? $filter_info['filter_id'] : $product_filter['filter_id']);
+                    // Check if this filter is in the product's saved filters (strict comparison with integers)
+                    $is_checked = in_array($current_filter_id, $product_filters, true);
+                    
                     $filter_groups[$filter_group_id]['product_filters'][] = array(
-                        'filter_id' => isset($filter_info['filter_id']) ? $filter_info['filter_id'] : $product_filter['filter_id'],
+                        'filter_id' => $current_filter_id,
                         'name' => isset($filter_info['name']) ? $filter_info['name'] : '',
                         'sort_order' => isset($filter_info['sort_order']) ? (int)$filter_info['sort_order'] : 0,
-                        'checked' => in_array($product_filter['filter_id'], $product_filters)
+                        'checked' => $is_checked
                     );
                 }
             }
