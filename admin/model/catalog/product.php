@@ -1784,7 +1784,16 @@ class ModelCatalogProduct extends Model {
 			'product_to_category',
 			'product_image',
 			'product_option',
-			'product_option_value'
+			'product_option_value',
+			'product_filter',
+			'product_attribute',
+			'product_discount',
+			'product_special',
+			'product_reward',
+			'product_related',
+			'product_compatible',
+			'product_to_layout',
+			'product_to_download'
 		);
 		foreach ($cleanup_tables_edit as $table) {
 			$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
@@ -1800,6 +1809,13 @@ class ModelCatalogProduct extends Model {
 					}
 				}
 			}
+		}
+		
+		// Also clean up url_alias for product_id=0
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+		} catch (Exception $e) {
+			error_log("Cleanup warning for url_alias: " . $e->getMessage());
 		}
 
 		// Verify product exists before updating
@@ -1857,9 +1873,10 @@ class ModelCatalogProduct extends Model {
 		
 		// Delete existing descriptions for this product
 		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . $product_id . "'");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");
 		} catch (Exception $e) {
 			error_log("Warning: Could not delete product descriptions for product_id " . $product_id . ": " . $e->getMessage());
+			// Try to continue - might be a constraint issue
 		}
 		
 		if (isset($data['product_description']) && is_array($data['product_description'])) {

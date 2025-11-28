@@ -1342,43 +1342,64 @@ $('#form-product').on('submit', function(e) {
         }
     });
     
-    // Collect all filter checkboxes
+    // Collect all filter checkboxes - ensure they're all visible
     var product_filters = [];
     $('input[name="product_filter[]"]:checked').each(function() {
-        product_filters.push($(this).val());
+        var filter_id = $(this).val();
+        if (filter_id && filter_id != '0') {
+            product_filters.push(filter_id);
+        }
     });
     
-    // Ensure product_filter is in the form
-    if (product_filters.length > 0) {
-        // Remove any existing hidden inputs for product_filter
-        $('input[name="product_filter[]"]').not(':checkbox').remove();
-        // Add hidden inputs for checked filters (as backup)
-        product_filters.forEach(function(filter_id) {
-            if ($('input[name="product_filter[]"][value="' + filter_id + '"]').length === 0) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'product_filter[]',
-                    value: filter_id
-                }).appendTo('#form-product');
-            }
-        });
-    }
+    // Remove any existing hidden inputs for product_filter (to avoid duplicates)
+    $('input[name="product_filter[]"][type="hidden"]').remove();
     
-    // Ensure all attribute textareas are properly included
+    // Add hidden inputs for checked filters (as backup)
+    product_filters.forEach(function(filter_id) {
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'product_filter[]',
+            value: filter_id
+        }).appendTo('#form-product');
+    });
+    
+    // Ensure all attribute textareas are properly included and have current values
+    var attribute_count = 0;
     $('textarea[name*="product_attribute"]').each(function() {
-        // Force update the value to ensure it's current
         var $textarea = $(this);
-        $textarea.val($textarea.val());
+        // Force update the value to ensure it's current
+        var current_value = $textarea.val();
+        $textarea.val(current_value);
+        
+        // Ensure the textarea is visible and in the form
+        if (!$textarea.is(':visible')) {
+            $textarea.show();
+        }
+        attribute_count++;
+    });
+    
+    // Also collect attribute data from hidden inputs
+    $('input[name*="product_attribute"][name*="[attribute_id]"]').each(function() {
+        var $input = $(this);
+        if (!$input.is(':visible')) {
+            $input.show();
+        }
     });
     
     // Log for debugging
-    console.log('Form submission - Filters:', product_filters.length, 'Attributes:', $('textarea[name*="product_attribute"]').length);
+    console.log('Form submission - Filters:', product_filters.length, 'Attributes:', attribute_count);
+    console.log('Filter IDs:', product_filters);
     
-    // Restore tab visibility after a short delay (form will submit before this)
+    // Small delay to ensure DOM is updated before form submits
+    var form = this;
     setTimeout(function() {
+        // Restore tab visibility (form will submit before this completes)
         $('.tab-pane').not('#tab-general').removeClass('active').hide();
         $('#tab-general').addClass('active').show();
-    }, 100);
+    }, 50);
+    
+    // Don't prevent default - let form submit normally
+    return true;
 });
 
 //--></script></div>
