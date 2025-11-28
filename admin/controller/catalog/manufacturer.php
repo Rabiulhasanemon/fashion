@@ -664,16 +664,34 @@ class ControllerCatalogManufacturer extends Controller {
 		}
 
 		// Check if products are linked, but allow deletion anyway (we'll unlink them)
-		$this->load->model('catalog/product');
+		// Use direct database query instead of non-existent model method
+		$this->load->model('catalog/manufacturer');
 		$manufacturers_with_products = array();
 
-		foreach ($this->request->post['selected'] as $manufacturer_id) {
-			$product_total = $this->model_catalog_product->getTotalProductsByManufacturerId($manufacturer_id);
-			if ($product_total > 0) {
-				$manufacturers_with_products[] = array(
-					'id' => $manufacturer_id,
-					'count' => $product_total
-				);
+		// Get database connection - try registry first, then direct access
+		$db = null;
+		if (isset($this->registry)) {
+			$db = $this->registry->get('db');
+		}
+		if (!$db && isset($this->db)) {
+			$db = $this->db;
+		}
+
+		if ($db) {
+			foreach ($this->request->post['selected'] as $manufacturer_id) {
+				$manufacturer_id = (int)$manufacturer_id;
+				if ($manufacturer_id > 0) {
+					// Direct query to count products - more reliable than calling non-existent method
+					$product_query = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE manufacturer_id = " . $manufacturer_id);
+					$product_total = isset($product_query->row['total']) ? (int)$product_query->row['total'] : 0;
+					
+					if ($product_total > 0) {
+						$manufacturers_with_products[] = array(
+							'id' => $manufacturer_id,
+							'count' => $product_total
+						);
+					}
+				}
 			}
 		}
 
