@@ -1482,6 +1482,8 @@ class ModelCatalogProduct extends Model {
 			$filter_count = 0;
 			if (isset($data['product_filter']) && is_array($data['product_filter'])) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Filter IDs: ' . implode(', ', $data['product_filter']) . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_id: ' . $product_id . ' (valid: ' . ($product_id > 0 ? 'YES' : 'NO') . ')' . PHP_EOL, FILE_APPEND);
 				
 				// Track processed filters to prevent duplicates
 				$processed_filters = array();
@@ -1533,6 +1535,7 @@ class ModelCatalogProduct extends Model {
 			if (isset($data['product_attribute']) && is_array($data['product_attribute'])) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Processing ' . count($data['product_attribute']) . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Data structure: ' . print_r($data['product_attribute'], true) . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] product_id: ' . $product_id . ' (valid: ' . ($product_id > 0 ? 'YES' : 'NO') . ')' . PHP_EOL, FILE_APPEND);
 				
 				// Track processed attributes to prevent duplicates
 				$processed_attributes = array();

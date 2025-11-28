@@ -1332,6 +1332,8 @@ $('#option a:first').tab('show');
 
 // Ensure all form data is collected before submission, especially from hidden tabs
 $('#form-product').on('submit', function(e) {
+    console.log('=== FORM SUBMIT HANDLER TRIGGERED ===');
+    
     // Make sure all tabs are visible temporarily to ensure form fields are included
     // This is necessary because some browsers don't include fields from hidden tabs
     
@@ -1344,10 +1346,14 @@ $('#form-product').on('submit', function(e) {
     
     // Collect all filter checkboxes - ensure they're all visible
     var product_filters = [];
-    $('input[name="product_filter[]"]:checked').each(function() {
+    var filter_checkboxes = $('input[name="product_filter[]"]:checked');
+    console.log('Found filter checkboxes:', filter_checkboxes.length);
+    
+    filter_checkboxes.each(function() {
         var filter_id = $(this).val();
         if (filter_id && filter_id != '0') {
             product_filters.push(filter_id);
+            console.log('  - Filter ID:', filter_id);
         }
     });
     
@@ -1365,8 +1371,12 @@ $('#form-product').on('submit', function(e) {
     
     // Ensure all attribute textareas are properly included and have current values
     var attribute_count = 0;
+    var attribute_data = {};
+    
     $('textarea[name*="product_attribute"]').each(function() {
         var $textarea = $(this);
+        var name = $textarea.attr('name');
+        
         // Force update the value to ensure it's current
         var current_value = $textarea.val();
         $textarea.val(current_value);
@@ -1375,6 +1385,19 @@ $('#form-product').on('submit', function(e) {
         if (!$textarea.is(':visible')) {
             $textarea.show();
         }
+        
+        // Parse the name to extract attribute_id and language_id
+        var match = name.match(/product_attribute\[(\d+)\]\[product_attribute_description\]\[(\d+)\]\[text\]/);
+        if (match) {
+            var attr_id = match[1];
+            var lang_id = match[2];
+            if (!attribute_data[attr_id]) {
+                attribute_data[attr_id] = {};
+            }
+            attribute_data[attr_id][lang_id] = current_value;
+            console.log('  - Attribute ID:', attr_id, 'Language:', lang_id, 'Text length:', current_value.length);
+        }
+        
         attribute_count++;
     });
     
@@ -1387,8 +1410,28 @@ $('#form-product').on('submit', function(e) {
     });
     
     // Log for debugging
-    console.log('Form submission - Filters:', product_filters.length, 'Attributes:', attribute_count);
-    console.log('Filter IDs:', product_filters);
+    console.log('Form submission summary:');
+    console.log('  - Filters:', product_filters.length, 'IDs:', product_filters);
+    console.log('  - Attributes:', attribute_count, 'textareas found');
+    console.log('  - Attribute data structure:', attribute_data);
+    
+    // Verify form will include the data
+    var formData = new FormData(this);
+    var formFilters = [];
+    var formAttributes = [];
+    
+    for (var pair of formData.entries()) {
+        if (pair[0] === 'product_filter[]') {
+            formFilters.push(pair[1]);
+        }
+        if (pair[0].indexOf('product_attribute') === 0) {
+            formAttributes.push(pair[0] + '=' + (pair[1].length > 20 ? pair[1].substring(0, 20) + '...' : pair[1]));
+        }
+    }
+    
+    console.log('FormData will include:');
+    console.log('  - Filters:', formFilters.length, 'IDs:', formFilters);
+    console.log('  - Attributes:', formAttributes.length, 'fields');
     
     // Small delay to ensure DOM is updated before form submits
     var form = this;
