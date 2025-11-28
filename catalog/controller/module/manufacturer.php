@@ -21,6 +21,14 @@ class ControllerModuleManufacturer extends Controller {
 			$setting['limit'] = 4;
 		}
 
+		// Set default width and height if not provided
+		if (!isset($setting['width']) || !$setting['width']) {
+			$setting['width'] = 160;
+		}
+		if (!isset($setting['height']) || !$setting['height']) {
+			$setting['height'] = 90;
+		}
+
 		if (!empty($setting['manufacturer'])) {
 			$manufacturers = array_slice($setting['manufacturer'], 0, (int)$setting['limit']);
 
@@ -28,7 +36,10 @@ class ControllerModuleManufacturer extends Controller {
 				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
 
 				if ($manufacturer_info) {
-					if ($manufacturer_info['image']) {
+					// Check for thumb first, then image, then use placeholder
+					if (!empty($manufacturer_info['thumb'])) {
+						$image = $this->model_tool_image->resize($manufacturer_info['thumb'], $setting['width'], $setting['height']);
+					} elseif (!empty($manufacturer_info['image'])) {
 						$image = $this->model_tool_image->resize($manufacturer_info['image'], $setting['width'], $setting['height']);
 					} else {
 						$image = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
