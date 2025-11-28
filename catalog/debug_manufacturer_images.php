@@ -393,22 +393,62 @@ try {
                 $thumb = isset($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
                 $image = isset($manufacturer['image']) ? $manufacturer['image'] : '';
                 
+                // File existence checks
+                $original_file_exists = false;
+                $original_file_path = '';
+                $file_check_status = '';
+                $cache_file_exists = false;
+                $cache_file_path = '';
+                
                 // Try to resize image
                 $resized_thumb = null;
                 $resized_image = null;
+                $image_to_check = $thumb ?: $image;
                 
-                if ($thumb) {
-                    $resized_thumb = $model_image->resize($thumb, 200, 200);
-                    if ($resized_thumb) $with_images++;
-                } elseif ($image) {
-                    $resized_image = $model_image->resize($image, 200, 200);
-                    if ($resized_image) $with_images++;
+                if ($image_to_check) {
+                    // Check if original file exists
+                    $original_file_path = DIR_IMAGE . $image_to_check;
+                    $original_file_exists = file_exists($original_file_path) && is_file($original_file_path);
+                    
+                    if ($original_file_exists) {
+                        $file_check_status = '✅ File exists';
+                        // Try to resize
+                        if ($thumb) {
+                            $resized_thumb = $model_image->resize($thumb, 200, 200);
+                        } elseif ($image) {
+                            $resized_image = $model_image->resize($image, 200, 200);
+                        }
+                        
+                        // Check if cache file was created
+                        if ($resized_thumb || $resized_image) {
+                            $resized_url = $resized_thumb ?: $resized_image;
+                            // Extract cache path from URL
+                            $url_parts = parse_url($resized_url);
+                            if (isset($url_parts['path'])) {
+                                $cache_relative_path = str_replace('/image/', '', $url_parts['path']);
+                                $cache_file_path = DIR_IMAGE . $cache_relative_path;
+                                $cache_file_exists = file_exists($cache_file_path);
+                                if (!$cache_file_exists) {
+                                    $file_check_status = '⚠️ Original exists but cache file missing';
+                                } else {
+                                    $file_check_status = '✅ Both original and cache exist';
+                                }
+                            }
+                            $with_images++;
+                        } else {
+                            $file_check_status = '❌ Resize failed (file exists but resize returned null)';
+                        }
+                    } else {
+                        $file_check_status = '❌ Original file NOT FOUND: ' . $image_to_check;
+                        $without_images++;
+                    }
                 } else {
+                    $file_check_status = '❌ No image path in database';
                     $without_images++;
                 }
                 
                 $final_image = $resized_thumb ?: $resized_image;
-                $has_image = !empty($final_image);
+                $has_image = !empty($final_image) && $original_file_exists;
                 
                 if (!$has_image) {
                     // Generate SVG placeholder
@@ -434,6 +474,29 @@ try {
                 </div>
                 
                 <div class="info-section">
+                    <div class="info-row">
+                        <span class="info-label">File Check:</span>
+                        <span class="info-value" style="font-weight: bold; <?php echo $original_file_exists ? 'color: #28a745;' : 'color: #dc3545;'; ?>">
+                            <?php echo $file_check_status; ?>
+                        </span>
+                    </div>
+                    <?php if ($original_file_path) { ?>
+                    <div class="info-row">
+                        <span class="info-label">Original Path:</span>
+                        <span class="info-value" style="font-size: 11px; font-family: monospace;">
+                            <?php echo htmlspecialchars($original_file_path); ?>
+                        </span>
+                    </div>
+                    <?php } ?>
+                    <?php if ($cache_file_path) { ?>
+                    <div class="info-row">
+                        <span class="info-label">Cache Path:</span>
+                        <span class="info-value" style="font-size: 11px; font-family: monospace; <?php echo $cache_file_exists ? 'color: #28a745;' : 'color: #dc3545;'; ?>">
+                            <?php echo htmlspecialchars($cache_file_path); ?>
+                            <?php echo $cache_file_exists ? ' ✅' : ' ❌'; ?>
+                        </span>
+                    </div>
+                    <?php } ?>
                     <div class="info-row">
                         <span class="info-label">Thumb Field:</span>
                         <span class="info-value"><?php echo $thumb ? htmlspecialchars($thumb) : '<em style="color:#999;">Empty</em>'; ?></span>
