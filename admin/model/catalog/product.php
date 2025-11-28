@@ -1525,16 +1525,23 @@ class ModelCatalogProduct extends Model {
 			$filter_count = 0;
 			if (isset($data['product_filter']) && is_array($data['product_filter']) && !empty($data['product_filter'])) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Filter IDs: ' . implode(', ', $data['product_filter']) . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Filter IDs received: ' . implode(', ', $data['product_filter']) . PHP_EOL, FILE_APPEND);
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_id: ' . $product_id . ' (valid: ' . ($product_id > 0 ? 'YES' : 'NO') . ')' . PHP_EOL, FILE_APPEND);
 				
-				// Track processed filters to prevent duplicates
+				// Remove duplicates from array using array_unique, then track processed to prevent duplicates
+				$unique_filters = array_unique(array_map('intval', $data['product_filter']));
+				$unique_filters = array_filter($unique_filters, function($id) { return $id > 0; });
+				$unique_filters = array_values($unique_filters); // Re-index array
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Unique filter IDs after deduplication: ' . implode(', ', $unique_filters) . ' (count: ' . count($unique_filters) . ')' . PHP_EOL, FILE_APPEND);
+				
+				// Track processed filters to prevent duplicates (double safety)
 				$processed_filters = array();
 				
-				foreach ($data['product_filter'] as $filter_id) {
+				foreach ($unique_filters as $filter_id) {
 					$filter_id = (int)$filter_id;
 					if ($filter_id > 0) {
-						// Skip if already processed
+						// Skip if already processed (double safety)
 						if (in_array($filter_id, $processed_filters)) {
 							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Skipping duplicate filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
 							continue;
@@ -1607,9 +1614,17 @@ class ModelCatalogProduct extends Model {
 					}
 				}
 			} else {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] No product_filter data found or not an array' . PHP_EOL, FILE_APPEND);
+				if (!isset($data['product_filter'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_filter key not set in data array' . PHP_EOL, FILE_APPEND);
+				} elseif (!is_array($data['product_filter'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_filter is not an array, type: ' . gettype($data['product_filter']) . PHP_EOL, FILE_APPEND);
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_filter array is empty' . PHP_EOL, FILE_APPEND);
+				}
 			}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Total inserted: ' . $filter_count . ' filter(s)' . PHP_EOL, FILE_APPEND);
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] SKIPPED: product_id is invalid (' . $product_id . ')' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product attributes
@@ -1740,9 +1755,17 @@ class ModelCatalogProduct extends Model {
 					}
 				}
 			} else {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] No product_attribute data found or not an array. Data type: ' . gettype(isset($data['product_attribute']) ? $data['product_attribute'] : null) . PHP_EOL, FILE_APPEND);
+				if (!isset($data['product_attribute'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] product_attribute key not set in data array' . PHP_EOL, FILE_APPEND);
+				} elseif (!is_array($data['product_attribute'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] product_attribute is not an array, type: ' . gettype($data['product_attribute']) . PHP_EOL, FILE_APPEND);
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] product_attribute array is empty' . PHP_EOL, FILE_APPEND);
+				}
 			}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Total inserted: ' . $attribute_count . ' attribute(s)' . PHP_EOL, FILE_APPEND);
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] SKIPPED: product_id is invalid (' . $product_id . ')' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product discounts
@@ -2443,6 +2466,7 @@ class ModelCatalogProduct extends Model {
 		// Update product attributes
 		$log_file = DIR_LOGS . 'product_insert_debug.log';
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting attribute update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Attribute data structure: ' . print_r(isset($data['product_attribute']) ? $data['product_attribute'] : 'NOT SET', true) . PHP_EOL, FILE_APPEND);
 		
 		// Clean up any product_id = 0 records first
 		try {
@@ -2451,11 +2475,12 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_attribute: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
 		
-		// Delete existing attributes for this product
+		// Delete existing attributes for this product FIRST (before processing new ones)
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Deleted all existing attributes for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		
 		$attribute_count = 0;
-		if (isset($data['product_attribute']) && is_array($data['product_attribute'])) {
+		if (isset($data['product_attribute']) && is_array($data['product_attribute']) && !empty($data['product_attribute'])) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_attribute']) . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 			
 			// Track processed attributes to prevent duplicates
@@ -2470,6 +2495,9 @@ class ModelCatalogProduct extends Model {
 					$attribute_id = (int)$key;
 				}
 				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing attribute key: ' . $key . ', attribute_id: ' . $attribute_id . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Attribute data: ' . print_r($attribute, true) . PHP_EOL, FILE_APPEND);
+				
 				if ($attribute_id > 0) {
 					// Skip if already processed
 					if (in_array($attribute_id, $processed_attributes)) {
@@ -2480,29 +2508,64 @@ class ModelCatalogProduct extends Model {
 					
 					// Check if product_attribute_description exists
 					if (isset($attribute['product_attribute_description']) && is_array($attribute['product_attribute_description'])) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Found product_attribute_description for attribute_id: ' . $attribute_id . ', languages: ' . count($attribute['product_attribute_description']) . PHP_EOL, FILE_APPEND);
+						
 						foreach ($attribute['product_attribute_description'] as $language_id => $product_attribute_description) {
 							$language_id = (int)$language_id;
 							$text = isset($product_attribute_description['text']) ? trim($product_attribute_description['text']) : '';
 							
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Language ' . $language_id . ' text length: ' . strlen($text) . PHP_EOL, FILE_APPEND);
+							
 							// Save attribute even if text is empty (some attributes might be empty)
 							if ($language_id > 0) {
-								// Delete any existing record first (safety against partial inserts or manual DB changes)
+								// Since we deleted all existing attributes above, we can safely insert
+								// But delete one more time to be absolutely sure (in case of race condition)
 								$this->db->query("DELETE FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "' AND attribute_id = '" . $attribute_id . "' AND language_id = '" . $language_id . "'");
 								
 								$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_attribute SET product_id = '" . (int)$product_id . "', attribute_id = '" . $attribute_id . "', language_id = '" . $language_id . "', text = '" . $this->db->escape($text) . "'");
 								if ($insert_result) {
 									$attribute_count++;
-									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . ', text length: ' . strlen($text) . PHP_EOL, FILE_APPEND);
 								} else {
-									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . PHP_EOL, FILE_APPEND);
+									// Get error details
+									$error_msg = 'Unknown error';
+									$error_code = 0;
+									try {
+										$reflection = new ReflectionClass($this->db);
+										$db_property = $reflection->getProperty('db');
+										$db_property->setAccessible(true);
+										$db_driver = $db_property->getValue($this->db);
+										if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+											$link_reflection = new ReflectionProperty($db_driver, 'link');
+											$link_reflection->setAccessible(true);
+											$link = $link_reflection->getValue($db_driver);
+											if (is_object($link)) {
+												if (method_exists($link, 'error')) {
+													$error_msg = $link->error;
+												}
+												if (method_exists($link, 'errno')) {
+													$error_code = $link->errno;
+												}
+											}
+										}
+									} catch (Exception $e) {
+										// Ignore
+									}
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert attribute_id: ' . $attribute_id . ', language_id: ' . $language_id . ', Error: ' . $error_msg . ' (Code: ' . $error_code . ')' . PHP_EOL, FILE_APPEND);
 								}
+							} else {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Invalid language_id: ' . $language_id . ' for attribute_id: ' . $attribute_id . PHP_EOL, FILE_APPEND);
 							}
 						}
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Missing product_attribute_description for attribute_id: ' . $attribute_id . PHP_EOL, FILE_APPEND);
 					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Invalid attribute_id: ' . $attribute_id . ' (key: ' . $key . ')' . PHP_EOL, FILE_APPEND);
 				}
 			}
 		} else {
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_attribute data found or not an array' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_attribute data found or not an array or empty. Data type: ' . gettype(isset($data['product_attribute']) ? $data['product_attribute'] : null) . PHP_EOL, FILE_APPEND);
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $attribute_count . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 
@@ -2516,36 +2579,53 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_filter: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
 		
-		// Delete existing filters for this product
+		// Delete existing filters for this product FIRST (before processing new ones)
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Deleted all existing filters for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		
 		$filter_count = 0;
-		if (isset($data['product_filter']) && is_array($data['product_filter'])) {
+		if (isset($data['product_filter']) && is_array($data['product_filter']) && !empty($data['product_filter'])) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Filter IDs received: ' . implode(', ', $data['product_filter']) . PHP_EOL, FILE_APPEND);
 			
-			// Track processed filters to prevent duplicates
+			// Remove duplicates from array using array_unique, then track processed to prevent duplicates
+			$unique_filters = array_unique(array_map('intval', $data['product_filter']));
+			$unique_filters = array_filter($unique_filters, function($id) { return $id > 0; });
+			$unique_filters = array_values($unique_filters); // Re-index array
+			
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Unique filter IDs after deduplication: ' . implode(', ', $unique_filters) . ' (count: ' . count($unique_filters) . ')' . PHP_EOL, FILE_APPEND);
+			
+			// Track processed filters to prevent duplicates (double safety)
 			$processed_filters = array();
 			
-			foreach ($data['product_filter'] as $filter_id) {
+			foreach ($unique_filters as $filter_id) {
 				$filter_id = (int)$filter_id;
 				if ($filter_id > 0) {
-					// Skip if already processed
+					// Skip if already processed (double safety)
 					if (in_array($filter_id, $processed_filters)) {
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Skipping duplicate filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
 						continue;
 					}
 					$processed_filters[] = $filter_id;
 					
-					// Check if exists (safety)
-					$check_exists = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "' AND filter_id = '" . $filter_id . "'");
-					if (!$check_exists->num_rows) {
-						$this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
-						$filter_count++;
+					// Since we deleted all existing filters above, we can safely insert
+					// But check one more time to be absolutely sure (in case of race condition)
+					$check_exists = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "' AND filter_id = '" . $filter_id . "' LIMIT 1");
+					if (!$check_exists || !$check_exists->num_rows) {
+						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_filter SET product_id = '" . (int)$product_id . "', filter_id = '" . $filter_id . "'");
+						if ($insert_result) {
+							$filter_count++;
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert filter_id: ' . $filter_id . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Filter_id ' . $filter_id . ' already exists (should not happen after delete), skipping' . PHP_EOL, FILE_APPEND);
 					}
 				}
 			}
 		} else {
-			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_filter data found or not an array' . PHP_EOL, FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product_filter data found or not an array or empty' . PHP_EOL, FILE_APPEND);
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Total inserted: ' . $filter_count . ' filter(s)' . PHP_EOL, FILE_APPEND);
 

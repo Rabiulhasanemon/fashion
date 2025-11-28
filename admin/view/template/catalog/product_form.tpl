@@ -1439,15 +1439,55 @@ $('#form-product').on('submit', function(e) {
     console.log('  - Filters:', formFilters.length, 'IDs:', formFilters);
     console.log('  - Attributes:', formAttributes.length, 'fields');
     
+    // Force form to include all data by serializing and checking
+    // Make sure all hidden inputs are in the form
+    var allFiltersInForm = true;
+    product_filters.forEach(function(filter_id) {
+        var found = false;
+        $('#form-product input[name="product_filter[]"]').each(function() {
+            if ($(this).val() == filter_id) {
+                found = true;
+                return false; // break
+            }
+        });
+        if (!found) {
+            allFiltersInForm = false;
+            console.warn('Filter ID ' + filter_id + ' not found in form!');
+        }
+    });
+    
+    if (!allFiltersInForm) {
+        console.error('Some filters are missing from form! Re-adding...');
+        // Re-add all filters as hidden inputs
+        $('input[name="product_filter[]"][type="hidden"]').remove();
+        product_filters.forEach(function(filter_id) {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'product_filter[]',
+                value: filter_id
+            }).appendTo('#form-product');
+        });
+    }
+    
     // Small delay to ensure DOM is updated before form submits
     setTimeout(function() {
         // Restore tab visibility
         $('.tab-pane').not('#tab-general').removeClass('active').hide();
         $('#tab-general').addClass('active').show();
         
+        // Final verification - check form has all data
+        var finalFormData = new FormData(form);
+        var finalFilters = [];
+        for (var pair of finalFormData.entries()) {
+            if (pair[0] === 'product_filter[]') {
+                finalFilters.push(pair[1]);
+            }
+        }
+        console.log('Final form submission - Filters in form:', finalFilters.length, 'IDs:', finalFilters);
+        
         // Now submit the form programmatically
         form.submit();
-    }, 100);
+    }, 150); // Increased delay slightly to ensure DOM is fully updated
     
     return false;
 });
