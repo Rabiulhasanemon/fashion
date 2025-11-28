@@ -1468,6 +1468,8 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Insert product filters
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] About to insert filters. product_id: ' . $product_id . ', has product_filter data: ' . (isset($data['product_filter']) ? 'YES' : 'NO') . PHP_EOL, FILE_APPEND);
+		
 		if ($product_id > 0) {
 			// Clean up any product_id = 0 records first
 			try {
@@ -1480,7 +1482,7 @@ class ModelCatalogProduct extends Model {
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_filter WHERE product_id = '" . (int)$product_id . "'");
 			
 			$filter_count = 0;
-			if (isset($data['product_filter']) && is_array($data['product_filter'])) {
+			if (isset($data['product_filter']) && is_array($data['product_filter']) && count($data['product_filter']) > 0) {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Processing ' . count($data['product_filter']) . ' filter(s)' . PHP_EOL, FILE_APPEND);
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Filter IDs: ' . implode(', ', $data['product_filter']) . PHP_EOL, FILE_APPEND);
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_id: ' . $product_id . ' (valid: ' . ($product_id > 0 ? 'YES' : 'NO') . ')' . PHP_EOL, FILE_APPEND);
@@ -1514,12 +1516,19 @@ class ModelCatalogProduct extends Model {
 					}
 				}
 			} else {
-				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] No product_filter data found or not an array' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] No product_filter data found or not an array. Type: ' . gettype(isset($data['product_filter']) ? $data['product_filter'] : null) . PHP_EOL, FILE_APPEND);
+				if (isset($data['product_filter'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] product_filter value: ' . print_r($data['product_filter'], true) . PHP_EOL, FILE_APPEND);
+				}
 			}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] Total inserted: ' . $filter_count . ' filter(s)' . PHP_EOL, FILE_APPEND);
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FILTER] SKIPPED: product_id is invalid (' . $product_id . ')' . PHP_EOL, FILE_APPEND);
 		}
 
 		// Insert product attributes
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ADD] About to insert attributes. product_id: ' . $product_id . ', has product_attribute data: ' . (isset($data['product_attribute']) ? 'YES' : 'NO') . PHP_EOL, FILE_APPEND);
+		
 		if ($product_id > 0) {
 			// Clean up any product_id = 0 records first
 			try {
@@ -1591,7 +1600,14 @@ class ModelCatalogProduct extends Model {
 				}
 			} else {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] No product_attribute data found or not an array. Data type: ' . gettype(isset($data['product_attribute']) ? $data['product_attribute'] : null) . PHP_EOL, FILE_APPEND);
+				if (isset($data['product_attribute'])) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] product_attribute value: ' . print_r($data['product_attribute'], true) . PHP_EOL, FILE_APPEND);
+				}
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Total inserted: ' . $attribute_count . ' attribute(s)' . PHP_EOL, FILE_APPEND);
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] SKIPPED: product_id is invalid (' . $product_id . ')' . PHP_EOL, FILE_APPEND);
+		}
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ATTRIBUTE] Total inserted: ' . $attribute_count . ' attribute(s)' . PHP_EOL, FILE_APPEND);
 		}
 
