@@ -2,17 +2,23 @@
 // Comprehensive Product Add Debug Script
 // Tests all input fields and database insertion
 
-// Security check
-define('HTTP_SERVER', 'http://localhost/');
-define('DIR_APPLICATION', dirname(__FILE__) . '/../');
-define('DIR_SYSTEM', DIR_APPLICATION . 'system/');
-define('DIR_DATABASE', DIR_SYSTEM . 'database/');
-define('DIR_LANGUAGE', DIR_APPLICATION . 'admin/language/');
-define('DIR_TEMPLATE', DIR_APPLICATION . 'admin/view/template/');
-define('DIR_CONFIG', DIR_SYSTEM . 'config/');
-define('DIR_MODIFICATION', DIR_SYSTEM . 'modification/');
-define('DIR_LOGS', DIR_SYSTEM . 'logs/');
-define('DIR_CACHE', DIR_SYSTEM . 'cache/');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// OpenCart bootstrap - load config first
+if (!file_exists(__DIR__ . '/config.php')) {
+    die("Error: config.php not found in " . __DIR__);
+}
+
+require_once(__DIR__ . '/config.php');
+
+if (!defined('DIR_SYSTEM')) {
+    die("Error: DIR_SYSTEM not defined after loading config.php");
+}
+
+if (!file_exists(DIR_SYSTEM . 'startup.php')) {
+    die("Error: startup.php not found at " . DIR_SYSTEM . 'startup.php');
+}
 
 // Startup
 require_once(DIR_SYSTEM . 'startup.php');
@@ -22,11 +28,52 @@ $registry = new Registry();
 
 // Config
 $config = new Config();
+// Load config files
+try {
+    if (file_exists(DIR_SYSTEM . 'config/default.php')) {
+        $config->load('default');
+    }
+} catch (Exception $e) {
+    // Ignore
+}
+
+try {
+    if (file_exists(DIR_SYSTEM . 'config/admin.php')) {
+        $config->load('admin');
+    }
+} catch (Exception $e) {
+    // Ignore
+}
+
 $registry->set('config', $config);
+
+// Load settings from database
+$query = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '0'");
+foreach ($query->rows as $setting) {
+    if (!$setting['serialized']) {
+        $config->set($setting['key'], $setting['value']);
+    } else {
+        $config->set($setting['key'], unserialize($setting['value']));
+    }
+}
 
 // Database
 $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
 $registry->set('db', $db);
+
+// Load settings from database
+$query = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '0'");
+foreach ($query->rows as $setting) {
+    if (!$setting['serialized']) {
+        $config->set($setting['key'], $setting['value']);
+    } else {
+        $config->set($setting['key'], unserialize($setting['value']));
+    }
+}
+
+// Loader
+$loader = new Loader($registry);
+$registry->set('load', $loader);
 
 // Logging
 $log = new Log('product_add_debug_full.log');
@@ -132,11 +179,21 @@ echo "</div>";
 echo "<div class='section'>";
 echo "<h2>Step 4: Load Product Model</h2>";
 try {
-    require_once(DIR_APPLICATION . 'model/catalog/product.php');
-    $model = new ModelCatalogProduct($registry);
+    // Use Loader to properly load the model
+    $loader = new Loader($registry);
+    $registry->set('load', $loader);
+    
+    $loader->model('catalog/product');
+    $model = $registry->get('model_catalog_product');
+    
+    if (!$model) {
+        throw new Exception("Model not found in registry");
+    }
+    
     echo "<div class='success'>✓ Product model loaded successfully</div>";
 } catch (Exception $e) {
     echo "<div class='error'>✗ Failed to load model: " . $e->getMessage() . "</div>";
+    echo "<div class='code'>" . nl2br(htmlspecialchars($e->getTraceAsString())) . "</div>";
     exit;
 }
 echo "</div>";
