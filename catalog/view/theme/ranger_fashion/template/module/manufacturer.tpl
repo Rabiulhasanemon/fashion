@@ -1,15 +1,37 @@
+<?php 
+// DEBUG: Log template rendering
+$debug_log = DIR_LOGS . 'manufacturer_debug.log';
+file_put_contents($debug_log, date('Y-m-d H:i:s') . " === TEMPLATE RENDERED ===\n", FILE_APPEND);
+file_put_contents($debug_log, date('Y-m-d H:i:s') . " Manufacturers count: " . (isset($manufacturers) ? count($manufacturers) : 0) . "\n", FILE_APPEND);
+if (isset($manufacturers) && !empty($manufacturers)) {
+	file_put_contents($debug_log, date('Y-m-d H:i:s') . " First manufacturer data: " . print_r($manufacturers[0], true) . "\n", FILE_APPEND);
+}
+?>
 <div id="manufacturer-brand-section" class="brandloop24_section manufacturer-display-wrapper">
   <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
-      <?php foreach ($manufacturers as $manufacturer) { ?>
-      <a class="brandloop24_card manufacturer-brand-card" href="<?php echo $manufacturer['href']; ?>" title="<?php echo $manufacturer['name']; ?>">
-        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" />
-      </a>
-      <?php } ?>
-      <?php foreach ($manufacturers as $manufacturer) { ?>
-      <a class="brandloop24_card manufacturer-brand-card" href="<?php echo $manufacturer['href']; ?>" title="<?php echo $manufacturer['name']; ?>">
-        <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" loading="lazy" />
-      </a>
+      <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
+        <?php foreach ($manufacturers as $manufacturer) { ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>">
+          <?php if (!empty($manufacturer['thumb'])) { ?>
+          <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';" />
+          <?php } else { ?>
+          <div class="manufacturer-brand-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?></div>
+          <?php } ?>
+        </a>
+        <?php } ?>
+        <?php foreach ($manufacturers as $manufacturer) { ?>
+        <a class="brandloop24_card manufacturer-brand-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>">
+          <?php if (!empty($manufacturer['thumb'])) { ?>
+          <img class="manufacturer-brand-image" src="<?php echo $manufacturer['thumb']; ?>" alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" title="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';" />
+          <?php } else { ?>
+          <div class="manufacturer-brand-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : 'Brand'; ?></div>
+          <?php } ?>
+        </a>
+        <?php } ?>
+      <?php } else { ?>
+        <!-- DEBUG: No manufacturers found -->
+        <div style="padding: 20px; text-align: center; color: #999;">No manufacturers to display</div>
       <?php } ?>
     </div>
   </div>
