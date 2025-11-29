@@ -61,8 +61,9 @@
 <style>
 /* Simple Premium Bestseller Module - Unique bs- Classes */
 #bs-module-wrapper.bs-module-section {
-    padding: 40px 0;
+    padding: 20px 0;
     background: #fff;
+    margin: 0;
 }
 
 .bs-module-container {
@@ -279,7 +280,7 @@
 
 @media (max-width: 768px) {
     #bs-module-wrapper.bs-module-section {
-        padding: 30px 0;
+        padding: 15px 0;
     }
     
     .bs-module-container {

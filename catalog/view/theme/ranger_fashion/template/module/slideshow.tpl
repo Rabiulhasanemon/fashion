@@ -280,85 +280,13 @@
 }
 
 @media (max-width: 768px) {
+    /* Hide full banner slideshow completely on mobile */
     .fullscreen-slideshow {
-        height: 550px;
-    }
-    
-    .fullscreen-slideshow .slide-content {
-        padding: 0 25px;
-        justify-content: center;
-        text-align: center;
-    }
-    
-    .fullscreen-slideshow .content-left {
-        flex: 1;
-        padding-right: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .fullscreen-slideshow .badge {
-        margin-bottom: 15px;
-    }
-    
-    .fullscreen-slideshow .main-title {
-        font-size: 32px;
-        margin-bottom: 15px;
-    }
-    
-    .fullscreen-slideshow .subtitle {
-        font-size: 16px;
-        margin-bottom: 25px;
-    }
-    
-    .fullscreen-slideshow .promo-section {
-        padding: 20px;
-        margin-bottom: 25px;
-        width: 100%;
-    }
-    
-    .fullscreen-slideshow .promo-code-wrapper {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .fullscreen-slideshow .promo-input,
-    .fullscreen-slideshow .copy-btn {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .fullscreen-slideshow .shop-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 16px 30px;
-    }
-    
-    .fullscreen-slideshow .slide-nav {
-        bottom: 20px;
-        right: 50%;
-        transform: translateX(50%);
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .fullscreen-slideshow .nav-btn {
-        display: none; /* Hide arrows on mobile */
-    }
-}
-
-@media (max-width: 480px) {
-    .fullscreen-slideshow {
-        height: 500px;
-    }
-    
-    .fullscreen-slideshow .main-title {
-        font-size: 28px;
-    }
-    
-    .fullscreen-slideshow .slide-overlay {
-        background: rgba(0,0,0,0.4); /* Darker overlay for better text readability */
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
 }
 </style>

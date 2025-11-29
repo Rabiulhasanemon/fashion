@@ -95,8 +95,9 @@ if (empty($tabs)) {
 <style>
 /* Deal of Day Section */
 .deal-of-day-section {
-    padding: 40px 0;
+    padding: 20px 0;
     background-color: #fff;
+    margin: 0;
 }
 
 .deal-of-day-section .container {
@@ -200,9 +201,27 @@ if (empty($tabs)) {
 
 .section-title .links {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
     margin-top: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #ff6b9d transparent;
+    padding-bottom: 5px;
+}
+
+.section-title .links::-webkit-scrollbar {
+    height: 4px;
+}
+
+.section-title .links::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.section-title .links::-webkit-scrollbar-thumb {
+    background: #ff6b9d;
+    border-radius: 2px;
 }
 
 /* Premium Product Card Styles (Consistent with Featured/Latest) */
@@ -498,7 +517,7 @@ if (empty($tabs)) {
 
 @media (max-width: 767px) {
     .deal-of-day-section {
-        padding: 20px 0;
+        padding: 15px 0;
     }
     
     .section-title h2 {
@@ -511,6 +530,12 @@ if (empty($tabs)) {
         gap: 10px;
     }
     
+    .section-title .links {
+        width: 100%;
+        gap: 8px;
+        padding-bottom: 8px;
+    }
+    
     .lux-premium-tabs {
         width: 100%;
         overflow-x: auto;
@@ -520,6 +545,9 @@ if (empty($tabs)) {
     
     .lux-tab-item {
         white-space: nowrap;
+        flex-shrink: 0;
+        padding: 6px 16px;
+        font-size: 13px;
     }
 }
 </style>
