@@ -235,6 +235,16 @@
     align-items: start;
 }
 
+/* If no sidebar, use full width */
+.cp-layout-grid > :first-child:empty,
+.cp-layout-grid > :first-child:not(:has(*)) {
+    display: none;
+}
+
+.cp-layout-grid:has(> :first-child:empty) {
+    grid-template-columns: 1fr;
+}
+
 /* Header Styles */
 .cp-header {
     margin-bottom: 30px;
