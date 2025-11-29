@@ -223,4 +223,354 @@
         </div>
     </div>
 </section>
+
+<style>
+/* Premium Category Page Styling - Unique lux-category Classes */
+#lux-category-page.lux-category-section {
+    background: #fff;
+    padding: 30px 0 50px 0;
+}
+
+.lux-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.lux-category-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+}
+
+/* Header */
+.lux-category-header {
+    margin-bottom: 30px;
+}
+
+.lux-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.lux-header-title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.lux-category-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.lux-filter-btn {
+    display: none;
+    padding: 10px 20px;
+    background: #ff6b9d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    gap: 8px;
+    align-items: center;
+}
+
+.lux-header-controls {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.lux-control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lux-control-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.lux-select-wrapper {
+    position: relative;
+}
+
+.lux-select {
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-width: 150px;
+}
+
+.lux-select:hover {
+    border-color: #ff6b9d;
+}
+
+/* Products Grid */
+.lux-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.lux-product-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.lux-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.lux-product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    z-index: 10;
+    box-shadow: 0 3px 8px rgba(255,107,107,0.3);
+}
+
+.lux-product-image-wrapper {
+    position: relative;
+    padding-top: 100%;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.lux-product-image-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.lux-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.lux-product-card:hover .lux-product-image {
+    transform: scale(1.1);
+}
+
+.lux-product-details {
+    padding: 20px;
+}
+
+.lux-product-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    min-height: 44px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.lux-product-name a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.lux-product-name a:hover {
+    color: #ff6b9d;
+}
+
+.lux-product-pricing {
+    margin-bottom: 15px;
+}
+
+.lux-price-current {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff6b9d;
+    margin-right: 8px;
+}
+
+.lux-price-original {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.lux-product-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.lux-action-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.lux-wishlist-btn {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.lux-wishlist-btn:hover {
+    background: #ff6b9d;
+    color: #fff;
+}
+
+.lux-buy-btn {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8c9f 100%);
+    color: #fff;
+}
+
+.lux-buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,107,157,0.3);
+}
+
+.lux-buy-btn--full {
+    flex: 2;
+}
+
+/* Footer */
+.lux-category-footer {
+    padding: 30px 0;
+    border-top: 1px solid #eee;
+    margin-top: 40px;
+}
+
+.lux-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.lux-results-text {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Empty State */
+.lux-empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.lux-empty-title {
+    font-size: 24px;
+    color: #666;
+    margin: 20px 0 10px 0;
+}
+
+.lux-empty-text {
+    color: #999;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .lux-category-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .lux-filter-btn {
+        display: flex;
+    }
+    
+    .lux-category-title {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 768px) {
+    .lux-category-title {
+        font-size: 22px;
+    }
+    
+    .lux-header-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .lux-header-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .lux-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .lux-product-card:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .lux-category-title {
+        font-size: 20px;
+    }
+    
+    .lux-control-group {
+        flex: 1;
+    }
+    
+    .lux-select {
+        width: 100%;
+        min-width: auto;
+        font-size: 13px;
+        padding: 8px 30px 8px 10px;
+    }
+    
+    .lux-control-label {
+        font-size: 12px;
+    }
+}
+</style>
+
 <?php echo $footer; ?>
