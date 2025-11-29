@@ -1,96 +1,53 @@
-<div class="bestseller-products-section color-background-1 background section-animation" data-columns="6" data-mobile-column="1">
-  <div class="bestseller-products__top">
-    <div class="bestseller-products__top-main">
-      <div class="bestseller-products__top-text">
-        <h2 class="bestseller-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
-<style>
-/* Consistent Premium Module Headings */
-.cosmetics-module-heading {
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  color: #1a1a1a !important;
-  text-align: left !important;
-  padding: 20px 0 16px 0 !important;
-  letter-spacing: -0.02em !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  position: relative !important;
-  margin: 0 !important;
-}
-.cosmetics-module-heading::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 8px !important;
-  left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
-}
-@media (max-width: 992px) {
-  .cosmetics-module-heading { font-size: 24px !important; padding: 18px 0 14px 0 !important; }
-  .cosmetics-module-heading::after { width: 50px !important; height: 2.5px !important; bottom: 6px !important; }
-}
-@media (max-width: 749px) {
-  .cosmetics-module-heading { font-size: 22px !important; padding: 16px 0 12px 0 !important; }
-  .cosmetics-module-heading::after { width: 45px !important; height: 2px !important; bottom: 5px !important; }
-}
-</style>
-      </div>
+<div id="bs-module-wrapper" class="bs-module-section">
+  <div class="bs-module-container">
+    <div class="bs-module-header">
+      <h2 class="bs-module-title"><?php echo $heading_title; ?></h2>
     </div>
-  </div>
-  
-  <div class="bestseller-products__wrapper content">
-    <div class="bestseller-products__layout">
-      <?php $bestseller_module_id = 'bestseller-' . uniqid(); ?>
-      <ul class="list-unstyled bestseller-products__list content grid--6" id="bestseller-products-list-<?php echo $bestseller_module_id; ?>">
-        <?php 
-        $product_count = 0;
-        foreach ($products as $product) { 
-          $product_count++;
-          $is_hidden = ($product_count > 6) ? 'bestseller-product-hidden' : '';
-        ?>
-        <li class="bestseller-products__item column-animation cart-content-center animate <?php echo $is_hidden; ?>" data-product-index="<?php echo $product_count; ?>">
-          <div class="bestseller-card-wrapper color-background-1" data-product="<?php echo $product['product_id']; ?>">
-            <div class="bestseller-card-wrapper__inner">
-              <div class="bestseller-card__image-wrapper">
-                <div class="bestseller-card__image">
-                  <a href="<?php echo $product['href']; ?>">
-                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" loading="lazy" class="bestseller-product-img">
-                  </a>
-                  <div class="bestseller-card__actions">
-                    <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_cart; ?>"><i class="fa fa-shopping-cart"></i></button>
-                    <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_wishlist; ?>"><i class="fa fa-heart"></i></button>
-                    <button type="button" onclick="compare.add('<?php echo $product['product_id']; ?>');" class="action-btn" title="<?php echo $button_compare; ?>"><i class="fa fa-exchange"></i></button>
-                  </div>
-                </div>
+    
+    <div class="bs-module-content">
+      <ul class="bs-products-grid">
+        <?php foreach ($products as $product) { ?>
+        <li class="bs-product-item">
+          <div class="bs-product-card">
+            <div class="bs-product-image-box">
+              <a href="<?php echo $product['href']; ?>" class="bs-product-link">
+                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="bs-product-image" loading="lazy">
+              </a>
+              <div class="bs-product-buttons">
+                <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');" class="bs-btn-icon" title="<?php echo $button_cart; ?>">
+                  <i class="fa fa-shopping-cart"></i>
+                </button>
+                <button type="button" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" class="bs-btn-icon" title="<?php echo $button_wishlist; ?>">
+                  <i class="fa fa-heart"></i>
+                </button>
+                <button type="button" onclick="compare.add('<?php echo $product['product_id']; ?>');" class="bs-btn-icon" title="<?php echo $button_compare; ?>">
+                  <i class="fa fa-exchange"></i>
+                </button>
               </div>
-              <div class="bestseller-card__information">
-                <h3 class="bestseller-card__title">
-                  <a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
-                </h3>
-                
-                <?php if ($product['rating']) { ?>
-                <div class="rating">
-                  <?php for ($i = 1; $i <= 5; $i++) { ?>
-                  <?php if ($product['rating'] < $i) { ?>
-                  <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
-                  <?php } else { ?>
-                  <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                  <?php } ?>
-                  <?php } ?>
-                </div>
+            </div>
+            
+            <div class="bs-product-info">
+              <h3 class="bs-product-name">
+                <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+              </h3>
+              
+              <?php if ($product['rating']) { ?>
+              <div class="bs-product-rating">
+                <?php for ($i = 1; $i <= 5; $i++) { ?>
+                <i class="fa fa-star <?php echo ($product['rating'] >= $i) ? 'bs-star-filled' : ''; ?>"></i>
                 <?php } ?>
-                
-                <div class="bestseller-price">
-                  <?php if ($product['price']) { ?>
-                    <?php if (!$product['special']) { ?>
-                      <span class="price-regular"><?php echo $product['price']; ?></span>
-                    <?php } else { ?>
-                      <span class="price-new"><?php echo $product['special']; ?></span> 
-                      <span class="price-old"><?php echo $product['price']; ?></span>
-                    <?php } ?>
+              </div>
+              <?php } ?>
+              
+              <div class="bs-product-price-box">
+                <?php if ($product['price']) { ?>
+                  <?php if ($product['special']) { ?>
+                    <span class="bs-price-sale"><?php echo $product['special']; ?></span>
+                    <span class="bs-price-original"><?php echo $product['price']; ?></span>
+                  <?php } else { ?>
+                    <span class="bs-price-normal"><?php echo $product['price']; ?></span>
                   <?php } ?>
-                </div>
+                <?php } ?>
               </div>
             </div>
           </div>
@@ -102,48 +59,85 @@
 </div>
 
 <style>
-/* Premium Product Grid Styles */
-.bestseller-products__list {
+/* Simple Premium Bestseller Module - Unique bs- Classes */
+#bs-module-wrapper.bs-module-section {
+    padding: 40px 0;
+    background: #fff;
+}
+
+.bs-module-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.bs-module-header {
+    margin-bottom: 30px;
+}
+
+.bs-module-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    padding-bottom: 15px;
+    position: relative;
+    letter-spacing: -0.02em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.bs-module-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
+    border-radius: 2px;
+}
+
+.bs-module-content {
+    width: 100%;
+}
+
+.bs-products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     margin: 0;
     padding: 0;
-}
-
-.bestseller-products__item {
     list-style: none;
 }
 
-.bestseller-card-wrapper {
+.bs-product-item {
+    list-style: none;
+}
+
+.bs-product-card {
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
-    transition: all 0.3s ease;
     border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.bestseller-card-wrapper:hover {
+.bs-product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
 
-.bestseller-card-wrapper__inner {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.bestseller-card__image-wrapper {
+.bs-product-image-box {
     position: relative;
-    overflow: hidden;
     padding-top: 100%;
+    overflow: hidden;
+    background: #f8f9fa;
 }
 
-.bestseller-card__image {
+.bs-product-link {
     position: absolute;
     top: 0;
     left: 0;
@@ -151,18 +145,18 @@
     height: 100%;
 }
 
-.bestseller-product-img {
+.bs-product-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.bestseller-card-wrapper:hover .bestseller-product-img {
+.bs-product-card:hover .bs-product-image {
     transform: scale(1.05);
 }
 
-.bestseller-card__actions {
+.bs-product-buttons {
     position: absolute;
     bottom: -50px;
     left: 0;
@@ -172,102 +166,150 @@
     gap: 10px;
     padding: 10px;
     transition: bottom 0.3s ease;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(5px);
 }
 
-.bestseller-card-wrapper:hover .bestseller-card__actions {
+.bs-product-card:hover .bs-product-buttons {
     bottom: 0;
 }
 
-.action-btn {
-    width: 35px;
-    height: 35px;
+.bs-btn-icon {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: none;
     background: #fff;
     color: #333;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    font-size: 14px;
 }
 
-.action-btn:hover {
+.bs-btn-icon:hover {
     background: #ff6b9d;
     color: #fff;
     transform: scale(1.1);
 }
 
-.bestseller-card__information {
-    padding: 15px;
+.bs-product-info {
+    padding: 18px;
     text-align: center;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.bestseller-card__title {
+.bs-product-name {
     font-size: 15px;
-    margin: 0 0 8px;
     font-weight: 500;
+    margin: 0 0 10px 0;
     line-height: 1.4;
+    min-height: 42px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.bestseller-card__title a {
+.bs-product-name a {
     color: #333;
     text-decoration: none;
     transition: color 0.2s;
 }
 
-.bestseller-card__title a:hover {
+.bs-product-name a:hover {
     color: #ff6b9d;
 }
 
-.bestseller-price {
-    font-weight: 600;
-    color: #1a1a1a;
+.bs-product-rating {
+    margin-bottom: 10px;
+}
+
+.bs-product-rating i {
+    color: #e0e0e0;
+    font-size: 12px;
+    margin-right: 2px;
+}
+
+.bs-product-rating i.bs-star-filled {
+    color: #ffc107;
+}
+
+.bs-product-price-box {
     margin-top: auto;
     padding-top: 10px;
 }
 
-.price-new {
+.bs-price-sale {
+    font-size: 20px;
+    font-weight: 700;
     color: #ff6b9d;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
-.price-old {
+.bs-price-original {
+    font-size: 15px;
     color: #999;
     text-decoration: line-through;
-    font-size: 0.9em;
     font-weight: 400;
 }
 
-.rating {
-    color: #ffc107;
-    font-size: 12px;
-    margin-bottom: 5px;
+.bs-price-normal {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .bestseller-products__list {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+@media (max-width: 992px) {
+    .bs-module-title {
+        font-size: 24px;
     }
     
-    .bestseller-card-wrapper:hover {
+    .bs-module-title::after {
+        width: 50px;
+        height: 2.5px;
+    }
+}
+
+@media (max-width: 768px) {
+    #bs-module-wrapper.bs-module-section {
+        padding: 30px 0;
+    }
+    
+    .bs-module-container {
+        padding: 0 15px;
+    }
+    
+    .bs-module-title {
+        font-size: 22px;
+        padding-bottom: 12px;
+    }
+    
+    .bs-module-title::after {
+        width: 45px;
+        height: 2px;
+    }
+    
+    .bs-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .bs-product-card:hover {
         transform: none;
     }
     
-    .bestseller-card__actions {
+    .bs-product-buttons {
         bottom: 0;
         background: transparent;
         position: absolute;
         top: 10px;
-        bottom: auto;
         right: 10px;
         left: auto;
         flex-direction: column;
@@ -275,11 +317,41 @@
         padding: 0;
     }
     
-    .action-btn {
-        width: 30px;
-        height: 30px;
+    .bs-btn-icon {
+        width: 32px;
+        height: 32px;
         font-size: 12px;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+    }
+    
+    .bs-product-info {
+        padding: 15px;
+    }
+    
+    .bs-product-name {
+        font-size: 14px;
+        min-height: 40px;
+    }
+    
+    .bs-price-sale,
+    .bs-price-normal {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bs-module-title {
+        font-size: 20px;
+    }
+    
+    .bs-product-name {
+        font-size: 13px;
+        min-height: 36px;
+    }
+    
+    .bs-price-sale,
+    .bs-price-normal {
+        font-size: 16px;
     }
 }
 </style>
