@@ -1,897 +1,485 @@
 <?php if ($products) { ?>
-<div class="flash-sell-new-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <h2 class="h3"><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></h2>
-                </div>
+<div id="premium-flash-deal-module" class="premium-flash-section">
+    <div class="premium-flash-container">
+        <div class="premium-flash-header">
+            <div class="premium-flash-title-wrapper">
+                <h2 class="premium-flash-title"><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></h2>
+                <div class="premium-flash-subtitle">Limited Time Offers - Grab Them Fast!</div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="main-content">
-                    <div class="flash-deal-slider owl-carousel">
-                        <?php foreach ($products as $product) { ?>
-                        <div class="slider-item">
-                            <div class="product-card">
-                                <div class="product-thumb">
-                                    <?php if ($product['discount']) { ?>
-                                    <div class="product-badge product-badge2 bg-info">-<?php echo (int)$product['discount']; ?>%</div>
-                                    <?php } ?>
-                                    <img class="lazy" alt="<?php echo htmlspecialchars($product['name']); ?>" src="<?php echo $product['thumb']; ?>">
-                                    <div class="product-button-group">
-                                        <a class="product-button wishlist_store" href="javascript:;" title="Wishlist" onclick="wishlist.add('<?php echo $product['product_id']; ?>');">
-                                            <i class="icon-heart"></i>
-                                        </a>
-                                        <a data-target="javascript:;" class="product-button product_compare" href="javascript:;" title="Compare" onclick="compare.add('<?php echo $product['product_id']; ?>');">
-                                            <i class="icon-repeat"></i>
-                                        </a>
-                                        <a class="product-button add_to_single_cart" data-target="<?php echo $product['product_id']; ?>" href="javascript:;" title="To Cart" onclick="cart.add('<?php echo $product['product_id']; ?>');">
-                                            <i class="icon-shopping-cart"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="product-card-inner">
-                                    <div class="product-card-body">
-                                        <?php if ($product['category_name']) { ?>
-                                        <div class="product-category">
-                                            <a href="javascript:;"><?php echo htmlspecialchars($product['category_name']); ?></a>
-                                        </div>
-                                        <?php } ?>
-                                        <h3 class="product-title">
-                                            <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
-                                        </h3>
-                                        <div class="rating-stars">
-                                            <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                            <i class="fas fa-star<?php echo ($i <= $product['rating']) ? '' : '-o'; ?>"></i>
-                                            <?php } ?>
-                                        </div>
-                                        <h4 class="product-price">
-                                            <?php if ($product['special']) { ?>
-                                            <del><?php echo $product['price']; ?></del>
-                                            <?php echo $product['special']; ?>
-                                            <?php } else { ?>
-                                            <?php echo $product['price']; ?>
-                                            <?php } ?>
-                                        </h4>
-                                        <?php if (!empty($product['end_date'])) { ?>
-                                        <div class="countdown countdown-alt mb-3" data-date-time="<?php echo htmlspecialchars($product['end_date']); ?>">
-                                            <span>00<small>Days</small></span>
-                                            <span>00<small>Hrs</small></span>
-                                            <span>00<small>Min</small></span>
-                                            <span>00<small>Sec</small></span>
-                                        </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
+        
+        <div class="premium-flash-content">
+            <div id="premium-flash-carousel" class="premium-flash-carousel owl-carousel">
+                <?php foreach ($products as $product) { ?>
+                <div class="premium-flash-item">
+                    <div class="premium-flash-card">
+                        <div class="premium-flash-image-section">
+                            <?php if ($product['discount']) { ?>
+                            <div class="premium-flash-discount-badge">-<?php echo (int)$product['discount']; ?>%</div>
+                            <?php } ?>
+                            <a href="<?php echo $product['href']; ?>" class="premium-flash-image-link">
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="premium-flash-image">
+                            </a>
+                            <div class="premium-flash-actions">
+                                <button type="button" class="premium-action-icon" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
+                                    <i class="fa fa-heart"></i>
+                                </button>
+                                <button type="button" class="premium-action-icon" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                    <i class="fa fa-exchange"></i>
+                                </button>
                             </div>
                         </div>
-                        <?php } ?>
+                        
+                        <div class="premium-flash-info-section">
+                            <div class="premium-flash-details">
+                                <?php if ($product['category_name']) { ?>
+                                <div class="premium-flash-category"><?php echo htmlspecialchars($product['category_name']); ?></div>
+                                <?php } ?>
+                                
+                                <h3 class="premium-flash-product-name">
+                                    <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                </h3>
+                                
+                                <div class="premium-flash-rating">
+                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                    <i class="fa fa-star <?php echo ($i <= $product['rating']) ? 'filled' : ''; ?>"></i>
+                                    <?php } ?>
+                                </div>
+                                
+                                <div class="premium-flash-pricing">
+                                    <?php if ($product['special']) { ?>
+                                    <span class="premium-flash-price-new"><?php echo $product['special']; ?></span>
+                                    <span class="premium-flash-price-old"><?php echo $product['price']; ?></span>
+                                    <?php } else { ?>
+                                    <span class="premium-flash-price-new"><?php echo $product['price']; ?></span>
+                                    <?php } ?>
+                                </div>
+                                
+                                <?php if (!empty($product['end_date'])) { ?>
+                                <div class="premium-flash-countdown" data-end-date="<?php echo htmlspecialchars($product['end_date']); ?>">
+                                    <div class="premium-countdown-item">
+                                        <span class="premium-countdown-value">00</span>
+                                        <span class="premium-countdown-label">Days</span>
+                                    </div>
+                                    <div class="premium-countdown-item">
+                                        <span class="premium-countdown-value">00</span>
+                                        <span class="premium-countdown-label">Hrs</span>
+                                    </div>
+                                    <div class="premium-countdown-item">
+                                        <span class="premium-countdown-value">00</span>
+                                        <span class="premium-countdown-label">Min</span>
+                                    </div>
+                                    <div class="premium-countdown-item">
+                                        <span class="premium-countdown-value">00</span>
+                                        <span class="premium-countdown-label">Sec</span>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                                
+                                <button type="button" class="premium-flash-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span>Add to Cart</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <?php } ?>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-.mt-50 {
-    margin-top: 50px !important;
+/* Premium Flash Deal Module - Unique Styling */
+#premium-flash-deal-module.premium-flash-section {
+    padding: 50px 0;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    position: relative;
 }
 
-.flash-sell-new-section {
-    padding: 0;
-    background: transparent;
-}
-
-.flash-sell-new-section .container {
-    max-width: 80%;
+.premium-flash-container {
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-@media (max-width: 767px) {
-    .flash-sell-new-section .container {
-        max-width: 100%;
-        padding: 0 15px;
-    }
+.premium-flash-header {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.flash-sell-new-section .section-title {
-    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
-    padding-bottom: 0;
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.premium-flash-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
 }
 
-.flash-sell-new-section .section-title h2.h3 {
-    padding-bottom: 12px;
-    margin-bottom: 0;
-    font-weight: 600;
-    font-size: 24px;
-    position: relative;
-    color: #232323;
+.premium-flash-subtitle {
+    font-size: 16px;
+    color: #666;
+    font-weight: 400;
 }
 
-.flash-sell-new-section .section-title h2.h3::before {
-    position: absolute;
-    content: "";
-    height: 2px;
-    width: 100%;
-    bottom: -2px;
-    left: 0;
-    background: #377dff;
-}
-
-.flash-sell-new-section .main-content {
-    width: 100%;
-}
-
-.flash-sell-new-section .flash-deal-slider {
+.premium-flash-carousel {
     position: relative;
 }
 
-.flash-sell-new-section .product-card {
-    display: flex;
-    position: relative;
-    width: 100%;
-    height: 350px;
-    border-radius: 12px;
-    background-color: #fff;
-    overflow: visible;
-    border: 1px solid #f0f0f0;
-    transition: all 0.3s ease;
-    margin-bottom: 0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.flash-sell-new-section .product-card:hover {
-    border-color: #FF6A00;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    transform: translateY(-4px);
-}
-
-.flash-sell-new-section .product-card .product-thumb {
-    width: 350px;
-    height: 350px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+.premium-flash-card {
+    background: #fff;
+    border-radius: 16px;
     overflow: hidden;
-    position: relative;
-    background: #fafafa;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    margin: 10px 5px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
-.flash-sell-new-section .product-card .product-thumb > img {
-    display: block;
+.premium-flash-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.premium-flash-image-section {
+    position: relative;
+    padding-top: 100%;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.premium-flash-image-link {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain !important;
-    object-position: center;
-    background: transparent;
-    transform: scale(1);
-    transition: 0.3s linear;
 }
 
-/* Responsive image height for different screen sizes */
-@media (min-width: 1200px) {
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 34%;
-    }
+.premium-flash-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-@media (min-width: 992px) and (max-width: 1199px) {
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 35%;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 40%;
-    }
-}
-
-@media (min-width: 576px) and (max-width: 767px) {
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 45%;
-    }
-}
-
-@media (max-width: 575px) {
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 50%;
-    }
-}
-
-.flash-sell-new-section .product-card:hover .product-thumb > img {
+.premium-flash-card:hover .premium-flash-image {
     transform: scale(1.1);
 }
 
-.flash-sell-new-section .product-card .product-card-inner {
-    flex: 1;
-    display: flex;
-    align-items: center;
+.premium-flash-discount-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(255,107,107,0.3);
 }
 
-.flash-sell-new-section .product-card .product-card-body {
-    padding: 15px 15px 10px;
-    width: 100%;
+.premium-flash-actions {
+    position: absolute;
+    top: 15px;
+    left: 15px;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease;
+}
+
+.premium-flash-card:hover .premium-flash-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.premium-action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.flash-sell-new-section .product-card .product-category {
-    width: 100%;
-    margin-bottom: 6px;
-    font-size: 13px;
+.premium-action-icon:hover {
+    background: #ff6b9d;
+    color: #fff;
+    transform: scale(1.1);
 }
 
-.flash-sell-new-section .product-card .product-category > a {
-    transition: color 0.2s;
+.premium-flash-info-section {
+    padding: 20px;
+}
+
+.premium-flash-category {
+    font-size: 12px;
     color: #999;
-    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
 }
 
-.flash-sell-new-section .product-card .product-title {
-    margin-bottom: 5px;
+.premium-flash-product-name {
     font-size: 16px;
-    font-weight: 400;
-    line-height: 1.3;
-}
-
-.flash-sell-new-section .product-card .product-title > a {
-    transition: color 0.3s;
-    color: #232323;
-    text-decoration: none;
-    font-size: 16px;
-    line-height: 20px;
-    height: auto;
-    max-height: 40px;
-    overflow: hidden;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    min-height: 44px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    font-weight: 500;
+    overflow: hidden;
 }
 
-.flash-sell-new-section .product-card .product-title > a:hover {
-    color: #FF6A00;
+.premium-flash-product-name a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
-.flash-sell-new-section .product-card .rating-stars {
-    display: flex !important;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 6px;
-    gap: 2px;
-    visibility: visible !important;
-    opacity: 1 !important;
+.premium-flash-product-name a:hover {
+    color: #ff6b9d;
 }
 
-.flash-sell-new-section .product-card .rating-stars > i {
-    display: inline-block !important;
-    margin-right: 0;
-    color: #ddd;
-    font-size: 13px;
+.premium-flash-rating {
+    margin-bottom: 12px;
+}
+
+.premium-flash-rating i {
+    color: #e0e0e0;
+    font-size: 14px;
+    margin-right: 2px;
+}
+
+.premium-flash-rating i.filled {
+    color: #ffc107;
+}
+
+.premium-flash-pricing {
+    margin-bottom: 15px;
+}
+
+.premium-flash-price-new {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff6b9d;
+    margin-right: 8px;
+}
+
+.premium-flash-price-old {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.premium-flash-countdown {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.premium-countdown-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-width: 50px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+}
+
+.premium-countdown-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
     line-height: 1;
 }
 
-.flash-sell-new-section .product-card .rating-stars > i.fa-star {
-    color: #ffa500;
+.premium-countdown-label {
+    display: block;
+    font-size: 9px;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
 }
 
-.flash-sell-new-section .product-card .rating-stars > i.fa-star-o {
-    color: #ddd;
-}
-
-.flash-sell-new-section .product-card .product-price {
-    display: inline-block;
-    margin-bottom: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    text-align: left;
-    color: #377dff;
-    line-height: 1.2;
-}
-
-.flash-sell-new-section .product-card .product-price > del {
-    margin-right: 5px;
-    color: #999;
-    font-weight: 400;
-    font-size: 14px;
-}
-
-.flash-sell-new-section .product-card .product-badge {
-    position: absolute;
-    top: 15px;
-    left: 0;
-    height: 24px;
-    padding: 0 12px 0 10px;
-    border-radius: 0 9px 30px 0;
+.premium-flash-cart-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8c9f 100%);
+    border: none;
+    border-radius: 10px;
     color: #fff;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 24px;
-    z-index: 9;
-    background: #377dff;
-}
-
-.flash-sell-new-section .product-card .product-badge.product-badge2 {
-    left: auto;
-    right: 0;
-    border-radius: 9px 0 0 30px;
-    padding: 0 10px 0 12px;
-    background: #daa520 !important;
-}
-
-.flash-sell-new-section .product-card .product-button-group {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 15px;
-    width: auto;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    opacity: 0;
-    visibility: hidden;
-    z-index: 15;
-    transition: all 0.3s ease;
-    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(255,107,157,0.3);
 }
 
-.flash-sell-new-section .product-card:hover .product-button-group {
-    bottom: 15px;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.flash-sell-new-section .product-card .product-button-group .product-button {
-    height: 40px;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    padding: 0;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    margin: 0;
-    background: #FF6A00 !important;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 16;
-}
-
-.flash-sell-new-section .product-card .product-button-group .product-button:hover {
-    background: #ff8c00 !important;
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.4);
-}
-
-.flash-sell-new-section .product-card .product-button-group .product-button > i {
-    font-size: 16px;
-    color: #ffffff;
-    line-height: 1;
-    display: block;
-}
-
-.flash-sell-new-section .product-card .countdown {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: 8px;
-    margin-bottom: 0;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.flash-sell-new-section .product-card .countdown span {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 48px;
-    border-radius: 6px;
-    margin-right: 0;
-    background: #377dff;
-    color: #fff;
-    text-align: center;
-    padding: 6px 4px 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.2;
-}
-
-.flash-sell-new-section .product-card .countdown span small {
-    display: block;
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    margin-top: 4px;
-    padding: 2px 4px;
-    font-size: 9px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 3px;
-    width: 100%;
+.premium-flash-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255,107,157,0.4);
 }
 
 /* Owl Carousel Navigation */
-.flash-sell-new-section .flash-deal-slider .owl-nav {
+#premium-flash-carousel.owl-carousel .owl-nav {
     position: absolute;
-    top: -18px;
+    top: 50%;
+    left: 0;
     right: 0;
+    transform: translateY(-50%);
     display: flex;
-    gap: 5px;
+    justify-content: space-between;
+    padding: 0 10px;
+    pointer-events: none;
 }
 
-.flash-sell-new-section .flash-deal-slider .owl-nav div {
-    width: 26px;
-    height: 26px;
-    line-height: 26px;
-    border: 0;
-    border-radius: 50px;
-    box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
-    background: #fff;
-    color: #505050;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s linear;
-    opacity: 1 !important;
+#premium-flash-carousel.owl-carousel .owl-nav button {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #fff !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: none;
+    color: #333 !important;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
-.flash-sell-new-section .flash-deal-slider .owl-nav div.owl-prev {
-    right: 33px;
-    left: auto;
+#premium-flash-carousel.owl-carousel .owl-nav button:hover {
+    background: #ff6b9d !important;
+    color: #fff !important;
+    transform: scale(1.1);
 }
 
-.flash-sell-new-section .flash-deal-slider .owl-nav div.owl-next {
-    right: 0;
-}
-
-.flash-sell-new-section .flash-deal-slider .owl-nav div:hover {
-    background: #FF6A00;
-    color: #fff;
-}
-
-.flash-sell-new-section .flash-deal-slider .owl-nav div.disabled {
-    background: 0 0;
-    box-shadow: unset;
-    display: none;
-}
-
-/* Responsive - Updated to work with percentage height */
-/* Premium Tablet Design - Smaller Size */
+/* Responsive */
 @media (max-width: 991px) {
-    .flash-sell-new-section {
-        padding: 8px 5px !important;
+    .premium-flash-title {
+        font-size: 26px;
     }
     
-    .flash-sell-new-section .container {
-        padding: 0 5px !important;
-    }
-    
-    .flash-sell-new-section .product-card {
-        height: 160px;
-        padding: 6px;
-        border-radius: 6px;
-    }
-    
-    .flash-sell-new-section .product-card .product-thumb {
-        width: 140px;
-        height: 140px;
-    }
-    
-    .flash-sell-new-section .product-card .product-thumb > img {
-        height: 32%;
-        object-fit: contain !important;
-    }
-    
-    .flash-sell-new-section .product-card .rating-stars {
-        margin-bottom: 4px;
-    }
-    
-    .flash-sell-new-section .product-card .rating-stars > i {
-        font-size: 11px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown {
-        margin-top: 6px;
-        gap: 4px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 36px;
-        padding: 5px 3px 3px;
-        font-size: 11px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 8px;
-        padding: 2px 3px;
-        margin-top: 3px;
-    }
-    
-    .flash-sell-new-section .product-card .product-card-body {
-        padding: 8px 6px;
-    }
-    
-    .flash-sell-new-section .product-card .product-title > a {
-        font-size: 11px;
-        line-height: 1.2;
-        height: auto;
-        min-height: 26px;
-        -webkit-line-clamp: 2;
-    }
-    
-    .flash-sell-new-section .product-card .product-price {
-        font-size: 12px;
-        margin-bottom: 4px;
-    }
-    
-    .flash-sell-new-section .product-card .product-category {
-        font-size: 9px;
-        margin-bottom: 3px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown {
-        margin-top: 2px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 30px;
-        font-size: 9px;
-        padding: 3px 5px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 8px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button i {
-        font-size: 11px;
+    .premium-flash-card {
+        margin: 10px 3px;
     }
 }
 
-/* Premium Mobile Design - Smaller Compact Size */
-@media (max-width: 767px) {
-    .flash-sell-new-section {
-        padding: 8px 5px !important;
+@media (max-width: 768px) {
+    #premium-flash-deal-module.premium-flash-section {
+        padding: 30px 0;
     }
     
-    .flash-sell-new-section .container {
-        padding: 0 5px !important;
+    .premium-flash-title {
+        font-size: 22px;
     }
     
-    .flash-sell-new-section .product-card {
-        flex-direction: column;
-        height: auto;
-        min-height: 220px;
-        padding: 6px;
-        border-radius: 6px;
-        margin: 0 3px;
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
+    .premium-flash-subtitle {
+        font-size: 14px;
     }
     
-    .flash-sell-new-section .product-card .product-thumb {
-        width: 100%;
-        height: 100px;
-        min-height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fff;
-        border-radius: 5px;
-        overflow: hidden;
-        margin-bottom: 6px;
+    .premium-flash-image-section {
+        padding-top: 100%;
     }
     
-    .flash-sell-new-section .product-card .rating-stars {
-        margin-bottom: 4px;
-        justify-content: center;
+    .premium-flash-product-name {
+        font-size: 14px;
+        min-height: 40px;
     }
     
-    .flash-sell-new-section .product-card .rating-stars > i {
-        font-size: 11px;
+    .premium-flash-price-new {
+        font-size: 18px;
     }
     
-    .flash-sell-new-section .product-card .countdown {
-        margin-top: 6px;
-        justify-content: center;
-        gap: 4px;
+    .premium-countdown-item {
+        min-width: 45px;
+        padding: 6px 8px;
     }
     
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 34px;
-        padding: 5px 3px 3px;
-        font-size: 10px;
+    .premium-countdown-value {
+        font-size: 14px;
     }
     
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 7px;
-        padding: 2px 3px;
-        margin-top: 3px;
+    .premium-countdown-label {
+        font-size: 8px;
     }
     
-    .flash-sell-new-section .product-card .product-thumb > img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain !important;
-        object-position: center;
-        max-width: 100%;
-        max-height: 100%;
-        display: block;
+    #premium-flash-carousel.owl-carousel .owl-nav button {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
     }
-    
-    .flash-sell-new-section .product-card .product-card-inner {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-    
-    .flash-sell-new-section .product-card .product-card-body {
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        justify-content: space-between;
-    }
-    
-    .flash-sell-new-section .product-card .product-category {
-        font-size: 9px;
-        margin-bottom: 3px;
-        text-align: center;
-        color: #666;
-    }
-    
-    .flash-sell-new-section .product-card .product-title {
-        margin-bottom: 4px;
-        text-align: center;
-    }
-    
-    .flash-sell-new-section .product-card .product-title > a {
-        font-size: 11px;
-        line-height: 1.2;
-        height: auto;
-        min-height: 26px;
-        -webkit-line-clamp: 2;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-align: center;
-        color: #333;
-        font-weight: 500;
-    }
-    
-    .flash-sell-new-section .product-card .product-price {
+}
+
+@media (max-width: 480px) {
+    .premium-flash-product-name {
         font-size: 13px;
-        margin-bottom: 6px;
-        text-align: center;
-        font-weight: 600;
-        color: #FF6A00;
+        min-height: 36px;
     }
     
-    .flash-sell-new-section .product-card .product-price del {
-        font-size: 11px;
-        color: #999;
-        margin-right: 5px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown {
-        margin-top: 0;
-        margin-bottom: 6px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 32px;
-        font-size: 9px;
-        padding: 4px 5px;
-        background: #f5f5f5;
-        border-radius: 3px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 7px;
-        margin-top: 1px;
-        color: #666;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group {
-        position: static;
-        transform: none;
-        bottom: auto;
-        opacity: 1;
-        visibility: visible;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
-        margin-top: 4px;
-        padding-top: 6px;
-        border-top: 1px solid #f0f0f0;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button i {
-        font-size: 12px;
-    }
-    
-    .flash-sell-new-section .flash-deal-slider .owl-nav {
-        top: auto;
-        bottom: 50%;
-        transform: translateY(50%);
-    }
-    
-    .flash-sell-new-section .flash-deal-slider .owl-nav div.owl-prev {
-        left: -10px;
-        right: auto;
-    }
-    
-    .flash-sell-new-section .flash-deal-slider .owl-nav div.owl-next {
-        right: -10px;
-    }
-}
-
-@media (max-width: 575px) {
-    .flash-sell-new-section .section-title h2.h3 {
+    .premium-flash-price-new {
         font-size: 16px;
-        margin-bottom: 10px;
     }
     
-    .flash-sell-new-section .product-card {
-        min-height: 200px;
-        padding: 5px;
-        margin: 0 2px;
+    .premium-countdown-item {
+        min-width: 40px;
+        padding: 5px 6px;
     }
     
-    .flash-sell-new-section .product-card .product-thumb {
-        height: 90px;
-        min-height: 90px;
-        margin-bottom: 5px;
-    }
-    
-    .flash-sell-new-section .product-card .rating-stars {
-        margin-bottom: 3px;
-        justify-content: center;
-    }
-    
-    .flash-sell-new-section .product-card .rating-stars > i {
-        font-size: 10px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown {
-        margin-top: 5px;
-        justify-content: center;
-        gap: 3px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 30px;
-        padding: 4px 2px 2px;
-        font-size: 9px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 6px;
-        padding: 1px 2px;
-        margin-top: 2px;
-    }
-    
-    .flash-sell-new-section .product-card .product-title > a {
-        font-size: 10px;
-        min-height: 24px;
-    }
-    
-    .flash-sell-new-section .product-card .product-price {
+    .premium-countdown-value {
         font-size: 12px;
-        margin-bottom: 5px;
-    }
-    
-    .flash-sell-new-section .product-card .product-category {
-        font-size: 8px;
-        margin-bottom: 2px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown {
-        margin-bottom: 5px;
-        gap: 3px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span {
-        min-width: 28px;
-        font-size: 8px;
-        padding: 3px 4px;
-    }
-    
-    .flash-sell-new-section .product-card .countdown span small {
-        font-size: 6px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group {
-        margin-top: 3px;
-        padding-top: 5px;
-        gap: 4px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .flash-sell-new-section .product-card .product-button-group .product-button i {
-        font-size: 11px;
     }
 }
 </style>
 
 <script>
 jQuery(document).ready(function($) {
+    // Initialize Owl Carousel
     if (typeof $.fn.owlCarousel !== 'undefined') {
-        $('.flash-sell-new-section .flash-deal-slider').owlCarousel({
+        $('#premium-flash-carousel').owlCarousel({
             loop: false,
-            margin: 15,
-            nav: false,
+            margin: 20,
+            nav: true,
             dots: false,
+            autoplay: false,
             responsive: {
                 0: {
-                    items: 1
+                    items: 1,
+                    margin: 10
                 },
                 576: {
-                    items: 1
+                    items: 2,
+                    margin: 15
                 },
                 768: {
-                    items: 2
+                    items: 2,
+                    margin: 15
                 },
                 992: {
-                    items: 2
+                    items: 3,
+                    margin: 20
                 },
                 1200: {
-                    items: 2
+                    items: 4,
+                    margin: 20
                 }
             },
             navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>']
@@ -899,27 +487,25 @@ jQuery(document).ready(function($) {
     }
     
     // Initialize countdown timers
-    $('.flash-sell-new-section .countdown').each(function() {
+    $('.premium-flash-countdown').each(function() {
         var $countdown = $(this);
-        var dateTime = $countdown.data('date-time');
-        if (!dateTime) return;
+        var endDate = $countdown.data('end-date');
+        if (!endDate) return;
         
-        // Parse date
-        var endDate = new Date(dateTime);
-        if (isNaN(endDate.getTime())) return;
+        var targetDate = new Date(endDate);
+        if (isNaN(targetDate.getTime())) return;
         
-        var $spans = $countdown.find('span');
-        if ($spans.length !== 4) return;
+        var $items = $countdown.find('.premium-countdown-item');
         
         function updateCountdown() {
             var now = new Date().getTime();
-            var distance = endDate.getTime() - now;
+            var distance = targetDate.getTime() - now;
             
             if (distance < 0) {
-                $spans.eq(0).html('00<small>Days</small>');
-                $spans.eq(1).html('00<small>Hrs</small>');
-                $spans.eq(2).html('00<small>Min</small>');
-                $spans.eq(3).html('00<small>Sec</small>');
+                $items.eq(0).find('.premium-countdown-value').text('00');
+                $items.eq(1).find('.premium-countdown-value').text('00');
+                $items.eq(2).find('.premium-countdown-value').text('00');
+                $items.eq(3).find('.premium-countdown-value').text('00');
                 return;
             }
             
@@ -928,10 +514,10 @@ jQuery(document).ready(function($) {
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
-            $spans.eq(0).html(String(days).padStart(2, '0') + '<small>Days</small>');
-            $spans.eq(1).html(String(hours).padStart(2, '0') + '<small>Hrs</small>');
-            $spans.eq(2).html(String(minutes).padStart(2, '0') + '<small>Min</small>');
-            $spans.eq(3).html(String(seconds).padStart(2, '0') + '<small>Sec</small>');
+            $items.eq(0).find('.premium-countdown-value').text(String(days).padStart(2, '0'));
+            $items.eq(1).find('.premium-countdown-value').text(String(hours).padStart(2, '0'));
+            $items.eq(2).find('.premium-countdown-value').text(String(minutes).padStart(2, '0'));
+            $items.eq(3).find('.premium-countdown-value').text(String(seconds).padStart(2, '0'));
         }
         
         updateCountdown();
