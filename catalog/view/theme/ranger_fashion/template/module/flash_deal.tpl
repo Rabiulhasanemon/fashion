@@ -93,7 +93,7 @@
 <style>
 /* Premium Flash Deal Module - Unique Styling */
 #premium-flash-deal-module.premium-flash-section {
-    padding: 50px 0;
+    padding: 0px 0;
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     position: relative;
 }
@@ -385,7 +385,7 @@
 
 @media (max-width: 768px) {
     #premium-flash-deal-module.premium-flash-section {
-        padding: 30px 0;
+        padding: 0px 0;
     }
     
     .premium-flash-title {
