@@ -100,7 +100,8 @@ console.groupEnd();
 })();
 </script>
 <div id="manufacturer-brand-section" class="brandloop24_section manufacturer-display-wrapper">
-  <div class="brandloop24_inner manufacturer-inner-container">
+  <div class="container">
+    <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
         <?php foreach ($manufacturers as $index => $manufacturer) { 
@@ -165,6 +166,7 @@ console.groupEnd();
         </div>
       <?php } ?>
     </div>
+  </div>
   </div>
 </div>
 
