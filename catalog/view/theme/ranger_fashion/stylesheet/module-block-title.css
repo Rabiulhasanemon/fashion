@@ -5,7 +5,7 @@
     margin: 0;
     padding: 0;
     border-bottom: 2px solid #ff505a;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 
 .block-title strong {
@@ -83,6 +83,19 @@
     font-size: 16px !important;
     line-height: 1.4 !important;
     margin: 0 0 20px 0 !important;
+}
+
+/* Hide subtitles below module titles - no subtitle should appear below border-bottom */
+.premium-flash-subtitle,
+.block-title + *,
+.premium-flash-title + .premium-flash-subtitle,
+.bs-module-title + *,
+.pst-module-title + *,
+.premium-flash-title-wrapper .premium-flash-subtitle,
+.premium-flash-header .premium-flash-subtitle,
+.module-heading-wrapper + *,
+.section-head + * {
+    display: none !important;
 }
 
 /* Apply red border-bottom to all module titles and their parent containers */
