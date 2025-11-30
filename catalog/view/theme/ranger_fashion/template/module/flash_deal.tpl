@@ -105,7 +105,7 @@
 }
 
 .premium-flash-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 40px;
 }
 
@@ -115,6 +115,7 @@
     color: #1a1a1a;
     margin: 0 0 10px 0;
     letter-spacing: -0.5px;
+    text-align: left;
 }
 
 .premium-flash-subtitle {
