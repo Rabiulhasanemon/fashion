@@ -1,8 +1,9 @@
 <div class="featured-products-section color-background-1 background section-animation" data-columns="6" data-mobile-column="1">
-  <div class="featured-products__top">
-    <div class="featured-products__top-main">
-      <div class="featured-products__top-text">
-        <h2 class="featured-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+  <div class="container">
+    <div class="featured-products__top">
+      <div class="featured-products__top-main">
+        <div class="featured-products__top-text">
+          <h2 class="featured-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
 <style>
 /* Consistent Premium Module Headings */
 .cosmetics-module-heading {
@@ -98,6 +99,7 @@
         <?php } ?>
       </ul>
     </div>
+  </div>
   </div>
 </div>
 

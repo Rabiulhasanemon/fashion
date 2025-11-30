@@ -1,5 +1,5 @@
 <?php if (!empty($reviews)) { ?>
-<section class="container" style="max-width: 80%; margin: 0 auto; padding: 0;">
+<section class="container">
   <?php if ($title) { ?>
   <div class="rv-module-heading module-heading-wrapper" style="margin-bottom: 30px; text-align: left;">
     <h2 class="rv-title cosmetics-module-heading"><?php echo $title; ?></h2>

@@ -338,7 +338,33 @@ h3.name,
   box-sizing: border-box !important;
 }
 
-/* Ensure module headings are within 80% container on desktop */
+/* Ensure all module sections use container class */
+.special-products-section,
+.latest-products-section,
+.featured-products-section,
+.bs-module-section,
+.premium-flash-section,
+.pst-module-section,
+.deal-of-day-section,
+.banner-module-section {
+  width: 100% !important;
+}
+
+.special-products-section .container,
+.latest-products-section .container,
+.featured-products-section .container,
+.bs-module-section .container,
+.premium-flash-section .container,
+.pst-module-section .container,
+.deal-of-day-section .container,
+.banner-module-section .container {
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 0 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure module headings are within container on desktop */
 @media (min-width: 768px) {
   .module-heading-wrapper {
     max-width: 80% !important;
