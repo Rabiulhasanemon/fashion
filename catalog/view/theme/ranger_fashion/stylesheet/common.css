@@ -1578,7 +1578,7 @@ section,
 .banner-tab-section.home-page-banner .container {
   max-width: 80% !important;
   margin: 0 auto !important;
-  padding: 0 20px !important;
+  padding: 0 0px !important;
 }
 
 @media (max-width: 767px) {
