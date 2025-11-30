@@ -1664,17 +1664,21 @@ class ModelCatalogProduct extends Model {
 					
 					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
 					
-					if ($customer_group_id >= 0 && $points >= 0) {
-						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
-						if ($insert_result) {
-							$reward_count++;
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
-						} else {
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] FAILED to insert reward for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
-						}
+				if ($customer_group_id >= 0 && $points >= 0 && $product_id > 0) {
+					// Delete any existing record for this specific product and customer group first (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . $customer_group_id . "'");
+					
+					// Insert the new reward points
+					$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+					if ($insert_result) {
+						$reward_count++;
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
 					} else {
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Skipped invalid reward: customer_group_id=' . $customer_group_id . ', points=' . $points . PHP_EOL, FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] FAILED to insert reward for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
 					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Skipped invalid reward: customer_group_id=' . $customer_group_id . ', points=' . $points . ', product_id=' . $product_id . PHP_EOL, FILE_APPEND);
+				}
 				}
 			} else {
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] No product_reward data found or not an array' . PHP_EOL, FILE_APPEND);
@@ -2359,9 +2363,19 @@ class ModelCatalogProduct extends Model {
 				$customer_group_id = (int)$customer_group_id;
 				$points = isset($product_reward['points']) ? (int)$product_reward['points'] : 0;
 				
-				if ($customer_group_id >= 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
-					$reward_count++;
+				if ($customer_group_id >= 0 && $product_id > 0) {
+					// Delete any existing record for this specific product and customer group first (safety)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . $customer_group_id . "'");
+					
+					// Insert the new reward points
+					$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+					
+					if ($insert_result) {
+						$reward_count++;
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert reward for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
+					}
 				}
 			}
 		} else {
