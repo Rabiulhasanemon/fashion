@@ -1,6 +1,8 @@
 <div class="panel panel-default">
   <div class="module-heading-wrapper">
-    <h2 class="panel-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+    <div class="block-title">
+      <strong><?php echo $heading_title; ?></strong>
+    </div>
   </div>
 <style>
 .panel-heading.cosmetics-module-heading {

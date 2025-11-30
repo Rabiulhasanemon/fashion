@@ -2,7 +2,9 @@
     <div class="container">
         <?php if ($tabs) { ?>
         <div class="pst-module-header">
-            <h2 class="pst-module-title"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
+            <div class="block-title">
+                <strong><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></strong>
+            </div>
             <div class="pst-tabs-wrapper">
                 <?php $first = true; ?>
                 <?php foreach ($tabs as $tab) { ?>

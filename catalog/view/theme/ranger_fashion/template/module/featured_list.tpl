@@ -11,7 +11,9 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="section-head" style="margin-bottom: 20px !important; padding-bottom: 15px !important;">
-          <h3 class="title cosmetics-module-heading" style="font-size: 28px !important; margin: 0; text-align: left !important; padding: 20px 0 16px 0 !important; position: relative !important;"><?php echo $name; ?></h3>
+          <div class="block-title">
+            <strong><?php echo $name; ?></strong>
+          </div>
 <style>
 .featured-product-area .cosmetics-module-heading {
   font-size: 28px !important;

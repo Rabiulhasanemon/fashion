@@ -1,7 +1,9 @@
 <div class="flashdeal-section">
 	<div class="flashdeal-container">
 		<div class="module-heading-wrapper">
-			<h2 class="flashdeal-title unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+			<div class="block-title">
+				<strong><?php echo $heading_title; ?></strong>
+			</div>
 		</div>
 		<div class="flashdeal-grid">
 			<?php foreach ($products as $p) { ?>

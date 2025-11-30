@@ -106,7 +106,9 @@
                 <div class="top-bar">
                     <div class="row align-center">
                         <div class="col-md-6 col-sm-12 title-toggle-wrap">
-                            <h3 class="title"><?php echo $heading_title; ?></h3>
+                            <div class="block-title">
+                                <strong><?php echo $heading_title; ?></strong>
+                            </div>
                             <button id="lc-toggle"><i class="material-icons">filter_list</i> <span>Filter</span></button>
                         </div>
                         <div class="col-md-6 col-sm-12">

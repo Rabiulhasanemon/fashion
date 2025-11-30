@@ -3,7 +3,9 @@
     <div class="featured-products__top">
       <div class="featured-products__top-main">
         <div class="featured-products__top-text">
-          <h2 class="featured-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+          <div class="block-title">
+            <strong><?php echo $heading_title; ?></strong>
+          </div>
 <style>
 /* Consistent Premium Module Headings */
 .cosmetics-module-heading {

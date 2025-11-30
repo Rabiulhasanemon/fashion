@@ -14,7 +14,9 @@ if (empty($tabs)) {
             <div class="col-lg-12">
                 <div class="section-title">
                     <div>
-                        <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
+                        <div class="block-title">
+                            <strong><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></strong>
+                        </div>
                         <?php if (count($tabs) > 1) { ?>
                         <div class="links lux-premium-tabs">
                             <?php $i=0; foreach ($tabs as $tab) { ?>

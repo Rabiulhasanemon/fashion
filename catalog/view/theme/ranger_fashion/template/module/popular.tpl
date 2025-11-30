@@ -38,7 +38,11 @@
 <div class="product-module">
   <div class="row heading">
     <div class="col-md-10 col-sm-10 col-xs-9">
-      <div class="left"><h2 class="unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2></div>
+      <div class="left">
+        <div class="block-title">
+          <strong><?php echo $heading_title; ?></strong>
+        </div>
+      </div>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
       <div class="right pull-right"><a href="<?php echo $see_all; ?>" class="see-all">See All</a></div>
