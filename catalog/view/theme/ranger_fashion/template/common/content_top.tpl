@@ -34,15 +34,16 @@
     </div>
     <style>
     .hvab24_stack {
+        background: #ffffff !important;
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 0px !important;
     }
     .hvab24_card {
         border-radius: 18px;
         background: #fff;
-        box-shadow: 0 18px 50px rgba(15,23,42,0.08);
-        padding: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        padding: 5px !important;
         position: relative;
         overflow: hidden;
     }

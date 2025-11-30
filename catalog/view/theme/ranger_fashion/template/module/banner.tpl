@@ -44,7 +44,7 @@
 <style>
 /* Premium Banner Module */
 .banner-module-section {
-    margin-bottom: 0;
+    margin-bottom: 40px;
     padding: 20px 0;
 }
 
@@ -122,17 +122,14 @@
 }
 
 @media (max-width: 768px) {
-    /* Hide full banner on mobile */
-    .banner-module-section {
-        display: none !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
+    .banner-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
     
-    .banner-grid {
-        display: none !important;
+    .banner-btn {
+        padding: 10px 20px;
+        font-size: 12px;
     }
 }
 </style>

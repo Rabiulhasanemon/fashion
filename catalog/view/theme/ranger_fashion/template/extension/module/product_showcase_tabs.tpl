@@ -1,5 +1,5 @@
 <section id="pst-module-<?php echo $module_uid; ?>" class="pst-module-section">
-    <div class="pst-module-container">
+    <div class="container">
         <?php if ($tabs) { ?>
         <div class="pst-module-header">
             <h2 class="pst-module-title"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
@@ -31,9 +31,8 @@
 <style>
 /* Simple Premium Tabbed Products Module - Unique pst- Classes */
 .pst-module-section {
-    padding: 20px 0;
+    padding: 40px 0;
     background: #fff;
-    margin: 0;
 }
 
 .pst-module-container {
@@ -75,27 +74,9 @@
 
 .pst-tabs-wrapper {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #ff6b9d transparent;
-    padding-bottom: 5px;
-}
-
-.pst-tabs-wrapper::-webkit-scrollbar {
-    height: 4px;
-}
-
-.pst-tabs-wrapper::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.pst-tabs-wrapper::-webkit-scrollbar-thumb {
-    background: #ff6b9d;
-    border-radius: 2px;
 }
 
 .pst-tab-btn {
@@ -386,17 +367,7 @@
 
 @media (max-width: 768px) {
     .pst-module-section {
-        padding: 15px 0;
-    }
-    
-    .pst-tabs-wrapper {
-        gap: 8px;
-        padding-bottom: 8px;
-    }
-    
-    .pst-tab-btn {
-        flex-shrink: 0;
-        white-space: nowrap;
+        padding: 30px 0;
     }
     
     .pst-module-container {

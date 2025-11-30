@@ -1,626 +1,229 @@
-<div id="cat-mod-wrapper" class="cat-mod-section">
-  <div class="cat-mod-container">
-    <div class="cat-mod-header">
-      <h3 class="cat-mod-title"><?php echo isset($heading_title) ? $heading_title : 'Categories'; ?></h3>
+<?php echo $header; ?>
+<section class="after-header">
+    <div class="container">
+        <ul class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <?php foreach ($breadcrumbs as $i => $breadcrumb) { if($i < 1) { ?>
+            <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+            <?php } else { ?>
+            <li  itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemtype="http://schema.org/Thing" itemprop="item" href="<?php echo $breadcrumb['href']; ?>"><span itemprop="name"><?php echo $breadcrumb['text']; ?></span></a><meta itemprop="position" content="<?php echo $i; ?>" /></li>
+            <?php }} ?>
+        </ul>
     </div>
-    
-    <div class="cat-mod-content">
-      <ul class="cat-mod-list">
-        <?php foreach ($categories as $category) { ?>
-        <li class="cat-mod-item <?php echo ($category['category_id'] == $category_id) ? 'cat-mod-active' : ''; ?>">
-          <a href="<?php echo $category['href']; ?>" class="cat-mod-link">
-            <span class="cat-mod-name"><?php echo htmlspecialchars($category['name']); ?></span>
-            <?php if ($category['children']) { ?>
-              <i class="fa fa-chevron-down cat-mod-arrow"></i>
-            <?php } ?>
-          </a>
-          
-          <?php if ($category['children']) { ?>
-          <ul class="cat-mod-submenu <?php echo ($category['category_id'] == $category_id) ? 'cat-mod-open' : ''; ?>">
-            <?php foreach ($category['children'] as $child) { ?>
-            <li class="cat-mod-subitem <?php echo (isset($child['category_id']) && $child['category_id'] == $child_id) ? 'cat-mod-subactive' : ''; ?>">
-              <a href="<?php echo $child['href']; ?>" class="cat-mod-sublink">
-                <span class="cat-mod-subname"><?php echo htmlspecialchars($child['name']); ?></span>
-                <?php if(isset($child['children']) && $child['children']) { ?>
-                  <i class="fa fa-chevron-down cat-mod-subarrow"></i>
-                <?php } ?>
-              </a>
-              
-              <?php if(isset($child['children']) && $child['children']) { ?>
-              <ul class="cat-mod-childmenu">
-                <?php foreach ($child['children'] as $child2) { ?>
-                <li class="cat-mod-childitem <?php echo (isset($child2['category_id']) && $child2['category_id'] == $child_id_2) ? 'cat-mod-childactive' : ''; ?>">
-                  <a href="<?php echo $child2['href']; ?>" class="cat-mod-childlink">
-                    <?php echo htmlspecialchars($child2['name']); ?>
-                  </a>
-                </li>
-                <?php } ?>
-              </ul>
-              <?php } ?>
-            </li>
-            <?php } ?>
-          </ul>
-          <?php } ?>
-        </li>
-        <?php } ?>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<style>
-/* Premium Category Module - Unique cat-mod- Classes */
-#cat-mod-wrapper.cat-mod-section {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-    overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s ease;
-}
-
-#cat-mod-wrapper.cat-mod-section:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-.cat-mod-container {
-    width: 100%;
-}
-
-.cat-mod-header {
-    padding: 20px 25px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
-}
-
-.cat-mod-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0;
-    padding-bottom: 12px;
-    position: relative;
-    letter-spacing: -0.02em;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-.cat-mod-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 3px;
-    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
-    border-radius: 2px;
-}
-
-.cat-mod-content {
-    padding: 10px 0;
-}
-
-.cat-mod-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.cat-mod-item {
-    border-bottom: 1px solid rgba(0,0,0,0.03);
-    position: relative;
-}
-
-.cat-mod-item:last-child {
-    border-bottom: none;
-}
-
-.cat-mod-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 25px;
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    position: relative;
-    background: #fff;
-}
-
-.cat-mod-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 0;
-    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
-    transition: width 0.3s ease;
-}
-
-.cat-mod-link:hover,
-.cat-mod-item.cat-mod-active > .cat-mod-link {
-    color: #ff6b9d;
-    background: linear-gradient(90deg, #fff9fa 0%, #fff 100%);
-    padding-left: 35px;
-}
-
-.cat-mod-link:hover::before,
-.cat-mod-item.cat-mod-active > .cat-mod-link::before {
-    width: 4px;
-}
-
-.cat-mod-name {
-    flex: 1;
-    transition: transform 0.2s ease;
-}
-
-.cat-mod-link:hover .cat-mod-name {
-    transform: translateX(3px);
-}
-
-.cat-mod-arrow {
-    font-size: 11px;
-    color: #ccc;
-    transition: all 0.3s ease;
-    margin-left: 10px;
-}
-
-.cat-mod-item.cat-mod-active > .cat-mod-link .cat-mod-arrow {
-    transform: rotate(180deg);
-    color: #ff6b9d;
-}
-
-.cat-mod-link:hover .cat-mod-arrow {
-    color: #ff6b9d;
-}
-
-/* Submenu Styles */
-.cat-mod-submenu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    background: #fafafa;
-    display: none;
-    border-top: 1px solid rgba(0,0,0,0.03);
-}
-
-.cat-mod-submenu.cat-mod-open {
-    display: block;
-    animation: catModSlideDown 0.3s ease;
-}
-
-@keyframes catModSlideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 1000px;
-    }
-}
-
-.cat-mod-subitem {
-    border-bottom: 1px solid rgba(0,0,0,0.02);
-    position: relative;
-}
-
-.cat-mod-subitem:last-child {
-    border-bottom: none;
-}
-
-.cat-mod-sublink {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 25px 12px 45px;
-    color: #666;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 400;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.cat-mod-sublink::before {
-    content: '';
-    position: absolute;
-    left: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #ddd;
-    transition: all 0.3s ease;
-}
-
-.cat-mod-sublink:hover,
-.cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink {
-    color: #ff6b9d;
-    background: #fff;
-    padding-left: 50px;
-}
-
-.cat-mod-sublink:hover::before,
-.cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink::before {
-    background: #ff6b9d;
-    width: 8px;
-    height: 8px;
-    left: 35px;
-}
-
-.cat-mod-subname {
-    flex: 1;
-    transition: transform 0.2s ease;
-}
-
-.cat-mod-sublink:hover .cat-mod-subname {
-    transform: translateX(3px);
-}
-
-.cat-mod-subarrow {
-    font-size: 10px;
-    color: #ccc;
-    transition: all 0.3s ease;
-    margin-left: 10px;
-}
-
-.cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink .cat-mod-subarrow {
-    transform: rotate(180deg);
-    color: #ff6b9d;
-}
-
-.cat-mod-sublink:hover .cat-mod-subarrow {
-    color: #ff6b9d;
-}
-
-/* Child Menu Styles */
-.cat-mod-childmenu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    background: #f5f5f5;
-    display: none;
-    border-top: 1px solid rgba(0,0,0,0.02);
-}
-
-.cat-mod-subitem.cat-mod-subactive > .cat-mod-childmenu {
-    display: block;
-    animation: catModSlideDown 0.3s ease;
-}
-
-.cat-mod-childitem {
-    border-bottom: 1px solid rgba(0,0,0,0.01);
-}
-
-.cat-mod-childitem:last-child {
-    border-bottom: none;
-}
-
-.cat-mod-childlink {
-    display: block;
-    padding: 10px 25px 10px 65px;
-    color: #888;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 400;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.cat-mod-childlink::before {
-    content: '→';
-    position: absolute;
-    left: 50px;
-    color: #ccc;
-    font-size: 12px;
-    transition: all 0.3s ease;
-}
-
-.cat-mod-childlink:hover,
-.cat-mod-childitem.cat-mod-childactive > .cat-mod-childlink {
-    color: #ff6b9d;
-    background: #fff;
-    padding-left: 70px;
-}
-
-.cat-mod-childlink:hover::before,
-.cat-mod-childitem.cat-mod-childactive > .cat-mod-childlink::before {
-    color: #ff6b9d;
-    transform: translateX(3px);
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-    .cat-mod-header {
-        padding: 18px 20px;
-    }
-    
-    .cat-mod-title {
-        font-size: 18px;
-        padding-bottom: 10px;
-    }
-    
-    .cat-mod-title::after {
-        width: 45px;
-        height: 2.5px;
-    }
-    
-    .cat-mod-link {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-    
-    .cat-mod-link:hover,
-    .cat-mod-item.cat-mod-active > .cat-mod-link {
-        padding-left: 28px;
-    }
-    
-    .cat-mod-sublink {
-        padding: 10px 20px 10px 40px;
-        font-size: 13px;
-    }
-    
-    .cat-mod-sublink:hover,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink {
-        padding-left: 45px;
-    }
-    
-    .cat-mod-sublink::before {
-        left: 25px;
-    }
-    
-    .cat-mod-sublink:hover::before,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink::before {
-        left: 30px;
-    }
-    
-    .cat-mod-childlink {
-        padding: 8px 20px 8px 55px;
-        font-size: 12px;
-    }
-    
-    .cat-mod-childlink:hover,
-    .cat-mod-childitem.cat-mod-childactive > .cat-mod-childlink {
-        padding-left: 60px;
-    }
-    
-    .cat-mod-childlink::before {
-        left: 40px;
-    }
-}
-
-@media (max-width: 768px) {
-    #cat-mod-wrapper.cat-mod-section {
-        margin-bottom: 20px;
-        border-radius: 10px;
-    }
-    
-    .cat-mod-header {
-        padding: 16px 18px;
-    }
-    
-    .cat-mod-title {
-        font-size: 17px;
-        padding-bottom: 8px;
-    }
-    
-    .cat-mod-title::after {
-        width: 40px;
-        height: 2px;
-    }
-    
-    .cat-mod-content {
-        padding: 8px 0;
-    }
-    
-    .cat-mod-link {
-        padding: 12px 18px;
-        font-size: 14px;
-    }
-    
-    .cat-mod-link:hover,
-    .cat-mod-item.cat-mod-active > .cat-mod-link {
-        padding-left: 25px;
-    }
-    
-    .cat-mod-sublink {
-        padding: 10px 18px 10px 38px;
-        font-size: 13px;
-    }
-    
-    .cat-mod-sublink:hover,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink {
-        padding-left: 42px;
-    }
-    
-    .cat-mod-sublink::before {
-        left: 23px;
-    }
-    
-    .cat-mod-sublink:hover::before,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink::before {
-        left: 28px;
-    }
-    
-    .cat-mod-childlink {
-        padding: 8px 18px 8px 50px;
-        font-size: 12px;
-    }
-    
-    .cat-mod-childlink:hover,
-    .cat-mod-childitem.cat-mod-childactive > .cat-mod-childlink {
-        padding-left: 55px;
-    }
-    
-    .cat-mod-childlink::before {
-        left: 38px;
-    }
-}
-
-@media (max-width: 480px) {
-    .cat-mod-header {
-        padding: 14px 15px;
-    }
-    
-    .cat-mod-title {
-        font-size: 16px;
-    }
-    
-    .cat-mod-link {
-        padding: 11px 15px;
-        font-size: 13px;
-    }
-    
-    .cat-mod-link:hover,
-    .cat-mod-item.cat-mod-active > .cat-mod-link {
-        padding-left: 22px;
-    }
-    
-    .cat-mod-sublink {
-        padding: 9px 15px 9px 35px;
-        font-size: 12px;
-    }
-    
-    .cat-mod-sublink:hover,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink {
-        padding-left: 38px;
-    }
-    
-    .cat-mod-sublink::before {
-        left: 20px;
-    }
-    
-    .cat-mod-sublink:hover::before,
-    .cat-mod-subitem.cat-mod-subactive > .cat-mod-sublink::before {
-        left: 25px;
-    }
-    
-    .cat-mod-childlink {
-        padding: 7px 15px 7px 45px;
-        font-size: 11px;
-    }
-    
-    .cat-mod-childlink:hover,
-    .cat-mod-childitem.cat-mod-childactive > .cat-mod-childlink {
-        padding-left: 50px;
-    }
-    
-    .cat-mod-childlink::before {
-        left: 33px;
-    }
-}
-
-/* Smooth transitions for all interactive elements */
-.cat-mod-link,
-.cat-mod-sublink,
-.cat-mod-childlink {
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Accessibility improvements */
-.cat-mod-link:focus,
-.cat-mod-sublink:focus,
-.cat-mod-childlink:focus {
-    outline: 2px solid #ff6b9d;
-    outline-offset: -2px;
-}
-
-/* Print styles */
-@media print {
-    #cat-mod-wrapper.cat-mod-section {
-        box-shadow: none;
-        border: 1px solid #ddd;
-    }
-    
-    .cat-mod-submenu,
-    .cat-mod-childmenu {
-        display: block !important;
-    }
-}
-</style>
-
-<script>
-(function() {
-    // Add click handlers for mobile submenu toggle
-    var categoryModule = document.getElementById('cat-mod-wrapper');
-    if (!categoryModule) return;
-    
-    var categoryItems = categoryModule.querySelectorAll('.cat-mod-item');
-    
-    categoryItems.forEach(function(item) {
-        var link = item.querySelector('.cat-mod-link');
-        var submenu = item.querySelector('.cat-mod-submenu');
+</section>
+<section class="product-categories">
+    <div class="container">
         
-        if (link && submenu) {
-            link.addEventListener('click', function(e) {
-                // Only toggle on mobile or if not navigating
-                if (window.innerWidth <= 768) {
-                    var isActive = item.classList.contains('cat-mod-active');
-                    
-                    // Close all other submenus
-                    categoryItems.forEach(function(otherItem) {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('cat-mod-active');
-                            var otherSubmenu = otherItem.querySelector('.cat-mod-submenu');
-                            if (otherSubmenu) {
-                                otherSubmenu.classList.remove('cat-mod-open');
-                            }
-                        }
-                    });
-                    
-                    // Toggle current item
-                    if (isActive) {
-                        item.classList.remove('cat-mod-active');
-                        submenu.classList.remove('cat-mod-open');
-                    } else {
-                        item.classList.add('cat-mod-active');
-                        submenu.classList.add('cat-mod-open');
-                        e.preventDefault();
+        <?php if (isset($category_modules) && !empty($category_modules)) { ?>
+        <div class="category-modules-top" style="margin-bottom: 30px;">
+            <?php foreach ($category_modules as $module) { ?>
+            <div class="category-module-item" style="margin-bottom: 20px;">
+                <?php if (!empty($module['description'])) { ?>
+                <div class="category-module-description" style="margin-bottom: 15px;">
+                    <?php 
+                    $description = $module['description'];
+                    // Decode HTML entities if needed
+                    if (htmlspecialchars_decode($description) != $description) {
+                        $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                     }
-                }
-            });
+                    // Strip slashes if double-encoded
+                    $description = stripslashes($description);
+                    // Remove any padding/background styling from wrapper - let the HTML control its own styling
+                    // Output the description as raw HTML (it's already sanitized from admin)
+                    echo $description;
+                    ?>
+                </div>
+                <?php } ?>
+                <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
+                <div class="category-page-module">
+                    <?php echo $module['output']; ?>
+                </div>
+                <?php } ?>
+            </div>
+            <?php } ?>
+        </div>
+        <style>
+        /* Hide module titles and section headings when displayed on category pages */
+        .category-page-module .module-heading-wrapper,
+        .category-page-module .section-head,
+        .category-page-module h2.cosmetics-module-heading,
+        .category-page-module h2.unified-module-heading,
+        .category-page-module .cosmetics-module-heading,
+        .category-page-module .unified-module-heading,
+        .category-page-module .latest-products__title,
+        .category-page-module .popular-products__title,
+        .category-page-module .heading_title,
+        .category-page-module .panel-heading {
+            display: none !important;
         }
         
-        // Handle submenu items with children
-        var subitems = item.querySelectorAll('.cat-mod-subitem');
-        subitems.forEach(function(subitem) {
-            var sublink = subitem.querySelector('.cat-mod-sublink');
-            var childmenu = subitem.querySelector('.cat-mod-childmenu');
-            
-            if (sublink && childmenu) {
-                sublink.addEventListener('click', function(e) {
-                    if (window.innerWidth <= 768) {
-                        var isSubActive = subitem.classList.contains('cat-mod-subactive');
-                        
-                        // Close all other child menus in this submenu
-                        subitems.forEach(function(otherSubitem) {
-                            if (otherSubitem !== subitem) {
-                                otherSubitem.classList.remove('cat-mod-subactive');
-                                var otherChildmenu = otherSubitem.querySelector('.cat-mod-childmenu');
-                                if (otherChildmenu) {
-                                    otherChildmenu.classList.remove('cat-mod-open');
-                                }
-                            }
-                        });
-                        
-                        // Toggle current subitem
-                        if (isSubActive) {
-                            subitem.classList.remove('cat-mod-subactive');
-                            childmenu.classList.remove('cat-mod-open');
-                        } else {
-                            subitem.classList.add('cat-mod-subactive');
-                            childmenu.classList.add('cat-mod-open');
-                            e.preventDefault();
-                        }
-                    }
-                });
-            }
-        });
-    });
-})();
-</script>
+        /* Hide titles within section-title but keep other content like tabs/links */
+        .category-page-module .section-title h2,
+        .category-page-module .section-title h3,
+        .category-page-module .section-title .h3,
+        .category-page-module .section-title > div:first-child > h2,
+        .category-page-module .section-title > div:first-child > h3,
+        .category-page-module h2.h3 {
+            display: none !important;
+        }
+        
+        /* Hide entire section-title if it only contains a title (no tabs/links) */
+        .category-page-module .section-title:only-child,
+        .category-page-module .section-title:has(> h2:only-child),
+        .category-page-module .section-title:has(> h3:only-child) {
+            display: none !important;
+        }
+        
+        /* For modules with section-title containing only title in first div */
+        .category-page-module .section-title > div:first-child:has(> h2:only-child),
+        .category-page-module .section-title > div:first-child:has(> h3:only-child) {
+            display: none !important;
+        }
+        
+        /* Adjust section-title padding when title is hidden but tabs remain */
+        .category-page-module .section-title {
+            padding-bottom: 0 !important;
+            margin-bottom: 15px !important;
+        }
+        
+        /* Adjust spacing when titles are hidden */
+        .category-page-module > div:first-child {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        
+        /* Remove top margin from module containers */
+        .category-page-module .deal-of-day-section,
+        .category-page-module .flash-sell-new-section,
+        .category-page-module .newproduct-section {
+            margin-top: 0 !important;
+        }
+        </style>
+        <?php } ?>
+
+        <div class="row"><?php echo $column_left; ?><?php if ($column_left && $column_right) { ?><?php $class = 'col-sm-12 col-md-6 product-listing'; ?><?php } elseif ($column_left || $column_right) { ?><?php $class = 'col-sm-12 col-md-9 product-listing'; ?><?php } else { ?><?php $class = 'col-sm-12'; ?><?php } ?>
+            <div id="content" class="<?php echo $class; ?>">
+
+                <div class="top-bar">
+                    <div class="row align-center">
+                        <div class="col-md-6 col-sm-12 title-toggle-wrap">
+                            <h3 class="title"><?php echo $heading_title; ?></h3>
+                            <button id="lc-toggle"><i class="material-icons">filter_list</i> <span>Filter</span></button>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="top-bar-filter">
+                                <div class="form-group show">
+                                    <label><?php echo $text_limit; ?></label>
+                                    <div class="custom-selects">
+                                        <select id="input-limit" onchange="location = this.value;">
+                                            <?php foreach ($limits as $limits) { ?><?php if ($limits['value'] == $limit) { ?>
+                                            <option value="<?php echo $limits['href']; ?>" selected="selected"><?php echo $limits['text']; ?></option>
+                                            <?php } else { ?>
+                                            <option value="<?php echo $limits['href']; ?>"><?php echo $limits['text']; ?></option>
+                                            <?php } ?><?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label><?php echo $text_sort; ?></label>
+                                    <div class="custom-selects">
+                                        <select id="input-limit" onchange="location = this.value;">
+                                            <?php foreach ($sorts as $sorts) { ?><?php if ($sorts['value'] == $sort . '-' . $order) { ?>
+                                            <option value="<?php echo $sorts['href']; ?>" selected="selected"><?php echo $sorts['text']; ?></option>
+                                            <?php } else { ?>
+                                            <option value="<?php echo $sorts['href']; ?>"><?php echo $sorts['text']; ?></option>
+                                            <?php } ?><?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row main-content">
+                    <?php foreach ($products as $product) { ?>
+
+                    <div class="col-sm-6 col-lg-4 mb-3">
+                        <div class="product-item">
+
+                            <?php if ($product['special']) { ?>
+                            <?php
+                              $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                              $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                              $discountAmount = $price - $special;
+                              $mark = ($discountAmount / $price) * 100;
+                            ?>
+                            <div class="mark"><?php echo round($mark, 1); ?>% OFF </div>
+                            <?php } ?>
+
+                            <a href="<?php echo $product['href']; ?>">
+                                <div class="product-img">
+                                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" />
+                                </div>
+                            </a>
+
+                            <div class="product-info">
+                                <a href="<?php echo $product['href']; ?>">
+                                    <h4 class="name"><?php echo $product['name']; ?></h4>
+                                </a>
+                                <div class="product-price-wrap">
+                                    <?php if ($product['special']) { ?>
+                                    <span class="price"><?php echo $product['special']; ?></span>
+                                    <span class="price old"><?php echo $product['price']; ?></span>
+                                    <?php } else { ?>
+                                    <span class="price"><?php echo $product['price']; ?></span>
+                                    <?php } ?>
+
+                                </div>
+                                <div class="product-btn-wrap">
+                                    <button  class="btn btn-outline wishlist" onclick="wishlist.add('<?php echo $product['product_id']; ?>');">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 21L10.55 19.7C8.86667 18.1834 7.475 16.875 6.375 15.775C5.275 14.675 4.4 13.6917 3.75 12.825C3.1 11.9417 2.64167 11.1334 2.375 10.4C2.125 9.66669 2 8.91669 2 8.15002C2 6.58336 2.525 5.27502 3.575 4.22502C4.625 3.17502 5.93333 2.65002 7.5 2.65002C8.36667 2.65002 9.19167 2.83336 9.975 3.20002C10.7583 3.56669 11.4333 4.08336 12 4.75003C12.5667 4.08336 13.2417 3.56669 14.025 3.20002C14.8083 2.83336 15.6333 2.65002 16.5 2.65002C18.0667 2.65002 19.375 3.17502 20.425 4.22502C21.475 5.27502 22 6.58336 22 8.15002C22 8.91669 21.8667 9.66669 21.6 10.4C21.35 11.1334 20.9 11.9417 20.25 12.825C19.6 13.6917 18.725 14.675 17.625 15.775C16.525 16.875 15.1333 18.1834 13.45 19.7L12 21ZM12 18.3C13.6 16.8667 14.9167 15.6417 15.95 14.625C16.9833 13.5917 17.8 12.7 18.4 11.95C19 11.1834 19.4167 10.5084 19.65 9.92503C19.8833 9.32503 20 8.73336 20 8.15002C20 7.15002 19.6667 6.31669 19 5.65003C18.3333 4.98336 17.5 4.65003 16.5 4.65003C15.7167 4.65003 14.9917 4.87503 14.325 5.32503C13.6583 5.75836 13.2 6.31669 12.95 7.00003H11.05C10.8 6.31669 10.3417 5.75836 9.675 5.32503C9.00833 4.87503 8.28333 4.65003 7.5 4.65003C6.5 4.65003 5.66667 4.98336 5 5.65003C4.33333 6.31669 4 7.15002 4 8.15002C4 8.73336 4.11667 9.32503 4.35 9.92503C4.58333 10.5084 5 11.1834 5.6 11.95C6.2 12.7 7.01667 13.5917 8.05 14.625C9.08333 15.6417 10.4 16.8667 12 18.3Z" fill="#C4C4C4"/>
+                                        </svg>
+                                    </button>
+                                    <?php if($product["disablePurchase"] && $product["restock_request_btn"]) { ?>
+                                    <button  class="btn btn-outline buy" onclick="restock_request.add('<?php echo $product['product_id']; ?>');">
+                                    <?php echo $product["restock_request_btn"]; ?>
+                                    </button>
+                                    <?php } elseif ($product["disablePurchase"]) { ?>
+                                    <button  class="btn btn-outline buy" <?php echo $product["disablePurchase"] ? "disabled" : ""; ?> onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                                    <?php echo $product["stock_status"]; ?>
+                                    </button>
+                                    <?php } else { ?>
+                                    <button  class="btn btn-outline buy" <?php echo $product["disablePurchase"] ? "disabled" : ""; ?> onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                                        <span class="material-icons">shopping_cart</span> Buy Now
+                                    </button>
+                                    <?php } ?>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php }
+                    if (!$products) { ?>
+                   <div class="col-lg-8 offset-lg-2">
+                       <div class="empty-content txt-center">
+                           <span class="icon"></span>
+                           <h5>Sorry! No Product Founds</h5>
+                           <p>Please try searching for something else</p>
+                       </div>
+                   </div>
+                    <?php } ?>
+                </div>
+                <div class="bottom-bar">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <?php echo $pagination; ?>
+                        </div>
+                        <div class="col-md-6 rs-none text-right">
+                            <p><?php echo $results; ?></p>
+                        </div>
+                    </div>
+                </div>
+                <?php echo $content_bottom; ?>
+            </div>
+            <?php echo $column_right; ?>
+        </div>
+    </div>
+</section>
+<?php echo $footer; ?>

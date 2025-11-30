@@ -1,6 +1,6 @@
 <?php if ($products) { ?>
 <div id="premium-flash-deal-module" class="premium-flash-section">
-    <div class="premium-flash-container">
+    <div class="container">
         <div class="premium-flash-header">
             <div class="premium-flash-title-wrapper">
                 <h2 class="premium-flash-title"><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></h2>
@@ -93,10 +93,9 @@
 <style>
 /* Premium Flash Deal Module - Unique Styling */
 #premium-flash-deal-module.premium-flash-section {
-    padding: 20px 0;
+    padding: 50px 0;
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     position: relative;
-    margin: 0;
 }
 
 .premium-flash-container {
@@ -386,7 +385,7 @@
 
 @media (max-width: 768px) {
     #premium-flash-deal-module.premium-flash-section {
-        padding: 15px 0;
+        padding: 30px 0;
     }
     
     .premium-flash-title {

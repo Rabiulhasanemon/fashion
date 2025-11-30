@@ -1,5 +1,5 @@
 <div id="bs-module-wrapper" class="bs-module-section">
-  <div class="bs-module-container">
+  <div class="container">
     <div class="bs-module-header">
       <h2 class="bs-module-title"><?php echo $heading_title; ?></h2>
     </div>
@@ -61,9 +61,8 @@
 <style>
 /* Simple Premium Bestseller Module - Unique bs- Classes */
 #bs-module-wrapper.bs-module-section {
-    padding: 20px 0;
+    padding: 40px 0;
     background: #fff;
-    margin: 0;
 }
 
 .bs-module-container {
@@ -280,7 +279,7 @@
 
 @media (max-width: 768px) {
     #bs-module-wrapper.bs-module-section {
-        padding: 15px 0;
+        padding: 30px 0;
     }
     
     .bs-module-container {

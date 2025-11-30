@@ -280,15 +280,12 @@
 }
 
 @media (max-width: 768px) {
-    /* Mobile-friendly slideshow - simplified version */
     .fullscreen-slideshow {
-        height: 300px;
-        margin: 0;
-        padding: 0;
+        height: 550px;
     }
     
     .fullscreen-slideshow .slide-content {
-        padding: 0 20px;
+        padding: 0 25px;
         justify-content: center;
         text-align: center;
     }
@@ -299,63 +296,47 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        max-width: 100%;
     }
     
     .fullscreen-slideshow .badge {
-        margin-bottom: 10px;
-        font-size: 10px;
-        padding: 4px 8px;
+        margin-bottom: 15px;
     }
     
     .fullscreen-slideshow .main-title {
-        font-size: 24px;
-        margin-bottom: 10px;
-        line-height: 1.2;
+        font-size: 32px;
+        margin-bottom: 15px;
     }
     
     .fullscreen-slideshow .subtitle {
-        font-size: 13px;
-        margin-bottom: 15px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        font-size: 16px;
+        margin-bottom: 25px;
     }
     
     .fullscreen-slideshow .promo-section {
-        padding: 12px;
-        margin-bottom: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
         width: 100%;
-        max-width: 100%;
-    }
-    
-    .fullscreen-slideshow .promo-text {
-        font-size: 12px;
-        margin-bottom: 10px;
     }
     
     .fullscreen-slideshow .promo-code-wrapper {
         flex-direction: column;
         width: 100%;
-        gap: 8px;
     }
     
     .fullscreen-slideshow .promo-input,
     .fullscreen-slideshow .copy-btn {
         width: 100%;
-        padding: 10px;
-        font-size: 13px;
+        justify-content: center;
     }
     
     .fullscreen-slideshow .shop-btn {
-        width: auto;
-        padding: 12px 24px;
-        font-size: 14px;
+        width: 100%;
+        justify-content: center;
+        padding: 16px 30px;
     }
     
     .fullscreen-slideshow .slide-nav {
-        bottom: 15px;
+        bottom: 20px;
         right: 50%;
         transform: translateX(50%);
         width: 100%;
@@ -365,43 +346,19 @@
     .fullscreen-slideshow .nav-btn {
         display: none; /* Hide arrows on mobile */
     }
-    
-    .fullscreen-slideshow .slide-dots {
-        gap: 8px;
-    }
-    
-    .fullscreen-slideshow .slide-dot {
-        width: 10px;
-        height: 10px;
-    }
 }
 
 @media (max-width: 480px) {
     .fullscreen-slideshow {
-        height: 250px;
+        height: 500px;
     }
     
     .fullscreen-slideshow .main-title {
-        font-size: 20px;
-    }
-    
-    .fullscreen-slideshow .subtitle {
-        font-size: 12px;
-        -webkit-line-clamp: 1;
-    }
-    
-    .fullscreen-slideshow .promo-section {
-        padding: 10px;
-        margin-bottom: 12px;
-    }
-    
-    .fullscreen-slideshow .shop-btn {
-        padding: 10px 20px;
-        font-size: 13px;
+        font-size: 28px;
     }
     
     .fullscreen-slideshow .slide-overlay {
-        background: rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.4); /* Darker overlay for better text readability */
     }
 }
 </style>
