@@ -873,7 +873,7 @@ select option {
   margin-bottom: 30px;
   padding-bottom: 24px;
   align-items: center;
-  border-bottom: 1px solid var(--borderColor);
+  border-bottom: none;
   width: 100%;
   max-width: 100%;
 }
