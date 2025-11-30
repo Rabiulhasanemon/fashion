@@ -1,8 +1,8 @@
 <?php if (!empty($reviews)) { ?>
-<section class="rv-testimonial-section" style="max-width: 80%; margin: 0 auto; padding: 0;">
+<section class="container" style="max-width: 80%; margin: 0 auto; padding: 0;">
   <?php if ($title) { ?>
-  <div class="rv-module-heading" style="margin-bottom: 30px; text-align: center;">
-    <h2 class="rv-title"><?php echo $title; ?></h2>
+  <div class="rv-module-heading module-heading-wrapper" style="margin-bottom: 30px; text-align: left;">
+    <h2 class="rv-title cosmetics-module-heading"><?php echo $title; ?></h2>
   </div>
   <?php } ?>
   

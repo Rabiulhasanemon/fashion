@@ -204,6 +204,10 @@
 </section>
 
 <style>
+.hvab24_stack {
+    gap: 0px !important;
+}
+
 /* Premium Category Page - Unique cp- Classes */
 #cp-page-wrapper.cp-page-section {
     background: #fff;
@@ -230,7 +234,7 @@
 
 .cp-layout-grid {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    
     gap: 30px;
     align-items: start;
 }
