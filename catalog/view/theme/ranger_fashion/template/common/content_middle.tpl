@@ -20,7 +20,7 @@
     .hvab24_card {
         border-radius: 18px;
         background: #fff;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        box-shadow: 0;
         padding: 5px !important;
         position: relative;
         overflow: hidden;

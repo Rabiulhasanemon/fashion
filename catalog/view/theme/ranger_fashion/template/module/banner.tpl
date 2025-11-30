@@ -44,7 +44,7 @@
 <style>
 /* Premium Banner Module */
 .banner-module-section {
-    margin-bottom: 40px;
+    margin-bottom: 0;
     padding: 20px 0;
 }
 

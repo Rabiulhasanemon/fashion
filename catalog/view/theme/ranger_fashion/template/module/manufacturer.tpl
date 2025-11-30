@@ -173,7 +173,7 @@ console.groupEnd();
 <style>
 /* Manufacturer Section - Unique IDs and Classes to Avoid Conflicts */
 #manufacturer-brand-section.brandloop24_section.manufacturer-display-wrapper {
-  padding: 60px 0 !important;
+  padding: 20px 0px !important;
   background: #ffffff !important;
   overflow: hidden !important;
   position: relative !important;

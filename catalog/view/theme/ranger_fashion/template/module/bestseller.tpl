@@ -61,7 +61,7 @@
 <style>
 /* Simple Premium Bestseller Module - Unique bs- Classes */
 #bs-module-wrapper.bs-module-section {
-    padding: 40px 0;
+    padding: 0;
     background: #fff;
 }
 
