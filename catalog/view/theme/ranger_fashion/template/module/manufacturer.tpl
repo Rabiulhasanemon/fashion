@@ -99,9 +99,8 @@ console.groupEnd();
   });
 })();
 </script>
-<div id="manufacturer-brand-section" class="brandloop24_section manufacturer-display-wrapper">
-  <div class="container">
-    <div class="brandloop24_inner manufacturer-inner-container">
+<div id="manufacturer-brand-section" class="container brandloop24_section manufacturer-display-wrapper">
+  <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
         <?php foreach ($manufacturers as $index => $manufacturer) { 
@@ -167,7 +166,6 @@ console.groupEnd();
       <?php } ?>
     </div>
   </div>
-  </div>
 </div>
 
 <style>
@@ -202,6 +200,8 @@ console.groupEnd();
   display: flex !important;
   gap: 24px !important;
   animation: brandloop24_scroll 20s linear infinite !important;
+  animation-play-state: running !important;
+  animation-iteration-count: infinite !important;
   width: max-content !important;
 }
 .manufacturer-brand-card.brandloop24_card {
