@@ -358,7 +358,7 @@ h3.name,
 .pst-module-section .container,
 .deal-of-day-section .container,
 .banner-module-section .container {
-  max-width: 1400px !important;
+  max-width: 100% !important;
   margin: 0 auto !important;
   padding: 0 20px !important;
   box-sizing: border-box !important;

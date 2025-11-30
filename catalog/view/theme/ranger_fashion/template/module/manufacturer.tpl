@@ -190,7 +190,7 @@ console.groupEnd();
   z-index: 0;
 }
 .manufacturer-inner-container.brandloop24_inner {
-  max-width: 1400px !important;
+  max-width: 100% !important;
   margin: 0 auto !important;
   position: relative !important;
   padding: 0 40px !important;
