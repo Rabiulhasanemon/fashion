@@ -1,32 +1,146 @@
 /* Module Block Title Styles */
 /* Styles for .block-title and related module title elements */
+/* Red Tab Design - Applied to all module titles */
 
 .block-title {
     margin: 0;
     padding: 0;
+    border-bottom: 2px solid #ff505a;
+    margin-bottom: 20px;
 }
 
 .block-title strong {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
+    padding: 12px 24px;
+    background-color: #ff505a;
+    color: #fff !important;
     font-weight: 700;
     text-transform: uppercase;
     position: relative;
     font-size: 16px;
+    line-height: 1.4;
 }
 
+/* Triangular flag shape at top-left */
 .block-title strong:before {
     content: "";
     position: absolute;
     left: 0;
-    bottom: -10px;
+    top: -10px;
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid #222;
+    border-bottom: 10px solid #ff1d2a;
+}
+
+/* Apply red tab style to all module titles */
+.cosmetics-module-heading,
+.unified-module-heading,
+.module-heading-title,
+.bs-module-title,
+.pst-module-title,
+.premium-flash-title,
+.flash-deal-title,
+.flashdeal-title,
+.rv-title,
+.rv-module-heading h2,
+.popular-products__title,
+.latest-products__title,
+.featured-products__title,
+.special-products__title,
+.section-title h2,
+.section-title h3,
+.heading_title,
+.tcp2-module-title,
+.offer-title,
+.panel-heading,
+.page_heading,
+.luxe-special-page-title,
+.cat-name,
+.page-heading {
+    display: inline-block !important;
+    padding: 12px 24px !important;
+    background-color: #ff505a !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    position: relative !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    margin: 0 0 20px 0 !important;
+    border-bottom: 2px solid #ff505a !important;
+}
+
+/* Remove the gradient underline from unified headings when using block-title style */
+.cosmetics-module-heading::after,
+.unified-module-heading::after,
+.module-heading-title::after,
+.bs-module-title::after,
+.pst-module-title::after,
+.premium-flash-title::after {
+    display: none !important;
+}
+
+/* Triangular flag shape for all module titles (top-left corner) */
+.cosmetics-module-heading:before,
+.unified-module-heading:before,
+.module-heading-title:before,
+.bs-module-title:before,
+.pst-module-title:before,
+.premium-flash-title:before,
+.flash-deal-title:before,
+.flashdeal-title:before,
+.rv-title:before,
+.heading_title:before,
+.tcp2-module-title:before,
+.block-title strong:before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -10px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    border-bottom: 10px solid #ff1d2a !important;
+    z-index: 1 !important;
+}
+
+/* Responsive adjustments for module titles */
+@media (max-width: 768px) {
+    .cosmetics-module-heading,
+    .unified-module-heading,
+    .module-heading-title,
+    .bs-module-title,
+    .pst-module-title,
+    .premium-flash-title,
+    .block-title strong {
+        font-size: 14px !important;
+        padding: 10px 18px !important;
+    }
+    
+    .cosmetics-module-heading:before,
+    .unified-module-heading:before,
+    .block-title strong:before {
+        top: -8px !important;
+        border-left: 8px solid transparent !important;
+        border-right: 8px solid transparent !important;
+        border-bottom: 8px solid #ff1d2a !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .cosmetics-module-heading,
+    .unified-module-heading,
+    .module-heading-title,
+    .bs-module-title,
+    .pst-module-title,
+    .premium-flash-title,
+    .block-title strong {
+        font-size: 13px !important;
+        padding: 8px 16px !important;
+    }
 }
 
 /* Block Primary Styles */
