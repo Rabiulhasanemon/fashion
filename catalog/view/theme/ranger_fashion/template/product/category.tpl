@@ -215,7 +215,7 @@
 }
 
 .cp-page-container {
-    max-width: 100%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 0 20px;
 }

@@ -58,7 +58,7 @@
 .fullscreen-slideshow .slide-content {
     position: relative;
     z-index: 2;
-    max-width: 100%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 0 40px;
     width: 100%;

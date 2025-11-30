@@ -100,7 +100,7 @@ if (empty($tabs)) {
 }
 
 .deal-of-day-section .container {
-    max-width: 100%;
+    max-width: 80%;
     margin: 0 auto;
     padding: 0 20px;
     width: 100%;
