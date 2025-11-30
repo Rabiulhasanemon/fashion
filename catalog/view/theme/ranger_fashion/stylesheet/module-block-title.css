@@ -4,6 +4,7 @@
 .block-title {
     margin: 0;
     padding: 0;
+    border-bottom: 2px solid #ff505a;
     margin-bottom: 20px;
 }
 
@@ -82,6 +83,55 @@
     font-size: 16px !important;
     line-height: 1.4 !important;
     margin: 0 0 20px 0 !important;
+}
+
+/* Apply red border-bottom to all module titles and their parent containers */
+.block-title,
+.cosmetics-module-heading,
+.unified-module-heading,
+.module-heading-title,
+.bs-module-title,
+.pst-module-title,
+.premium-flash-title,
+.flash-deal-title,
+.flashdeal-title,
+.rv-title,
+.rv-module-heading h2,
+.rv-module-heading h2.rv-title,
+.popular-products__title,
+.latest-products__title,
+.featured-products__title,
+.special-products__title,
+.section-title h2:not(.product-name):not(.name),
+.section-title h3:not(.product-name):not(.name),
+.section-title .h3:not(.product-name):not(.name),
+.heading_title:not(.product-name):not(.name),
+.tcp2-module-title,
+.offer-title,
+.panel-heading,
+.page_heading,
+.luxe-special-page-title,
+.cat-name,
+.page-heading,
+.bs-module-header h2,
+.pst-module-header h2,
+.premium-flash-header h2,
+.premium-flash-title-wrapper h2,
+.module-heading-wrapper h2,
+.module-heading-wrapper h3,
+.section-head h2:not(.product-name):not(.name),
+.section-head h3:not(.product-name):not(.name),
+.section-head .title:not(.product-name):not(.name),
+.cp-title,
+.cp-page-title,
+/* Module header containers */
+.bs-module-header,
+.pst-module-header,
+.premium-flash-header,
+.premium-flash-title-wrapper,
+.module-heading-wrapper,
+.rv-module-heading {
+    border-bottom: 2px solid #ff505a !important;
 }
 
 /* Remove the gradient underline from unified headings when using block-title style */
@@ -275,7 +325,7 @@
 
 /* Orange Color Theme */
 .block-primary.orange-color .block-title {
-    /* border-bottom removed - using red tab style */
+    border-bottom: 2px solid #f9b513;
 }
 
 .block-primary.orange-color .block-title strong {
@@ -294,7 +344,7 @@
 
 /* Blue Color Theme */
 .block-primary.blue-color .block-title {
-    /* border-bottom removed - using red tab style */
+    border-bottom: 2px solid #4dabee;
 }
 
 .block-primary.blue-color .block-title strong {
@@ -313,7 +363,7 @@
 
 /* Red Color Theme */
 .block-primary.red-color .block-title {
-    /* border-bottom removed - using red tab style */
+    border-bottom: 2px solid #ff505a;
 }
 
 .block-primary.red-color .block-title strong {
@@ -332,7 +382,7 @@
 
 /* Green Color Theme */
 .block-primary.green-color .block-title {
-    /* border-bottom removed - using red tab style */
+    border-bottom: 2px solid #53c861;
 }
 
 .block-primary.green-color .block-title strong {
@@ -351,7 +401,7 @@
 
 /* Purple Color Theme */
 .block-primary.purple-color .block-title {
-    /* border-bottom removed - using red tab style */
+    border-bottom: 2px solid #c579c0;
 }
 
 .block-primary.purple-color .block-title strong {
