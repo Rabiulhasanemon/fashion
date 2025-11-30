@@ -44,6 +44,7 @@
 .flashdeal-title,
 .rv-title,
 .rv-module-heading h2,
+.rv-module-heading h2.rv-title,
 .popular-products__title,
 .latest-products__title,
 .featured-products__title,
@@ -57,7 +58,20 @@
 .page_heading,
 .luxe-special-page-title,
 .cat-name,
-.page-heading {
+.page-heading,
+/* Additional selectors for module sections */
+.bs-module-header h2,
+.pst-module-header h2,
+.premium-flash-header h2,
+.premium-flash-title-wrapper h2,
+.module-heading-wrapper h2,
+.module-heading-wrapper h3,
+.section-head h2,
+.section-head h3,
+.section-head .title,
+/* Category and page titles */
+.cp-title,
+.cp-page-title {
     display: inline-block !important;
     padding: 12px 24px !important;
     background-color: #ff505a !important;
@@ -77,7 +91,24 @@
 .module-heading-title::after,
 .bs-module-title::after,
 .pst-module-title::after,
-.premium-flash-title::after {
+.premium-flash-title::after,
+.flash-deal-title::after,
+.flashdeal-title::after,
+.rv-title::after,
+.rv-module-heading h2::after,
+.popular-products__title::after,
+.latest-products__title::after,
+.featured-products__title::after,
+.special-products__title::after,
+.section-title h2::after,
+.section-title h3::after,
+.heading_title::after,
+.bs-module-header h2::after,
+.pst-module-header h2::after,
+.premium-flash-header h2::after,
+.premium-flash-title-wrapper h2::after,
+.module-heading-wrapper h2::after,
+.module-heading-wrapper h3::after {
     display: none !important;
 }
 
@@ -91,9 +122,21 @@
 .flash-deal-title:before,
 .flashdeal-title:before,
 .rv-title:before,
+.rv-module-heading h2:before,
 .heading_title:before,
 .tcp2-module-title:before,
-.block-title strong:before {
+.block-title strong:before,
+.bs-module-header h2:before,
+.pst-module-header h2:before,
+.premium-flash-header h2:before,
+.premium-flash-title-wrapper h2:before,
+.module-heading-wrapper h2:before,
+.module-heading-wrapper h3:before,
+.section-head h2:before,
+.section-head h3:before,
+.section-head .title:before,
+.cp-title:before,
+.cp-page-title:before {
     content: "" !important;
     position: absolute !important;
     left: 0 !important;
@@ -114,14 +157,35 @@
     .bs-module-title,
     .pst-module-title,
     .premium-flash-title,
-    .block-title strong {
+    .flash-deal-title,
+    .flashdeal-title,
+    .rv-title,
+    .rv-module-heading h2,
+    .popular-products__title,
+    .latest-products__title,
+    .featured-products__title,
+    .special-products__title,
+    .heading_title,
+    .block-title strong,
+    .bs-module-header h2,
+    .pst-module-header h2,
+    .premium-flash-header h2,
+    .module-heading-wrapper h2,
+    .module-heading-wrapper h3 {
         font-size: 14px !important;
         padding: 10px 18px !important;
     }
     
     .cosmetics-module-heading:before,
     .unified-module-heading:before,
-    .block-title strong:before {
+    .bs-module-title:before,
+    .pst-module-title:before,
+    .premium-flash-title:before,
+    .rv-title:before,
+    .block-title strong:before,
+    .bs-module-header h2:before,
+    .pst-module-header h2:before,
+    .premium-flash-header h2:before {
         top: -8px !important;
         border-left: 8px solid transparent !important;
         border-right: 8px solid transparent !important;
@@ -136,7 +200,21 @@
     .bs-module-title,
     .pst-module-title,
     .premium-flash-title,
-    .block-title strong {
+    .flash-deal-title,
+    .flashdeal-title,
+    .rv-title,
+    .rv-module-heading h2,
+    .popular-products__title,
+    .latest-products__title,
+    .featured-products__title,
+    .special-products__title,
+    .heading_title,
+    .block-title strong,
+    .bs-module-header h2,
+    .pst-module-header h2,
+    .premium-flash-header h2,
+    .module-heading-wrapper h2,
+    .module-heading-wrapper h3 {
         font-size: 13px !important;
         padding: 8px 16px !important;
     }
