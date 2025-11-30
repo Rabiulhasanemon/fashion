@@ -1,100 +1,107 @@
-/* Unified Premium Module Heading Styles - All Module Headings */
+/* NEW PREMIUM MODULE HEADING STYLES - All Module Headings Only */
 /* This ensures ALL module headings have the same premium style, size, and color */
+/* EXCLUDES product names to maintain their own styling */
 
-/* Primary unified classes */
+/* ============================================
+   PREMIUM MODULE HEADING STYLE
+   ============================================ */
+/* Primary unified classes - Module headings only */
 .cosmetics-module-heading,
 .unified-module-heading,
 .module-heading-title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-align: left !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   text-transform: none !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   position: relative !important;
   display: block !important;
 }
 
-/* Elegant pink gradient underline accent */
+/* Premium gradient underline accent - Enhanced */
 .cosmetics-module-heading::after,
 .unified-module-heading::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Bestseller module title */
 .bs-module-title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
 .bs-module-title::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Product Showcase Tabs module title */
 .pst-module-title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
 .pst-module-title::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Flash Deal module title */
 .premium-flash-title,
 .flash-deal-title,
 .flashdeal-title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
@@ -103,26 +110,27 @@
 .flashdeal-title::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Review View module title */
 .rv-title,
 .rv-module-heading h2 {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
@@ -130,12 +138,13 @@
 .rv-module-heading h2::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Popular, Latest, Featured, Special products titles */
@@ -143,15 +152,15 @@
 .latest-products__title,
 .featured-products__title,
 .special-products__title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
@@ -161,82 +170,85 @@
 .special-products__title::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
-/* Section title headings */
-.section-title h2,
-.section-title h3,
-.section-title .h3,
-.section-head h2,
-.section-head h3 {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+/* Section title headings - Module headings only */
+.section-title h2:not(.product-name):not(.name),
+.section-title h3:not(.product-name):not(.name),
+.section-title .h3:not(.product-name):not(.name),
+.section-head h2:not(.product-name):not(.name),
+.section-head h3:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
-.section-title h2::after,
-.section-title h3::after,
-.section-title .h3::after {
+.section-title h2:not(.product-name):not(.name)::after,
+.section-title h3:not(.product-name):not(.name)::after,
+.section-title .h3:not(.product-name):not(.name)::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
-/* Generic heading_title class */
-.heading_title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+/* Generic heading_title class - Module headings only */
+.heading_title:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
-.heading_title::after {
+.heading_title:not(.product-name):not(.name)::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
 /* Tabbed category module title */
 .tcp2-module-title,
 .offer-title {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
@@ -244,115 +256,82 @@
 .offer-title::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
-/* Panel heading (for store, google hangouts, etc.) */
-.panel-heading {
-  font-size: 28px !important;
-  font-weight: 600 !important;
+/* Panel heading (for store, google hangouts, etc.) - Module headings only */
+.panel-heading:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
   color: #1a1a1a !important;
   margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
+  padding: 24px 0 20px 0 !important;
   position: relative !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   text-transform: none !important;
 }
 
-.panel-heading::after {
+.panel-heading:not(.product-name):not(.name)::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 8px !important;
+  bottom: 12px !important;
   left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
-/* Generic module heading selectors - catch all h2, h3 in module sections */
-.module h2,
-.module h3,
-[class*="module"] h2:first-child,
-[class*="module"] h3:first-child,
-[class*="section"] h2:first-child,
-[class*="section"] h3:first-child,
-[class*="products"] h2:first-child,
-[class*="products"] h3:first-child {
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  color: #1a1a1a !important;
-  margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
-  position: relative !important;
-  letter-spacing: -0.02em !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
-  text-transform: none !important;
-  text-align: left !important;
+/* ============================================
+   EXCLUDE PRODUCT NAMES - Do NOT style these
+   ============================================ */
+/* Ensure product names are NOT affected by module heading styles */
+.name,
+.product-name,
+.cp-product-name,
+.bs-product-name,
+.pst-product-name,
+.premium-flash-product-name,
+h1.name,
+h2.name,
+h3.name,
+.product-title,
+.item-name {
+  /* Reset any module heading styles that might affect product names */
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
 }
 
-.module h2::after,
-.module h3::after,
-[class*="module"] h2:first-child::after,
-[class*="module"] h3:first-child::after,
-[class*="section"] h2:first-child::after,
-[class*="section"] h3:first-child::after,
-[class*="products"] h2:first-child::after,
-[class*="products"] h3:first-child::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 8px !important;
-  left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
-}
-
-/* Category module title */
-.category-module-item h2,
-.category-module-item h3,
-.category-page-module h2:first-child,
-.category-page-module h3:first-child {
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  color: #1a1a1a !important;
-  margin: 0 !important;
-  padding: 20px 0 16px 0 !important;
-  position: relative !important;
-  letter-spacing: -0.02em !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.3 !important;
-  text-transform: none !important;
-  text-align: left !important;
-}
-
-.category-module-item h2::after,
-.category-module-item h3::after,
-.category-page-module h2:first-child::after,
-.category-page-module h3:first-child::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 8px !important;
-  left: 0 !important;
-  width: 60px !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
-  border-radius: 2px !important;
+.name::after,
+.product-name::after,
+.cp-product-name::after,
+.bs-product-name::after,
+.pst-product-name::after,
+.premium-flash-product-name::after,
+.product-title::after,
+.item-name::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* Module heading wrapper */
 .module-heading-wrapper {
   text-align: left !important;
-  margin-bottom: 24px !important;
+  margin-bottom: 30px !important;
   padding: 0 20px !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -368,7 +347,9 @@
   }
 }
 
-/* Responsive adjustments */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 992px) {
   .cosmetics-module-heading,
   .unified-module-heading,
@@ -384,27 +365,15 @@
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2,
-  .section-title h3,
-  .section-title .h3,
-  .heading_title,
+  .section-title h2:not(.product-name):not(.name),
+  .section-title h3:not(.product-name):not(.name),
+  .section-title .h3:not(.product-name):not(.name),
+  .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
-  .panel-heading,
-  .module h2,
-  .module h3,
-  [class*="module"] h2:first-child,
-  [class*="module"] h3:first-child,
-  [class*="section"] h2:first-child,
-  [class*="section"] h3:first-child,
-  [class*="products"] h2:first-child,
-  [class*="products"] h3:first-child,
-  .category-module-item h2,
-  .category-module-item h3,
-  .category-page-module h2:first-child,
-  .category-page-module h3:first-child {
-    font-size: 24px !important;
-    padding: 18px 0 14px 0 !important;
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 28px !important;
+    padding: 22px 0 18px 0 !important;
   }
   
   .cosmetics-module-heading::after,
@@ -420,28 +389,16 @@
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2::after,
-  .section-title h3::after,
-  .section-title .h3::after,
-  .heading_title::after,
+  .section-title h2:not(.product-name):not(.name)::after,
+  .section-title h3:not(.product-name):not(.name)::after,
+  .section-title .h3:not(.product-name):not(.name)::after,
+  .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
-  .panel-heading::after,
-  .module h2::after,
-  .module h3::after,
-  [class*="module"] h2:first-child::after,
-  [class*="module"] h3:first-child::after,
-  [class*="section"] h2:first-child::after,
-  [class*="section"] h3:first-child::after,
-  [class*="products"] h2:first-child::after,
-  [class*="products"] h3:first-child::after,
-  .category-module-item h2::after,
-  .category-module-item h3::after,
-  .category-page-module h2:first-child::after,
-  .category-page-module h3:first-child::after {
-    width: 50px !important;
-    height: 2.5px !important;
-    bottom: 6px !important;
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 70px !important;
+    height: 3.5px !important;
+    bottom: 10px !important;
   }
 }
 
@@ -460,27 +417,15 @@
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2,
-  .section-title h3,
-  .section-title .h3,
-  .heading_title,
+  .section-title h2:not(.product-name):not(.name),
+  .section-title h3:not(.product-name):not(.name),
+  .section-title .h3:not(.product-name):not(.name),
+  .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
-  .panel-heading,
-  .module h2,
-  .module h3,
-  [class*="module"] h2:first-child,
-  [class*="module"] h3:first-child,
-  [class*="section"] h2:first-child,
-  [class*="section"] h3:first-child,
-  [class*="products"] h2:first-child,
-  [class*="products"] h3:first-child,
-  .category-module-item h2,
-  .category-module-item h3,
-  .category-page-module h2:first-child,
-  .category-page-module h3:first-child {
-    font-size: 22px !important;
-    padding: 16px 0 12px 0 !important;
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 26px !important;
+    padding: 20px 0 16px 0 !important;
   }
   
   .cosmetics-module-heading::after,
@@ -496,28 +441,16 @@
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2::after,
-  .section-title h3::after,
-  .section-title .h3::after,
-  .heading_title::after,
+  .section-title h2:not(.product-name):not(.name)::after,
+  .section-title h3:not(.product-name):not(.name)::after,
+  .section-title .h3:not(.product-name):not(.name)::after,
+  .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
-  .panel-heading::after,
-  .module h2::after,
-  .module h3::after,
-  [class*="module"] h2:first-child::after,
-  [class*="module"] h3:first-child::after,
-  [class*="section"] h2:first-child::after,
-  [class*="section"] h3:first-child::after,
-  [class*="products"] h2:first-child::after,
-  [class*="products"] h3:first-child::after,
-  .category-module-item h2::after,
-  .category-module-item h3::after,
-  .category-page-module h2:first-child::after,
-  .category-page-module h3:first-child::after {
-    width: 45px !important;
-    height: 2px !important;
-    bottom: 5px !important;
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 65px !important;
+    height: 3px !important;
+    bottom: 8px !important;
   }
   
   .module-heading-wrapper {
@@ -540,27 +473,15 @@
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2,
-  .section-title h3,
-  .section-title .h3,
-  .heading_title,
+  .section-title h2:not(.product-name):not(.name),
+  .section-title h3:not(.product-name):not(.name),
+  .section-title .h3:not(.product-name):not(.name),
+  .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
-  .panel-heading,
-  .module h2,
-  .module h3,
-  [class*="module"] h2:first-child,
-  [class*="module"] h3:first-child,
-  [class*="section"] h2:first-child,
-  [class*="section"] h3:first-child,
-  [class*="products"] h2:first-child,
-  [class*="products"] h3:first-child,
-  .category-module-item h2,
-  .category-module-item h3,
-  .category-page-module h2:first-child,
-  .category-page-module h3:first-child {
-    font-size: 20px !important;
-    padding: 14px 0 10px 0 !important;
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 24px !important;
+    padding: 18px 0 14px 0 !important;
   }
   
   .cosmetics-module-heading::after,
@@ -576,32 +497,19 @@
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2::after,
-  .section-title h3::after,
-  .section-title .h3::after,
-  .heading_title::after,
+  .section-title h2:not(.product-name):not(.name)::after,
+  .section-title h3:not(.product-name):not(.name)::after,
+  .section-title .h3:not(.product-name):not(.name)::after,
+  .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
-  .panel-heading::after,
-  .module h2::after,
-  .module h3::after,
-  [class*="module"] h2:first-child::after,
-  [class*="module"] h3:first-child::after,
-  [class*="section"] h2:first-child::after,
-  [class*="section"] h3:first-child::after,
-  [class*="products"] h2:first-child::after,
-  [class*="products"] h3:first-child::after,
-  .category-module-item h2::after,
-  .category-module-item h3::after,
-  .category-page-module h2:first-child::after,
-  .category-page-module h3:first-child::after {
-    width: 40px !important;
-    height: 2px !important;
-    bottom: 4px !important;
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 60px !important;
+    height: 2.5px !important;
+    bottom: 6px !important;
   }
   
   .module-heading-wrapper {
     padding: 0 10px !important;
   }
 }
-
