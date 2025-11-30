@@ -179,7 +179,9 @@
   box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
 
-/* Section title headings - Module headings only */
+/* Section title headings - DISABLED - Now using red tab style from module-block-title.css */
+/* These styles are removed to allow the red tab style to apply properly */
+/*
 .section-title h2:not(.product-name):not(.name),
 .section-title h3:not(.product-name):not(.name),
 .section-title .h3:not(.product-name):not(.name),
@@ -210,6 +212,7 @@
   border-radius: 4px !important;
   box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
 }
+*/
 
 /* Generic heading_title class - Module headings only */
 .heading_title:not(.product-name):not(.name) {
@@ -391,9 +394,9 @@ h3.name,
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2:not(.product-name):not(.name),
-  .section-title h3:not(.product-name):not(.name),
-  .section-title .h3:not(.product-name):not(.name),
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
@@ -415,9 +418,9 @@ h3.name,
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2:not(.product-name):not(.name)::after,
-  .section-title h3:not(.product-name):not(.name)::after,
-  .section-title .h3:not(.product-name):not(.name)::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
@@ -443,9 +446,9 @@ h3.name,
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2:not(.product-name):not(.name),
-  .section-title h3:not(.product-name):not(.name),
-  .section-title .h3:not(.product-name):not(.name),
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
@@ -467,9 +470,9 @@ h3.name,
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2:not(.product-name):not(.name)::after,
-  .section-title h3:not(.product-name):not(.name)::after,
-  .section-title .h3:not(.product-name):not(.name)::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
@@ -499,9 +502,9 @@ h3.name,
   .latest-products__title,
   .featured-products__title,
   .special-products__title,
-  .section-title h2:not(.product-name):not(.name),
-  .section-title h3:not(.product-name):not(.name),
-  .section-title .h3:not(.product-name):not(.name),
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name),
   .tcp2-module-title,
   .offer-title,
@@ -523,9 +526,9 @@ h3.name,
   .latest-products__title::after,
   .featured-products__title::after,
   .special-products__title::after,
-  .section-title h2:not(.product-name):not(.name)::after,
-  .section-title h3:not(.product-name):not(.name)::after,
-  .section-title .h3:not(.product-name):not(.name)::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
   .heading_title:not(.product-name):not(.name)::after,
   .tcp2-module-title::after,
   .offer-title::after,
