@@ -4,7 +4,6 @@
 .block-title {
     margin: 0;
     padding: 0;
-    border-bottom: 2px solid #ff505a;
     margin-bottom: 20px;
 }
 
@@ -83,7 +82,6 @@
     font-size: 16px !important;
     line-height: 1.4 !important;
     margin: 0 0 20px 0 !important;
-    border-bottom: 2px solid #ff505a !important;
 }
 
 /* Remove the gradient underline from unified headings when using block-title style */
@@ -277,7 +275,7 @@
 
 /* Orange Color Theme */
 .block-primary.orange-color .block-title {
-    border-bottom: 2px solid #f9b513;
+    /* border-bottom removed - using red tab style */
 }
 
 .block-primary.orange-color .block-title strong {
@@ -296,7 +294,7 @@
 
 /* Blue Color Theme */
 .block-primary.blue-color .block-title {
-    border-bottom: 2px solid #4dabee;
+    /* border-bottom removed - using red tab style */
 }
 
 .block-primary.blue-color .block-title strong {
@@ -315,7 +313,7 @@
 
 /* Red Color Theme */
 .block-primary.red-color .block-title {
-    border-bottom: 2px solid #ff505a;
+    /* border-bottom removed - using red tab style */
 }
 
 .block-primary.red-color .block-title strong {
@@ -334,7 +332,7 @@
 
 /* Green Color Theme */
 .block-primary.green-color .block-title {
-    border-bottom: 2px solid #53c861;
+    /* border-bottom removed - using red tab style */
 }
 
 .block-primary.green-color .block-title strong {
@@ -353,7 +351,7 @@
 
 /* Purple Color Theme */
 .block-primary.purple-color .block-title {
-    border-bottom: 2px solid #c579c0;
+    /* border-bottom removed - using red tab style */
 }
 
 .block-primary.purple-color .block-title strong {
