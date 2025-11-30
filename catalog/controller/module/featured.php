@@ -135,6 +135,8 @@ class ControllerModuleFeatured extends Controller {
                         'rating'      => $rating,
                         'category_name' => $category_name,
                         'discount_percent' => $discount_percentage,
+                        'points'      => isset($product_info['points']) ? (int)$product_info['points'] : 0,
+                        'reward'      => isset($product_info['reward']) ? (int)$product_info['reward'] : 0,
                         'href'        => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
                     );
                 }

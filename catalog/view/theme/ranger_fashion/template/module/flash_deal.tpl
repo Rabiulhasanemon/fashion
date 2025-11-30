@@ -53,6 +53,12 @@
                                     <?php } else { ?>
                                     <span class="premium-flash-price-new"><?php echo $product['price']; ?></span>
                                     <?php } ?>
+                                    <?php if (!empty($product['points']) && $product['points'] > 0) { ?>
+                                    <div class="module-reward-points">
+                                      <i class="fa fa-gift"></i>
+                                      <span>Earn <?php echo $product['points']; ?> points</span>
+                                    </div>
+                                    <?php } ?>
                                 </div>
                                 
                                 <?php if (!empty($product['end_date'])) { ?>

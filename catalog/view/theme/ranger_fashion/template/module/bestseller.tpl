@@ -48,6 +48,12 @@
                     <span class="bs-price-normal"><?php echo $product['price']; ?></span>
                   <?php } ?>
                 <?php } ?>
+                <?php if (!empty($product['points']) && $product['points'] > 0) { ?>
+                <div class="module-reward-points">
+                  <i class="fa fa-gift"></i>
+                  <span>Earn <?php echo $product['points']; ?> points</span>
+                </div>
+                <?php } ?>
               </div>
             </div>
           </div>

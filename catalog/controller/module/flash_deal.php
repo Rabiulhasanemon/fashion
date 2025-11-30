@@ -95,6 +95,8 @@ class ControllerModuleFlashDeal extends Controller {
 					'special' => $final_special,
 					'discount' => $discount_percentage,
 					'rating' => $rating,
+					'points' => isset($product_info['points']) ? (int)$product_info['points'] : 0,
+					'reward' => isset($product_info['reward']) ? (int)$product_info['reward'] : 0,
 					'end_date' => $end_date_js,
 					'href' => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
 				);

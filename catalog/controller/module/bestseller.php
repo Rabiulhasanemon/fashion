@@ -75,6 +75,8 @@ class ControllerModuleBestSeller extends Controller {
 					'special'           => $special,
 					'tax'               => $tax,
 					'rating'            => $rating,
+					'points'            => isset($result['points']) ? (int)$result['points'] : 0,
+					'reward'            => isset($result['reward']) ? (int)$result['reward'] : 0,
 					'href'              => $this->url->link('product/product', 'product_id=' . $result['product_id']),
 				);
 			}

@@ -582,6 +582,13 @@
                 html += product.price;
             }
             html += '</div>';
+            // Reward Points
+            if (product.points && product.points > 0) {
+                html += '<div class="module-reward-points">';
+                html += '<i class="fa fa-gift"></i>';
+                html += '<span>Earn ' + product.points + ' points</span>';
+                html += '</div>';
+            }
             html += '</div>';
             
             html += '</div>';

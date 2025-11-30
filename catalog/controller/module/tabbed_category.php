@@ -94,21 +94,8 @@ class ControllerModuleTabbedCategory extends Controller {
                     'special'=>$special,
                     'tax'=>$tax,
                     'rating'=>(int)$rating,
-                    'href'=>$this->url->link('product/product', 'product_id=' . $product_info['product_id']),
-                    'discount' => $discount_percentage,
-                    'category_name' => $category_name,
-                    'manufacturer'  => $product_info['manufacturer']
-                );
-            }
-
-            $title = isset($tab['title']) ? $tab['title'] : '';
-            if (empty($title) && !empty($tab['category_id'])) { $cat = $this->model_catalog_category->getCategory((int)$tab['category_id']); if ($cat) $title = $cat['name']; }
-            $data['tabs'][] = array('title'=>$title, 'products'=>$products_out);
-        }
-
-        return $this->load->view($this->config->get('config_template') . '/template/module/tabbed_category.tpl', $data);
-    }
-}
+                    'points'=>isset($product_info['points']) ? (int)$product_info['points'] : 0,
+                    'reward'=>isset($product_info['reward']) ? (int)$product_info['reward'] : 0,
                     'href'=>$this->url->link('product/product', 'product_id=' . $product_info['product_id']),
                     'discount' => $discount_percentage,
                     'category_name' => $category_name,
