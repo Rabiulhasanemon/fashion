@@ -2,9 +2,7 @@
 <section class="container">
   <?php if ($title) { ?>
   <div class="rv-module-heading module-heading-wrapper" style="margin-bottom: 30px; text-align: left;">
-    <div class="block-title">
-      <strong><?php echo $title; ?></strong>
-    </div>
+    <h2 class="rv-title cosmetics-module-heading"><?php echo $title; ?></h2>
   </div>
   <?php } ?>
   

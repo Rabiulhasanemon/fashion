@@ -1,9 +1,7 @@
 <div id="bs-module-wrapper" class="bs-module-section">
   <div class="container">
     <div class="bs-module-header">
-      <div class="block-title">
-        <strong><?php echo $heading_title; ?></strong>
-      </div>
+      <h2 class="bs-module-title"><?php echo $heading_title; ?></h2>
     </div>
     
     <div class="bs-module-content">

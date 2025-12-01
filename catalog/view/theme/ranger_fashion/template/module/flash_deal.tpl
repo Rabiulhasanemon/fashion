@@ -3,9 +3,7 @@
     <div class="container">
         <div class="premium-flash-header">
             <div class="premium-flash-title-wrapper">
-                <div class="block-title">
-                    <strong><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></strong>
-                </div>
+                <h2 class="premium-flash-title"><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></h2>
                 <div class="premium-flash-subtitle">Limited Time Offers - Grab Them Fast!</div>
             </div>
         </div>

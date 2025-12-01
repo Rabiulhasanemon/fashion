@@ -1,8 +1,6 @@
 <div class="topsellers-products">
   <div class="module-heading-wrapper">
-    <div class="block-title">
-      <strong>Top Seller</strong>
-    </div>
+    <h2 class="title cosmetics-module-heading">Top Seller</h2>
   </div>
 <style>
 .topsellers-products .cosmetics-module-heading {
