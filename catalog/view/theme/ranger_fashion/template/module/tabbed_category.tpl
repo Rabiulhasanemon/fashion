@@ -756,7 +756,12 @@ jQuery(document).ready(function($) {
         var $slider = $('#' + carouselId, $wrapper);
         
         if ($slider.length && typeof $.fn.owlCarousel !== 'undefined') {
-            var owl = $slider.owlCarousel({
+            // Destroy existing carousel if it exists
+            if ($slider.data('owl.carousel')) {
+                $slider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+            }
+            
+            var owl = $slider.addClass('owl-carousel').owlCarousel({
                 loop: true,
                 margin: 15,
                 nav: false,
@@ -840,28 +845,66 @@ jQuery(document).ready(function($) {
     });
     
     // "ALL PRODUCT" button functionality - show last tab (all products)
-    $('#tcp-all-products-btn-' + moduleUid, root).on('click', function(e) {
-        e.preventDefault();
-        var totalTabs = $('.tabbed-category-slider-wrapper', root).length;
-        if (totalTabs > 0) {
-            var allProductsTabId = totalTabs - 1; // Last tab is "All Products"
+    var $allProductsBtn = $('#tcp-all-products-btn-' + moduleUid);
+    if ($allProductsBtn.length) {
+        $allProductsBtn.on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             
-            // Hide all tabs
-            $('.tabbed-category-slider-wrapper', root).css('display', 'none').removeClass('active');
-            
-            // Show "All Products" tab
-            $('.tabbed-category-slider-wrapper', root).eq(allProductsTabId).css('display', 'block').addClass('active');
-            
-            // Update active carousel
-            if (owlCarousels[allProductsTabId]) {
-                currentActiveCarousel = owlCarousels[allProductsTabId];
-                currentActiveCarousel.trigger('refresh.owl.carousel');
+            var totalTabs = $('.tabbed-category-slider-wrapper', root).length;
+            if (totalTabs > 0) {
+                var allProductsTabId = totalTabs - 1; // Last tab is "All Products"
+                
+                // Hide all tabs
+                $('.tabbed-category-slider-wrapper', root).each(function() {
+                    $(this).css('display', 'none').removeClass('active');
+                });
+                
+                // Show "All Products" tab
+                var $allProductsTab = $('.tabbed-category-slider-wrapper', root).eq(allProductsTabId);
+                $allProductsTab.css('display', 'block').addClass('active');
+                
+                // Update active carousel
+                if (owlCarousels[allProductsTabId]) {
+                    currentActiveCarousel = owlCarousels[allProductsTabId];
+                    // Refresh and trigger carousel update
+                    setTimeout(function() {
+                        currentActiveCarousel.trigger('refresh.owl.carousel');
+                        currentActiveCarousel.trigger('to.owl.carousel', 0);
+                    }, 100);
+                } else {
+                    // If carousel not initialized, initialize it now
+                    var carouselId = 'tcp-carousel-' + moduleUid + '-' + allProductsTabId;
+                    var $slider = $('#' + carouselId, $allProductsTab);
+                    if ($slider.length && typeof $.fn.owlCarousel !== 'undefined') {
+                        var owl = $slider.addClass('owl-carousel').owlCarousel({
+                            loop: true,
+                            margin: 15,
+                            nav: false,
+                            dots: false,
+                            autoplay: true,
+                            autoplayTimeout: 4000,
+                            autoplayHoverPause: true,
+                            autoplaySpeed: 800,
+                            smartSpeed: 600,
+                            responsive: {
+                                0: { items: 2, margin: 8, slideBy: 2 },
+                                576: { items: 2, margin: 10, slideBy: 2 },
+                                768: { items: 4, margin: 12, slideBy: 2 },
+                                992: { items: 4, margin: 15 },
+                                1200: { items: 5, margin: 15 }
+                            }
+                        });
+                        owlCarousels[allProductsTabId] = owl;
+                        currentActiveCarousel = owl;
+                    }
+                }
+                
+                // Remove active state from all tab buttons
+                $('.tcp-tab-btn', root).removeClass('tcp-tab-active');
             }
-            
-            // Remove active state from all tab buttons
-            $('.tcp-tab-btn', root).removeClass('tcp-tab-active');
-        }
-    });
+        });
+    }
 
     // Timer functionality - Fixed to use date_end from admin panel
     var $countdown = $('#tcp-countdown-' + moduleUid);
