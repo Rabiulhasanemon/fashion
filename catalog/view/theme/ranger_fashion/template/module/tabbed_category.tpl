@@ -46,7 +46,7 @@ if (empty($tabs)) {
                         </span>
                     </div>
                 </div>
-                <a href="<?php echo isset($see_all_url) ? $see_all_url : $this->url->link('product/category', 'view_all=1'); ?>" class="tcp-view-all-btn" id="tcp-all-products-btn-<?php echo $module_uid; ?>">
+                <a href="<?php echo isset($see_all_url) ? $see_all_url : 'index.php?route=product/category&view_all=1'; ?>" class="tcp-view-all-btn" id="tcp-all-products-btn-<?php echo $module_uid; ?>">
                     <span>ALL PRODUCT</span>
                     <i class="fa fa-chevron-right"></i>
                 </a>
