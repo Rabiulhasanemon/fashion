@@ -148,7 +148,7 @@ if (empty($tabs)) {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 30px;
-    padding: 15px 0;
+    padding: 0;
     background: #fff;
     border-bottom: 2px solid #ff505a;
     position: relative;
@@ -158,7 +158,7 @@ if (empty($tabs)) {
 
 .tcp-header-left {
     flex-shrink: 0;
-    padding-left: 20px;
+    padding-left: 0;
 }
 
 .tcp-title-tab {
