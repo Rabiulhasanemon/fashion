@@ -390,7 +390,9 @@ jQuery(document).ready(function($) {
         loop: enableLoop,
     margin: 20,
     nav: false, // Disable default nav, use custom buttons
-    dots: true,
+    dots: true, // Enable dots (slider counter)
+    dotClass: 'owl-dot',
+    dotsClass: 'owl-dots',
     autoplay: true,
     autoplayTimeout: 3000,
     autoplayHoverPause: false,
