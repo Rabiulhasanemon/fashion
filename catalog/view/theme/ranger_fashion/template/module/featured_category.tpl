@@ -1,9 +1,9 @@
 <?php if (isset($categories) && !empty($categories)) { ?>
-<section class="category style-7 section-padding featured-category-module" id="featured-category-<?php echo isset($module_id) ? $module_id : 'default'; ?>">
+<section class="category style-7 section-padding fc-module-section" id="fc-module-<?php echo isset($module_id) ? $module_id : time(); ?>">
     <div class="container">
         <div class="fc-modern-header">
             <div class="fc-header-left">
-                <h3 class="fc-modern-title"><?php echo isset($name) ? strtoupper($name) : 'FEATURED CATEGORIES'; ?></h3>
+                <h3 class="fc-modern-title"><?php echo isset($name) ? htmlspecialchars($name) : 'Featured Categories'; ?></h3>
             </div>
             <div class="fc-header-right">
                 <div class="fc-nav-arrows">
@@ -16,55 +16,60 @@
                 </div>
             </div>
         </div>
-        <div class="fc-carousel-wrapper">
-            <div class="category-inner fc-carousel owl-carousel" id="fc-carousel-<?php echo isset($module_id) ? $module_id : 'default'; ?>">
+        <div class="fc-category-carousel owl-carousel" id="fc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>">
             <?php foreach ($categories as $category) { ?>
-            <div class="fc-carousel-item">
+            <div class="fc-category-item">
                 <a href="<?php echo $category['href']; ?>">
                     <div class="category-card">
                         <div class="category-info">
                             <p><?php echo $category['name']; ?></p>
                         </div>
                         <div class="category-img">
-                            <img src="<?php echo $category['icon']; ?>" alt="<?php echo $category['name']; ?>">
+                            <img src="<?php echo $category['icon']; ?>" alt="<?php echo htmlspecialchars($category['name']); ?>">
                         </div>
                     </div>
                 </a>
             </div>
             <?php } ?>
-            </div>
         </div>
     </div>
 </section>
 
 <style>
-/* Featured Category Modern Header Style - New Classes (fc- prefix) */
-.featured-category-module .fc-modern-header {
+/* Featured Category Modern Header - New Classes (No Conflicts) */
+.fc-module-section {
+    padding: 40px 0;
+    background: #fff;
+}
+
+.fc-modern-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5;
-    padding: 15px 20px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding: 15px 0;
+    background: #f5f5f5;
     border-bottom: 1px solid #e0e0e0;
+    position: relative;
 }
 
 .fc-header-left {
     flex: 1;
+    padding-left: 20px;
 }
 
 .fc-modern-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: #333;
-    text-transform: uppercase;
     margin: 0;
-    padding: 0;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .fc-header-right {
     flex-shrink: 0;
+    padding-right: 20px;
 }
 
 .fc-nav-arrows {
@@ -83,105 +88,52 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    border-radius: 2px;
+    border-radius: 4px;
     font-size: 14px;
-    padding: 0;
 }
 
 .fc-nav-btn:hover {
-    background: #f0f0f0;
-    border-color: #ccc;
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
 }
 
 .fc-nav-btn:active {
     transform: scale(0.95);
 }
 
-.fc-carousel-wrapper {
-    overflow: hidden;
-    width: 100%;
-    position: relative;
+/* Category Carousel */
+.fc-category-carousel {
+    margin-top: 20px;
 }
 
-.fc-carousel-item {
-    padding: 0 8px;
-}
-
-/* Ensure carousel shows limited items - not all visible */
-.featured-category-module .fc-carousel {
-    overflow: hidden !important;
-    width: 100%;
-}
-
-.featured-category-module .fc-carousel .owl-stage-outer {
-    overflow: hidden !important;
-    width: 100%;
-}
-
-.featured-category-module .fc-carousel .owl-stage {
-    display: flex;
-}
-
-.featured-category-module .fc-carousel .owl-item {
-    min-width: 0;
-}
-
-/* Category card styling to match image */
-.featured-category-module .category-card {
-    border: 1px solid #8b6f47;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    min-height: 120px;
-}
-
-.featured-category-module .category-info {
-    flex: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background: #fff;
-}
-
-.featured-category-module .category-info p {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #2d5016;
-    text-align: center;
-}
-
-.featured-category-module .category-img {
-    flex: 1;
-    background: #ff6b9d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    position: relative;
-    overflow: hidden;
-}
-
-.featured-category-module .category-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    max-width: 100%;
-    max-height: 100%;
+.fc-category-item {
+    padding: 0 10px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .featured-category-module .fc-modern-header {
-        padding: 12px 15px;
+    .fc-modern-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .fc-header-left {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    .fc-header-right {
+        padding-right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
     }
     
     .fc-modern-title {
-        font-size: 14px;
+        font-size: 16px;
     }
     
     .fc-nav-btn {
@@ -189,85 +141,53 @@
         height: 32px;
         font-size: 12px;
     }
-    
-    .featured-category-module .category-card {
-        min-height: 100px;
-    }
-    
-    .featured-category-module .category-info p {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .fc-modern-title {
-        font-size: 13px;
-    }
-    
-    .fc-nav-btn {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .featured-category-module .category-card {
-        min-height: 90px;
-    }
-    
-    .featured-category-module .category-info p {
-        font-size: 12px;
-    }
 }
 </style>
 
 <script>
 jQuery(document).ready(function($) {
-    var carouselId = '#fc-carousel-<?php echo isset($module_id) ? $module_id : 'default'; ?>';
+    var carouselId = '#fc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>';
     var $carousel = $(carouselId);
     var $prevBtn = $('.fc-nav-prev');
     var $nextBtn = $('.fc-nav-next');
     
     if ($carousel.length && typeof $.fn.owlCarousel !== 'undefined') {
-        // Initialize Owl Carousel with automatic sliding
+        // Initialize Owl Carousel with AUTOMATIC SLIDING
         $carousel.owlCarousel({
             loop: true,
             margin: 15,
-            nav: false,
+            nav: false, // Use custom navigation
             dots: false,
-            autoplay: true,
-            autoplayTimeout: 3000,
-            autoplayHoverPause: true,
+            autoplay: true, // ENABLE AUTOMATIC SLIDING
+            autoplayTimeout: 4000, // 4 seconds between slides
+            autoplayHoverPause: true, // Pause on hover
             autoplaySpeed: 800,
             smartSpeed: 600,
             responsive: {
                 0: {
-                    items: 1.5,  // Show 1.5 items so next is partially visible
-                    margin: 10,
-                    slideBy: 1
+                    items: 2,
+                    margin: 10
                 },
                 576: {
-                    items: 2,  // Show 2 items, next partially visible
-                    margin: 12,
-                    slideBy: 1
+                    items: 3,
+                    margin: 12
                 },
                 768: {
-                    items: 2.5,  // Show 2.5 items
-                    margin: 15,
-                    slideBy: 1
+                    items: 4,
+                    margin: 15
                 },
                 992: {
-                    items: 3,  // Show 3 items, next partially visible
-                    margin: 15,
-                    slideBy: 1
+                    items: 5,
+                    margin: 15
                 },
                 1200: {
-                    items: 3.5,  // Show 3.5 items - not all visible
-                    margin: 15,
-                    slideBy: 1
+                    items: 6,
+                    margin: 15
                 }
             }
         });
         
-        // Connect navigation buttons
+        // Connect custom navigation buttons
         $prevBtn.on('click', function() {
             $carousel.trigger('prev.owl.carousel');
         });
