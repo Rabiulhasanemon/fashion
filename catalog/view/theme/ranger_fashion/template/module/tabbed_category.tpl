@@ -46,6 +46,10 @@ if (empty($tabs)) {
                         </span>
                     </div>
                 </div>
+                <a href="<?php echo isset($see_all_url) ? $see_all_url : 'index.php?route=product/category'; ?>" class="tcp-view-all-btn">
+                    <span>ALL PRODUCT</span>
+                    <i class="fa fa-chevron-right"></i>
+                </a>
                 <div class="tcp-nav-arrows">
                     <button type="button" class="tcp-nav-btn tcp-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
@@ -307,6 +311,40 @@ if (empty($tabs)) {
     letter-spacing: 0.2px;
     font-weight: 500;
     line-height: 1;
+}
+
+.tcp-view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tcp-view-all-btn:hover {
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 80, 90, 0.2);
+}
+
+.tcp-view-all-btn i {
+    font-size: 11px;
+    transition: transform 0.3s ease;
+}
+
+.tcp-view-all-btn:hover i {
+    transform: translateX(2px);
 }
 
 .tcp-nav-arrows {
