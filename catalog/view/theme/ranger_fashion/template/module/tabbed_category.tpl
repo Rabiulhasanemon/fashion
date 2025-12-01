@@ -32,22 +32,18 @@ if (empty($tabs)) {
             <div class="tcp-header-right">
                 <div class="tcp-countdown-wrapper">
                     <div class="tcp-countdown" id="tcp-countdown-<?php echo $module_uid; ?>" data-end-date="<?php echo !empty($date_end) ? htmlspecialchars($date_end) : date('Y-m-d H:i', strtotime('+7 days')); ?>">
-                        <div class="tcp-countdown-item">
-                            <span class="tcp-countdown-value">00</span>
-                            <span class="tcp-countdown-label">Days</span>
-                        </div>
-                        <div class="tcp-countdown-item">
-                            <span class="tcp-countdown-value">00</span>
-                            <span class="tcp-countdown-label">Hrs</span>
-                        </div>
-                        <div class="tcp-countdown-item">
-                            <span class="tcp-countdown-value">00</span>
-                            <span class="tcp-countdown-label">Min</span>
-                        </div>
-                        <div class="tcp-countdown-item">
-                            <span class="tcp-countdown-value">00</span>
-                            <span class="tcp-countdown-label">Sec</span>
-                        </div>
+                        <span class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span><span class="tcp-countdown-label">D</span>
+                        </span>
+                        <span class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span><span class="tcp-countdown-label">H</span>
+                        </span>
+                        <span class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span><span class="tcp-countdown-label">M</span>
+                        </span>
+                        <span class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span><span class="tcp-countdown-label">S</span>
+                        </span>
                     </div>
                 </div>
                 <div class="tcp-nav-arrows">
@@ -153,8 +149,8 @@ if (empty($tabs)) {
     justify-content: space-between;
     margin-bottom: 30px;
     padding: 15px 0;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+    border-bottom: 2px solid #ff505a;
     position: relative;
     gap: 20px;
     flex-wrap: wrap;
@@ -240,7 +236,7 @@ if (empty($tabs)) {
 }
 
 .tcp-tab-btn.tcp-tab-active {
-    color: #ff6b9d;
+    color: #ff505a;
     font-weight: 700;
     border-bottom: 2px solid #ff505a;
 }
@@ -253,7 +249,7 @@ if (empty($tabs)) {
     padding-right: 20px;
 }
 
-/* Smart Timer Design */
+/* Smart Timer Design - Small & Compact */
 .tcp-countdown-wrapper {
     display: flex;
     align-items: center;
@@ -261,38 +257,56 @@ if (empty($tabs)) {
 
 .tcp-countdown {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     align-items: center;
+    background: #fff0f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ffb3c1;
 }
 
 .tcp-countdown-item {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    padding: 8px 10px;
-    min-width: 50px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    min-width: auto;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: none;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: baseline;
     justify-content: center;
+    gap: 1px;
 }
 
-.tcp-countdown-value {
-    display: block;
-    font-size: 16px;
+.tcp-countdown-item:not(:last-child)::after {
+    content: ":";
+    color: #ff505a;
     font-weight: 700;
-    color: #fff;
+    margin: 0 3px;
+    font-size: 11px;
     line-height: 1;
 }
 
+.tcp-countdown-value {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ff505a;
+    line-height: 1.2;
+    min-width: 16px;
+    text-align: center;
+}
+
 .tcp-countdown-label {
-    display: block;
-    font-size: 9px;
-    color: rgba(255,255,255,0.8);
+    display: inline-block;
+    font-size: 7px;
+    color: #999;
     text-transform: uppercase;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
+    margin-left: 1px;
+    letter-spacing: 0.2px;
+    font-weight: 500;
+    line-height: 1;
 }
 
 .tcp-nav-arrows {
@@ -390,26 +404,28 @@ if (empty($tabs)) {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     opacity: 1;
     visibility: visible;
     z-index: 15;
     transition: all 0.3s ease;
     pointer-events: auto;
-    background: rgba(255,255,255,0.95);
-    padding: 10px;
-    backdrop-filter: blur(5px);
+    background: rgba(255,255,255,0.98);
+    padding: 12px 8px;
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
 
 .product-card:hover .product-button-group {
     opacity: 1;
     visibility: visible;
-    background: rgba(255,255,255,0.98);
+    background: rgba(255,255,255,1);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
 .product-card .product-button-group .product-button {
-    height: 35px;
-    width: 35px;
+    height: 38px;
+    width: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -418,19 +434,22 @@ if (empty($tabs)) {
     text-align: center;
     text-decoration: none;
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     margin: 0;
     background: #fff !important;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
     z-index: 16;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .product-card .product-button-group .product-button:hover {
-    background: #ff6b9d !important;
+    background: #ff505a !important;
     color: #fff !important;
-    transform: scale(1.1);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 80, 90, 0.3);
+    border-color: #ff505a;
 }
 
 .product-card .product-button-group .product-button i {
@@ -636,23 +655,39 @@ if (empty($tabs)) {
         border-bottom: 8px solid #ff1d2a;
     }
     
-    .tcp-countdown-item {
-        min-width: 45px;
-        padding: 6px 8px;
+    .tcp-countdown {
+        padding: 3px 6px;
+        gap: 2px;
+    }
+    
+    .tcp-countdown-item:not(:last-child)::after {
+        margin: 0 2px;
+        font-size: 10px;
     }
     
     .tcp-countdown-value {
-        font-size: 14px;
+        font-size: 10px;
+        min-width: 14px;
     }
     
     .tcp-countdown-label {
-        font-size: 8px;
+        font-size: 6px;
     }
     
     .tcp-nav-btn {
         width: 32px;
         height: 32px;
         font-size: 12px;
+    }
+    
+    .product-card .product-button-group {
+        padding: 10px 6px;
+        gap: 6px;
+    }
+    
+    .product-card .product-button-group .product-button {
+        height: 34px;
+        width: 34px;
     }
 }
 </style>
