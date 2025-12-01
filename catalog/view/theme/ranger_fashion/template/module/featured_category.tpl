@@ -16,7 +16,8 @@
                 </div>
             </div>
         </div>
-        <div class="category-inner fc-carousel owl-carousel" id="fc-carousel-<?php echo isset($module_id) ? $module_id : 'default'; ?>">
+        <div class="fc-carousel-wrapper">
+            <div class="category-inner fc-carousel owl-carousel" id="fc-carousel-<?php echo isset($module_id) ? $module_id : 'default'; ?>">
             <?php foreach ($categories as $category) { ?>
             <div class="fc-carousel-item">
                 <a href="<?php echo $category['href']; ?>">
@@ -31,6 +32,7 @@
                 </a>
             </div>
             <?php } ?>
+            </div>
         </div>
     </div>
 </section>
@@ -95,8 +97,81 @@
     transform: scale(0.95);
 }
 
+.fc-carousel-wrapper {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
 .fc-carousel-item {
     padding: 0 8px;
+}
+
+/* Ensure carousel shows limited items - not all visible */
+.featured-category-module .fc-carousel {
+    overflow: hidden !important;
+    width: 100%;
+}
+
+.featured-category-module .fc-carousel .owl-stage-outer {
+    overflow: hidden !important;
+    width: 100%;
+}
+
+.featured-category-module .fc-carousel .owl-stage {
+    display: flex;
+}
+
+.featured-category-module .fc-carousel .owl-item {
+    min-width: 0;
+}
+
+/* Category card styling to match image */
+.featured-category-module .category-card {
+    border: 1px solid #8b6f47;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    min-height: 120px;
+}
+
+.featured-category-module .category-info {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: #fff;
+}
+
+.featured-category-module .category-info p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d5016;
+    text-align: center;
+}
+
+.featured-category-module .category-img {
+    flex: 1;
+    background: #ff6b9d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-category-module .category-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* Responsive */
@@ -114,6 +189,14 @@
         height: 32px;
         font-size: 12px;
     }
+    
+    .featured-category-module .category-card {
+        min-height: 100px;
+    }
+    
+    .featured-category-module .category-info p {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -124,6 +207,14 @@
     .fc-nav-btn {
         width: 30px;
         height: 30px;
+    }
+    
+    .featured-category-module .category-card {
+        min-height: 90px;
+    }
+    
+    .featured-category-module .category-info p {
+        font-size: 12px;
     }
 }
 </style>
@@ -149,24 +240,29 @@ jQuery(document).ready(function($) {
             smartSpeed: 600,
             responsive: {
                 0: {
-                    items: 2,
-                    margin: 10
+                    items: 1.5,  // Show 1.5 items so next is partially visible
+                    margin: 10,
+                    slideBy: 1
                 },
                 576: {
-                    items: 3,
-                    margin: 12
+                    items: 2,  // Show 2 items, next partially visible
+                    margin: 12,
+                    slideBy: 1
                 },
                 768: {
-                    items: 4,
-                    margin: 15
+                    items: 2.5,  // Show 2.5 items
+                    margin: 15,
+                    slideBy: 1
                 },
                 992: {
-                    items: 5,
-                    margin: 15
+                    items: 3,  // Show 3 items, next partially visible
+                    margin: 15,
+                    slideBy: 1
                 },
                 1200: {
-                    items: 6,
-                    margin: 15
+                    items: 3.5,  // Show 3.5 items - not all visible
+                    margin: 15,
+                    slideBy: 1
                 }
             }
         });
