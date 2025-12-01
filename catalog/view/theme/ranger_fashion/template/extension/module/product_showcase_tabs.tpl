@@ -302,7 +302,7 @@
 .pst-product-image-box .pst-reward-points {
     position: absolute;
     top: 12px;
-    left: 12px;
+    right: 12px;
     z-index: 3;
     display: inline-flex;
     align-items: center;
@@ -319,6 +319,11 @@
 .pst-product-image-box .pst-reward-points i {
     color: #ff9800;
     font-size: 14px;
+}
+
+/* Adjust badge position when reward points are present */
+.pst-product-image-box:has(.pst-reward-points) .pst-product-badge {
+    top: 50px; /* Move discount badge down if reward points are present */
 }
 
 .pst-product-buttons {
@@ -774,8 +779,23 @@
             html += '<div class="pst-product-card">';
             html += '<div class="pst-product-image-box">';
             
-            // Discount badge
-            if (product.discount) {
+            // Discount badge - Top Right (if no reward points)
+            if (product.discount && (!product.points || product.points <= 0)) {
+                html += '<div class="pst-product-badge">-' + product.discount + '%</div>';
+            }
+            
+            // Reward Points - Top Right
+            if (product.points && product.points > 0) {
+                html += '<div class="pst-reward-points">';
+                html += '<i class="fa fa-gift"></i>';
+                html += '<span>Earn ' + product.points + ' points</span>';
+                html += '</div>';
+                // If both discount and reward points exist, show discount below reward points
+                if (product.discount) {
+                    html += '<div class="pst-product-badge" style="top: 50px;">-' + product.discount + '%</div>';
+                }
+            } else if (product.discount) {
+                // Only discount, show at top right
                 html += '<div class="pst-product-badge">-' + product.discount + '%</div>';
             }
             
