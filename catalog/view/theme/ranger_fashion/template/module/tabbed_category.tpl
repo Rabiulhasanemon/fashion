@@ -712,6 +712,11 @@ if (empty($tabs)) {
         font-size: 6px;
     }
     
+    .tcp-view-all-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
     .tcp-nav-btn {
         width: 32px;
         height: 32px;
