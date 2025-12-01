@@ -45,6 +45,11 @@ class ControllerModuleTabbedCategory extends Controller {
         if (empty($tabs)) {
             return '';
         }
+        
+        // Collect all products for "ALL PRODUCT" tab
+        $all_products = array();
+        $all_product_ids = array();
+        
         foreach ($tabs as $tab) {
             $products_out = array();
             $ids = array();
@@ -109,6 +114,19 @@ class ControllerModuleTabbedCategory extends Controller {
             $title = isset($tab['title']) ? $tab['title'] : '';
             if (empty($title) && !empty($tab['category_id'])) { $cat = $this->model_catalog_category->getCategory((int)$tab['category_id']); if ($cat) $title = $cat['name']; }
             $data['tabs'][] = array('title'=>$title, 'products'=>$products_out);
+            
+            // Collect products for "ALL PRODUCT" tab (avoid duplicates)
+            foreach ($products_out as $product) {
+                if (!in_array($product['product_id'], $all_product_ids)) {
+                    $all_products[] = $product;
+                    $all_product_ids[] = $product['product_id'];
+                }
+            }
+        }
+        
+        // Add "ALL PRODUCT" tab at the end with all products combined
+        if (!empty($all_products)) {
+            $data['tabs'][] = array('title' => 'All Products', 'products' => $all_products, 'is_all_products' => true);
         }
 
         return $this->load->view($this->config->get('config_template') . '/template/module/tabbed_category.tpl', $data);

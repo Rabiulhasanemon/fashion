@@ -46,10 +46,10 @@ if (empty($tabs)) {
                         </span>
                     </div>
                 </div>
-                <a href="<?php echo isset($see_all_url) ? $see_all_url : 'index.php?route=product/category'; ?>" class="tcp-view-all-btn">
+                <button type="button" class="tcp-view-all-btn" id="tcp-all-products-btn-<?php echo $module_uid; ?>">
                     <span>ALL PRODUCT</span>
                     <i class="fa fa-chevron-right"></i>
-                </a>
+                </button>
                 <div class="tcp-nav-arrows">
                     <button type="button" class="tcp-nav-btn tcp-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
@@ -328,6 +328,8 @@ if (empty($tabs)) {
     border-radius: 4px;
     transition: all 0.3s ease;
     white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .tcp-view-all-btn:hover {
@@ -835,6 +837,30 @@ jQuery(document).ready(function($) {
                 $(this).css('display', 'none').removeClass('active');
             }
         });
+    });
+    
+    // "ALL PRODUCT" button functionality - show last tab (all products)
+    $('#tcp-all-products-btn-' + moduleUid, root).on('click', function(e) {
+        e.preventDefault();
+        var totalTabs = $('.tabbed-category-slider-wrapper', root).length;
+        if (totalTabs > 0) {
+            var allProductsTabId = totalTabs - 1; // Last tab is "All Products"
+            
+            // Hide all tabs
+            $('.tabbed-category-slider-wrapper', root).css('display', 'none').removeClass('active');
+            
+            // Show "All Products" tab
+            $('.tabbed-category-slider-wrapper', root).eq(allProductsTabId).css('display', 'block').addClass('active');
+            
+            // Update active carousel
+            if (owlCarousels[allProductsTabId]) {
+                currentActiveCarousel = owlCarousels[allProductsTabId];
+                currentActiveCarousel.trigger('refresh.owl.carousel');
+            }
+            
+            // Remove active state from all tab buttons
+            $('.tcp-tab-btn', root).removeClass('tcp-tab-active');
+        }
     });
 
     // Timer functionality - Fixed to use date_end from admin panel
