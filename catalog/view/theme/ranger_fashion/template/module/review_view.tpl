@@ -259,65 +259,35 @@
   font-weight: 400;
 }
 
-/* Navigation Arrows - Owl Carousel */
+/* Hide Default Owl Carousel Navigation Buttons */
 .rv-owl-carousel .owl-nav {
-  display: block !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-.rv-owl-carousel .owl-nav button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: #FF6A00 !important;
-  color: #ffffff !important;
-  border-radius: 50% !important;
-  cursor: pointer !important;
-  z-index: 10 !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  border: none !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.3s ease;
-}
-
-.rv-owl-carousel .owl-nav button i {
-  font-size: 20px !important;
-  color: #ffffff !important;
-  line-height: 1;
-}
-
-.rv-owl-carousel .owl-nav .owl-prev {
-  left: 10px;
-}
-
+.rv-owl-carousel .owl-nav button,
+.rv-owl-carousel .owl-nav .owl-prev,
 .rv-owl-carousel .owl-nav .owl-next {
-  right: 10px;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-.rv-owl-carousel .owl-nav button:hover {
-  background: #ff8c00 !important;
-  box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3) !important;
-  transform: translateY(-50%) scale(1.1);
-}
-
-.rv-owl-carousel .owl-nav button.disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Pagination - Owl Carousel */
+/* Pagination - Owl Carousel Dots (Slider Counter) */
 .rv-owl-carousel .owl-dots {
   position: absolute;
-  bottom: 0;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   text-align: center;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .rv-owl-carousel .owl-dots .owl-dot {
@@ -328,14 +298,22 @@
   opacity: 1;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin: 0 5px;
+  margin: 0;
   display: inline-block;
+  border: none;
+  padding: 0;
+}
+
+.rv-owl-carousel .owl-dots .owl-dot:hover {
+  background: #ff505a;
+  transform: scale(1.2);
 }
 
 .rv-owl-carousel .owl-dots .owl-dot.active {
-  background: #FF6A00;
+  background: #ff505a !important;
   width: 30px;
   border-radius: 5px;
+  transform: scale(1);
 }
 
 /* Responsive */
@@ -379,10 +357,6 @@
     padding: 0;
   }
   
-  .rv-owl-carousel .owl-nav button {
-    width: 36px;
-    height: 36px;
-  }
   
   .rv-testimonial-card {
     padding: 20px;
