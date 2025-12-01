@@ -10,10 +10,10 @@ if (empty($tabs)) {
 ?>
 <div class="deal-of-day-section mt-20" id="<?php echo $module_uid; ?>">
     <div class="container">
-        <!-- Modern Header with Red Tab, Navigation Tabs, and Arrow Buttons -->
-        <div class="tcp-modern-header">
+        <!-- Modern Header with Timer - New Classes (tcp- prefix) -->
+        <div class="tcp-modern-header" id="tcp-header-<?php echo $module_uid; ?>">
             <div class="tcp-header-left">
-                <div class="tcp-modern-title-tab">
+                <div class="tcp-title-tab">
                     <strong><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></strong>
                 </div>
             </div>
@@ -32,7 +32,7 @@ if (empty($tabs)) {
             <div class="tcp-header-right">
                 <?php if (!empty($date_end)) { ?>
                 <div class="tcp-countdown-wrapper">
-                    <div class="tcp-countdown" data-date-time="<?php echo htmlspecialchars($date_end); ?>">
+                    <div class="tcp-countdown" id="tcp-countdown-<?php echo $module_uid; ?>" data-end-date="<?php echo htmlspecialchars($date_end); ?>">
                         <div class="tcp-countdown-item">
                             <span class="tcp-countdown-value">00</span>
                             <span class="tcp-countdown-label">Days</span>
@@ -53,10 +53,10 @@ if (empty($tabs)) {
                 </div>
                 <?php } ?>
                 <div class="tcp-nav-arrows">
-                    <button type="button" class="tcp-nav-btn tcp-prev-btn" aria-label="Previous">
+                    <button type="button" class="tcp-nav-btn tcp-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
                     </button>
-                    <button type="button" class="tcp-nav-btn tcp-next-btn" aria-label="Next">
+                    <button type="button" class="tcp-nav-btn tcp-nav-next" aria-label="Next">
                         <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
@@ -66,7 +66,7 @@ if (empty($tabs)) {
             <div class="col-lg-12">
         <?php $i=0; foreach ($tabs as $tab) { ?>
                 <div class="tabbed-category-slider-wrapper <?php echo $i==0 ? 'active' : ''; ?>" data-tab-id="<?php echo $i; ?>" style="<?php echo $i==0 ? '' : 'display: none;'; ?>">
-                    <div class="popular-category-slider owl-carousel">
+                    <div class="popular-category-slider owl-carousel" id="tcp-carousel-<?php echo $module_uid; ?>-<?php echo $i; ?>">
           <?php if (!empty($tab['products']) && is_array($tab['products'])) { ?>
               <?php foreach ($tab['products'] as $product) { ?>
                             <div class="slider-item">
@@ -148,90 +148,101 @@ if (empty($tabs)) {
     margin-top: 20px !important;
 }
 
-/* Modern Header Styles - Tabbed Category Products */
+/* Modern Header - New Classes (tcp- prefix) */
 .tcp-modern-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5;
-    padding: 15px 20px;
-    border-bottom: 1px solid #e0e0e0;
     margin-bottom: 30px;
+    padding: 15px 0;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+    gap: 20px;
     flex-wrap: wrap;
-    gap: 15px;
 }
 
 .tcp-header-left {
     flex-shrink: 0;
+    padding-left: 20px;
 }
 
-.tcp-modern-title-tab {
-    margin: 0;
-    padding: 0;
-}
-
-.tcp-modern-title-tab strong {
+.tcp-title-tab {
+    position: relative;
     display: inline-block;
-    padding: 10px 20px;
+}
+
+.tcp-title-tab strong {
+    display: inline-block;
+    padding: 12px 24px;
     background-color: #ff505a;
-    color: #fff;
+    color: #fff !important;
     font-weight: 700;
     text-transform: uppercase;
     position: relative;
     font-size: 16px;
     line-height: 1.4;
+    margin: 0;
 }
 
-.tcp-modern-title-tab strong:before {
+/* Triangular flag shape at top-left */
+.tcp-title-tab strong:before {
     content: "";
     position: absolute;
     left: 0;
-    bottom: -10px;
+    top: -10px;
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 10px solid #ff1d2a;
+    z-index: 1;
 }
 
 .tcp-header-center {
     flex: 1;
     display: flex;
+    align-items: center;
     justify-content: center;
-    min-width: 200px;
-}
-
-.tcp-tabs-nav {
-    display: flex;
-    gap: 10px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-.tcp-tabs-nav::-webkit-scrollbar {
+.tcp-header-center::-webkit-scrollbar {
     display: none;
 }
 
+.tcp-tabs-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 10px;
+}
+
 .tcp-tab-btn {
-    background-color: transparent;
+    padding: 8px 16px;
     border: none;
-    color: #555;
-    padding: 10px 15px;
-    cursor: pointer;
+    background: transparent;
+    color: #333;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
     white-space: nowrap;
-    transition: color 0.3s ease;
+    text-transform: uppercase;
+    position: relative;
 }
 
 .tcp-tab-btn:hover {
-    color: #ff6b9d;
+    color: #ff505a;
 }
 
 .tcp-tab-btn.tcp-tab-active {
-    color: #ff505a;
+    color: #ff6b9d;
     font-weight: 700;
     border-bottom: 2px solid #ff505a;
 }
@@ -241,8 +252,10 @@ if (empty($tabs)) {
     display: flex;
     align-items: center;
     gap: 15px;
+    padding-right: 20px;
 }
 
+/* Smart Timer Design */
 .tcp-countdown-wrapper {
     display: flex;
     align-items: center;
@@ -251,6 +264,7 @@ if (empty($tabs)) {
 .tcp-countdown {
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 
 .tcp-countdown-item {
@@ -260,6 +274,10 @@ if (empty($tabs)) {
     min-width: 50px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .tcp-countdown-value {
@@ -303,6 +321,10 @@ if (empty($tabs)) {
     background: #ff505a;
     color: #fff;
     border-color: #ff505a;
+}
+
+.tcp-nav-btn:active {
+    transform: scale(0.95);
 }
 
 /* Premium Product Card Styles (Consistent with Featured/Latest) */
@@ -538,22 +560,64 @@ if (empty($tabs)) {
     color: #fff !important;
 }
 
-/* Old tab styles removed - using new tcp-tab-btn styles above */
+/* Tab Navigation */
+.lux-premium-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.lux-tab-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: #f5f5f5;
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.lux-tab-item:hover {
+    background: #fff;
+    color: #ff6b9d;
+    border-color: #ff6b9d;
+    transform: translateY(-2px);
+}
+
+.lux-tab-item.active {
+    background: #ff6b9d;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+    border-color: #ff6b9d;
+}
 
 /* Responsive Design */
 @media (max-width: 992px) {
     .tcp-modern-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .tcp-header-left,
+    .tcp-header-center,
+    .tcp-header-right {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
     }
     
     .tcp-header-center {
-        width: 100%;
         justify-content: flex-start;
     }
     
     .tcp-header-right {
-        width: 100%;
         justify-content: space-between;
     }
 }
@@ -563,25 +627,16 @@ if (empty($tabs)) {
         padding: 20px 0;
     }
     
-    .tcp-modern-header {
-        padding: 15px;
-    }
-    
-    .tcp-modern-title-tab strong {
+    .tcp-title-tab strong {
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 10px 18px;
     }
     
-    .tcp-modern-title-tab strong:before {
-        bottom: -8px;
+    .tcp-title-tab strong:before {
+        top: -8px;
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
         border-bottom: 8px solid #ff1d2a;
-    }
-    
-    .tcp-tabs-nav {
-        width: 100%;
-        justify-content: flex-start;
     }
     
     .tcp-countdown-item {
@@ -607,20 +662,24 @@ if (empty($tabs)) {
 
 <script>
 jQuery(document).ready(function($) {
-    var root = document.getElementById('<?php echo $module_uid; ?>');
-    if (!root || root.dataset.tcp2Initialized) {
+    var root = $('#<?php echo $module_uid; ?>');
+    if (!root.length || root.data('tcp-initialized')) {
         return;
     }
-    root.dataset.tcp2Initialized = 'true';
+    root.data('tcp-initialized', true);
 
-    var sliders = root.querySelectorAll('.popular-category-slider');
-    var owlCarousels = [];
+    var moduleUid = '<?php echo $module_uid; ?>';
     var currentActiveCarousel = null;
+    var owlCarousels = {};
 
     // Initialize owl carousel for each tab with AUTOMATIC SLIDING
-    sliders.forEach(function(slider) {
-        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
-            var owl = jQuery(slider).owlCarousel({
+    $('.tabbed-category-slider-wrapper', root).each(function(index) {
+        var $wrapper = $(this);
+        var carouselId = 'tcp-carousel-' + moduleUid + '-' + index;
+        var $slider = $('#' + carouselId, $wrapper);
+        
+        if ($slider.length && typeof $.fn.owlCarousel !== 'undefined') {
+            var owl = $slider.owlCarousel({
                 loop: true,
                 margin: 15,
                 nav: false,
@@ -656,107 +715,74 @@ jQuery(document).ready(function($) {
                     }
                 }
             });
-            owlCarousels.push(owl);
             
-            // Set first visible carousel as active
-            if (jQuery(slider).closest('.tabbed-category-slider-wrapper').hasClass('active')) {
+            owlCarousels[index] = owl;
+            
+            // Set first tab's carousel as active
+            if (index === 0) {
                 currentActiveCarousel = owl;
             }
         }
     });
 
-    // Tab switching functionality with new button classes
-    var tabWrappers = root.querySelectorAll('.tabbed-category-slider-wrapper');
-    var currentTab = 0;
-
-    // Tab click handlers if multiple tabs exist
-    if (tabWrappers.length > 1) {
-        var tabItems = root.querySelectorAll('.tcp-tab-btn');
-        tabItems.forEach(function(tab, index) {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                var tabId = parseInt(this.getAttribute('data-tab-id'));
-                
-                // Update active tab
-                tabItems.forEach(function(t) { 
-                    t.classList.remove('tcp-tab-active'); 
-                });
-                this.classList.add('tcp-tab-active');
-                
-                // Show/hide sliders
-                tabWrappers.forEach(function(wrapper, idx) {
-                    if (idx === tabId) {
-                        wrapper.style.display = 'block';
-                        wrapper.classList.add('active');
-                        // Get and set active carousel
-                        var slider = wrapper.querySelector('.popular-category-slider');
-                        if (slider && typeof jQuery !== 'undefined' && jQuery(slider).data('owl.carousel')) {
-                            currentActiveCarousel = jQuery(slider).data('owl.carousel');
-                            jQuery(slider).trigger('refresh.owl.carousel');
-                        }
-                    } else {
-                        wrapper.style.display = 'none';
-                        wrapper.classList.remove('active');
-                    }
-                });
-                
-                currentTab = tabId;
-            });
-        });
-    }
-
-    // Arrow navigation for carousel
-    var $prevBtn = root.querySelector('.tcp-prev-btn');
-    var $nextBtn = root.querySelector('.tcp-next-btn');
+    // Custom navigation buttons
+    $('.tcp-nav-prev', root).on('click', function() {
+        if (currentActiveCarousel) {
+            currentActiveCarousel.trigger('prev.owl.carousel');
+        }
+    });
     
-    if ($prevBtn && $nextBtn) {
-        $prevBtn.addEventListener('click', function() {
-            if (currentActiveCarousel) {
-                currentActiveCarousel.trigger('prev.owl.carousel');
-            } else if (owlCarousels.length > 0) {
-                owlCarousels[0].trigger('prev.owl.carousel');
-            }
-        });
-        
-        $nextBtn.addEventListener('click', function() {
-            if (currentActiveCarousel) {
-                currentActiveCarousel.trigger('next.owl.carousel');
-            } else if (owlCarousels.length > 0) {
-                owlCarousels[0].trigger('next.owl.carousel');
-            }
-        });
-    }
+    $('.tcp-nav-next', root).on('click', function() {
+        if (currentActiveCarousel) {
+            currentActiveCarousel.trigger('next.owl.carousel');
+        }
+    });
 
-    // Initialize countdown timer if date_end is set
-    var $countdown = root.querySelector('.tcp-countdown');
-    if ($countdown) {
-        var endDateStr = $countdown.getAttribute('data-date-time');
+    // Tab switching functionality
+    $('.tcp-tab-btn', root).on('click', function() {
+        var tabId = parseInt($(this).data('tab-id'));
+        
+        // Update active tab button
+        $('.tcp-tab-btn', root).removeClass('tcp-tab-active');
+        $(this).addClass('tcp-tab-active');
+        
+        // Show/hide sliders
+        $('.tabbed-category-slider-wrapper', root).each(function(index) {
+            if (index === tabId) {
+                $(this).css('display', 'block').addClass('active');
+                // Update active carousel
+                if (owlCarousels[index]) {
+                    currentActiveCarousel = owlCarousels[index];
+                    // Refresh carousel
+                    currentActiveCarousel.trigger('refresh.owl.carousel');
+                }
+            } else {
+                $(this).css('display', 'none').removeClass('active');
+            }
+        });
+    });
+
+    // Timer functionality - Fixed to use date_end from admin panel
+    var $countdown = $('#tcp-countdown-' + moduleUid);
+    if ($countdown.length) {
+        var endDateStr = $countdown.data('end-date');
         if (endDateStr) {
-            // Parse date from "YYYY-MM-DD HH:mm" format
-            var dateParts = endDateStr.split(' ');
-            var datePart = dateParts[0].split('-');
-            var timePart = dateParts[1] ? dateParts[1].split(':') : ['00', '00'];
+            // Parse the date from admin panel (format: YYYY-MM-DD HH:mm)
+            var endDate = new Date(endDateStr.replace(/-/g, '/'));
             
-            var targetDate = new Date(
-                parseInt(datePart[0]), // year
-                parseInt(datePart[1]) - 1, // month (0-indexed)
-                parseInt(datePart[2]), // day
-                parseInt(timePart[0]), // hour
-                parseInt(timePart[1]) // minute
-            );
-            
-            if (!isNaN(targetDate.getTime())) {
-                var $items = $countdown.querySelectorAll('.tcp-countdown-item');
+            if (!isNaN(endDate.getTime())) {
+                var $items = $countdown.find('.tcp-countdown-item');
                 
                 function updateCountdown() {
                     var now = new Date().getTime();
-                    var distance = targetDate.getTime() - now;
+                    var distance = endDate.getTime() - now;
                     
                     if (distance < 0) {
-                        $items[0].querySelector('.tcp-countdown-value').textContent = '00';
-                        $items[1].querySelector('.tcp-countdown-value').textContent = '00';
-                        $items[2].querySelector('.tcp-countdown-value').textContent = '00';
-                        $items[3].querySelector('.tcp-countdown-value').textContent = '00';
+                        // Timer expired
+                        $items.eq(0).find('.tcp-countdown-value').text('00');
+                        $items.eq(1).find('.tcp-countdown-value').text('00');
+                        $items.eq(2).find('.tcp-countdown-value').text('00');
+                        $items.eq(3).find('.tcp-countdown-value').text('00');
                         return;
                     }
                     
@@ -765,12 +791,13 @@ jQuery(document).ready(function($) {
                     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                     
-                    $items[0].querySelector('.tcp-countdown-value').textContent = String(days).padStart(2, '0');
-                    $items[1].querySelector('.tcp-countdown-value').textContent = String(hours).padStart(2, '0');
-                    $items[2].querySelector('.tcp-countdown-value').textContent = String(minutes).padStart(2, '0');
-                    $items[3].querySelector('.tcp-countdown-value').textContent = String(seconds).padStart(2, '0');
+                    $items.eq(0).find('.tcp-countdown-value').text(String(days).padStart(2, '0'));
+                    $items.eq(1).find('.tcp-countdown-value').text(String(hours).padStart(2, '0'));
+                    $items.eq(2).find('.tcp-countdown-value').text(String(minutes).padStart(2, '0'));
+                    $items.eq(3).find('.tcp-countdown-value').text(String(seconds).padStart(2, '0'));
                 }
                 
+                // Update immediately and then every second
                 updateCountdown();
                 setInterval(updateCountdown, 1000);
             }
