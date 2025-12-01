@@ -1,8 +1,20 @@
 <?php if (!empty($reviews)) { ?>
 <section class="container">
   <?php if ($title) { ?>
-  <div class="rv-module-heading module-heading-wrapper" style="margin-bottom: 30px; text-align: left;">
-    <h2 class="rv-title cosmetics-module-heading"><?php echo $title; ?></h2>
+  <div class="rv-modern-header">
+    <div class="rv-header-left">
+      <h3 class="rv-modern-title"><?php echo $title; ?></h3>
+    </div>
+    <div class="rv-header-right">
+      <div class="rv-nav-arrows">
+        <button type="button" class="rv-nav-btn rv-nav-prev" aria-label="Previous">
+          <i class="fa fa-chevron-left"></i>
+        </button>
+        <button type="button" class="rv-nav-btn rv-nav-next" aria-label="Next">
+          <i class="fa fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
   </div>
   <?php } ?>
   
@@ -46,6 +58,67 @@
 </section>
 
 <style>
+/* Review Module Modern Header - Same as Featured Category */
+.rv-modern-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 15px 0;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.rv-header-left {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.rv-modern-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rv-header-right {
+    flex-shrink: 0;
+    padding-right: 20px;
+}
+
+.rv-nav-arrows {
+    display: flex;
+    gap: 8px;
+}
+
+.rv-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.rv-nav-btn:hover {
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
+}
+
+.rv-nav-btn:active {
+    transform: scale(0.95);
+}
+
 /* Review View Testimonial - Unique Classes to Avoid Conflicts */
 .rv-testimonial-section {
   padding: 0;
@@ -312,13 +385,12 @@ jQuery(document).ready(function($) {
   $carousel.addClass('owl-carousel').owlCarousel({
         loop: enableLoop,
     margin: 20,
-    nav: true,
+    nav: false, // Disable default nav, use custom buttons
     dots: true,
     autoplay: true,
     autoplayTimeout: 3000,
     autoplayHoverPause: false,
     smartSpeed: 600,
-    navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
     responsive: {
       0: {
         items: 1,
@@ -342,6 +414,15 @@ jQuery(document).ready(function($) {
           }
         }
       });
+      
+  // Custom navigation for the new arrows
+  $('.rv-nav-prev').on('click', function() {
+    $carousel.trigger('prev.owl.carousel');
+  });
+  
+  $('.rv-nav-next').on('click', function() {
+    $carousel.trigger('next.owl.carousel');
+  });
       
   // Ensure autoplay continues
   $carousel.on('mouseleave', function() {
