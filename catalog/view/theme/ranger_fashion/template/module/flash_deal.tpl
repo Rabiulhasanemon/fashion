@@ -1,10 +1,19 @@
 <?php if ($products) { ?>
 <div id="premium-flash-deal-module" class="premium-flash-section">
     <div class="container">
-        <div class="premium-flash-header">
-            <div class="premium-flash-title-wrapper">
-                <h2 class="premium-flash-title"><?php echo isset($heading_title) ? $heading_title : 'Flash Deal'; ?></h2>
-                <div class="premium-flash-subtitle">Limited Time Offers - Grab Them Fast!</div>
+        <div class="fd-modern-header" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
+            <div class="fd-header-left">
+                <h2 class="fd-modern-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
+            </div>
+            <div class="fd-header-right">
+                <div class="fd-nav-arrows">
+                    <button type="button" class="fd-nav-btn fd-nav-prev" aria-label="Previous">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="fd-nav-btn fd-nav-next" aria-label="Next">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -110,6 +119,68 @@
     padding: 0 20px;
 }
 
+/* Flash Deal Modern Header - New Classes (No Conflicts) */
+.fd-modern-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 15px 0;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.fd-header-left {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.fd-modern-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fd-header-right {
+    flex-shrink: 0;
+    padding-right: 20px;
+}
+
+.fd-nav-arrows {
+    display: flex;
+    gap: 8px;
+}
+
+.fd-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.fd-nav-btn:hover {
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
+}
+
+.fd-nav-btn:active {
+    transform: scale(0.95);
+}
+
+/* Old styles kept for backward compatibility */
 .premium-flash-header {
     text-align: left;
     margin-bottom: 40px;
@@ -395,6 +466,35 @@
         padding: 0px 0;
     }
     
+    .fd-modern-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .fd-header-left {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    .fd-header-right {
+        padding-right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .fd-modern-title {
+        font-size: 16px;
+    }
+    
+    .fd-nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+    
     .premium-flash-title {
         font-size: 22px;
     }
@@ -459,14 +559,22 @@
 
 <script>
 jQuery(document).ready(function($) {
-    // Initialize Owl Carousel
+    var $carousel = $('#premium-flash-carousel');
+    var $prevBtn = $('.fd-nav-prev');
+    var $nextBtn = $('.fd-nav-next');
+    
+    // Initialize Owl Carousel with AUTOMATIC SLIDING
     if (typeof $.fn.owlCarousel !== 'undefined') {
-        $('#premium-flash-carousel').owlCarousel({
-            loop: false,
+        $carousel.owlCarousel({
+            loop: true,
             margin: 20,
-            nav: true,
+            nav: false, // Disable default nav, use custom buttons
             dots: false,
-            autoplay: false,
+            autoplay: true, // ENABLE AUTOMATIC SLIDING
+            autoplayTimeout: 4000, // 4 seconds between slides
+            autoplayHoverPause: true, // Pause on hover
+            autoplaySpeed: 800,
+            smartSpeed: 600,
             responsive: {
                 0: {
                     items: 1,
@@ -488,8 +596,16 @@ jQuery(document).ready(function($) {
                     items: 4,
                     margin: 20
                 }
-            },
-            navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>']
+            }
+        });
+        
+        // Connect custom navigation buttons
+        $prevBtn.on('click', function() {
+            $carousel.trigger('prev.owl.carousel');
+        });
+        
+        $nextBtn.on('click', function() {
+            $carousel.trigger('next.owl.carousel');
         });
     }
     
