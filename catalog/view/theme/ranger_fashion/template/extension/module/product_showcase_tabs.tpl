@@ -1,17 +1,29 @@
 <section id="pst-module-<?php echo $module_uid; ?>" class="pst-module-section">
     <div class="container">
         <?php if ($tabs) { ?>
-        <div class="pst-module-header">
-            <h2 class="pst-module-title"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
-            <div class="pst-tabs-wrapper">
-                <?php $first = true; ?>
-                <?php foreach ($tabs as $tab) { ?>
-                <button type="button" class="pst-tab-btn <?php echo $first ? 'pst-tab-active' : ''; ?>" 
-                        data-tab-id="<?php echo $tab['id']; ?>">
-                    <?php echo htmlspecialchars($tab['title']); ?>
-                </button>
-                <?php $first = false; ?>
-                <?php } ?>
+        <div class="pst-premium-header-wrapper" id="pst-premium-header-<?php echo $module_uid; ?>">
+            <div class="pst-premium-header-inner">
+                <div class="pst-premium-title-tab">
+                    <h2 class="pst-premium-title"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
+                </div>
+                <div class="pst-premium-nav-links">
+                    <?php $first = true; ?>
+                    <?php foreach ($tabs as $tab) { ?>
+                    <button type="button" class="pst-premium-nav-btn <?php echo $first ? 'pst-premium-nav-active' : ''; ?>" 
+                            data-tab-id="<?php echo $tab['id']; ?>">
+                        <?php echo htmlspecialchars($tab['title']); ?>
+                    </button>
+                    <?php $first = false; ?>
+                    <?php } ?>
+                </div>
+                <div class="pst-premium-nav-arrows">
+                    <button type="button" class="pst-premium-arrow-btn pst-premium-prev" id="pst-prev-<?php echo $module_uid; ?>">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="pst-premium-arrow-btn pst-premium-next" id="pst-next-<?php echo $module_uid; ?>">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <?php } ?>
@@ -33,6 +45,161 @@
 .pst-module-section {
     padding: 40px 0;
     background: #fff;
+}
+
+/* NEW PREMIUM HEADER STYLE - Red Tab with Navigation */
+.pst-premium-header-wrapper {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ff505a;
+    padding-bottom: 0;
+}
+
+.pst-premium-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    position: relative;
+}
+
+/* Red Arrow Tab on Left */
+.pst-premium-title-tab {
+    position: relative;
+    z-index: 2;
+}
+
+.pst-premium-title {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ff505a;
+    color: #fff !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+    border: none;
+}
+
+/* Triangular flag shape at top-left */
+.pst-premium-title:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ff1d2a;
+    z-index: 1;
+}
+
+/* Navigation Links in Middle */
+.pst-premium-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.pst-premium-nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+.pst-premium-nav-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.pst-premium-nav-btn:hover {
+    color: #ff505a;
+}
+
+.pst-premium-nav-btn.pst-premium-nav-active {
+    color: #ff6b9d;
+}
+
+/* Arrow Buttons on Right */
+.pst-premium-nav-arrows {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pst-premium-arrow-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    padding: 0;
+}
+
+.pst-premium-arrow-btn:hover {
+    background: #f5f5f5;
+    border-color: #ff505a;
+    color: #ff505a;
+}
+
+.pst-premium-arrow-btn i {
+    font-size: 14px;
+}
+
+.pst-premium-arrow-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive for Premium Header */
+@media (max-width: 768px) {
+    .pst-premium-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .pst-premium-nav-links {
+        width: 100%;
+        order: 2;
+    }
+    
+    .pst-premium-nav-arrows {
+        order: 3;
+        align-self: flex-end;
+    }
+    
+    .pst-premium-title {
+        font-size: 14px;
+        padding: 10px 18px;
+    }
+    
+    .pst-premium-title:before {
+        top: -8px;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #ff1d2a;
+    }
 }
 
 .pst-module-container {
@@ -465,9 +632,11 @@
     var ajaxUrl = '<?php echo $ajax_url; ?>';
     var tabs = <?php echo json_encode($tabs); ?>;
     
-    var tabButtons = root.querySelectorAll('.pst-tab-btn');
+    var tabButtons = root.querySelectorAll('.pst-premium-nav-btn');
     var sliderContainer = root.querySelector('#pst-slider-<?php echo $module_uid; ?>');
     var loadingEl = root.querySelector('#pst-loading-<?php echo $module_uid; ?>');
+    var prevBtn = root.querySelector('#pst-prev-<?php echo $module_uid; ?>');
+    var nextBtn = root.querySelector('#pst-next-<?php echo $module_uid; ?>');
     var currentTabId = tabs.length > 0 ? tabs[0].id : null;
     var owlCarousel = null;
 
@@ -609,16 +778,17 @@
                 $slider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
             }
             
-            // Re-initialize with unique instance
+            // Re-initialize with unique instance - AUTOMATIC SLIDING ENABLED
             owlCarousel = $slider.addClass('owl-carousel').owlCarousel({
-                loop: false,
+                loop: true,
                 margin: 15,
-                nav: true,
+                nav: false,
                 dots: false,
-                autoplay: false,
-                autoplayTimeout: 3000,
+                autoplay: true,
+                autoplayTimeout: 4000,
                 autoplayHoverPause: true,
-                navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+                autoplaySpeed: 800,
+                smartSpeed: 800,
                 responsive: {
                     0: {
                         items: 2,
@@ -645,6 +815,24 @@
                     }
                 }
             });
+            
+            // Connect custom arrow buttons to carousel
+            if (prevBtn && owlCarousel) {
+                prevBtn.addEventListener('click', function() {
+                    $slider.trigger('prev.owl.carousel');
+                });
+            }
+            
+            if (nextBtn && owlCarousel) {
+                nextBtn.addEventListener('click', function() {
+                    $slider.trigger('next.owl.carousel');
+                });
+            }
+            
+            // Update arrow button states on carousel change
+            $slider.on('changed.owl.carousel', function(event) {
+                // Arrow buttons are always enabled with loop: true
+            });
         }
     }
 
@@ -655,8 +843,8 @@
             var tabId = parseInt(this.getAttribute('data-tab-id'));
             
             // Update active tab
-            tabButtons.forEach(function(b) { b.classList.remove('pst-tab-active'); });
-            this.classList.add('pst-tab-active');
+            tabButtons.forEach(function(b) { b.classList.remove('pst-premium-nav-active'); });
+            this.classList.add('pst-premium-nav-active');
             
             // Load products
             currentTabId = tabId;
