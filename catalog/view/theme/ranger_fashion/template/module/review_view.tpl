@@ -339,6 +339,36 @@
 }
 
 /* Responsive */
+@media (max-width: 768px) {
+  .rv-modern-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .rv-header-left,
+  .rv-header-right {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .rv-header-right {
+    justify-content: flex-end;
+  }
+  
+  .rv-modern-title {
+    font-size: 16px;
+  }
+  
+  .rv-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 767px) {
   .rv-testimonial-section {
     max-width: 100% !important;
