@@ -298,6 +298,29 @@
     z-index: 2;
 }
 
+/* Reward Points - Top Right Position */
+.pst-product-image-box .pst-reward-points {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff7e6;
+    color: #b37400;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pst-product-image-box .pst-reward-points i {
+    color: #ff9800;
+    font-size: 14px;
+}
+
 .pst-product-buttons {
     position: absolute;
     bottom: -50px;
@@ -439,9 +462,16 @@
     display: none !important;
 }
 
-/* Slider Item */
+/* Slider Item - Fixed Height for Alignment */
 .pst-slider-item {
     padding: 10px;
+    height: 100%;
+    display: flex;
+}
+
+.pst-slider-item .pst-product-card {
+    min-height: 480px; /* Fixed minimum height for all products */
+    width: 100%;
 }
 
 /* Owl Carousel Navigation */
@@ -784,13 +814,6 @@
                 html += product.price;
             }
             html += '</div>';
-            // Reward Points
-            if (product.points && product.points > 0) {
-                html += '<div class="module-reward-points">';
-                html += '<i class="fa fa-gift"></i>';
-                html += '<span>Earn ' + product.points + ' points</span>';
-                html += '</div>';
-            }
             html += '</div>';
             
             html += '</div>';
