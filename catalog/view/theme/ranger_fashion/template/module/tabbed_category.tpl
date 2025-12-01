@@ -10,35 +10,58 @@ if (empty($tabs)) {
 ?>
 <div class="deal-of-day-section mt-20" id="<?php echo $module_uid; ?>">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <div>
-                        <h2 class="h3"><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></h2>
-                        <?php if (count($tabs) > 1) { ?>
-                        <div class="links lux-premium-tabs">
-                            <?php $i=0; foreach ($tabs as $tab) { ?>
-                            <a class="category_get tabbed-category-tab lux-tab-item <?php echo $i==0 ? 'active' : ''; ?>" 
-                               data-tab-id="<?php echo $i; ?>"
-                               href="javascript:;"><?php echo htmlspecialchars($tab['title']); ?></a>
-                            <?php $i++; } ?>
+        <!-- Modern Header with Red Tab, Navigation Tabs, and Arrow Buttons -->
+        <div class="tcp-modern-header">
+            <div class="tcp-header-left">
+                <div class="tcp-modern-title-tab">
+                    <strong><?php echo !empty($name) ? htmlspecialchars($name) : 'Deals Of The Week'; ?></strong>
+                </div>
+            </div>
+            <div class="tcp-header-center">
+                <?php if (count($tabs) > 1) { ?>
+                <div class="tcp-tabs-nav">
+                    <?php $i=0; foreach ($tabs as $tab) { ?>
+                    <button type="button" class="tcp-tab-btn <?php echo $i==0 ? 'tcp-tab-active' : ''; ?>" 
+                            data-tab-id="<?php echo $i; ?>">
+                        <?php echo htmlspecialchars($tab['title']); ?>
+                    </button>
+                    <?php $i++; } ?>
+                </div>
+                <?php } ?>
+            </div>
+            <div class="tcp-header-right">
+                <?php if (!empty($date_end)) { ?>
+                <div class="tcp-countdown-wrapper">
+                    <div class="tcp-countdown" data-date-time="<?php echo htmlspecialchars($date_end); ?>">
+                        <div class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span>
+                            <span class="tcp-countdown-label">Days</span>
                         </div>
-      <?php } ?>
-    </div>
-                    <div class="right-area">
-                        <div class="countdown countdown-alt" data-date-time="10/10/2022">
-                            <span>00<small>Days</small></span> 
-                            <span>00<small>Hrs</small></span> 
-                            <span>00<small>Min</small></span> 
-                            <span>00<small>Sec</small></span>
+                        <div class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span>
+                            <span class="tcp-countdown-label">Hrs</span>
                         </div>
-                        <a class="right_link" href="<?php echo isset($see_all_url) ? $see_all_url : 'index.php?route=product/category'; ?>">
-                            View All <i class="icon-chevron-right"></i>
-                        </a>
+                        <div class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span>
+                            <span class="tcp-countdown-label">Min</span>
+                        </div>
+                        <div class="tcp-countdown-item">
+                            <span class="tcp-countdown-value">00</span>
+                            <span class="tcp-countdown-label">Sec</span>
+                        </div>
                     </div>
                 </div>
-      </div>
-    </div>
+                <?php } ?>
+                <div class="tcp-nav-arrows">
+                    <button type="button" class="tcp-nav-btn tcp-prev-btn" aria-label="Previous">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="tcp-nav-btn tcp-next-btn" aria-label="Next">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="row g-3">
             <div class="col-lg-12">
         <?php $i=0; foreach ($tabs as $tab) { ?>
@@ -125,90 +148,161 @@ if (empty($tabs)) {
     margin-top: 20px !important;
 }
 
-/* Section Title */
-.section-title {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    padding-bottom: 15px;
-    margin-bottom: 30px;
+/* Modern Header Styles - Tabbed Category Products */
+.tcp-modern-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    background-color: #f5f5f5;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 30px;
     flex-wrap: wrap;
+    gap: 15px;
 }
 
-.section-title h2 {
-    padding-bottom: 0;
-    margin-bottom: 0;
-    font-weight: 600;
-    font-size: 28px;
+.tcp-header-left {
+    flex-shrink: 0;
+}
+
+.tcp-modern-title-tab {
+    margin: 0;
+    padding: 0;
+}
+
+.tcp-modern-title-tab strong {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff505a;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
     position: relative;
-    color: #1a1a1a;
-    letter-spacing: -0.02em;
-    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
 }
 
-.section-title h2::before {
+.tcp-modern-title-tab strong:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ff1d2a;
+}
+
+.tcp-header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 200px;
+}
+
+.tcp-tabs-nav {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.tcp-tabs-nav::-webkit-scrollbar {
     display: none;
 }
 
-.section-title .right-area {
+.tcp-tab-btn {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.tcp-tab-btn:hover {
+    color: #ff6b9d;
+}
+
+.tcp-tab-btn.tcp-tab-active {
+    color: #ff505a;
+    font-weight: 700;
+    border-bottom: 2px solid #ff505a;
+}
+
+.tcp-header-right {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
 }
 
-.section-title .countdown {
-    display: inline-flex;
-    margin-top: 0;
-    margin-left: 20px;
-    background: #fff0f5;
-    padding: 6px 15px;
-    border-radius: 50px;
-    border: 1px solid #ff6b9d;
-}
-
-.section-title .countdown span {
-    display: inline-block;
-    text-align: center;
-    color: #ff6b9d;
-    min-width: auto;
-    padding: 0;
-    border-radius: 0;
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.section-title .countdown span small {
-    display: inline-block;
-    background: 0 0;
-    color: #666;
-    margin-top: 0;
-    padding: 0;
-    margin-left: 3px;
-    font-weight: 400;
-    text-transform: uppercase;
-    font-size: 10px;
-}
-
-.section-title .right_link {
-    color: #666;
-    margin-left: 20px;
-    transition: 0.3s linear;
-    font-weight: 500;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.section-title .right_link:hover {
-    color: #ff6b9d;
-}
-
-.section-title .links {
+.tcp-countdown-wrapper {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+    align-items: center;
+}
+
+.tcp-countdown {
+    display: flex;
+    gap: 8px;
+}
+
+.tcp-countdown-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-width: 50px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+}
+
+.tcp-countdown-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.tcp-countdown-label {
+    display: block;
+    font-size: 9px;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+.tcp-nav-arrows {
+    display: flex;
+    gap: 8px;
+}
+
+.tcp-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.tcp-nav-btn:hover {
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
 }
 
 /* Premium Product Card Styles (Consistent with Featured/Latest) */
@@ -444,61 +538,23 @@ if (empty($tabs)) {
     color: #fff !important;
 }
 
-/* Tab Navigation */
-.lux-premium-tabs {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-}
-
-.lux-tab-item {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 20px;
-    border-radius: 30px;
-    background: #f5f5f5;
-    color: #666;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.lux-tab-item:hover {
-    background: #fff;
-    color: #ff6b9d;
-    border-color: #ff6b9d;
-    transform: translateY(-2px);
-}
-
-.lux-tab-item.active {
-    background: #ff6b9d;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
-    border-color: #ff6b9d;
-}
+/* Old tab styles removed - using new tcp-tab-btn styles above */
 
 /* Responsive Design */
 @media (max-width: 992px) {
-    .section-title {
+    .tcp-modern-header {
         flex-direction: column;
         align-items: flex-start;
     }
     
-    .section-title .right-area {
-        margin-top: 15px;
+    .tcp-header-center {
         width: 100%;
-        flex-wrap: wrap;
+        justify-content: flex-start;
     }
     
-    .section-title h2 {
-        font-size: 24px;
-    }
-    
-    .section-title .countdown {
-        margin-left: 0;
+    .tcp-header-right {
+        width: 100%;
+        justify-content: space-between;
     }
 }
 
@@ -507,31 +563,50 @@ if (empty($tabs)) {
         padding: 20px 0;
     }
     
-    .section-title h2 {
-        font-size: 22px;
+    .tcp-modern-header {
+        padding: 15px;
     }
     
-    .section-title .right-area {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+    .tcp-modern-title-tab strong {
+        font-size: 14px;
+        padding: 8px 16px;
     }
     
-    .lux-premium-tabs {
+    .tcp-modern-title-tab strong:before {
+        bottom: -8px;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #ff1d2a;
+    }
+    
+    .tcp-tabs-nav {
         width: 100%;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        flex-wrap: nowrap;
+        justify-content: flex-start;
     }
     
-    .lux-tab-item {
-        white-space: nowrap;
+    .tcp-countdown-item {
+        min-width: 45px;
+        padding: 6px 8px;
+    }
+    
+    .tcp-countdown-value {
+        font-size: 14px;
+    }
+    
+    .tcp-countdown-label {
+        font-size: 8px;
+    }
+    
+    .tcp-nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
     }
 }
 </style>
 
 <script>
-(function() {
+jQuery(document).ready(function($) {
     var root = document.getElementById('<?php echo $module_uid; ?>');
     if (!root || root.dataset.tcp2Initialized) {
         return;
@@ -540,8 +615,9 @@ if (empty($tabs)) {
 
     var sliders = root.querySelectorAll('.popular-category-slider');
     var owlCarousels = [];
+    var currentActiveCarousel = null;
 
-    // Initialize owl carousel for each tab
+    // Initialize owl carousel for each tab with AUTOMATIC SLIDING
     sliders.forEach(function(slider) {
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
             var owl = jQuery(slider).owlCarousel({
@@ -549,9 +625,11 @@ if (empty($tabs)) {
                 margin: 15,
                 nav: false,
                 dots: false,
-                autoplay: true,
-                autoplayTimeout: 3000,
+                autoplay: true, // ENABLE AUTOMATIC SLIDING
+                autoplayTimeout: 4000, // 4 seconds
                 autoplayHoverPause: true,
+                autoplaySpeed: 800,
+                smartSpeed: 600,
                 responsive: {
                     0: {
                         items: 2,
@@ -579,33 +657,41 @@ if (empty($tabs)) {
                 }
             });
             owlCarousels.push(owl);
+            
+            // Set first visible carousel as active
+            if (jQuery(slider).closest('.tabbed-category-slider-wrapper').hasClass('active')) {
+                currentActiveCarousel = owl;
+            }
         }
     });
 
-    // Tab switching functionality
+    // Tab switching functionality with new button classes
     var tabWrappers = root.querySelectorAll('.tabbed-category-slider-wrapper');
     var currentTab = 0;
 
     // Tab click handlers if multiple tabs exist
     if (tabWrappers.length > 1) {
-        var tabItems = root.querySelectorAll('.tabbed-category-tab');
+        var tabItems = root.querySelectorAll('.tcp-tab-btn');
         tabItems.forEach(function(tab, index) {
             tab.addEventListener('click', function(e) {
                 e.preventDefault();
                 var tabId = parseInt(this.getAttribute('data-tab-id'));
                 
                 // Update active tab
-                tabItems.forEach(function(t) { t.classList.remove('active'); });
-                this.classList.add('active');
+                tabItems.forEach(function(t) { 
+                    t.classList.remove('tcp-tab-active'); 
+                });
+                this.classList.add('tcp-tab-active');
                 
                 // Show/hide sliders
                 tabWrappers.forEach(function(wrapper, idx) {
                     if (idx === tabId) {
                         wrapper.style.display = 'block';
                         wrapper.classList.add('active');
-                        // Refresh owl carousel
+                        // Get and set active carousel
                         var slider = wrapper.querySelector('.popular-category-slider');
                         if (slider && typeof jQuery !== 'undefined' && jQuery(slider).data('owl.carousel')) {
+                            currentActiveCarousel = jQuery(slider).data('owl.carousel');
                             jQuery(slider).trigger('refresh.owl.carousel');
                         }
                     } else {
@@ -618,5 +704,77 @@ if (empty($tabs)) {
             });
         });
     }
-})();
+
+    // Arrow navigation for carousel
+    var $prevBtn = root.querySelector('.tcp-prev-btn');
+    var $nextBtn = root.querySelector('.tcp-next-btn');
+    
+    if ($prevBtn && $nextBtn) {
+        $prevBtn.addEventListener('click', function() {
+            if (currentActiveCarousel) {
+                currentActiveCarousel.trigger('prev.owl.carousel');
+            } else if (owlCarousels.length > 0) {
+                owlCarousels[0].trigger('prev.owl.carousel');
+            }
+        });
+        
+        $nextBtn.addEventListener('click', function() {
+            if (currentActiveCarousel) {
+                currentActiveCarousel.trigger('next.owl.carousel');
+            } else if (owlCarousels.length > 0) {
+                owlCarousels[0].trigger('next.owl.carousel');
+            }
+        });
+    }
+
+    // Initialize countdown timer if date_end is set
+    var $countdown = root.querySelector('.tcp-countdown');
+    if ($countdown) {
+        var endDateStr = $countdown.getAttribute('data-date-time');
+        if (endDateStr) {
+            // Parse date from "YYYY-MM-DD HH:mm" format
+            var dateParts = endDateStr.split(' ');
+            var datePart = dateParts[0].split('-');
+            var timePart = dateParts[1] ? dateParts[1].split(':') : ['00', '00'];
+            
+            var targetDate = new Date(
+                parseInt(datePart[0]), // year
+                parseInt(datePart[1]) - 1, // month (0-indexed)
+                parseInt(datePart[2]), // day
+                parseInt(timePart[0]), // hour
+                parseInt(timePart[1]) // minute
+            );
+            
+            if (!isNaN(targetDate.getTime())) {
+                var $items = $countdown.querySelectorAll('.tcp-countdown-item');
+                
+                function updateCountdown() {
+                    var now = new Date().getTime();
+                    var distance = targetDate.getTime() - now;
+                    
+                    if (distance < 0) {
+                        $items[0].querySelector('.tcp-countdown-value').textContent = '00';
+                        $items[1].querySelector('.tcp-countdown-value').textContent = '00';
+                        $items[2].querySelector('.tcp-countdown-value').textContent = '00';
+                        $items[3].querySelector('.tcp-countdown-value').textContent = '00';
+                        return;
+                    }
+                    
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    
+                    $items[0].querySelector('.tcp-countdown-value').textContent = String(days).padStart(2, '0');
+                    $items[1].querySelector('.tcp-countdown-value').textContent = String(hours).padStart(2, '0');
+                    $items[2].querySelector('.tcp-countdown-value').textContent = String(minutes).padStart(2, '0');
+                    $items[3].querySelector('.tcp-countdown-value').textContent = String(seconds).padStart(2, '0');
+                }
+                
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
+        }
+    }
+});
 </script>

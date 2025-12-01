@@ -35,6 +35,9 @@ class ControllerModuleTabbedCategory extends Controller {
         
         $data['tabs'] = array();
         $data['see_all_url'] = $this->url->link('product/category');
+        
+        // Get date_end from settings for countdown timer
+        $data['date_end'] = isset($setting['date_end']) ? $setting['date_end'] : '';
 
         $tabs = isset($setting['tabs']) ? $setting['tabs'] : array();
         
