@@ -1,26 +1,30 @@
 <section id="pst-module-<?php echo $module_uid; ?>" class="pst-module-section">
     <div class="container">
         <?php if ($tabs) { ?>
-        <div class="pst-premium-header-wrapper" id="pst-premium-header-<?php echo $module_uid; ?>">
-            <div class="pst-premium-header-inner">
-                <div class="pst-premium-title-tab">
-                    <h2 class="pst-premium-title"><?php echo isset($heading_title) ? $heading_title : 'Popular Categories'; ?></h2>
+        <div class="modern-module-header" id="modern-header-<?php echo $module_uid; ?>">
+            <div class="modern-header-left">
+                <div class="modern-title-tab">
+                    <strong><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Popular Categories'; ?></strong>
                 </div>
-                <div class="pst-premium-nav-links">
+            </div>
+            <div class="modern-header-center">
+                <div class="modern-tabs-nav">
                     <?php $first = true; ?>
                     <?php foreach ($tabs as $tab) { ?>
-                    <button type="button" class="pst-premium-nav-btn <?php echo $first ? 'pst-premium-nav-active' : ''; ?>" 
+                    <button type="button" class="modern-tab-btn <?php echo $first ? 'modern-tab-active' : ''; ?>" 
                             data-tab-id="<?php echo $tab['id']; ?>">
                         <?php echo htmlspecialchars($tab['title']); ?>
                     </button>
                     <?php $first = false; ?>
                     <?php } ?>
                 </div>
-                <div class="pst-premium-nav-arrows">
-                    <button type="button" class="pst-premium-arrow-btn pst-premium-prev" id="pst-prev-<?php echo $module_uid; ?>">
+            </div>
+            <div class="modern-header-right">
+                <div class="modern-nav-arrows" id="modern-nav-<?php echo $module_uid; ?>">
+                    <button type="button" class="modern-nav-btn modern-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
                     </button>
-                    <button type="button" class="pst-premium-arrow-btn pst-premium-next" id="pst-next-<?php echo $module_uid; ?>">
+                    <button type="button" class="modern-nav-btn modern-nav-next" aria-label="Next">
                         <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
@@ -47,29 +51,35 @@
     background: #fff;
 }
 
-/* NEW PREMIUM HEADER STYLE - Red Tab with Navigation */
-.pst-premium-header-wrapper {
-    margin-bottom: 30px;
-    border-bottom: 2px solid #ff505a;
-    padding-bottom: 0;
+.pst-module-container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.pst-premium-header-inner {
+/* Modern Module Header - New Style (No Conflicts) */
+.modern-module-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 0;
+    border-bottom: 2px solid #ff505a;
+    position: relative;
+    gap: 20px;
     flex-wrap: wrap;
-    gap: 15px;
-    position: relative;
 }
 
-/* Red Arrow Tab on Left */
-.pst-premium-title-tab {
-    position: relative;
-    z-index: 2;
+.modern-header-left {
+    flex-shrink: 0;
 }
 
-.pst-premium-title {
+.modern-title-tab {
+    position: relative;
+    display: inline-block;
+}
+
+.modern-title-tab strong {
     display: inline-block;
     padding: 12px 24px;
     background-color: #ff505a;
@@ -80,11 +90,10 @@
     font-size: 16px;
     line-height: 1.4;
     margin: 0;
-    border: none;
 }
 
 /* Triangular flag shape at top-left */
-.pst-premium-title:before {
+.modern-title-tab strong:before {
     content: "";
     position: absolute;
     left: 0;
@@ -97,52 +106,58 @@
     z-index: 1;
 }
 
-/* Navigation Links in Middle */
-.pst-premium-nav-links {
+.modern-header-center {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 15px;
-    flex: 1;
+    justify-content: center;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 
-.pst-premium-nav-links::-webkit-scrollbar {
-    display: none;
-}
-
-.pst-premium-nav-btn {
-    background: none;
-    border: none;
-    padding: 8px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: color 0.3s ease;
-    position: relative;
-}
-
-.pst-premium-nav-btn:hover {
-    color: #ff505a;
-}
-
-.pst-premium-nav-btn.pst-premium-nav-active {
-    color: #ff6b9d;
-}
-
-/* Arrow Buttons on Right */
-.pst-premium-nav-arrows {
+.modern-tabs-nav {
     display: flex;
     gap: 8px;
     align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 10px;
 }
 
-.pst-premium-arrow-btn {
+.modern-tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.modern-tab-btn:hover {
+    color: #ff505a;
+}
+
+.modern-tab-btn.modern-tab-active {
+    color: #ff6b9d;
+}
+
+.modern-header-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.modern-nav-arrows {
+    display: flex;
+    gap: 8px;
+}
+
+.modern-nav-btn {
     width: 36px;
     height: 36px;
     border: 1px solid #e0e0e0;
@@ -154,60 +169,20 @@
     justify-content: center;
     transition: all 0.3s ease;
     border-radius: 0;
-    padding: 0;
-}
-
-.pst-premium-arrow-btn:hover {
-    background: #f5f5f5;
-    border-color: #ff505a;
-    color: #ff505a;
-}
-
-.pst-premium-arrow-btn i {
     font-size: 14px;
 }
 
-.pst-premium-arrow-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.modern-nav-btn:hover {
+    background: #ff505a;
+    color: #fff;
+    border-color: #ff505a;
 }
 
-/* Responsive for Premium Header */
-@media (max-width: 768px) {
-    .pst-premium-header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .pst-premium-nav-links {
-        width: 100%;
-        order: 2;
-    }
-    
-    .pst-premium-nav-arrows {
-        order: 3;
-        align-self: flex-end;
-    }
-    
-    .pst-premium-title {
-        font-size: 14px;
-        padding: 10px 18px;
-    }
-    
-    .pst-premium-title:before {
-        top: -8px;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-bottom: 8px solid #ff1d2a;
-    }
+.modern-nav-btn:active {
+    transform: scale(0.95);
 }
 
-.pst-module-container {
-    max-width: 80%;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
+/* Old styles kept for backward compatibility */
 .pst-module-header {
     margin-bottom: 30px;
     display: flex;
@@ -602,9 +577,67 @@
     }
 }
 
+@media (max-width: 768px) {
+    .modern-module-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .modern-header-center {
+        width: 100%;
+        order: 2;
+    }
+    
+    .modern-header-right {
+        order: 3;
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .modern-title-tab strong {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+    
+    .modern-title-tab strong:before {
+        top: -8px;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #ff1d2a;
+    }
+    
+    .modern-tabs-nav {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .modern-tabs-nav::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .modern-tab-btn {
+        font-size: 12px;
+        padding: 6px 14px;
+    }
+}
+
 @media (max-width: 480px) {
     .pst-module-title {
         font-size: 20px;
+    }
+    
+    .modern-title-tab strong {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+    
+    .modern-nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
     }
     
     .pst-product-name {
@@ -632,13 +665,13 @@
     var ajaxUrl = '<?php echo $ajax_url; ?>';
     var tabs = <?php echo json_encode($tabs); ?>;
     
-    var tabButtons = root.querySelectorAll('.pst-premium-nav-btn');
+    var tabButtons = root.querySelectorAll('.pst-tab-btn, .modern-tab-btn');
     var sliderContainer = root.querySelector('#pst-slider-<?php echo $module_uid; ?>');
     var loadingEl = root.querySelector('#pst-loading-<?php echo $module_uid; ?>');
-    var prevBtn = root.querySelector('#pst-prev-<?php echo $module_uid; ?>');
-    var nextBtn = root.querySelector('#pst-next-<?php echo $module_uid; ?>');
     var currentTabId = tabs.length > 0 ? tabs[0].id : null;
     var owlCarousel = null;
+    var navPrevBtn = root.querySelector('.modern-nav-prev');
+    var navNextBtn = root.querySelector('.modern-nav-next');
 
     function showLoading() {
         if (loadingEl) {
@@ -782,13 +815,13 @@
             owlCarousel = $slider.addClass('owl-carousel').owlCarousel({
                 loop: true,
                 margin: 15,
-                nav: false,
+                nav: false, // Disable default nav, use custom buttons
                 dots: false,
-                autoplay: true,
-                autoplayTimeout: 4000,
-                autoplayHoverPause: true,
+                autoplay: true, // ENABLE AUTOMATIC SLIDING
+                autoplayTimeout: 4000, // 4 seconds between slides
+                autoplayHoverPause: true, // Pause on hover
                 autoplaySpeed: 800,
-                smartSpeed: 800,
+                smartSpeed: 600,
                 responsive: {
                     0: {
                         items: 2,
@@ -816,35 +849,32 @@
                 }
             });
             
-            // Connect custom arrow buttons to carousel
-            if (prevBtn && owlCarousel) {
-                prevBtn.addEventListener('click', function() {
-                    $slider.trigger('prev.owl.carousel');
+            // Connect custom navigation buttons
+            if (navPrevBtn && owlCarousel) {
+                navPrevBtn.addEventListener('click', function() {
+                    owlCarousel.trigger('prev.owl.carousel');
                 });
             }
             
-            if (nextBtn && owlCarousel) {
-                nextBtn.addEventListener('click', function() {
-                    $slider.trigger('next.owl.carousel');
+            if (navNextBtn && owlCarousel) {
+                navNextBtn.addEventListener('click', function() {
+                    owlCarousel.trigger('next.owl.carousel');
                 });
             }
-            
-            // Update arrow button states on carousel change
-            $slider.on('changed.owl.carousel', function(event) {
-                // Arrow buttons are always enabled with loop: true
-            });
         }
     }
 
-    // Tab click handlers
+    // Tab click handlers - Support both old and new classes
     tabButtons.forEach(function(btn) {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             var tabId = parseInt(this.getAttribute('data-tab-id'));
             
-            // Update active tab
-            tabButtons.forEach(function(b) { b.classList.remove('pst-premium-nav-active'); });
-            this.classList.add('pst-premium-nav-active');
+            // Update active tab - Support both old and new classes
+            tabButtons.forEach(function(b) { 
+                b.classList.remove('pst-tab-active', 'modern-tab-active'); 
+            });
+            this.classList.add('pst-tab-active', 'modern-tab-active');
             
             // Load products
             currentTabId = tabId;
