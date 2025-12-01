@@ -30,9 +30,8 @@ if (empty($tabs)) {
                 <?php } ?>
             </div>
             <div class="tcp-header-right">
-                <?php if (!empty($date_end)) { ?>
                 <div class="tcp-countdown-wrapper">
-                    <div class="tcp-countdown" id="tcp-countdown-<?php echo $module_uid; ?>" data-end-date="<?php echo htmlspecialchars($date_end); ?>">
+                    <div class="tcp-countdown" id="tcp-countdown-<?php echo $module_uid; ?>" data-end-date="<?php echo !empty($date_end) ? htmlspecialchars($date_end) : date('Y-m-d H:i', strtotime('+7 days')); ?>">
                         <div class="tcp-countdown-item">
                             <span class="tcp-countdown-value">00</span>
                             <span class="tcp-countdown-label">Days</span>
@@ -51,7 +50,6 @@ if (empty($tabs)) {
                         </div>
                     </div>
                 </div>
-                <?php } ?>
                 <div class="tcp-nav-arrows">
                     <button type="button" class="tcp-nav-btn tcp-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
@@ -77,9 +75,9 @@ if (empty($tabs)) {
                 <?php } ?>
                                         <img class="lazy" alt="<?php echo htmlspecialchars($product['name']); ?>" src="<?php echo $product['thumb']; ?>">
                                         <div class="product-button-group">
-                                            <a class="product-button wishlist_store" href="javascript:;" title="Wishlist" onclick="wishlist.add('<?php echo $product['product_id']; ?>'); return false;"><i class="icon-heart"></i></a>
-                                            <a class="product-button product_compare" href="javascript:;" title="Compare" onclick="compare.add('<?php echo $product['product_id']; ?>'); return false;"><i class="icon-repeat"></i></a>
-                                            <a class="product-button add_to_single_cart" data-target="<?php echo $product['product_id']; ?>" href="javascript:;" title="To Cart" onclick="cart.add('<?php echo $product['product_id']; ?>'); return false;"><i class="icon-shopping-cart"></i></a>
+                                            <a class="product-button wishlist_store" href="javascript:;" title="Wishlist" onclick="wishlist.add('<?php echo $product['product_id']; ?>'); return false;"><i class="fa fa-heart"></i></a>
+                                            <a class="product-button product_compare" href="javascript:;" title="Compare" onclick="compare.add('<?php echo $product['product_id']; ?>'); return false;"><i class="fa fa-exchange"></i></a>
+                                            <a class="product-button add_to_single_cart" data-target="<?php echo $product['product_id']; ?>" href="javascript:;" title="Add to Cart" onclick="cart.add('<?php echo $product['product_id']; ?>'); return false;"><i class="fa fa-shopping-cart"></i></a>
                                         </div>
               </div>
                                     <div class="product-card-body">
@@ -387,27 +385,26 @@ if (empty($tabs)) {
 .product-card .product-button-group {
     position: absolute;
     left: 0;
-    bottom: -50px;
+    bottom: 0;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    opacity: 0;
-    visibility: hidden;
+    opacity: 1;
+    visibility: visible;
     z-index: 15;
-    transition: bottom 0.3s ease, opacity 0.3s ease;
-    pointer-events: none;
-    background: rgba(255,255,255,0.9);
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    background: rgba(255,255,255,0.95);
     padding: 10px;
     backdrop-filter: blur(5px);
 }
 
 .product-card:hover .product-button-group {
-    bottom: 0;
     opacity: 1;
     visibility: visible;
-    pointer-events: auto;
+    background: rgba(255,255,255,0.98);
 }
 
 .product-card .product-button-group .product-button {
@@ -767,8 +764,18 @@ jQuery(document).ready(function($) {
     if ($countdown.length) {
         var endDateStr = $countdown.data('end-date');
         if (endDateStr) {
-            // Parse the date from admin panel (format: YYYY-MM-DD HH:mm)
-            var endDate = new Date(endDateStr.replace(/-/g, '/'));
+            // Parse the date from admin panel (format: YYYY-MM-DD HH:mm or YYYY-MM-DD)
+            // Replace spaces with 'T' for ISO format, or use standard parsing
+            var dateStr = endDateStr.replace(' ', 'T');
+            if (dateStr.indexOf('T') === -1) {
+                dateStr = dateStr + 'T23:59:59'; // Default to end of day if no time
+            }
+            var endDate = new Date(dateStr);
+            
+            // Fallback: try alternative parsing
+            if (isNaN(endDate.getTime())) {
+                endDate = new Date(endDateStr.replace(/-/g, '/'));
+            }
             
             if (!isNaN(endDate.getTime())) {
                 var $items = $countdown.find('.tcp-countdown-item');
@@ -800,6 +807,8 @@ jQuery(document).ready(function($) {
                 // Update immediately and then every second
                 updateCountdown();
                 setInterval(updateCountdown, 1000);
+            } else {
+                console.log('Tabbed Category: Invalid date format:', endDateStr);
             }
         }
     }
