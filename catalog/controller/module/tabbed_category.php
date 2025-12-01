@@ -34,7 +34,7 @@ class ControllerModuleTabbedCategory extends Controller {
         }
         
         $data['tabs'] = array();
-        $data['see_all_url'] = $this->url->link('product/category');
+        $data['see_all_url'] = $this->url->link('product/category', 'view_all=1');
         
         // Pass date_end from settings for timer
         $data['date_end'] = isset($setting['date_end']) ? $setting['date_end'] : '';
