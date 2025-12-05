@@ -1358,6 +1358,171 @@ input#range-to {
 =============================================================================================*/
 
 /* ============================================
+   NEW CATEGORY PAGE FILTER SIDEBAR - NCP Design
+   ============================================ */
+
+/* Filter Sidebar for NCP Layout */
+.ncp-grid-layout > #column-left {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.ncp-grid-layout > #column-left::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ncp-grid-layout > #column-left::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.ncp-grid-layout > #column-left::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.ncp-grid-layout > #column-left .panel-heading {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e8e8e8;
+}
+
+.ncp-grid-layout > #column-left .panel .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ncp-grid-layout > #column-left .panel .filters .filter-group,
+.ncp-grid-layout > #column-left .panel .filters .price-filter {
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.ncp-grid-layout > #column-left .filter-group .label,
+.ncp-grid-layout > #column-left .price-filter .label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+    cursor: pointer;
+    display: block;
+}
+
+.ncp-grid-layout > #column-left .filter-group .items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.ncp-grid-layout > #column-left .filter-group .items label.filter {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    justify-content: space-between;
+}
+
+.ncp-grid-layout > #column-left .filter-group .items label.filter:hover {
+    color: #6c5ce7;
+}
+
+.ncp-grid-layout > #column-left .filter-group .items label.filter input {
+    margin: 0 8px 0 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #6c5ce7;
+}
+
+.ncp-grid-layout > #column-left .filter-group .items label.filter .count {
+    color: #999;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+/* Price Slider */
+.ncp-grid-layout > #column-left .price-filter .noUi-horizontal {
+    height: 4px;
+    margin: 20px 0;
+    background: #e8e8e8;
+    border-radius: 4px;
+}
+
+.ncp-grid-layout > #column-left .price-filter .noUi-connect {
+    background: #e84393;
+    border-radius: 4px;
+}
+
+.ncp-grid-layout > #column-left .price-filter .noUi-handle {
+    background: #e84393;
+    box-shadow: 0 2px 6px rgba(232, 67, 147, 0.3);
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    top: -7px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.ncp-grid-layout > #column-left .price-filter .noUi-handle:hover {
+    transform: scale(1.1);
+}
+
+.ncp-grid-layout > #column-left .panel .range-label input {
+    width: 48%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.ncp-grid-layout > #column-left .panel .range-label input:focus {
+    border-color: #6c5ce7;
+    outline: none;
+}
+
+/* Mobile Sidebar */
+@media (max-width: 992px) {
+    .ncp-grid-layout > #column-left {
+        position: fixed;
+        top: 0;
+        right: -320px;
+        width: 300px;
+        height: 100vh;
+        z-index: 1000;
+        border-radius: 0;
+        box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
+        transition: right 0.4s ease;
+        max-height: 100vh;
+        padding-top: 60px;
+    }
+    
+    .ncp-grid-layout > #column-left.ncp-sidebar-show {
+        right: 0;
+    }
+    
+    .ncp-grid-layout > #column-left .lc-close {
+        display: flex;
+    }
+}
+
+/* ============================================
    MODERN PREMIUM FILTER SIDEBAR - FCP Design
    ============================================ */
 
