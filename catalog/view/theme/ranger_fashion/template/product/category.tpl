@@ -217,7 +217,8 @@
     align-items: start;
 }
 
-/* Sidebar Filter */
+/* Sidebar Filter - Target column-left element */
+.ncp-grid-layout > column#column-left,
 .ncp-grid-layout > #column-left {
     background: #fff;
     border-radius: 8px;
@@ -227,19 +228,49 @@
     top: 20px;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
 }
 
+/* Override Bootstrap column classes */
+.ncp-grid-layout > column#column-left.col-sm-12,
+.ncp-grid-layout > column#column-left.col-sm-3,
+.ncp-grid-layout > #column-left.col-sm-12,
+.ncp-grid-layout > #column-left.col-sm-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    padding: 20px !important;
+}
+
+.ncp-grid-layout > column#column-left::-webkit-scrollbar,
 .ncp-grid-layout > #column-left::-webkit-scrollbar {
     width: 4px;
 }
 
+.ncp-grid-layout > column#column-left::-webkit-scrollbar-track,
 .ncp-grid-layout > #column-left::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
+.ncp-grid-layout > column#column-left::-webkit-scrollbar-thumb,
 .ncp-grid-layout > #column-left::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 4px;
+}
+
+/* Hide empty sidebar */
+.ncp-grid-layout > column#column-left:empty,
+.ncp-grid-layout > #column-left:empty {
+    display: none !important;
+}
+
+/* If sidebar is empty, use full width */
+.ncp-grid-layout:has(> column#column-left:empty),
+.ncp-grid-layout:has(> #column-left:empty) {
+    grid-template-columns: 1fr;
 }
 
 /* Top Bar */
@@ -650,6 +681,7 @@
     }
     
     /* Mobile Sidebar */
+    .ncp-grid-layout > column#column-left,
     .ncp-grid-layout > #column-left {
         position: fixed;
         top: 0;
@@ -664,6 +696,7 @@
         padding-top: 60px;
     }
     
+    .ncp-grid-layout > column#column-left.ncp-sidebar-show,
     .ncp-grid-layout > #column-left.ncp-sidebar-show {
         right: 0;
     }
@@ -789,7 +822,7 @@
 <script>
 (function() {
     var filterBtn = document.getElementById('ncp-filter-btn');
-    var sidebar = document.querySelector('.ncp-grid-layout > #column-left');
+    var sidebar = document.querySelector('.ncp-grid-layout > column#column-left') || document.querySelector('.ncp-grid-layout > #column-left');
     var layout = document.querySelector('.ncp-grid-layout');
     
     if (filterBtn && sidebar) {
@@ -811,7 +844,7 @@
         }
         
         // Close button
-        var closeBtn = document.querySelector('#column-left .lc-close');
+        var closeBtn = document.querySelector('column#column-left .lc-close') || document.querySelector('#column-left .lc-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', function() {
                 sidebar.classList.remove('ncp-sidebar-show');

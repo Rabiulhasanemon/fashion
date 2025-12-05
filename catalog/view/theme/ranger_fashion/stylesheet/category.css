@@ -1361,7 +1361,8 @@ input#range-to {
    NEW CATEGORY PAGE FILTER SIDEBAR - NCP Design
    ============================================ */
 
-/* Filter Sidebar for NCP Layout */
+/* Filter Sidebar for NCP Layout - Support both column and div elements */
+.ncp-grid-layout > column#column-left,
 .ncp-grid-layout > #column-left {
     background: #fff;
     border-radius: 8px;
@@ -1371,21 +1372,40 @@ input#range-to {
     top: 20px;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
+/* Override Bootstrap column classes */
+.ncp-grid-layout > column#column-left.col-sm-12,
+.ncp-grid-layout > column#column-left.col-sm-3,
+.ncp-grid-layout > #column-left.col-sm-12,
+.ncp-grid-layout > #column-left.col-sm-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    padding: 20px !important;
+}
+
+.ncp-grid-layout > column#column-left::-webkit-scrollbar,
 .ncp-grid-layout > #column-left::-webkit-scrollbar {
     width: 4px;
 }
 
+.ncp-grid-layout > column#column-left::-webkit-scrollbar-track,
 .ncp-grid-layout > #column-left::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
+.ncp-grid-layout > column#column-left::-webkit-scrollbar-thumb,
 .ncp-grid-layout > #column-left::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 4px;
 }
 
+/* Filter Content Styles - Support both column and div */
+.ncp-grid-layout > column#column-left .panel-heading,
 .ncp-grid-layout > #column-left .panel-heading {
     font-size: 16px;
     font-weight: 600;
@@ -1395,12 +1415,15 @@ input#range-to {
     border-bottom: 2px solid #e8e8e8;
 }
 
+.ncp-grid-layout > column#column-left .panel .filters,
 .ncp-grid-layout > #column-left .panel .filters {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
+.ncp-grid-layout > column#column-left .panel .filters .filter-group,
+.ncp-grid-layout > column#column-left .panel .filters .price-filter,
 .ncp-grid-layout > #column-left .panel .filters .filter-group,
 .ncp-grid-layout > #column-left .panel .filters .price-filter {
     margin-bottom: 0;
@@ -1409,6 +1432,8 @@ input#range-to {
     border: none;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .label,
+.ncp-grid-layout > column#column-left .price-filter .label,
 .ncp-grid-layout > #column-left .filter-group .label,
 .ncp-grid-layout > #column-left .price-filter .label {
     font-size: 15px;
@@ -1421,6 +1446,7 @@ input#range-to {
     display: block;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .items,
 .ncp-grid-layout > #column-left .filter-group .items {
     display: flex;
     flex-direction: column;
@@ -1428,6 +1454,7 @@ input#range-to {
     margin-top: 12px;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .items label.filter,
 .ncp-grid-layout > #column-left .filter-group .items label.filter {
     display: flex;
     align-items: center;
@@ -1438,10 +1465,12 @@ input#range-to {
     justify-content: space-between;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .items label.filter:hover,
 .ncp-grid-layout > #column-left .filter-group .items label.filter:hover {
     color: #6c5ce7;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .items label.filter input,
 .ncp-grid-layout > #column-left .filter-group .items label.filter input {
     margin: 0 8px 0 0;
     width: 16px;
@@ -1450,6 +1479,7 @@ input#range-to {
     accent-color: #6c5ce7;
 }
 
+.ncp-grid-layout > column#column-left .filter-group .items label.filter .count,
 .ncp-grid-layout > #column-left .filter-group .items label.filter .count {
     color: #999;
     font-size: 13px;
@@ -1457,6 +1487,7 @@ input#range-to {
 }
 
 /* Price Slider */
+.ncp-grid-layout > column#column-left .price-filter .noUi-horizontal,
 .ncp-grid-layout > #column-left .price-filter .noUi-horizontal {
     height: 4px;
     margin: 20px 0;
@@ -1464,11 +1495,13 @@ input#range-to {
     border-radius: 4px;
 }
 
+.ncp-grid-layout > column#column-left .price-filter .noUi-connect,
 .ncp-grid-layout > #column-left .price-filter .noUi-connect {
     background: #e84393;
     border-radius: 4px;
 }
 
+.ncp-grid-layout > column#column-left .price-filter .noUi-handle,
 .ncp-grid-layout > #column-left .price-filter .noUi-handle {
     background: #e84393;
     box-shadow: 0 2px 6px rgba(232, 67, 147, 0.3);
@@ -1480,10 +1513,12 @@ input#range-to {
     cursor: pointer;
 }
 
+.ncp-grid-layout > column#column-left .price-filter .noUi-handle:hover,
 .ncp-grid-layout > #column-left .price-filter .noUi-handle:hover {
     transform: scale(1.1);
 }
 
+.ncp-grid-layout > column#column-left .panel .range-label input,
 .ncp-grid-layout > #column-left .panel .range-label input {
     width: 48%;
     padding: 8px 10px;
@@ -1492,6 +1527,7 @@ input#range-to {
     font-size: 13px;
 }
 
+.ncp-grid-layout > column#column-left .panel .range-label input:focus,
 .ncp-grid-layout > #column-left .panel .range-label input:focus {
     border-color: #6c5ce7;
     outline: none;
@@ -1499,6 +1535,7 @@ input#range-to {
 
 /* Mobile Sidebar */
 @media (max-width: 992px) {
+    .ncp-grid-layout > column#column-left,
     .ncp-grid-layout > #column-left {
         position: fixed;
         top: 0;
@@ -1513,10 +1550,12 @@ input#range-to {
         padding-top: 60px;
     }
     
+    .ncp-grid-layout > column#column-left.ncp-sidebar-show,
     .ncp-grid-layout > #column-left.ncp-sidebar-show {
         right: 0;
     }
     
+    .ncp-grid-layout > column#column-left .lc-close,
     .ncp-grid-layout > #column-left .lc-close {
         display: flex;
     }
