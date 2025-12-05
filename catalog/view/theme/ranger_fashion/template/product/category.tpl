@@ -21,7 +21,7 @@
     <div class="scp-flex-layout">
         
         <!-- Filter Sidebar -->
-        <div class="scp-filter-sidebar filter-toggle-hide">
+        <div class="scp-filter-sidebar">
             <?php echo $column_left; ?>
         </div>
         
@@ -191,6 +191,7 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
     transition: all 0.5s ease-in-out;
+    display: block !important;
 }
 
 @media (min-width: 768px) {
@@ -199,6 +200,7 @@
         top: 20px;
         max-height: calc(100vh - 40px);
         height: auto;
+        display: block !important;
     }
 }
 
@@ -406,17 +408,20 @@
 
 .scp-image-wrapper {
     position: relative;
-    padding-top: 100%;
+    padding-top: 0% !important;
     overflow: hidden;
     background: #fafafa;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .scp-product-image {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
-    height: 100%;
+    height: auto;
+    max-height: 300px;
     object-fit: contain;
     padding: 15px;
     transition: transform 0.3s ease;
