@@ -542,12 +542,7 @@
     margin-top: 15px;
 }
 
-.product-categories .main-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-}
+
 
 .product-categories .product-item {
     background: #fff;
@@ -781,18 +776,10 @@
 }
 
 /* Responsive */
-@media (max-width: 991px) {
-    .product-categories .main-content {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
-    }
-}
+
 
 @media (max-width: 767px) {
-    .product-categories .main-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
+ 
     
     .product-categories .product-item .product-info {
         padding: 16px;
@@ -1369,3 +1356,248 @@ input#range-to {
 /*============================================================================================
    End Category Area Style-7
 =============================================================================================*/
+
+/* ============================================
+   MODERN PREMIUM FILTER SIDEBAR - FCP Design
+   ============================================ */
+
+/* Filter Sidebar Styling for FCP Layout */
+.fcp-layout-grid > #column-left {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fcp-layout-grid > #column-left::-webkit-scrollbar {
+    width: 5px;
+}
+
+.fcp-layout-grid > #column-left::-webkit-scrollbar-track {
+    background: #f5f7fa;
+    border-radius: 10px;
+}
+
+.fcp-layout-grid > #column-left::-webkit-scrollbar-thumb {
+    background: #10503D;
+    border-radius: 10px;
+}
+
+.fcp-layout-grid > #column-left::-webkit-scrollbar-thumb:hover {
+    background: #0a3d2e;
+}
+
+/* Close button styling */
+.fcp-layout-grid > #column-left .lc-close {
+    display: none;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1001;
+    background: #f5f7fa;
+    color: #64748b;
+    border-radius: 8px;
+    padding: 8px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.fcp-layout-grid > #column-left .lc-close:hover {
+    background: #10503D;
+    color: #fff;
+}
+
+.fcp-layout-grid > #column-left .lc-close .material-icons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* Filter groups styling */
+.fcp-layout-grid > #column-left .panel .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.fcp-layout-grid > #column-left .panel .filters .filter-group,
+.fcp-layout-grid > #column-left .panel .filters .price-filter {
+    margin-bottom: 0;
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: #fafafa;
+    border: 1px solid rgba(166, 138, 106, 0.15);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.fcp-layout-grid > #column-left .panel .filters .filter-group:hover,
+.fcp-layout-grid > #column-left .panel .filters .price-filter:hover {
+    border-color: #10503D;
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.1);
+}
+
+.fcp-layout-grid > #column-left .price-filter .label, 
+.fcp-layout-grid > #column-left .filter-group .label {
+    cursor: pointer;
+    border-bottom: 1px solid rgba(166, 138, 106, 0.2);
+    position: relative;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    color: #10503D;
+    transition: all 0.3s ease;
+}
+
+.fcp-layout-grid > #column-left .price-filter .label:hover, 
+.fcp-layout-grid > #column-left .filter-group .label:hover {
+    border-bottom-color: #10503D;
+    color: #0a3d2e;
+}
+
+.fcp-layout-grid > #column-left .filter-group .items {
+    margin: 12px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fcp-layout-grid > #column-left .filter-group .items label.filter {
+    font-size: 13px;
+    cursor: pointer;
+    line-height: 1.6;
+    color: #666;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.fcp-layout-grid > #column-left .filter-group .items label.filter:hover {
+    color: #10503D;
+}
+
+.fcp-layout-grid > #column-left .panel .filters .filter-group label.filter input {
+    float: left;
+    margin: 2px 10px 0 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #10503D;
+}
+
+/* Price filter slider */
+.fcp-layout-grid > #column-left .panel .filters .price-filter .noUi-horizontal {
+    height: 5px;
+    margin: 24px 0;
+}
+
+.fcp-layout-grid > #column-left .panel .filters .noUi-base {
+    border: none;
+    box-shadow: none;
+    background: rgba(166, 138, 106, 0.2);
+    border-radius: 10px;
+}
+
+.fcp-layout-grid > #column-left .panel .filters .noUi-connect {
+    background: linear-gradient(to right, #10503D 0%, #0a3d2e 100%);
+    border-radius: 10px;
+    height: 5px;
+}
+
+.fcp-layout-grid > #column-left .price-filter .noUi-handle {
+    background: #10503D;
+    box-shadow: 0 2px 6px rgba(16, 80, 61, 0.3);
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    top: -7px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.fcp-layout-grid > #column-left .price-filter .noUi-handle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 10px rgba(16, 80, 61, 0.4);
+}
+
+.fcp-layout-grid > #column-left .panel .range-label input {
+    float: left;
+    width: 48%;
+    outline: 0;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(166, 138, 106, 0.2);
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.fcp-layout-grid > #column-left .panel .range-label input:focus {
+    border-color: #10503D;
+    box-shadow: 0 0 0 3px rgba(16, 80, 61, 0.1);
+}
+
+/* Mobile Filter Sidebar */
+@media (max-width: 992px) {
+    .fcp-layout-grid > #column-left {
+        position: fixed;
+        top: 0;
+        right: -320px;
+        width: 300px;
+        height: 100vh;
+        z-index: 1000;
+        border-radius: 0;
+        box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 100vh;
+        padding-top: 60px;
+    }
+    
+    .fcp-layout-grid > #column-left.fcp-sidebar-open {
+        right: 0;
+    }
+    
+    .fcp-layout-grid > #column-left .lc-close {
+        display: flex;
+    }
+    
+    .fcp-layout-grid > #column-left .panel .filters .filter-group, 
+    .fcp-layout-grid > #column-left .panel .filters .price-filter {
+        margin-bottom: 10px;
+        padding: 14px;
+    }
+    
+    .fcp-layout-grid > #column-left .price-filter .label, 
+    .fcp-layout-grid > #column-left .filter-group .label {
+        font-size: 14px;
+        padding-bottom: 8px;
+    }
+    
+    .fcp-layout-grid > #column-left .panel .filters .price-filter .noUi-horizontal {
+        margin: 20px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .fcp-layout-grid > #column-left {
+        width: 280px;
+        right: -300px;
+    }
+    
+    .fcp-layout-grid > #column-left .panel .filters .filter-group, 
+    .fcp-layout-grid > #column-left .panel .filters .price-filter {
+        padding: 12px;
+    }
+}
