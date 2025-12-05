@@ -125,15 +125,54 @@ try {
 }
 echo "</div>";
 
-// Test 4: Test Insert Operation
+// Test 4: Check AUTO_INCREMENT and fix if needed
 echo "<div class=\"test-section\">";
-echo "<h2>4. Test Insert Operation</h2>";
+echo "<h2>4. Database AUTO_INCREMENT Check & Fix</h2>";
 try {
-    // Test data
+    // Check current AUTO_INCREMENT value
+    $ai_check = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "filter_group'");
+    $auto_increment = $ai_check->row['Auto_increment'];
+    echo "<div class=\"info\">Current AUTO_INCREMENT value: <strong>" . ($auto_increment ? $auto_increment : 'NULL') . "</strong></div>";
+    
+    // Check for row with ID 0
+    $zero_check = $db->query("SELECT * FROM `" . DB_PREFIX . "filter_group` WHERE filter_group_id = 0");
+    if ($zero_check->num_rows > 0) {
+        echo "<div class=\"error\">❌ Found row with filter_group_id = 0 (this causes conflicts!)</div>";
+        echo "<div class=\"warning\">⚠️ Attempting to fix by deleting row with ID 0...</div>";
+        try {
+            $db->query("DELETE FROM `" . DB_PREFIX . "filter_group` WHERE filter_group_id = 0");
+            echo "<div class=\"success\">✅ Deleted row with ID 0</div>";
+        } catch (Exception $e) {
+            echo "<div class=\"error\">❌ Failed to delete: " . $e->getMessage() . "</div>";
+        }
+    } else {
+        echo "<div class=\"success\">✅ No row with ID 0 found</div>";
+    }
+    
+    // Get max ID
+    $max_id = $db->query("SELECT MAX(filter_group_id) as max_id FROM `" . DB_PREFIX . "filter_group`");
+    $max_id_value = $max_id->row['max_id'] ? $max_id->row['max_id'] : 0;
+    echo "<div class=\"info\">Maximum filter_group_id in table: <strong>$max_id_value</strong></div>";
+    
+    // Fix AUTO_INCREMENT if needed
+    $new_ai = max(1, $max_id_value + 1);
+    if (!$auto_increment || $auto_increment <= $max_id_value) {
+        echo "<div class=\"warning\">⚠️ AUTO_INCREMENT needs to be fixed. Setting to: $new_ai</div>";
+        try {
+            $db->query("ALTER TABLE `" . DB_PREFIX . "filter_group` AUTO_INCREMENT = " . (int)$new_ai);
+            echo "<div class=\"success\">✅ AUTO_INCREMENT fixed to $new_ai</div>";
+        } catch (Exception $e) {
+            echo "<div class=\"error\">❌ Failed to fix AUTO_INCREMENT: " . $e->getMessage() . "</div>";
+        }
+    } else {
+        echo "<div class=\"success\">✅ AUTO_INCREMENT is properly configured</div>";
+    }
+    
+    // Now test insert
+    echo "<div class=\"info\"><strong>Testing INSERT operation...</strong></div>";
     $test_label = 'DEBUG_TEST_' . time();
     $test_sort_order = 0;
     
-    echo "<div class=\"info\">Attempting to insert test filter group...</div>";
     echo "<pre>Label: $test_label\nSort Order: $test_sort_order</pre>";
     
     $insert_query = "INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$test_sort_order . "', label = '" . $db->escape($test_label) . "'";
@@ -142,14 +181,14 @@ try {
     $db->query($insert_query);
     $filter_group_id = $db->getLastId();
     
-    if ($filter_group_id) {
+    if ($filter_group_id && $filter_group_id > 0) {
         echo "<div class=\"success\">✅ Insert successful! Filter Group ID: $filter_group_id</div>";
         
         // Clean up test data
         $db->query("DELETE FROM `" . DB_PREFIX . "filter_group` WHERE filter_group_id = '" . (int)$filter_group_id . "'");
         echo "<div class=\"info\">🧹 Test data cleaned up</div>";
     } else {
-        echo "<div class=\"error\">❌ Insert failed - No ID returned</div>";
+        echo "<div class=\"error\">❌ Insert failed - No valid ID returned (got: " . ($filter_group_id ? $filter_group_id : 'NULL') . ")</div>";
     }
 } catch (Exception $e) {
     echo "<div class=\"error\">❌ Insert test failed: " . $e->getMessage() . "</div>";
