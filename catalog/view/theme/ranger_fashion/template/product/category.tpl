@@ -17,266 +17,293 @@
     </div>
 </section>
 
-<section id="ncp-wrapper" class="ncp-section">
-    <div class="ncp-container">
+<div id="scp-wrapper" class="scp-container">
+    <div class="scp-flex-layout">
         
-        <?php if (isset($category_modules) && !empty($category_modules)) { ?>
-        <div id="ncp-mods" class="ncp-mods-wrap">
-            <?php foreach ($category_modules as $module) { ?>
-            <div class="ncp-mod-item">
-                <?php if (!empty($module['description'])) { ?>
-                <div class="ncp-mod-desc">
-                    <?php 
-                    $description = $module['description'];
-                    if (htmlspecialchars_decode($description) != $description) {
-                        $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    }
-                    $description = stripslashes($description);
-                    echo $description;
-                    ?>
-                </div>
-                <?php } ?>
-                <?php if (isset($module['output']) && !empty(trim($module['output']))) { ?>
-                <div class="ncp-mod-out">
-                    <?php echo $module['output']; ?>
-                </div>
-                <?php } ?>
-            </div>
-            <?php } ?>
-        </div>
-        <?php } ?>
-
-        <div class="ncp-grid-layout">
+        <!-- Filter Sidebar -->
+        <div class="scp-filter-sidebar filter-toggle-hide">
             <?php echo $column_left; ?>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="scp-main-content grow">
             
-            <div id="ncp-content" class="ncp-content-area">
-                <div id="ncp-topbar" class="ncp-topbar">
-                    <div class="ncp-topbar-left">
-                        <h1 class="ncp-page-title"><?php echo $heading_title; ?></h1>
-                        <button id="ncp-filter-btn" class="ncp-filter-toggle">
-                            <i class="fa fa-filter"></i>
-                            <span>Filter</span>
-                        </button>
-                    </div>
-                    <div class="ncp-topbar-right">
-                        <div class="ncp-ctrl-group">
-                            <label class="ncp-ctrl-label"><?php echo $text_limit; ?></label>
-                            <select class="ncp-select-ctrl" onchange="location = this.value;">
-                                <?php foreach ($limits as $limits) { ?>
-                                <option value="<?php echo $limits['href']; ?>" <?php echo ($limits['value'] == $limit) ? 'selected' : ''; ?>>
-                                    <?php echo $limits['text']; ?>
-                                </option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="ncp-ctrl-group">
-                            <label class="ncp-ctrl-label"><?php echo $text_sort; ?></label>
-                            <select class="ncp-select-ctrl" onchange="location = this.value;">
-                                <?php foreach ($sorts as $sorts) { ?>
-                                <option value="<?php echo $sorts['href']; ?>" <?php echo ($sorts['value'] == $sort . '-' . $order) ? 'selected' : ''; ?>>
-                                    <?php echo $sorts['text']; ?>
-                                </option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="ncp-grid" class="ncp-product-grid">
-                    <?php foreach ($products as $product) { ?>
-                    <div class="ncp-card" data-id="<?php echo $product['product_id']; ?>">
-                        <?php if ($product['special']) { ?>
-                        <?php
-                          $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                          $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                          $discountAmount = $price - $special;
-                          $mark = ($discountAmount / $price) * 100;
-                        ?>
-                        <div class="ncp-tag-discount"><?php echo round($mark); ?>% OFF</div>
-                        <?php } ?>
-
-                        <a href="<?php echo $product['href']; ?>" class="ncp-img-link">
-                            <div class="ncp-img-wrap">
-                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="ncp-img" loading="lazy" />
-                            </div>
-                        </a>
-
-                        <div class="ncp-body">
-                            <h3 class="ncp-name">
-                                <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
-                            </h3>
-                            
-                            <div class="ncp-rating">
-                                <?php if ($product['rating']) { ?>
-                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                        <?php if ($i <= $product['rating']) { ?>
-                                            <i class="fa fa-star ncp-star-filled"></i>
-                                        <?php } else { ?>
-                                            <i class="fa fa-star ncp-star-empty"></i>
-                                        <?php } ?>
-                                    <?php } ?>
-                                <?php } else { ?>
-                                    <i class="fa fa-star ncp-star-empty"></i>
-                                    <i class="fa fa-star ncp-star-empty"></i>
-                                    <i class="fa fa-star ncp-star-empty"></i>
-                                    <i class="fa fa-star ncp-star-empty"></i>
-                                    <i class="fa fa-star ncp-star-empty"></i>
-                                <?php } ?>
-                            </div>
-                            
-                            <?php if ($product['special']) { ?>
-                            <div class="ncp-label-sale">SALE</div>
+            <!-- Top Bar -->
+            <div class="scp-top-bar">
+                <h1 class="scp-page-title"><?php echo $heading_title; ?></h1>
+                <div class="scp-controls">
+                    <div class="scp-control-group">
+                        <label><?php echo $text_limit; ?></label>
+                        <select class="scp-select" onchange="location = this.value;">
+                            <?php foreach ($limits as $limits) { ?>
+                            <option value="<?php echo $limits['href']; ?>" <?php echo ($limits['value'] == $limit) ? 'selected' : ''; ?>>
+                                <?php echo $limits['text']; ?>
+                            </option>
                             <?php } ?>
-                            
-                            <div class="ncp-price-wrap">
-                                <?php if ($product['special']) { ?>
-                                <div class="ncp-price-row">
-                                    <span class="ncp-price-old"><?php echo $product['price']; ?></span>
-                                    <span class="ncp-price-now"><?php echo $product['special']; ?></span>
-                                </div>
-                                <?php } else { ?>
-                                <span class="ncp-price-now"><?php echo $product['price']; ?></span>
-                                <?php } ?>
-                            </div>
-                            
-                            <?php if($product["disablePurchase"] && $product["restock_request_btn"]) { ?>
-                            <button class="ncp-btn-cart" onclick="restock_request.add('<?php echo $product['product_id']; ?>');">
-                                <?php echo $product["restock_request_btn"]; ?>
-                            </button>
-                            <?php } elseif ($product["disablePurchase"]) { ?>
-                            <button class="ncp-btn-cart" disabled onclick="cart.add('<?php echo $product['product_id']; ?>');">
-                                <?php echo $product["stock_status"]; ?>
-                            </button>
-                            <?php } else { ?>
-                            <button class="ncp-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');">
-                                ADD TO CART
-                            </button>
+                        </select>
+                    </div>
+                    <div class="scp-control-group">
+                        <label><?php echo $text_sort; ?></label>
+                        <select class="scp-select" onchange="location = this.value;">
+                            <?php foreach ($sorts as $sorts) { ?>
+                            <option value="<?php echo $sorts['href']; ?>" <?php echo ($sorts['value'] == $sort . '-' . $order) ? 'selected' : ''; ?>>
+                                <?php echo $sorts['text']; ?>
+                            </option>
                             <?php } ?>
-                        </div>
-                    </div>
-                    <?php }
-                    if (!$products) { ?>
-                    <div class="ncp-empty-wrap">
-                        <div class="ncp-empty-box">
-                            <i class="fa fa-box-open ncp-empty-icon"></i>
-                            <h3 class="ncp-empty-title">Sorry! No Products Found</h3>
-                            <p class="ncp-empty-text">Please try searching for something else</p>
-                        </div>
-                    </div>
-                    <?php } ?>
-                </div>
-                
-                <div id="ncp-footer" class="ncp-footer-bar">
-                    <div class="ncp-footer-content">
-                        <div class="ncp-pagination-wrap">
-                            <?php echo $pagination; ?>
-                        </div>
-                        <div class="ncp-results-wrap">
-                            <p class="ncp-results-text"><?php echo $results; ?></p>
-                        </div>
+                        </select>
                     </div>
                 </div>
-                <?php echo $content_bottom; ?>
             </div>
             
-            <?php echo $column_right; ?>
+            <!-- Products Grid -->
+            <div class="scp-products-grid">
+                <?php foreach ($products as $product) { ?>
+                <div class="scp-product-card">
+                    <?php if ($product['special']) { ?>
+                    <?php
+                      $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                      $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                      $discountAmount = $price - $special;
+                      $mark = ($discountAmount / $price) * 100;
+                    ?>
+                    <div class="scp-discount-badge"><?php echo round($mark); ?>% OFF</div>
+                    <?php } ?>
+                    
+                    <a href="<?php echo $product['href']; ?>" class="scp-product-image-link">
+                        <div class="scp-image-wrapper">
+                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="scp-product-image" loading="lazy" />
+                        </div>
+                    </a>
+                    
+                    <div class="scp-product-info">
+                        <h3 class="scp-product-name">
+                            <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                        </h3>
+                        
+                        <div class="scp-rating">
+                            <?php if ($product['rating']) { ?>
+                                <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                    <?php if ($i <= $product['rating']) { ?>
+                                        <i class="fa fa-star scp-star-filled"></i>
+                                    <?php } else { ?>
+                                        <i class="fa fa-star scp-star-empty"></i>
+                                    <?php } ?>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <i class="fa fa-star scp-star-empty"></i>
+                                <i class="fa fa-star scp-star-empty"></i>
+                                <i class="fa fa-star scp-star-empty"></i>
+                                <i class="fa fa-star scp-star-empty"></i>
+                                <i class="fa fa-star scp-star-empty"></i>
+                            <?php } ?>
+                        </div>
+                        
+                        <?php if ($product['special']) { ?>
+                        <div class="scp-sale-label">SALE</div>
+                        <?php } ?>
+                        
+                        <div class="scp-price-box">
+                            <?php if ($product['special']) { ?>
+                            <span class="scp-price-old"><?php echo $product['price']; ?></span>
+                            <span class="scp-price-new"><?php echo $product['special']; ?></span>
+                            <?php } else { ?>
+                            <span class="scp-price-new"><?php echo $product['price']; ?></span>
+                            <?php } ?>
+                        </div>
+                        
+                        <?php if($product["disablePurchase"] && $product["restock_request_btn"]) { ?>
+                        <button class="scp-add-cart-btn" onclick="restock_request.add('<?php echo $product['product_id']; ?>');">
+                            <?php echo $product["restock_request_btn"]; ?>
+                        </button>
+                        <?php } elseif ($product["disablePurchase"]) { ?>
+                        <button class="scp-add-cart-btn" disabled>
+                            <?php echo $product["stock_status"]; ?>
+                        </button>
+                        <?php } else { ?>
+                        <button class="scp-add-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                            ADD TO CART
+                        </button>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php }
+                if (!$products) { ?>
+                <div class="scp-empty-state">
+                    <div class="scp-empty-content">
+                        <i class="fa fa-box-open scp-empty-icon"></i>
+                        <h3 class="scp-empty-title">Sorry! No Products Found</h3>
+                        <p class="scp-empty-text">Please try searching for something else</p>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+            
+            <!-- Footer -->
+            <div class="scp-footer">
+                <div class="scp-pagination">
+                    <?php echo $pagination; ?>
+                </div>
+                <div class="scp-results">
+                    <p><?php echo $results; ?></p>
+                </div>
+            </div>
+            
+            <?php echo $content_bottom; ?>
         </div>
     </div>
-</section>
+</div>
 
 <style>
 /* ============================================
-   NEW CATEGORY PAGE - NCP DESIGN
-   Matches the provided image exactly
+   SHAJGOJ STYLE CATEGORY PAGE - SCP Design
+   Matches reference image exactly
    ============================================ */
 
-#ncp-wrapper.ncp-section {
-    background: #f5f5f5;
-    padding: 20px 0 50px 0;
-}
-
-.ncp-container {
+#scp-wrapper.scp-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 20px;
+    background: #f5f5f5;
 }
 
-.ncp-mods-wrap {
-    margin-bottom: 20px;
-}
-
-.ncp-mod-item {
-    margin-bottom: 15px;
-}
-
-/* Main Layout Grid */
-.ncp-grid-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+.scp-flex-layout {
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    align-items: start;
 }
 
-/* Sidebar Filter - Target column-left element */
-.ncp-grid-layout > column#column-left,
-.ncp-grid-layout > #column-left {
+@media (min-width: 768px) {
+    .scp-flex-layout {
+        flex-direction: row;
+        gap: 20px;
+    }
+}
+
+/* Filter Sidebar */
+.scp-filter-sidebar {
+    flex: none;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
     background: #fff;
     border-radius: 8px;
-    padding: 20px;
+    padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 20px;
-    max-height: calc(100vh - 40px);
     overflow-y: auto;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: none !important;
+    transition: all 0.5s ease-in-out;
 }
 
-/* Override Bootstrap column classes */
-.ncp-grid-layout > column#column-left.col-sm-12,
-.ncp-grid-layout > column#column-left.col-sm-3,
-.ncp-grid-layout > #column-left.col-sm-12,
-.ncp-grid-layout > #column-left.col-sm-3 {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: none !important;
-    padding: 20px !important;
+@media (min-width: 768px) {
+    .scp-filter-sidebar {
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 40px);
+        height: auto;
+    }
 }
 
-.ncp-grid-layout > column#column-left::-webkit-scrollbar,
-.ncp-grid-layout > #column-left::-webkit-scrollbar {
+.scp-filter-sidebar::-webkit-scrollbar {
     width: 4px;
 }
 
-.ncp-grid-layout > column#column-left::-webkit-scrollbar-track,
-.ncp-grid-layout > #column-left::-webkit-scrollbar-track {
+.scp-filter-sidebar::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-.ncp-grid-layout > column#column-left::-webkit-scrollbar-thumb,
-.ncp-grid-layout > #column-left::-webkit-scrollbar-thumb {
+.scp-filter-sidebar::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 4px;
 }
 
-/* Hide empty sidebar */
-.ncp-grid-layout > column#column-left:empty,
-.ncp-grid-layout > #column-left:empty {
-    display: none !important;
+.scp-filter-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
-/* If sidebar is empty, use full width */
-.ncp-grid-layout:has(> column#column-left:empty),
-.ncp-grid-layout:has(> #column-left:empty) {
-    grid-template-columns: 1fr;
+/* Filter Content Styling */
+.scp-filter-sidebar column#column-left,
+.scp-filter-sidebar #column-left {
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    position: static;
+    max-height: none;
+    overflow: visible;
+}
+
+.scp-filter-sidebar .panel-heading {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.scp-filter-sidebar .panel .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.scp-filter-sidebar .filter-group,
+.scp-filter-sidebar .price-filter {
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.scp-filter-sidebar .filter-group .label,
+.scp-filter-sidebar .price-filter .label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+    cursor: pointer;
+}
+
+.scp-filter-sidebar .filter-group .items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter:hover {
+    color: #6c5ce7;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #6c5ce7;
+}
+
+/* Main Content */
+.scp-main-content.grow {
+    flex: 1;
+    min-width: 0;
 }
 
 /* Top Bar */
-.ncp-topbar {
+.scp-top-bar {
     background: #fff;
-    padding: 15px 20px;
+    padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     display: flex;
@@ -287,78 +314,50 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.ncp-topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex: 1;
-}
-
-.ncp-page-title {
+.scp-page-title {
     font-size: 24px;
     font-weight: 600;
     color: #333;
     margin: 0;
-    font-family: 'Jost', sans-serif;
 }
 
-.ncp-filter-toggle {
-    display: none;
-    padding: 8px 16px;
-    background: #6c5ce7;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 13px;
-    cursor: pointer;
-    gap: 6px;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.ncp-filter-toggle:hover {
-    background: #5f4fd1;
-}
-
-.ncp-topbar-right {
+.scp-controls {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
 }
 
-.ncp-ctrl-group {
+.scp-control-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
-.ncp-ctrl-label {
-    font-size: 13px;
+.scp-control-group label {
+    font-size: 14px;
     color: #666;
     font-weight: 500;
     white-space: nowrap;
 }
 
-.ncp-select-ctrl {
+.scp-select {
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background: #fff;
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
     cursor: pointer;
     min-width: 150px;
-    font-family: 'Jost', sans-serif;
 }
 
-.ncp-select-ctrl:focus {
+.scp-select:focus {
     outline: none;
     border-color: #6c5ce7;
 }
 
-/* Product Grid */
-.ncp-product-grid {
+/* Products Grid */
+.scp-products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
@@ -366,7 +365,7 @@
 }
 
 /* Product Card */
-.ncp-card {
+.scp-product-card {
     background: #fff;
     border-radius: 8px;
     overflow: hidden;
@@ -378,14 +377,14 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.ncp-card:hover {
+.scp-product-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     border-color: #d0d0d0;
 }
 
 /* Discount Badge */
-.ncp-tag-discount {
+.scp-discount-badge {
     position: absolute;
     top: 12px;
     left: 12px;
@@ -400,19 +399,19 @@
 }
 
 /* Image */
-.ncp-img-link {
+.scp-product-image-link {
     display: block;
     text-decoration: none;
 }
 
-.ncp-img-wrap {
+.scp-image-wrapper {
     position: relative;
     padding-top: 100%;
     overflow: hidden;
     background: #fafafa;
 }
 
-.ncp-img {
+.scp-product-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -423,19 +422,19 @@
     transition: transform 0.3s ease;
 }
 
-.ncp-card:hover .ncp-img {
+.scp-product-card:hover .scp-product-image {
     transform: scale(1.05);
 }
 
-/* Card Body */
-.ncp-body {
+/* Product Info */
+.scp-product-info {
     padding: 16px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.ncp-name {
+.scp-product-name {
     font-size: 14px;
     font-weight: 500;
     margin: 0 0 10px 0;
@@ -447,35 +446,35 @@
     overflow: hidden;
 }
 
-.ncp-name a {
+.scp-product-name a {
     color: #333;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
-.ncp-name a:hover {
+.scp-product-name a:hover {
     color: #6c5ce7;
 }
 
-/* Star Rating */
-.ncp-rating {
+/* Rating */
+.scp-rating {
     display: flex;
     gap: 2px;
     margin-bottom: 8px;
 }
 
-.ncp-star-filled {
+.scp-star-filled {
     color: #ffc107;
     font-size: 13px;
 }
 
-.ncp-star-empty {
+.scp-star-empty {
     color: #ddd;
     font-size: 13px;
 }
 
 /* Sale Label */
-.ncp-label-sale {
+.scp-sale-label {
     display: inline-block;
     background: #ff6348;
     color: #fff;
@@ -489,31 +488,29 @@
 }
 
 /* Price */
-.ncp-price-wrap {
+.scp-price-box {
     margin-bottom: 12px;
-}
-
-.ncp-price-row {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
-.ncp-price-old {
+.scp-price-old {
     font-size: 13px;
     color: #999;
     text-decoration: line-through;
     font-weight: 400;
 }
 
-.ncp-price-now {
+.scp-price-new {
     font-size: 18px;
     font-weight: 600;
     color: #e84393;
 }
 
 /* Add to Cart Button */
-.ncp-btn-cart {
+.scp-add-cart-btn {
     width: 100%;
     padding: 12px;
     background: #6c5ce7;
@@ -527,30 +524,26 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: auto;
-    font-family: 'Jost', sans-serif;
 }
 
-.ncp-btn-cart:hover:not(:disabled) {
+.scp-add-cart-btn:hover:not(:disabled) {
     background: #5f4fd1;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
-.ncp-btn-cart:disabled {
+.scp-add-cart-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
 /* Footer */
-.ncp-footer-bar {
+.scp-footer {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     margin-top: 30px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.ncp-footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -558,66 +551,38 @@
     gap: 15px;
 }
 
-.ncp-pagination-wrap {
+.scp-pagination {
     flex: 1;
 }
 
-.ncp-results-wrap {
+.scp-results {
     flex-shrink: 0;
 }
 
-.ncp-results-text {
+.scp-results p {
     color: #666;
     font-size: 13px;
     margin: 0;
 }
 
-/* Empty State */
-.ncp-empty-wrap {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.ncp-empty-box {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.ncp-empty-icon {
-    font-size: 56px;
-    color: #ddd;
-    margin-bottom: 15px;
-}
-
-.ncp-empty-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: #666;
-    margin: 0 0 8px 0;
-}
-
-.ncp-empty-text {
-    color: #999;
-    font-size: 14px;
-    margin: 0;
-}
-
 /* Pagination */
-.ncp-pagination-wrap .pagination {
+.scp-pagination .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.ncp-pagination-wrap .pagination li {
+.scp-pagination .pagination li {
     list-style: none;
 }
 
-.ncp-pagination-wrap .pagination a,
-.ncp-pagination-wrap .pagination span {
+.scp-pagination .pagination a,
+.scp-pagination .pagination span {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -631,58 +596,70 @@
     font-size: 13px;
 }
 
-.ncp-pagination-wrap .pagination a {
+.scp-pagination .pagination a {
     color: #666;
     background: #f5f5f5;
 }
 
-.ncp-pagination-wrap .pagination a:hover {
+.scp-pagination .pagination a:hover {
     background: #6c5ce7;
     color: #fff;
 }
 
-.ncp-pagination-wrap .pagination .active span {
+.scp-pagination .pagination .active span {
     background: #6c5ce7;
     color: #fff;
+}
+
+/* Empty State */
+.scp-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.scp-empty-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.scp-empty-icon {
+    font-size: 56px;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+.scp-empty-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 8px 0;
+}
+
+.scp-empty-text {
+    color: #999;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Hide module titles */
+.scp-filter-sidebar .module-heading-wrapper,
+.scp-filter-sidebar .section-head,
+.scp-filter-sidebar h2,
+.scp-filter-sidebar h3 {
+    display: none !important;
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
-    .ncp-container {
-        max-width: 100%;
-    }
-    
-    .ncp-grid-layout {
-        grid-template-columns: 260px 1fr;
-        gap: 15px;
-    }
-    
-    .ncp-product-grid {
+    .scp-products-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 15px;
     }
 }
 
 @media (max-width: 992px) {
-    .ncp-grid-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .ncp-filter-toggle {
-        display: flex;
-    }
-    
-    .ncp-page-title {
-        font-size: 22px;
-    }
-    
-    .ncp-product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-    
-    /* Mobile Sidebar */
-    .ncp-grid-layout > column#column-left,
-    .ncp-grid-layout > #column-left {
+    .scp-filter-sidebar {
         position: fixed;
         top: 0;
         right: -320px;
@@ -696,163 +673,182 @@
         padding-top: 60px;
     }
     
-    .ncp-grid-layout > column#column-left.ncp-sidebar-show,
-    .ncp-grid-layout > #column-left.ncp-sidebar-show {
+    .scp-filter-sidebar.filter-toggle-show {
         right: 0;
     }
     
-    /* Overlay */
-    .ncp-grid-layout::before {
-        content: '';
+    .scp-filter-sidebar .lc-close {
+        display: flex !important;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
+        top: 16px;
+        right: 16px;
+        z-index: 1001;
+        background: #f5f7fa;
+        color: #64748b;
+        border-radius: 8px;
+        padding: 8px;
+        width: 32px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
     }
     
-    .ncp-grid-layout.ncp-sidebar-show::before {
-        opacity: 1;
-        visibility: visible;
+    .scp-filter-sidebar .lc-close:hover {
+        background: #6c5ce7;
+        color: #fff;
+    }
+    
+    /* Filter toggle button */
+    .scp-top-bar::before {
+        content: 'Filter';
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #6c5ce7;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 }
 
 @media (max-width: 768px) {
-    #ncp-wrapper.ncp-section {
-        padding: 15px 0 40px 0;
+    #scp-wrapper.scp-container {
+        padding: 15px;
     }
     
-    .ncp-container {
-        padding: 0 15px;
-    }
-    
-    .ncp-topbar {
+    .scp-top-bar {
         flex-direction: column;
         align-items: stretch;
-        padding: 12px 15px;
+        padding: 15px;
     }
     
-    .ncp-topbar-left {
-        justify-content: space-between;
-    }
-    
-    .ncp-topbar-right {
+    .scp-controls {
         width: 100%;
         justify-content: space-between;
     }
     
-    .ncp-ctrl-group {
+    .scp-control-group {
         flex: 1;
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
     }
     
-    .ncp-select-ctrl {
+    .scp-select {
         width: 100%;
         min-width: auto;
     }
     
-    .ncp-product-grid {
+    .scp-products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
     
-    .ncp-card:hover {
+    .scp-product-card:hover {
         transform: none;
     }
     
-    .ncp-body {
+    .scp-product-info {
         padding: 12px;
     }
     
-    .ncp-name {
+    .scp-product-name {
         font-size: 13px;
         min-height: 36px;
     }
     
-    .ncp-price-now {
+    .scp-price-new {
         font-size: 16px;
     }
     
-    .ncp-btn-cart {
+    .scp-add-cart-btn {
         padding: 10px;
         font-size: 12px;
+    }
+    
+    .scp-footer {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 
 @media (max-width: 480px) {
-    .ncp-page-title {
+    .scp-page-title {
         font-size: 18px;
     }
     
-    .ncp-product-grid {
+    .scp-products-grid {
         gap: 10px;
     }
     
-    .ncp-name {
+    .scp-product-name {
         font-size: 12px;
         min-height: 32px;
     }
     
-    .ncp-price-now {
+    .scp-price-new {
         font-size: 15px;
     }
     
-    .ncp-btn-cart {
+    .scp-add-cart-btn {
         padding: 9px;
         font-size: 11px;
     }
-}
-
-/* Hide old conflicting styles */
-.ncp-mod-out .module-heading-wrapper,
-.ncp-mod-out .section-head,
-.ncp-mod-out h2,
-.ncp-mod-out h3 {
-    display: none !important;
 }
 </style>
 
 <script>
 (function() {
-    var filterBtn = document.getElementById('ncp-filter-btn');
-    var sidebar = document.querySelector('.ncp-grid-layout > column#column-left') || document.querySelector('.ncp-grid-layout > #column-left');
-    var layout = document.querySelector('.ncp-grid-layout');
+    // Filter toggle functionality for mobile
+    var filterSidebar = document.querySelector('.scp-filter-sidebar');
+    var filterToggle = document.querySelector('.scp-top-bar');
     
-    if (filterBtn && sidebar) {
+    if (filterSidebar && filterToggle) {
+        // Create filter button
+        var filterBtn = document.createElement('button');
+        filterBtn.className = 'scp-filter-toggle-btn';
+        filterBtn.innerHTML = '<i class="fa fa-filter"></i> Filter';
+        filterBtn.style.cssText = 'display: none; padding: 8px 16px; background: #6c5ce7; color: #fff; border: none; border-radius: 4px; font-weight: 500; font-size: 13px; cursor: pointer; gap: 6px; align-items: center;';
+        
+        if (window.innerWidth <= 992) {
+            filterBtn.style.display = 'flex';
+            filterToggle.insertBefore(filterBtn, filterToggle.firstChild);
+        }
+        
         filterBtn.addEventListener('click', function() {
-            sidebar.classList.toggle('ncp-sidebar-show');
-            if (layout) {
-                layout.classList.toggle('ncp-sidebar-show');
+            filterSidebar.classList.toggle('filter-toggle-show');
+        });
+        
+        // Close button
+        var closeBtn = filterSidebar.querySelector('.lc-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                filterSidebar.classList.remove('filter-toggle-show');
+            });
+        }
+        
+        // Close on overlay click
+        filterSidebar.addEventListener('click', function(e) {
+            if (e.target === filterSidebar) {
+                filterSidebar.classList.remove('filter-toggle-show');
             }
         });
         
-        // Close on overlay click
-        if (layout) {
-            layout.addEventListener('click', function(e) {
-                if (e.target === layout && sidebar.classList.contains('ncp-sidebar-show')) {
-                    sidebar.classList.remove('ncp-sidebar-show');
-                    layout.classList.remove('ncp-sidebar-show');
-                }
-            });
-        }
-        
-        // Close button
-        var closeBtn = document.querySelector('column#column-left .lc-close') || document.querySelector('#column-left .lc-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                sidebar.classList.remove('ncp-sidebar-show');
-                if (layout) {
-                    layout.classList.remove('ncp-sidebar-show');
-                }
-            });
-        }
+        // Show/hide filter button on resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 992) {
+                filterBtn.style.display = 'flex';
+            } else {
+                filterBtn.style.display = 'none';
+                filterSidebar.classList.remove('filter-toggle-show');
+            }
+        });
     }
 })();
 </script>

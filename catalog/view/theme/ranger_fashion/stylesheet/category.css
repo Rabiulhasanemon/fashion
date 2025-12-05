@@ -1805,3 +1805,225 @@ input#range-to {
         padding: 12px;
     }
 }
+
+/* ============================================
+   SHAJGOJ STYLE FILTER SIDEBAR - SCP Design
+   Matches reference image exactly
+   ============================================ */
+
+/* Filter Sidebar Styling */
+.scp-filter-sidebar column#column-left,
+.scp-filter-sidebar #column-left {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+}
+
+.scp-filter-sidebar .panel-heading {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.scp-filter-sidebar .panel .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.scp-filter-sidebar .filter-group,
+.scp-filter-sidebar .price-filter {
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.scp-filter-sidebar .filter-group .label,
+.scp-filter-sidebar .price-filter .label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+    cursor: pointer;
+    display: block;
+}
+
+.scp-filter-sidebar .filter-group .items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: color 0.2s ease;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter:hover {
+    color: #6c5ce7;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #6c5ce7;
+}
+
+.scp-filter-sidebar .filter-group .items label.filter .count {
+    color: #999;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+/* Price Filter Slider */
+.scp-filter-sidebar .price-filter .noUi-horizontal {
+    height: 4px;
+    margin: 20px 0;
+    background: #e8e8e8;
+    border-radius: 4px;
+}
+
+.scp-filter-sidebar .price-filter .noUi-connect {
+    background: #6c5ce7;
+    border-radius: 4px;
+}
+
+.scp-filter-sidebar .price-filter .noUi-handle {
+    background: #6c5ce7;
+    box-shadow: 0 2px 6px rgba(108, 92, 231, 0.3);
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    top: -7px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scp-filter-sidebar .price-filter .noUi-handle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 10px rgba(108, 92, 231, 0.4);
+}
+
+.scp-filter-sidebar .panel .range-label input {
+    width: 48%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.scp-filter-sidebar .panel .range-label input:focus {
+    border-color: #6c5ce7;
+    outline: none;
+}
+
+/* Hide module titles in filter sidebar */
+.scp-filter-sidebar .module-heading-wrapper,
+.scp-filter-sidebar .section-head,
+.scp-filter-sidebar h2.cosmetics-module-heading,
+.scp-filter-sidebar h2.unified-module-heading,
+.scp-filter-sidebar .cosmetics-module-heading,
+.scp-filter-sidebar .unified-module-heading,
+.scp-filter-sidebar .latest-products__title,
+.scp-filter-sidebar .popular-products__title,
+.scp-filter-sidebar .heading_title {
+    display: none !important;
+}
+
+/* Mobile Filter Sidebar */
+@media (max-width: 992px) {
+    .scp-filter-sidebar {
+        position: fixed;
+        top: 0;
+        right: -320px;
+        width: 300px;
+        height: 100vh;
+        z-index: 1000;
+        border-radius: 0;
+        box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
+        transition: right 0.4s ease;
+        max-height: 100vh;
+        padding-top: 60px;
+    }
+    
+    .scp-filter-sidebar.filter-toggle-show {
+        right: 0;
+    }
+    
+    .scp-filter-sidebar .lc-close {
+        display: flex !important;
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 1001;
+        background: #f5f7fa;
+        color: #64748b;
+        border-radius: 8px;
+        padding: 8px;
+        width: 32px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .scp-filter-sidebar .lc-close:hover {
+        background: #6c5ce7;
+        color: #fff;
+    }
+    
+    .scp-filter-sidebar .lc-close .material-icons {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Overlay */
+    .scp-filter-sidebar.filter-toggle-show::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}
+
+@media (max-width: 480px) {
+    .scp-filter-sidebar {
+        width: 280px;
+        right: -300px;
+    }
+    
+    .scp-filter-sidebar .panel .filters .filter-group,
+    .scp-filter-sidebar .panel .filters .price-filter {
+        padding: 0;
+    }
+}
