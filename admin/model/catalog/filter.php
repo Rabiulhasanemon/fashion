@@ -3,35 +3,90 @@ class ModelCatalogFilter extends Model {
 	public function addFilter($data) {
 		$this->event->trigger('pre.admin.filter.add', $data);
 
+		// Validate required data
+		if (empty($data['label'])) {
+			error_log("Filter Add Error: Label is required");
+			return false;
+		}
+
+		if (empty($data['filter_group_description']) || !is_array($data['filter_group_description'])) {
+			error_log("Filter Add Error: Filter group description is required");
+			return false;
+		}
+
+		// Set default sort_order if not provided
+		if (!isset($data['sort_order']) || $data['sort_order'] === '') {
+			$data['sort_order'] = 0;
+		}
+
 		try {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order']. "', label = '" . $this->db->escape($data['label']) . "'");
 
 			$filter_group_id = $this->db->getLastId();
+
+			if (!$filter_group_id) {
+				error_log("Filter Add Error: Failed to get filter_group_id");
+				return false;
+			}
 		} catch (Exception $e) {
-			error_log("Filter Add Error: " . $e->getMessage());
+			error_log("Filter Add Error (DB): " . $e->getMessage());
 			return false;
 		}
 
-		foreach ($data['filter_group_description'] as $language_id => $value) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+		try {
+			foreach ($data['filter_group_description'] as $language_id => $value) {
+				if (empty($value['name'])) {
+					error_log("Filter Add Error: Filter group name is required for language_id: " . $language_id);
+					continue;
+				}
+				$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+			}
+		} catch (Exception $e) {
+			error_log("Filter Add Error (Description): " . $e->getMessage());
+			return false;
 		}
 
-		if (isset($data['filter'])) {
-			foreach ($data['filter'] as $filter) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
+		if (isset($data['filter']) && is_array($data['filter'])) {
+			try {
+				foreach ($data['filter'] as $filter) {
+					if (empty($filter['sort_order']) || $filter['sort_order'] === '') {
+						$filter['sort_order'] = 0;
+					}
 
-				$filter_id = $this->db->getLastId();
+					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
 
-				foreach ($filter['filter_description'] as $language_id => $filter_description) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
+					$filter_id = $this->db->getLastId();
+
+					if (!$filter_id) {
+						error_log("Filter Add Error: Failed to get filter_id");
+						continue;
+					}
+
+					if (isset($filter['filter_description']) && is_array($filter['filter_description'])) {
+						foreach ($filter['filter_description'] as $language_id => $filter_description) {
+							if (empty($filter_description['name'])) {
+								continue;
+							}
+							$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
+						}
+					}
 				}
+			} catch (Exception $e) {
+				error_log("Filter Add Error (Filter Items): " . $e->getMessage());
 			}
 		}
 
-        if (isset($data['group_filter_profile'])) {
-            foreach ($data['group_filter_profile'] as $filter_profile_id) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_to_profile SET filter_group_id = '" . (int)$filter_group_id . "', filter_profile_id = '" . (int)$filter_profile_id . "'");
-            }
+        if (isset($data['group_filter_profile']) && is_array($data['group_filter_profile'])) {
+            try {
+				foreach ($data['group_filter_profile'] as $filter_profile_id) {
+					if (empty($filter_profile_id)) {
+						continue;
+					}
+					$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_to_profile SET filter_group_id = '" . (int)$filter_group_id . "', filter_profile_id = '" . (int)$filter_profile_id . "'");
+				}
+			} catch (Exception $e) {
+				error_log("Filter Add Error (Profile): " . $e->getMessage());
+			}
         }
 
 		$this->event->trigger('post.admin.filter.add', $filter_group_id);
@@ -42,45 +97,100 @@ class ModelCatalogFilter extends Model {
 	public function editFilter($filter_group_id, $data) {
 		$this->event->trigger('pre.admin.filter.edit', $data);
 
-		try {
-			$this->db->query("UPDATE `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order'] . "', label = '" . $this->db->escape($data['label']) . "' WHERE filter_group_id = '" . (int)$filter_group_id . "'");
-		} catch (Exception $e) {
-			error_log("Filter Edit Error: " . $e->getMessage());
+		// Validate required data
+		if (empty($data['label'])) {
+			error_log("Filter Edit Error: Label is required");
 			return false;
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "filter_group_description WHERE filter_group_id = '" . (int)$filter_group_id . "'");
-
-		foreach ($data['filter_group_description'] as $language_id => $value) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+		if (empty($data['filter_group_description']) || !is_array($data['filter_group_description'])) {
+			error_log("Filter Edit Error: Filter group description is required");
+			return false;
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "filter WHERE filter_group_id = '" . (int)$filter_group_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "filter_group_to_profile WHERE filter_group_id = '" . (int)$filter_group_id . "'");
-		$this->db->query("DELETE FROM " . DB_PREFIX . "filter_description WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+		// Set default sort_order if not provided
+		if (!isset($data['sort_order']) || $data['sort_order'] === '') {
+			$data['sort_order'] = 0;
+		}
 
-		if (isset($data['filter'])) {
-			foreach ($data['filter'] as $filter) {
-				if (!empty($filter['filter_id'])) {
-					// Use existing filter_id
-					$filter_id = (int)$filter['filter_id'];
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_id = '" . $filter_id . "', filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
-				} else {
-					// Create new filter
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
-					$filter_id = $this->db->getLastId();
-				}
+		try {
+			$this->db->query("UPDATE `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order'] . "', label = '" . $this->db->escape($data['label']) . "' WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+		} catch (Exception $e) {
+			error_log("Filter Edit Error (DB): " . $e->getMessage());
+			return false;
+		}
 
-				foreach ($filter['filter_description'] as $language_id => $filter_description) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "filter_group_description WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+
+			foreach ($data['filter_group_description'] as $language_id => $value) {
+				if (empty($value['name'])) {
+					error_log("Filter Edit Error: Filter group name is required for language_id: " . $language_id);
+					continue;
 				}
+				$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+			}
+		} catch (Exception $e) {
+			error_log("Filter Edit Error (Description): " . $e->getMessage());
+			return false;
+		}
+
+		try {
+			$this->db->query("DELETE FROM " . DB_PREFIX . "filter WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "filter_group_to_profile WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+			$this->db->query("DELETE FROM " . DB_PREFIX . "filter_description WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+		} catch (Exception $e) {
+			error_log("Filter Edit Error (Delete): " . $e->getMessage());
+			return false;
+		}
+
+		if (isset($data['filter']) && is_array($data['filter'])) {
+			try {
+				foreach ($data['filter'] as $filter) {
+					if (empty($filter['sort_order']) || $filter['sort_order'] === '') {
+						$filter['sort_order'] = 0;
+					}
+
+					if (!empty($filter['filter_id'])) {
+						// Use existing filter_id
+						$filter_id = (int)$filter['filter_id'];
+						$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_id = '" . $filter_id . "', filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
+					} else {
+						// Create new filter
+						$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
+						$filter_id = $this->db->getLastId();
+					}
+
+					if (!$filter_id) {
+						error_log("Filter Edit Error: Failed to get filter_id");
+						continue;
+					}
+
+					if (isset($filter['filter_description']) && is_array($filter['filter_description'])) {
+						foreach ($filter['filter_description'] as $language_id => $filter_description) {
+							if (empty($filter_description['name'])) {
+								continue;
+							}
+							$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
+						}
+					}
+				}
+			} catch (Exception $e) {
+				error_log("Filter Edit Error (Filter Items): " . $e->getMessage());
 			}
 		}
 
-        if (isset($data['group_filter_profile'])) {
-            foreach ($data['group_filter_profile'] as $filter_profile_id) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_to_profile SET filter_group_id = '" . (int)$filter_group_id . "', filter_profile_id = '" . (int)$filter_profile_id . "'");
-            }
+        if (isset($data['group_filter_profile']) && is_array($data['group_filter_profile'])) {
+            try {
+				foreach ($data['group_filter_profile'] as $filter_profile_id) {
+					if (empty($filter_profile_id)) {
+						continue;
+					}
+					$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_to_profile SET filter_group_id = '" . (int)$filter_group_id . "', filter_profile_id = '" . (int)$filter_profile_id . "'");
+				}
+			} catch (Exception $e) {
+				error_log("Filter Edit Error (Profile): " . $e->getMessage());
+			}
         }
 
 		$this->event->trigger('post.admin.filter.edit', $filter_group_id);

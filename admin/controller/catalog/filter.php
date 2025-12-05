@@ -20,9 +20,14 @@ class ControllerCatalogFilter extends Controller {
 		$this->load->model('catalog/filter');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_filter->addFilter($this->request->post);
+			$result = $this->model_catalog_filter->addFilter($this->request->post);
 
-			$this->session->data['success'] = $this->language->get('text_success');
+			if ($result === false) {
+				$this->error['warning'] = 'Error: Failed to add filter. Please check error logs.';
+				error_log("Filter Add Failed - POST Data: " . print_r($this->request->post, true));
+			} else {
+				$this->session->data['success'] = $this->language->get('text_success');
+			}
 
 			$url = '';
             if (isset($this->request->get['filter_name'])) {
@@ -45,7 +50,9 @@ class ControllerCatalogFilter extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			if (!isset($this->error['warning'])) {
+				$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			}
 		}
 
 		$this->getForm();
@@ -59,9 +66,18 @@ class ControllerCatalogFilter extends Controller {
 		$this->load->model('catalog/filter');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_catalog_filter->editFilter($this->request->get['filter_group_id'], $this->request->post);
+			if (!isset($this->request->get['filter_group_id'])) {
+				$this->error['warning'] = 'Error: Filter group ID is missing.';
+			} else {
+				$result = $this->model_catalog_filter->editFilter($this->request->get['filter_group_id'], $this->request->post);
 
-			$this->session->data['success'] = $this->language->get('text_success');
+				if ($result === false) {
+					$this->error['warning'] = 'Error: Failed to edit filter. Please check error logs.';
+					error_log("Filter Edit Failed - POST Data: " . print_r($this->request->post, true));
+				} else {
+					$this->session->data['success'] = $this->language->get('text_success');
+				}
+			}
 
 			$url = '';
 
@@ -85,7 +101,9 @@ class ControllerCatalogFilter extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			if (!isset($this->error['warning'])) {
+				$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			}
 		}
 
 		$this->getForm();
