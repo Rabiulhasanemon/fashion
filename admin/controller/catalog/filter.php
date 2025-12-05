@@ -480,25 +480,34 @@ class ControllerCatalogFilter extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-        if ((utf8_strlen($this->request->post['label']) < 3) || (utf8_strlen($this->request->post['label']) > 120)) {
-            $this->error['label'] = $this->language->get('error_label');
-        }
+		// Check if label exists and is valid
+		if (!isset($this->request->post['label']) || empty($this->request->post['label'])) {
+			$this->error['label'] = $this->language->get('error_label');
+		} elseif ((utf8_strlen($this->request->post['label']) < 3) || (utf8_strlen($this->request->post['label']) > 120)) {
+			$this->error['label'] = $this->language->get('error_label');
+		} elseif ($this->request->post['label'] && ($filter_profile = $this->model_catalog_filter->getFilterGroupByLabel($this->request->post['label'])) && (!isset($this->request->get['filter_group_id']) || $filter_profile['filter_group_id'] != $this->request->get['filter_group_id'])) {
+			$this->error['label'] = $this->language->get('error_label');
+		}
 
-        if($this->request->post['label'] && ($filter_profile = $this->model_catalog_filter->getFilterGroupByLabel($this->request->post['label'])) && (!isset($this->request->get['filter_group_id']) || $filter_profile['filter_group_id'] != $this->request->get['filter_group_id'])) {
-            $this->error['label'] = $this->language->get('error_label');
-        }
-
-		foreach ($this->request->post['filter_group_description'] as $language_id => $value) {
-			if ((utf8_strlen($value['name']) < 1) || (utf8_strlen($value['name']) > 100)) {
-				$this->error['group'][$language_id] = $this->language->get('error_group');
+		// Check filter group description
+		if (!isset($this->request->post['filter_group_description']) || !is_array($this->request->post['filter_group_description'])) {
+			$this->error['warning'] = $this->language->get('error_group');
+		} else {
+			foreach ($this->request->post['filter_group_description'] as $language_id => $value) {
+				if (!isset($value['name']) || (utf8_strlen($value['name']) < 1) || (utf8_strlen($value['name']) > 100)) {
+					$this->error['group'][$language_id] = $this->language->get('error_group');
+				}
 			}
 		}
 
-		if (isset($this->request->post['filter'])) {
+		// Validate filters if provided
+		if (isset($this->request->post['filter']) && is_array($this->request->post['filter'])) {
 			foreach ($this->request->post['filter'] as $filter_id => $filter) {
-				foreach ($filter['filter_description'] as $language_id => $filter_description) {
-					if ((utf8_strlen($filter_description['name']) < 1) || (utf8_strlen($filter_description['name']) > 64)) {
-						$this->error['filter'][$filter_id][$language_id] = $this->language->get('error_name');
+				if (isset($filter['filter_description']) && is_array($filter['filter_description'])) {
+					foreach ($filter['filter_description'] as $language_id => $filter_description) {
+						if (!isset($filter_description['name']) || (utf8_strlen($filter_description['name']) < 1) || (utf8_strlen($filter_description['name']) > 64)) {
+							$this->error['filter'][$filter_id][$language_id] = $this->language->get('error_name');
+						}
 					}
 				}
 			}

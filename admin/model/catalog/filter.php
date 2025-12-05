@@ -3,9 +3,14 @@ class ModelCatalogFilter extends Model {
 	public function addFilter($data) {
 		$this->event->trigger('pre.admin.filter.add', $data);
 
-		$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order']. "', label = '" . $this->db->escape($data['label']) . "'");
+		try {
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order']. "', label = '" . $this->db->escape($data['label']) . "'");
 
-		$filter_group_id = $this->db->getLastId();
+			$filter_group_id = $this->db->getLastId();
+		} catch (Exception $e) {
+			error_log("Filter Add Error: " . $e->getMessage());
+			return false;
+		}
 
 		foreach ($data['filter_group_description'] as $language_id => $value) {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
@@ -37,7 +42,12 @@ class ModelCatalogFilter extends Model {
 	public function editFilter($filter_group_id, $data) {
 		$this->event->trigger('pre.admin.filter.edit', $data);
 
-		$this->db->query("UPDATE `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order'] . "', label = '" . $this->db->escape($data['label']) . "' WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+		try {
+			$this->db->query("UPDATE `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order'] . "', label = '" . $this->db->escape($data['label']) . "' WHERE filter_group_id = '" . (int)$filter_group_id . "'");
+		} catch (Exception $e) {
+			error_log("Filter Edit Error: " . $e->getMessage());
+			return false;
+		}
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "filter_group_description WHERE filter_group_id = '" . (int)$filter_group_id . "'");
 
@@ -51,13 +61,15 @@ class ModelCatalogFilter extends Model {
 
 		if (isset($data['filter'])) {
 			foreach ($data['filter'] as $filter) {
-				if ($filter['filter_id']) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_id = '" . (int)$filter['filter_id'] . "', filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
+				if (!empty($filter['filter_id'])) {
+					// Use existing filter_id
+					$filter_id = (int)$filter['filter_id'];
+					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_id = '" . $filter_id . "', filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
 				} else {
+					// Create new filter
 					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
+					$filter_id = $this->db->getLastId();
 				}
-
-				$filter_id = $this->db->getLastId();
 
 				foreach ($filter['filter_description'] as $language_id => $filter_description) {
 					$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
