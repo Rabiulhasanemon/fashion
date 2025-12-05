@@ -1,16 +1,29 @@
 <?php
 class ModelCatalogFilter extends Model {
 	public function addFilter($data) {
-		$this->event->trigger('pre.admin.filter.add', $data);
+		$log_file = DIR_LOGS . 'filter_debug.log';
+		$log_message = date('Y-m-d H:i:s') . " - [FILTER ADD] Starting\n";
+		$log_message .= "POST Data: " . print_r($data, true) . "\n";
+		file_put_contents($log_file, $log_message, FILE_APPEND);
+
+		try {
+			$this->event->trigger('pre.admin.filter.add', $data);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Event trigger error: " . $e->getMessage() . "\n", FILE_APPEND);
+		}
 
 		// Validate required data
 		if (empty($data['label'])) {
-			error_log("Filter Add Error: Label is required");
+			$error_msg = "Filter Add Error: Label is required";
+			error_log($error_msg);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
 			return false;
 		}
 
 		if (empty($data['filter_group_description']) || !is_array($data['filter_group_description'])) {
-			error_log("Filter Add Error: Filter group description is required");
+			$error_msg = "Filter Add Error: Filter group description is required";
+			error_log($error_msg);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
 			return false;
 		}
 
@@ -20,29 +33,43 @@ class ModelCatalogFilter extends Model {
 		}
 
 		try {
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order']. "', label = '" . $this->db->escape($data['label']) . "'");
+			$sql = "INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = '" . (int)$data['sort_order']. "', label = '" . $this->db->escape($data['label']) . "'";
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Executing SQL: " . $sql . "\n", FILE_APPEND);
+			
+			$this->db->query($sql);
 
 			$filter_group_id = $this->db->getLastId();
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Got filter_group_id: " . $filter_group_id . "\n", FILE_APPEND);
 
 			if (!$filter_group_id) {
-				error_log("Filter Add Error: Failed to get filter_group_id");
+				$error_msg = "Filter Add Error: Failed to get filter_group_id";
+				error_log($error_msg);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
 				return false;
 			}
 		} catch (Exception $e) {
-			error_log("Filter Add Error (DB): " . $e->getMessage());
+			$error_msg = "Filter Add Error (DB): " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine();
+			error_log($error_msg);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Stack trace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
 			return false;
 		}
 
 		try {
 			foreach ($data['filter_group_description'] as $language_id => $value) {
 				if (empty($value['name'])) {
-					error_log("Filter Add Error: Filter group name is required for language_id: " . $language_id);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: Filter group name is empty for language_id: " . $language_id . "\n", FILE_APPEND);
 					continue;
 				}
-				$this->db->query("INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'");
+				$sql = "INSERT INTO " . DB_PREFIX . "filter_group_description SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "'";
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Inserting description for language_id $language_id\n", FILE_APPEND);
+				$this->db->query($sql);
 			}
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Successfully inserted filter group descriptions\n", FILE_APPEND);
 		} catch (Exception $e) {
-			error_log("Filter Add Error (Description): " . $e->getMessage());
+			$error_msg = "Filter Add Error (Description): " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine();
+			error_log($error_msg);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
 			return false;
 		}
 
@@ -89,8 +116,13 @@ class ModelCatalogFilter extends Model {
 			}
         }
 
-		$this->event->trigger('post.admin.filter.add', $filter_group_id);
+		try {
+			$this->event->trigger('post.admin.filter.add', $filter_group_id);
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Event trigger error (post): " . $e->getMessage() . "\n", FILE_APPEND);
+		}
 
+		file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Successfully completed. Filter Group ID: " . $filter_group_id . "\n", FILE_APPEND);
 		return $filter_group_id;
 	}
 
