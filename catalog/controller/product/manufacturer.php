@@ -127,9 +127,9 @@ class ControllerProductManufacturer extends Controller {
         $manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
 
 		if ($manufacturer_info) {
-			$this->document->setTitle($manufacturer_info['meta_title']);
-            $this->document->setDescription($manufacturer_info['meta_description']);
-            $this->document->setKeywords($manufacturer_info['meta_keyword']);
+			$this->document->setTitle(isset($manufacturer_info['meta_title']) ? $manufacturer_info['meta_title'] : '');
+            $this->document->setDescription(isset($manufacturer_info['meta_description']) ? $manufacturer_info['meta_description'] : '');
+            $this->document->setKeywords(isset($manufacturer_info['meta_keyword']) ? $manufacturer_info['meta_keyword'] : '');
 
 			$url = '';
 
@@ -150,11 +150,11 @@ class ControllerProductManufacturer extends Controller {
 			}
 
 			$data['breadcrumbs'][] = array(
-				'text' => $manufacturer_info['name'],
+				'text' => isset($manufacturer_info['name']) ? $manufacturer_info['name'] : '',
 				'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id . $url)
 			);
 
-			$data['heading_title'] = $manufacturer_info['name'];
+			$data['heading_title'] = isset($manufacturer_info['name']) ? $manufacturer_info['name'] : '';
 
 			$data['text_empty'] = $this->language->get('text_empty');
 			$data['text_quantity'] = $this->language->get('text_quantity');
@@ -175,19 +175,21 @@ class ControllerProductManufacturer extends Controller {
 			$data['button_grid'] = $this->language->get('button_grid');
 
 			$data['compare'] = $this->url->link('product/compare');
-            $data['description'] = html_entity_decode($manufacturer_info['description'], ENT_QUOTES, 'UTF-8');
+            $data['description'] = isset($manufacturer_info['description']) ? html_entity_decode($manufacturer_info['description'], ENT_QUOTES, 'UTF-8') : '';
             
             // Manufacturer image
             if (isset($manufacturer_info['image']) && $manufacturer_info['image']) {
                 $data['manufacturer_info'] = array(
                     'image' => $this->model_tool_image->resize($manufacturer_info['image'], 200, 200),
-                    'name' => $manufacturer_info['name']
+                    'name' => isset($manufacturer_info['name']) ? $manufacturer_info['name'] : ''
                 );
             } else {
                 $data['manufacturer_info'] = null;
             }
             
 			$data['products'] = array();
+			$data['sorts'] = array();
+			$data['limits'] = array();
 
 			$filter_data = array(
 				'filter_manufacturer_id' => $manufacturer_id,
@@ -206,7 +208,7 @@ class ControllerProductManufacturer extends Controller {
 				$image_width = 500;
 				$image_height = 500;
 				
-                if ($result['image']) {
+                if (isset($result['image']) && $result['image']) {
                     $image = $this->model_tool_image->resize($result['image'], $image_width, $image_height);
                 } else {
                     $image = $this->model_tool_image->resize('placeholder.png', $image_width, $image_height);
@@ -218,58 +220,63 @@ class ControllerProductManufacturer extends Controller {
                 }
 
                 $disablePurchase = false;
-                if ($result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
+                if (isset($result['quantity']) && isset($result['stock_status']) && $result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
                     $disablePurchase = true;
                 }
 
                 if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-                    $price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+                    $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
+                    $product_price = isset($result['price']) ? $result['price'] : 0;
+                    $price = $this->currency->format($this->tax->calculate($product_price, $tax_class_id, $this->config->get('config_tax')));
                 } else {
                     $price = false;
                 }
 
-                if ((float)$result['special']) {
-                    $special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+                if (isset($result['special']) && (float)$result['special']) {
+                    $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
+                    $special = $this->currency->format($this->tax->calculate($result['special'], $tax_class_id, $this->config->get('config_tax')));
                 } else {
                     $special = false;
                 }
 
                 if ($this->config->get('config_tax')) {
-                    $tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
+                    $special_price = isset($result['special']) ? $result['special'] : 0;
+                    $product_price = isset($result['price']) ? $result['price'] : 0;
+                    $tax = $this->currency->format((float)$special_price ? $special_price : $product_price);
                 } else {
                     $tax = false;
                 }
 
                 if ($this->config->get('config_review_status')) {
-                    $rating = (int)$result['rating'];
+                    $rating = isset($result['rating']) ? (int)$result['rating'] : 0;
                     $reviews = isset($result['reviews']) ? (int)$result['reviews'] : 0;
                 } else {
                     $rating = false;
                     $reviews = 0;
                 }
 
-                if($result['manufacturer_thumb']) {
+                if(isset($result['manufacturer_thumb']) && $result['manufacturer_thumb']) {
                     $manufacturer_thumb = $this->config->get('config_ssl') . '/image/' . $result['manufacturer_thumb'];
                 } else {
                     $manufacturer_thumb = null;
                 }
                 $data['products'][] = array(
-                    'product_id'  => $result['product_id'],
+                    'product_id'  => isset($result['product_id']) ? $result['product_id'] : 0,
                     'thumb'       => $image,
                     'featured_image'   => $featured_image,
-                    'manufacturer' => $result['manufacturer'],
+                    'manufacturer' => isset($result['manufacturer']) ? $result['manufacturer'] : '',
                     'manufacturer_thumb'       => $manufacturer_thumb,
-                    'name'        => $result['name'],
-                    'short_description' => $result['short_description'],
+                    'name'        => isset($result['name']) ? $result['name'] : '',
+                    'short_description' => isset($result['short_description']) ? $result['short_description'] : '',
                     'price'       => $price,
                     'disablePurchase' => $disablePurchase,
-                    'stock_status' => $result['stock_status'],
+                    'stock_status' => isset($result['stock_status']) ? $result['stock_status'] : '',
                     'special'     => $special,
                     'tax'         => $tax,
-                    'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
+                    'minimum'     => (isset($result['minimum']) && $result['minimum'] > 0) ? $result['minimum'] : 1,
                     'rating'      => $rating,
                     'reviews'     => $reviews,
-                    'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
+                    'href'        => $this->url->link('product/product', 'product_id=' . (isset($result['product_id']) ? $result['product_id'] : 0))
                 );
             }
 
@@ -279,62 +286,62 @@ class ControllerProductManufacturer extends Controller {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
 
-			$data['sorts'] = array();
+			$manufacturer_id_param = isset($this->request->get['manufacturer_id']) ? $this->request->get['manufacturer_id'] : $manufacturer_id;
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_default'),
 				'value' => 'p.sort_order-ASC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.sort_order&order=ASC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=p.sort_order&order=ASC' . $url)
 			);
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=ASC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=pd.name&order=ASC' . $url)
 			);
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=pd.name&order=DESC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=pd.name&order=DESC' . $url)
 			);
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_asc'),
 				'value' => 'p.price-ASC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=ASC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=p.price&order=ASC' . $url)
 			);
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_desc'),
 				'value' => 'p.price-DESC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.price&order=DESC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=p.price&order=DESC' . $url)
 			);
 
 			if ($this->config->get('config_review_status')) {
 				$data['sorts'][] = array(
 					'text'  => $this->language->get('text_rating_desc'),
 					'value' => 'rating-DESC',
-					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=DESC' . $url)
+					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=rating&order=DESC' . $url)
 				);
 
 				$data['sorts'][] = array(
 					'text'  => $this->language->get('text_rating_asc'),
 					'value' => 'rating-ASC',
-					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=rating&order=ASC' . $url)
+					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=rating&order=ASC' . $url)
 				);
 			}
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_asc'),
 				'value' => 'p.model-ASC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=ASC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=p.model&order=ASC' . $url)
 			);
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_model_desc'),
 				'value' => 'p.model-DESC',
-				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . '&sort=p.model&order=DESC' . $url)
+				'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . '&sort=p.model&order=DESC' . $url)
 			);
 
 			$url = '';
@@ -357,7 +364,7 @@ class ControllerProductManufacturer extends Controller {
 				$data['limits'][] = array(
 					'text'  => $value,
 					'value' => $value,
-					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&limit=' . $value)
+					'href'  => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param . $url . '&limit=' . $value)
 				);
 			}
 
@@ -383,7 +390,7 @@ class ControllerProductManufacturer extends Controller {
 			$pagination->total = $product_total;
 			$pagination->page = $page;
 			$pagination->limit = $limit;
-			$pagination->url = $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] .  $url . '&page={page}');
+			$pagination->url = $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param .  $url . '&page={page}');
 
 			$data['pagination'] = $pagination->render();
 

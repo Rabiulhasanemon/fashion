@@ -48,49 +48,60 @@
             <?php } ?>
             
             <!-- Top Bar -->
-            <?php if ($products) { ?>
+            <?php if (isset($products) && $products) { ?>
             <div class="mfr-top-bar">
                 <div class="mfr-controls">
+                    <?php if (isset($limits) && $limits) { ?>
                     <div class="mfr-control-group">
-                        <label><?php echo $text_limit; ?></label>
+                        <label><?php echo isset($text_limit) ? $text_limit : 'Show'; ?></label>
                         <select class="mfr-select" onchange="location = this.value;">
-                            <?php foreach ($limits as $limits) { ?>
-                            <option value="<?php echo $limits['href']; ?>" <?php echo ($limits['value'] == $limit) ? 'selected' : ''; ?>>
-                                <?php echo $limits['text']; ?>
+                            <?php foreach ($limits as $limit_item) { ?>
+                            <option value="<?php echo isset($limit_item['href']) ? $limit_item['href'] : '#'; ?>" <?php echo (isset($limit_item['value']) && isset($limit) && $limit_item['value'] == $limit) ? 'selected' : ''; ?>>
+                                <?php echo isset($limit_item['text']) ? $limit_item['text'] : ''; ?>
                             </option>
                             <?php } ?>
                         </select>
                     </div>
+                    <?php } ?>
+                    <?php if (isset($sorts) && $sorts) { ?>
                     <div class="mfr-control-group">
-                        <label><?php echo $text_sort; ?></label>
+                        <label><?php echo isset($text_sort) ? $text_sort : 'Sort'; ?></label>
                         <select class="mfr-select" onchange="location = this.value;">
-                            <?php foreach ($sorts as $sorts) { ?>
-                            <option value="<?php echo $sorts['href']; ?>" <?php echo ($sorts['value'] == $sort . '-' . $order) ? 'selected' : ''; ?>>
-                                <?php echo $sorts['text']; ?>
+                            <?php foreach ($sorts as $sort_item) { ?>
+                            <option value="<?php echo isset($sort_item['href']) ? $sort_item['href'] : '#'; ?>" <?php echo (isset($sort_item['value']) && isset($sort) && isset($order) && $sort_item['value'] == $sort . '-' . $order) ? 'selected' : ''; ?>>
+                                <?php echo isset($sort_item['text']) ? $sort_item['text'] : ''; ?>
                             </option>
                             <?php } ?>
                         </select>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
             
             <!-- Products Grid -->
+            <?php if (isset($products) && $products) { ?>
             <div class="mfr-products-grid">
                 <?php foreach ($products as $product) { ?>
                 <div class="mfr-product-card">
-                    <?php if ($product['special']) { ?>
+                    <?php if (isset($product['special']) && $product['special'] && isset($product['price']) && $product['price']) { ?>
                     <?php
                       $price = floatval(str_replace(['৳', ','], '', $product['price']));
                       $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                      $discountAmount = $price - $special;
-                      $mark = ($discountAmount / $price) * 100;
+                      if ($price > 0) {
+                          $discountAmount = $price - $special;
+                          $mark = ($discountAmount / $price) * 100;
+                      } else {
+                          $mark = 0;
+                      }
                     ?>
+                    <?php if ($mark > 0) { ?>
                     <div class="mfr-discount-badge"><?php echo round($mark); ?>% OFF</div>
                     <?php } ?>
+                    <?php } ?>
                     
-                    <a href="<?php echo $product['href']; ?>" class="mfr-product-image-link">
+                    <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>" class="mfr-product-image-link">
                         <div class="mfr-image-wrapper">
-                            <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="mfr-product-image" loading="lazy" />
+                            <img src="<?php echo isset($product['thumb']) ? $product['thumb'] : ''; ?>" alt="<?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?>" class="mfr-product-image" loading="lazy" />
                         </div>
                     </a>
                     
@@ -102,7 +113,7 @@
                     
                     <div class="mfr-product-info">
                         <h3 class="mfr-product-name">
-                            <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                            <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>"><?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?></a>
                         </h3>
                         
                         <div class="mfr-rating-wrapper">
@@ -132,10 +143,14 @@
                         
                         <div class="mfr-price-box">
                             <?php if (isset($product['special']) && $product['special']) { ?>
+                            <?php if (isset($product['price'])) { ?>
                             <span class="mfr-price-old"><?php echo $product['price']; ?></span>
+                            <?php } ?>
                             <span class="mfr-price-new"><?php echo $product['special']; ?></span>
                             <?php } else { ?>
+                            <?php if (isset($product['price'])) { ?>
                             <span class="mfr-price-new"><?php echo $product['price']; ?></span>
+                            <?php } ?>
                             <?php } ?>
                         </div>
                         
@@ -144,7 +159,7 @@
                             <?php echo isset($product["stock_status"]) ? $product["stock_status"] : "Out of Stock"; ?>
                         </button>
                         <?php } else { ?>
-                        <button class="mfr-add-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                        <button class="mfr-add-btn" onclick="cart.add('<?php echo isset($product['product_id']) ? $product['product_id'] : 0; ?>');">
                             ADD
                         </button>
                         <?php } ?>
@@ -152,9 +167,10 @@
                 </div>
                 <?php } ?>
             </div>
+            <?php } ?>
             
             <!-- Empty State -->
-            <?php } else { ?>
+            <?php if (!isset($products) || !$products) { ?>
             <div class="mfr-empty-state">
                 <div class="mfr-empty-content">
                     <i class="fa fa-box-open mfr-empty-icon"></i>
@@ -165,14 +181,18 @@
             <?php } ?>
             
             <!-- Footer -->
-            <?php if ($products) { ?>
+            <?php if (isset($products) && $products) { ?>
             <div class="mfr-footer">
+                <?php if (isset($pagination)) { ?>
                 <div class="mfr-pagination">
                     <?php echo $pagination; ?>
                 </div>
+                <?php } ?>
+                <?php if (isset($results)) { ?>
                 <div class="mfr-results">
                     <p><?php echo $results; ?></p>
                 </div>
+                <?php } ?>
             </div>
             <?php } ?>
             
