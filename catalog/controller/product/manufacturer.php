@@ -176,6 +176,17 @@ class ControllerProductManufacturer extends Controller {
 
 			$data['compare'] = $this->url->link('product/compare');
             $data['description'] = html_entity_decode($manufacturer_info['description'], ENT_QUOTES, 'UTF-8');
+            
+            // Manufacturer image
+            if (isset($manufacturer_info['image']) && $manufacturer_info['image']) {
+                $data['manufacturer_info'] = array(
+                    'image' => $this->model_tool_image->resize($manufacturer_info['image'], 200, 200),
+                    'name' => $manufacturer_info['name']
+                );
+            } else {
+                $data['manufacturer_info'] = null;
+            }
+            
 			$data['products'] = array();
 
 			$filter_data = array(
