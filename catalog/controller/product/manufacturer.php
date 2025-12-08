@@ -200,10 +200,10 @@ class ControllerProductManufacturer extends Controller {
                 } else {
                     $image = $this->model_tool_image->resize('placeholder.png', $image_width, $image_height);
                 }
-                if ($results['featured_image']) {
-                    $featured_image = $this->model_tool_image->resize($results['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+                if (isset($result['featured_image']) && $result['featured_image']) {
+                    $featured_image = $this->model_tool_image->resize($result['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
                 } else {
-                    $featured_image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));;
+                    $featured_image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
                 }
 
                 $disablePurchase = false;
