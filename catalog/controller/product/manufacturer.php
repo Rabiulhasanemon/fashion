@@ -129,15 +129,27 @@ class ControllerProductManufacturer extends Controller {
 
         $data['breadcrumbs'] = array();
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/home')
-        );
+        try {
+            $data['breadcrumbs'][] = array(
+                'text' => $this->language->get('text_home'),
+                'href' => $this->url->link('common/home')
+            );
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_brand'),
-            'href' => $this->url->link('product/manufacturer')
-        );
+            $data['breadcrumbs'][] = array(
+                'text' => $this->language->get('text_brand'),
+                'href' => $this->url->link('product/manufacturer')
+            );
+        } catch (Exception $e) {
+            // If language loading fails, use defaults
+            $data['breadcrumbs'][] = array(
+                'text' => 'Home',
+                'href' => $this->url->link('common/home')
+            );
+            $data['breadcrumbs'][] = array(
+                'text' => 'Brand',
+                'href' => $this->url->link('product/manufacturer')
+            );
+        }
 
         $manufacturer_info = false;
         if ($manufacturer_id > 0) {
@@ -178,23 +190,43 @@ class ControllerProductManufacturer extends Controller {
 
 			$data['heading_title'] = isset($manufacturer_info['name']) ? $manufacturer_info['name'] : '';
 
-			$data['text_empty'] = $this->language->get('text_empty');
-			$data['text_quantity'] = $this->language->get('text_quantity');
-			$data['text_manufacturer'] = $this->language->get('text_manufacturer');
-			$data['text_model'] = $this->language->get('text_model');
-			$data['text_price'] = $this->language->get('text_price');
-			$data['text_tax'] = $this->language->get('text_tax');
-			$data['text_points'] = $this->language->get('text_points');
-			$data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
-			$data['text_sort'] = $this->language->get('text_sort');
-			$data['text_limit'] = $this->language->get('text_limit');
+			try {
+				$data['text_empty'] = $this->language->get('text_empty');
+				$data['text_quantity'] = $this->language->get('text_quantity');
+				$data['text_manufacturer'] = $this->language->get('text_manufacturer');
+				$data['text_model'] = $this->language->get('text_model');
+				$data['text_price'] = $this->language->get('text_price');
+				$data['text_tax'] = $this->language->get('text_tax');
+				$data['text_points'] = $this->language->get('text_points');
+				$data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
+				$data['text_sort'] = $this->language->get('text_sort');
+				$data['text_limit'] = $this->language->get('text_limit');
 
-			$data['button_cart'] = $this->language->get('button_cart');
-			$data['button_wishlist'] = $this->language->get('button_wishlist');
-			$data['button_compare'] = $this->language->get('button_compare');
-			$data['button_continue'] = $this->language->get('button_continue');
-			$data['button_list'] = $this->language->get('button_list');
-			$data['button_grid'] = $this->language->get('button_grid');
+				$data['button_cart'] = $this->language->get('button_cart');
+				$data['button_wishlist'] = $this->language->get('button_wishlist');
+				$data['button_compare'] = $this->language->get('button_compare');
+				$data['button_continue'] = $this->language->get('button_continue');
+				$data['button_list'] = $this->language->get('button_list');
+				$data['button_grid'] = $this->language->get('button_grid');
+			} catch (Exception $e) {
+				// Set default values if language loading fails
+				$data['text_empty'] = 'No products found';
+				$data['text_quantity'] = 'Quantity';
+				$data['text_manufacturer'] = 'Manufacturer';
+				$data['text_model'] = 'Model';
+				$data['text_price'] = 'Price';
+				$data['text_tax'] = 'Tax';
+				$data['text_points'] = 'Points';
+				$data['text_compare'] = 'Compare';
+				$data['text_sort'] = 'Sort';
+				$data['text_limit'] = 'Limit';
+				$data['button_cart'] = 'Add to Cart';
+				$data['button_wishlist'] = 'Add to Wishlist';
+				$data['button_compare'] = 'Compare';
+				$data['button_continue'] = 'Continue';
+				$data['button_list'] = 'List';
+				$data['button_grid'] = 'Grid';
+			}
 
 			$data['compare'] = $this->url->link('product/compare');
             $data['description'] = isset($manufacturer_info['description']) ? html_entity_decode($manufacturer_info['description'], ENT_QUOTES, 'UTF-8') : '';

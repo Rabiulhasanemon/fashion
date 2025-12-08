@@ -1,9 +1,12 @@
-<?php echo $header; ?>
+<?php echo isset($header) ? $header : ''; ?>
 
 <section class="after-header">
     <div class="container">
         <ul class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
-            <?php foreach ($breadcrumbs as $i => $breadcrumb) { if($i < 1) { ?>
+            <?php if (isset($breadcrumbs) && is_array($breadcrumbs)) { ?>
+            <?php foreach ($breadcrumbs as $i => $breadcrumb) { ?>
+            <?php if (isset($breadcrumb['href']) && isset($breadcrumb['text'])) { ?>
+            <?php if($i < 1) { ?>
             <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
             <?php } else { ?>
             <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
@@ -12,7 +15,10 @@
                 </a>
                 <meta itemprop="position" content="<?php echo $i; ?>" />
             </li>
-            <?php }} ?>
+            <?php } ?>
+            <?php } ?>
+            <?php } ?>
+            <?php } ?>
         </ul>
     </div>
 </section>
@@ -22,7 +28,7 @@
         
         <!-- Filter Sidebar -->
         <div class="mfr-filter-sidebar">
-            <?php echo $column_left; ?>
+            <?php echo isset($column_left) ? $column_left : ''; ?>
         </div>
         
         <!-- Main Content -->
@@ -949,4 +955,4 @@
 })();
 </script>
 
-<?php echo $footer; ?>
+<?php echo isset($footer) ? $footer : ''; ?>
