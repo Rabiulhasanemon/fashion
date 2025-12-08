@@ -32,28 +32,37 @@ class ControllerProductManufacturer extends Controller {
 
 		$results = $this->model_catalog_manufacturer->getManufacturers();
 
-		foreach ($results as $result) {
-			if (is_numeric(utf8_substr($result['name'], 0, 1))) {
-				$key = '0 - 9';
-			} else {
-				$key = utf8_substr(utf8_strtoupper($result['name']), 0, 1);
+		if ($results) {
+			foreach ($results as $result) {
+				if (!isset($result['name']) || empty($result['name'])) {
+					continue;
+				}
+				
+				if (is_numeric(utf8_substr($result['name'], 0, 1))) {
+					$key = '0 - 9';
+				} else {
+					$key = utf8_substr(utf8_strtoupper($result['name']), 0, 1);
+				}
+
+				if (!isset($data['categories'][$key])) {
+					$data['categories'][$key]['name'] = $key;
+					$data['categories'][$key]['manufacturer'] = array();
+				}
+
+				if (isset($result['image']) && $result['image']) {
+					$image = $this->model_tool_image->resize($result['image'], 170, 170);
+				} else {
+					$image = $this->model_tool_image->resize('placeholder.png', 170, 170);
+				}
+
+				$manufacturer_id = isset($result['manufacturer_id']) ? $result['manufacturer_id'] : 0;
+				
+				$data['categories'][$key]['manufacturer'][] = array(
+					'name' => $result['name'],
+					'image' => $image,
+					'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id)
+				);
 			}
-
-			if (!isset($data['categories'][$key])) {
-				$data['categories'][$key]['name'] = $key;
-			}
-
-            if ($result['image']) {
-                $image = $this->model_tool_image->resize($result['image'], 170, 170);
-            } else {
-                $image = $this->model_tool_image->resize('placeholder.png', 170, 170);
-            }
-
-			$data['categories'][$key]['manufacturer'][] = array(
-				'name' => $result['name'],
-				'image' => $image,
-				'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id'])
-			);
 		}
 
 		$data['continue'] = $this->url->link('common/home');
