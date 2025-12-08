@@ -116,9 +116,12 @@ class ControllerProductManufacturer extends Controller {
         }
 
         if (isset($this->request->get['limit'])) {
-            $limit = $this->request->get['limit'];
+            $limit = (int)$this->request->get['limit'];
         } else {
-            $limit = $this->config->get('config_product_limit');
+            $limit = (int)$this->config->get('config_product_limit');
+            if ($limit <= 0) {
+                $limit = 20; // Default fallback
+            }
         }
 
         $data['breadcrumbs'] = array();
@@ -209,8 +212,12 @@ class ControllerProductManufacturer extends Controller {
 			);
 
 			$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
+			$product_total = $product_total ? (int)$product_total : 0;
 
 			$results = $this->model_catalog_product->getProducts($filter_data);
+			if (!is_array($results)) {
+				$results = array();
+			}
 
             foreach ($results as $result) {
 				// Standard product image size for premium consistent display
@@ -223,9 +230,17 @@ class ControllerProductManufacturer extends Controller {
                     $image = $this->model_tool_image->resize('placeholder.png', $image_width, $image_height);
                 }
                 if (isset($result['featured_image']) && $result['featured_image']) {
-                    $featured_image = $this->model_tool_image->resize($result['featured_image'], $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+                    $featured_width = (int)$this->config->get('config_featured_image_width');
+                    $featured_height = (int)$this->config->get('config_featured_image_height');
+                    if ($featured_width <= 0) $featured_width = 500;
+                    if ($featured_height <= 0) $featured_height = 500;
+                    $featured_image = $this->model_tool_image->resize($result['featured_image'], $featured_width, $featured_height);
                 } else {
-                    $featured_image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_featured_image_width'), $this->config->get('config_featured_image_height'));
+                    $featured_width = (int)$this->config->get('config_featured_image_width');
+                    $featured_height = (int)$this->config->get('config_featured_image_height');
+                    if ($featured_width <= 0) $featured_width = 500;
+                    if ($featured_height <= 0) $featured_height = 500;
+                    $featured_image = $this->model_tool_image->resize('placeholder.png', $featured_width, $featured_height);
                 }
 
                 $disablePurchase = false;
@@ -365,7 +380,11 @@ class ControllerProductManufacturer extends Controller {
 
 			$data['limits'] = array();
 
-			$limits = array_unique(array($this->config->get('config_product_limit'), 25, 50, 75, 100));
+			$config_limit = (int)$this->config->get('config_product_limit');
+			if ($config_limit <= 0) {
+				$config_limit = 20; // Default fallback
+			}
+			$limits = array_unique(array($config_limit, 25, 50, 75, 100));
 
 			sort($limits);
 
@@ -397,8 +416,8 @@ class ControllerProductManufacturer extends Controller {
 
 			$pagination = new Pagination();
 			$pagination->total = $product_total;
-			$pagination->page = $page;
-			$pagination->limit = $limit;
+			$pagination->page = max(1, (int)$page);
+			$pagination->limit = max(1, (int)$limit);
 			$pagination->url = $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id_param .  $url . '&page={page}');
 
 			$data['pagination'] = $pagination->render();
@@ -413,7 +432,10 @@ class ControllerProductManufacturer extends Controller {
                 $this->document->addLink($next, 'next');
             }
 
-			$data['results'] = sprintf($this->language->get('text_pagination'), ($product_total) ? (($page - 1) * $limit) + 1 : 0, ((($page - 1) * $limit) > ($product_total - $limit)) ? $product_total : ((($page - 1) * $limit) + $limit), $product_total, ceil($product_total / $limit));
+			$start = ($product_total > 0) ? (($page - 1) * $limit) + 1 : 0;
+			$end = (($page - 1) * $limit) > ($product_total - $limit) ? $product_total : ((($page - 1) * $limit) + $limit);
+			$total_pages = $product_total > 0 ? ceil($product_total / $limit) : 0;
+			$data['results'] = sprintf($this->language->get('text_pagination'), $start, $end, $product_total, $total_pages);
 
 			$data['sort'] = $sort;
 			$data['order'] = $order;
