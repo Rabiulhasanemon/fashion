@@ -13,6 +13,7 @@ class ControllerModuleManufacturer extends Controller {
         $data['name'] = isset($setting['name']) ? $setting['name'] : '';
 
 		$this->load->model('catalog/manufacturer');
+		$this->load->model('catalog/product');
 		$this->load->model('tool/image');
 
 		$data['manufacturers'] = array();
@@ -115,10 +116,14 @@ class ControllerModuleManufacturer extends Controller {
 						$debug_entry['resized_url'] = 'data:image/svg+xml;base64,...';
 					}
 
+					// Get product count for this manufacturer
+					$product_count = $this->model_catalog_product->getTotalProducts(array('filter_manufacturer_id' => $manufacturer_info['manufacturer_id']));
+					
 					$data['manufacturers'][] = array(
 						'manufacturer_id'  => $manufacturer_info['manufacturer_id'],
 						'thumb'       => $image,
 						'name'        => $manufacturer_info['name'],
+						'product_count' => $product_count,
 						'href'        => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_info['manufacturer_id'])
 					);
 					$debug_entry['final_image'] = substr($image, 0, 100) . (strlen($image) > 100 ? '...' : '');

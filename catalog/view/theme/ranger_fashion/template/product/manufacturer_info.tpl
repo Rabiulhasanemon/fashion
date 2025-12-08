@@ -94,38 +94,41 @@
                         </div>
                     </a>
                     
+                    <!-- Delivery Badge -->
+                    <div class="mfr-delivery-badge">
+                        <i class="fa fa-rocket"></i>
+                        <span>12-24 Hours</span>
+                    </div>
+                    
                     <div class="mfr-product-info">
-                        <?php if (isset($product['manufacturer_thumb']) && $product['manufacturer_thumb']) { ?>
-                        <div class="mfr-manufacturer-badge">
-                            <img src="<?php echo $product['manufacturer_thumb']; ?>" alt="<?php echo htmlspecialchars($product['manufacturer']); ?>" />
-                        </div>
-                        <?php } ?>
-                        
                         <h3 class="mfr-product-name">
                             <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
                         </h3>
                         
-                        <div class="mfr-rating">
-                            <?php if (isset($product['rating']) && $product['rating']) { ?>
-                                <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                    <?php if ($i <= $product['rating']) { ?>
-                                        <i class="fa fa-star mfr-star-filled"></i>
-                                    <?php } else { ?>
-                                        <i class="fa fa-star mfr-star-empty"></i>
+                        <div class="mfr-rating-wrapper">
+                            <div class="mfr-rating">
+                                <?php if (isset($product['rating']) && $product['rating']) { ?>
+                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                        <?php if ($i <= $product['rating']) { ?>
+                                            <i class="fa fa-star mfr-star-filled"></i>
+                                        <?php } else { ?>
+                                            <i class="fa fa-star mfr-star-empty"></i>
+                                        <?php } ?>
                                     <?php } ?>
+                                <?php } else { ?>
+                                    <i class="fa fa-star mfr-star-empty"></i>
+                                    <i class="fa fa-star mfr-star-empty"></i>
+                                    <i class="fa fa-star mfr-star-empty"></i>
+                                    <i class="fa fa-star mfr-star-empty"></i>
+                                    <i class="fa fa-star mfr-star-empty"></i>
                                 <?php } ?>
+                            </div>
+                            <?php if (isset($product['reviews'])) { ?>
+                            <span class="mfr-review-count">(<?php echo $product['reviews']; ?>)</span>
                             <?php } else { ?>
-                                <i class="fa fa-star mfr-star-empty"></i>
-                                <i class="fa fa-star mfr-star-empty"></i>
-                                <i class="fa fa-star mfr-star-empty"></i>
-                                <i class="fa fa-star mfr-star-empty"></i>
-                                <i class="fa fa-star mfr-star-empty"></i>
+                            <span class="mfr-review-count">(0)</span>
                             <?php } ?>
                         </div>
-                        
-                        <?php if (isset($product['special']) && $product['special']) { ?>
-                        <div class="mfr-sale-label">SALE</div>
-                        <?php } ?>
                         
                         <div class="mfr-price-box">
                             <?php if (isset($product['special']) && $product['special']) { ?>
@@ -137,12 +140,12 @@
                         </div>
                         
                         <?php if(isset($product["disablePurchase"]) && $product["disablePurchase"]) { ?>
-                        <button class="mfr-add-cart-btn" disabled>
+                        <button class="mfr-add-btn" disabled>
                             <?php echo isset($product["stock_status"]) ? $product["stock_status"] : "Out of Stock"; ?>
                         </button>
                         <?php } else { ?>
-                        <button class="mfr-add-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
-                            ADD TO CART
+                        <button class="mfr-add-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
+                            ADD
                         </button>
                         <?php } ?>
                     </div>
@@ -388,14 +391,14 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    background: #e84393;
+    background: #dc3545;
     color: #fff;
-    padding: 5px 12px;
-    border-radius: 20px;
+    padding: 6px 10px;
+    border-radius: 4px;
     font-weight: 600;
     font-size: 12px;
     z-index: 10;
-    box-shadow: 0 2px 6px rgba(232, 67, 147, 0.3);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
 }
 
 /* Image */
@@ -413,6 +416,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-bottom: 35px;
 }
 
 .mfr-product-image {
@@ -427,6 +431,29 @@
 
 .mfr-product-card:hover .mfr-product-image {
     transform: scale(1.05);
+}
+
+/* Delivery Badge */
+.mfr-delivery-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    color: #fff;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 5;
+}
+
+.mfr-delivery-badge i {
+    color: #ffc107;
+    font-size: 12px;
 }
 
 /* Product Info */
@@ -449,7 +476,7 @@
 
 .mfr-product-name {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     margin: 0 0 10px 0;
     line-height: 1.4;
     min-height: 38px;
@@ -457,10 +484,11 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    color: #000;
 }
 
 .mfr-product-name a {
-    color: #333;
+    color: #000;
     text-decoration: none;
     transition: color 0.2s ease;
 }
@@ -470,10 +498,16 @@
 }
 
 /* Rating */
+.mfr-rating-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .mfr-rating {
     display: flex;
     gap: 2px;
-    margin-bottom: 8px;
 }
 
 .mfr-star-filled {
@@ -484,6 +518,11 @@
 .mfr-star-empty {
     color: #ddd;
     font-size: 13px;
+}
+
+.mfr-review-count {
+    font-size: 12px;
+    color: #999;
 }
 
 /* Sale Label */
@@ -518,36 +557,35 @@
 
 .mfr-price-new {
     font-size: 18px;
-    font-weight: 600;
-    color: #e84393;
+    font-weight: 700;
+    color: #000;
 }
 
-/* Add to Cart Button */
-.mfr-add-cart-btn {
+/* Add Button - Green */
+.mfr-add-btn {
     width: 100%;
     padding: 12px;
-    background: #6c5ce7;
+    background: #28a745;
     color: #fff;
     border: none;
     border-radius: 4px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-top: auto;
 }
 
-.mfr-add-cart-btn:hover:not(:disabled) {
-    background: #5f4fd1;
+.mfr-add-btn:hover:not(:disabled) {
+    background: #218838;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
-.mfr-add-cart-btn:disabled {
+.mfr-add-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background: #6c757d;
 }
 
 /* Footer */

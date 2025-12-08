@@ -242,8 +242,10 @@ class ControllerProductManufacturer extends Controller {
 
                 if ($this->config->get('config_review_status')) {
                     $rating = (int)$result['rating'];
+                    $reviews = isset($result['reviews']) ? (int)$result['reviews'] : 0;
                 } else {
                     $rating = false;
+                    $reviews = 0;
                 }
 
                 if($result['manufacturer_thumb']) {
@@ -265,7 +267,8 @@ class ControllerProductManufacturer extends Controller {
                     'special'     => $special,
                     'tax'         => $tax,
                     'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
-                    'rating'      => $result['rating'],
+                    'rating'      => $rating,
+                    'reviews'     => $reviews,
                     'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
                 );
             }

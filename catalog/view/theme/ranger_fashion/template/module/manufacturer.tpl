@@ -128,6 +128,11 @@ console.groupEnd();
             <small style="display: block; color: #999; font-size: 10px;">No image</small>
           </div>
           <?php } ?>
+          <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+          <div class="manufacturer-product-count">
+            <?php echo $manufacturer['product_count']; ?> <?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?>
+          </div>
+          <?php } ?>
         </a>
         <?php } ?>
         <?php foreach ($manufacturers as $index => $manufacturer) { 
@@ -153,6 +158,11 @@ console.groupEnd();
           <div class="manufacturer-brand-name" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
             <?php echo $manufacturer_name; ?>
             <small style="display: block; color: #999; font-size: 10px;">No image</small>
+          </div>
+          <?php } ?>
+          <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+          <div class="manufacturer-product-count">
+            <?php echo $manufacturer['product_count']; ?> <?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?>
           </div>
           <?php } ?>
         </a>
@@ -261,6 +271,26 @@ console.groupEnd();
   filter: grayscale(0%) brightness(1) !important;
   opacity: 1 !important;
   transform: scale(1.05) !important;
+}
+/* Product Count Badge */
+.manufacturer-product-count {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 3;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.manufacturer-brand-card.brandloop24_card:hover .manufacturer-product-count {
+  background: rgba(0, 0, 0, 0.85);
 }
 /* Fallback text if no image */
 .manufacturer-brand-name {
