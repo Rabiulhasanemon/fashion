@@ -197,7 +197,7 @@ if (!$has_categories) {
 
 .desktop-menu > .menu-item > .menu-link {
     display: block;
-    padding: 0;
+    padding: 15px 0;
     font-size: 0.9rem;
     font-weight: 400;
     letter-spacing: -0.009em;
@@ -230,7 +230,7 @@ if (!$has_categories) {
     top: calc(100% + 8px);
     left: -1.5rem;
     min-width: 240px;
-    padding: 0;
+    padding: 1.2rem 0;
     background: #ffffff;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: 12px;
@@ -260,7 +260,7 @@ if (!$has_categories) {
 
 .desktop-menu .submenu li a {
     display: block;
-    padding: 0;
+    padding: 0.85rem 1.9rem;
     color: #333333;
     font-weight: 400;
     font-size: 14px;
@@ -276,7 +276,7 @@ if (!$has_categories) {
 .desktop-menu .submenu li:hover > a {
     color: #FF6A00;
     background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
-    padding-left: 0;
+    padding-left: 2.1rem;
     font-weight: 500;
 }
 

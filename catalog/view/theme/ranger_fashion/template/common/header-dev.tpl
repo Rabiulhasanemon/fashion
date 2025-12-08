@@ -66,7 +66,6 @@
     <link href="catalog/view/theme/ranger_fashion/stylesheet/unified-module-headings.css?v=1" rel="stylesheet">
     <link href="catalog/view/theme/ranger_fashion/stylesheet/module-reward-points.css?v=1" rel="stylesheet">
     <link href="catalog/view/theme/ranger_fashion/stylesheet/module-block-title.css?v=1" rel="stylesheet">
-    <link href="catalog/view/theme/ranger_fashion/stylesheet/premium-module-heading.css?v=1" rel="stylesheet">
 
     <?php foreach ($styles as $style) { ?>
     <link href="<?php echo $style['href']; ?>" type="text/css" rel="<?php echo $style['rel']; ?>" media="<?php echo $style['media']; ?>" />

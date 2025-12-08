@@ -1,26 +1,26 @@
 <?php if (isset($categories) && !empty($categories)) { ?>
-<section class="category style-7 section-padding fc-module-section" id="fc-module-<?php echo isset($module_id) ? $module_id : time(); ?>">
-    <div class="container">
-        <div class="fc-modern-header">
-            <div class="fc-header-left">
-                <div class="premium-module-heading">
-                    <h3 class="fc-modern-title"><?php echo isset($name) ? htmlspecialchars($name) : 'Featured Categories'; ?></h3>
-                </div>
-            </div>
+<section class="shop-cat-module-section" id="shop-cat-module-<?php echo isset($module_id) ? $module_id : time(); ?>">
+    <div class="container product-slider">
+        <div class="shop-cat-header">
+            <h2 class="shop-cat-title"><?php echo isset($name) ? htmlspecialchars($name) : 'Shop By Category'; ?></h2>
         </div>
-        <div class="fc-category-grid">
-            <?php foreach ($categories as $category) { ?>
-            <div class="fc-category-item">
-                <a href="<?php echo $category['href']; ?>">
-                    <div class="category-card">
-                        <div class="category-info">
-                            <p><?php echo $category['name']; ?></p>
-                        </div>
-                        <div class="category-img">
-                            <img src="<?php echo $category['icon']; ?>" alt="<?php echo htmlspecialchars($category['name']); ?>">
-                        </div>
+        <div class="shop-cat-card-grid">
+            <?php foreach ($categories as $index => $category) { ?>
+            <div class="shop-cat-item-wrapper">
+                <div class="shop-cat-item">
+                    <div class="shop-cat-card">
+                        <a href="<?php echo $category['href']; ?>" class="shop-cat-card-link">
+                            <div class="shop-cat-image-container">
+                                <div class="shop-cat-image-wrapper">
+                                    <img src="<?php echo $category['icon']; ?>" alt="<?php echo htmlspecialchars($category['name']); ?>" width="125" height="125" class="shop-cat-image">
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </a>
+                    <div class="shop-cat-content">
+                        <a href="<?php echo $category['href']; ?>" class="shop-cat-name-link"><?php echo $category['name']; ?></a>
+                    </div>
+                </div>
             </div>
             <?php } ?>
         </div>
@@ -28,222 +28,246 @@
 </section>
 
 <style>
-/* Featured Category Module - Responsive Grid (No Sliding) */
-.fc-module-section {
+/* Shop By Category Module - New Style (No Conflicts) */
+.shop-cat-module-section {
     padding: 40px 0;
     background: #fff;
 }
 
-.fc-modern-header {
+.shop-cat-header {
     margin-bottom: 30px;
-    padding: 0;
 }
 
-.fc-header-left {
-    width: 100%;
-}
-
-/* Premium Heading Style */
-.premium-module-heading {
+.shop-cat-title {
+    font-size: 30px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    padding-bottom: 8px;
     position: relative;
     display: inline-block;
 }
 
-.fc-modern-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0;
-    padding: 0 0 12px 0;
-    text-transform: none;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    position: relative;
-    font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-.fc-modern-title::after {
+.shop-cat-title::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 70px;
-    height: 4px;
-    background: linear-gradient(90deg, #ff505a 0%, #ff6b9d 50%, #ff505a 100%);
+    width: 60px;
+    height: 3px;
+    background: #ff8c00;
     border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(255, 80, 90, 0.3);
 }
 
-/* Category Grid - Responsive Layout */
-.fc-category-grid {
+/* Category Grid Layout */
+.shop-cat-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
 }
 
-.fc-category-item {
-    width: 100%;
-}
-
-.category-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+/* Category Item Wrapper */
+.shop-cat-item-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 180px;
 }
 
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(255, 80, 90, 0.15);
-    border-color: #ff505a;
-}
-
-.category-info {
-    margin-bottom: 15px;
-}
-
-.category-info p {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-    text-transform: capitalize;
-}
-
-.category-img {
-    width: 100%;
-    max-width: 100px;
-    height: 100px;
+.shop-cat-item {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Category Card */
+.shop-cat-card {
+    border-radius: 12px;
     overflow: hidden;
 }
 
-.category-img img {
-    max-width: 100%;
-    max-height: 100%;
+.shop-cat-card-link {
+    display: block;
+    text-decoration: none;
+    border-radius: 12px;
+}
+
+.shop-cat-image-container {
+    background-color: #f4e6e7;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.shop-cat-card-link:hover .shop-cat-image-container {
+    border-color: #ff8c00;
+}
+
+.shop-cat-image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 151px;
+    padding: 10px;
+}
+
+.shop-cat-image {
+    width: 125px;
+    height: 125px;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    display: block;
 }
 
-.category-card:hover .category-img img {
-    transform: scale(1.1);
+/* Category Content */
+.shop-cat-content {
+    padding: 12px 0;
+    text-align: center;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Responsive Grid */
+.shop-cat-name-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    text-decoration: none;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+}
+
+.shop-cat-name-link:hover {
+    color: #ff8c00;
+}
+
+/* Responsive Design */
+@media (min-width: 576px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 5px;
+    }
+    
+    .shop-cat-title {
+        font-size: 28px;
+    }
+}
+
+@media (min-width: 800px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1100px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 5px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 5px;
+    }
+}
+
 @media (min-width: 1400px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(8, 1fr);
-    }
-}
-
-@media (min-width: 1200px) and (max-width: 1399px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(7, 1fr);
-    }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-    .fc-category-grid {
+    .shop-cat-card-grid {
         grid-template-columns: repeat(6, 1fr);
     }
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 15px;
-    }
-    
-    .fc-modern-title {
-        font-size: 28px;
-        padding-bottom: 10px;
-    }
-    
-    .fc-modern-title::after {
-        width: 60px;
-        height: 3px;
+@media (min-width: 1600px) {
+    .shop-cat-card-grid {
+        grid-template-columns: repeat(8, 1fr);
     }
 }
 
-@media (min-width: 576px) and (max-width: 767px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+    .shop-cat-module-section {
+        padding: 30px 0;
     }
     
-    .fc-modern-title {
+    .shop-cat-header {
+        margin-bottom: 20px;
+    }
+    
+    .shop-cat-title {
         font-size: 24px;
-        padding-bottom: 8px;
     }
     
-    .fc-modern-title::after {
+    .shop-cat-title::after {
         width: 50px;
-        height: 3px;
+        height: 2.5px;
     }
     
-    .category-card {
-        min-height: 160px;
-        padding: 15px;
+    .shop-cat-image-wrapper {
+        height: 120px;
     }
     
-    .category-img {
-        max-width: 80px;
+    .shop-cat-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .shop-cat-content {
+        height: 38px;
+        padding: 10px 0;
+    }
+    
+    .shop-cat-name-link {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-cat-title {
+        font-size: 22px;
+    }
+    
+    .shop-cat-image-wrapper {
+        height: 100px;
+    }
+    
+    .shop-cat-image {
+        width: 80px;
         height: 80px;
     }
-}
-
-@media (max-width: 575px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+    
+    .shop-cat-content {
+        height: 36px;
+        padding: 8px 0;
     }
     
-    .fc-modern-title {
-        font-size: 20px;
-        padding-bottom: 6px;
-    }
-    
-    .fc-modern-title::after {
-        width: 40px;
-        height: 2px;
-    }
-    
-    .category-card {
-        min-height: 140px;
-        padding: 12px;
-    }
-    
-    .category-info p {
-        font-size: 14px;
-    }
-    
-    .category-img {
-        max-width: 60px;
-        height: 60px;
-    }
-}
-
-@media (max-width: 400px) {
-    .fc-category-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .category-card {
-        min-height: 130px;
-        padding: 10px;
+    .shop-cat-name-link {
+        font-size: 12px;
     }
 }
 </style>
+
 <?php } ?>

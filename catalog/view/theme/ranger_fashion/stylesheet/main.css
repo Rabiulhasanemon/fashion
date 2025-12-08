@@ -1797,7 +1797,7 @@ a:focus {
 
 .header-bottom .main-nav .menu > li > a {
     display: block;
-    padding: 0;
+    padding: 13px 0;
     font-size: 16px;
     font-weight: 500;
     line-height: 150%;
@@ -1827,7 +1827,7 @@ a:focus {
     top: 100%;
     left: 0;
     min-width: 215px;
-    padding: 0;
+    padding: 1rem 0;
     background: #fff;
     box-shadow: 0 2px 35px rgba(0, 0, 0, 0.1);
     z-index: 1001;
@@ -1847,13 +1847,13 @@ a:focus {
 }
 
 .header-bottom .main-nav .menu .submenu li {
-    padding: 0;
+    padding: 0 1.9rem;
     width: 100%;
 }
 
 .header-bottom .main-nav .menu .submenu li a {
     display: block;
-    padding: 0;
+    padding: 0.7rem 0 0.8rem 0;
     color: var(--primary-color, #10503D);
     font-weight: 500;
     font-size: 15px;
