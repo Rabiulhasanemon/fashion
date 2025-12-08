@@ -85,11 +85,14 @@ class ControllerProductManufacturer extends Controller {
         $this->load->language('product/manufacturer');
 
         $this->load->model('catalog/manufacturer');
-        $this->load->model('catalog/category_manufacturer');
         $this->load->model('catalog/product');
         $this->load->model('catalog/category');
-
         $this->load->model('tool/image');
+        
+        // Load category_manufacturer model only if it exists (optional)
+        if (file_exists(DIR_APPLICATION . 'model/catalog/category_manufacturer.php')) {
+            $this->load->model('catalog/category_manufacturer');
+        }
 
         if (isset($this->request->get['manufacturer_id'])) {
             $manufacturer_id = (int)$this->request->get['manufacturer_id'];
@@ -136,9 +139,16 @@ class ControllerProductManufacturer extends Controller {
             'href' => $this->url->link('product/manufacturer')
         );
 
-        $manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+        $manufacturer_info = false;
+        if ($manufacturer_id > 0) {
+            try {
+                $manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+            } catch (Exception $e) {
+                $manufacturer_info = false;
+            }
+        }
 
-		if ($manufacturer_info) {
+		if ($manufacturer_info && is_array($manufacturer_info)) {
 			$this->document->setTitle(isset($manufacturer_info['meta_title']) ? $manufacturer_info['meta_title'] : '');
             $this->document->setDescription(isset($manufacturer_info['meta_description']) ? $manufacturer_info['meta_description'] : '');
             $this->document->setKeywords(isset($manufacturer_info['meta_keyword']) ? $manufacturer_info['meta_keyword'] : '');
@@ -211,11 +221,19 @@ class ControllerProductManufacturer extends Controller {
 				'limit'                  => $limit
 			);
 
-			$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
-			$product_total = $product_total ? (int)$product_total : 0;
+			$product_total = 0;
+			$results = array();
+			
+			try {
+				$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
+				$product_total = $product_total ? (int)$product_total : 0;
 
-			$results = $this->model_catalog_product->getProducts($filter_data);
-			if (!is_array($results)) {
+				$results = $this->model_catalog_product->getProducts($filter_data);
+				if (!is_array($results)) {
+					$results = array();
+				}
+			} catch (Exception $e) {
+				$product_total = 0;
 				$results = array();
 			}
 
@@ -442,16 +460,74 @@ class ControllerProductManufacturer extends Controller {
 			$data['limit'] = $limit;
 
 			$data['continue'] = $this->url->link('common/home');
-            $data['after_header'] = $this->load->controller('common/after_header');
-			$data['column_left'] = $this->load->controller('common/column_left');
-			$data['column_right'] = $this->load->controller('common/column_right');
-			$data['content_top'] = $this->load->controller('common/content_top');
-			$data['content_bottom'] = $this->load->controller('common/content_bottom');
-			$data['footer'] = $this->load->controller('common/footer');
-			$data['header'] = $this->load->controller('common/header');
+            
+            // Initialize all required variables
+            if (!isset($data['pagination'])) {
+                $data['pagination'] = '';
+            }
+            if (!isset($data['results'])) {
+                $data['results'] = '';
+            }
+            if (!isset($data['products'])) {
+                $data['products'] = array();
+            }
+            if (!isset($data['sorts'])) {
+                $data['sorts'] = array();
+            }
+            if (!isset($data['limits'])) {
+                $data['limits'] = array();
+            }
+            
+            try {
+                $data['after_header'] = $this->load->controller('common/after_header');
+            } catch (Exception $e) {
+                $data['after_header'] = '';
+            }
+            
+			try {
+				$data['column_left'] = $this->load->controller('common/column_left');
+			} catch (Exception $e) {
+				$data['column_left'] = '';
+			}
+			
+			try {
+				$data['column_right'] = $this->load->controller('common/column_right');
+			} catch (Exception $e) {
+				$data['column_right'] = '';
+			}
+			
+			try {
+				$data['content_top'] = $this->load->controller('common/content_top');
+			} catch (Exception $e) {
+				$data['content_top'] = '';
+			}
+			
+			try {
+				$data['content_bottom'] = $this->load->controller('common/content_bottom');
+			} catch (Exception $e) {
+				$data['content_bottom'] = '';
+			}
+			
+			try {
+				$data['footer'] = $this->load->controller('common/footer');
+			} catch (Exception $e) {
+				$data['footer'] = '';
+			}
+			
+			try {
+				$data['header'] = $this->load->controller('common/header');
+			} catch (Exception $e) {
+				$data['header'] = '';
+			}
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/manufacturer_info.tpl')) {
-				$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/product/manufacturer_info.tpl', $data));
+			$template_file = DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/manufacturer_info.tpl';
+			if (file_exists($template_file)) {
+				try {
+					$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/product/manufacturer_info.tpl', $data));
+				} catch (Exception $e) {
+					// Fallback to default template
+					$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
+				}
 			} else {
 				$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
 			}
