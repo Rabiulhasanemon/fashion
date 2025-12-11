@@ -105,6 +105,12 @@
                                         <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>"><?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?></a>
                                     </h3>
                                     
+                                    <?php if (isset($product['short_description']) && $product['short_description']) { ?>
+                                    <div class="premium-mfr-product-short-description">
+                                        <?php echo htmlspecialchars($product['short_description']); ?>
+                                    </div>
+                                    <?php } ?>
+                                    
                                     <div class="premium-mfr-rating-wrapper">
                                         <div class="premium-mfr-rating">
                                             <?php if (isset($product['rating']) && $product['rating']) { ?>
@@ -360,7 +366,7 @@
 .premium-mfr-products-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 25px;
+    gap: 20px;
     padding: 0;
 }
 
@@ -371,7 +377,7 @@
 
 .premium-mfr-product-card-inner {
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     border: 1px solid rgba(16, 80, 61, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -414,17 +420,16 @@
     position: relative;
     overflow: hidden;
     background: #ffffff;
-    min-height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 25px;
+    padding: 10px;
 }
 
 .premium-mfr-product-image {
     width: 100%;
     height: auto;
-    max-height: 240px;
+    max-height: 200px;
     object-fit: contain;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -435,7 +440,7 @@
 
 /* Premium Product Info */
 .premium-mfr-product-info {
-    padding: 20px;
+    padding: 15px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -443,16 +448,27 @@
 }
 
 .premium-mfr-product-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    margin: 0 0 12px 0;
-    line-height: 1.5;
-    min-height: 45px;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    min-height: 40px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     color: #10503D;
+}
+
+.premium-mfr-product-short-description {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .premium-mfr-product-name a {
@@ -469,8 +485,8 @@
 .premium-mfr-rating-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .premium-mfr-rating {
@@ -497,21 +513,21 @@
 
 /* Premium Price */
 .premium-mfr-price-box {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .premium-mfr-price-old {
-    font-size: 14px;
+    font-size: 12px;
     color: #999;
     text-decoration: line-through;
     font-weight: 500;
 }
 
 .premium-mfr-price-new {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: #10503D;
     letter-spacing: -0.5px;
@@ -520,13 +536,13 @@
 /* Premium Add Button */
 .premium-mfr-add-btn {
     margin-top: auto;
-    padding: 14px 24px;
+    padding: 10px 16px;
     background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
     border: none;
     color: #ffffff;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
@@ -979,7 +995,7 @@
     }
     
     #premium-mfr-brand-header.premium-mfr-brand-header {
-        padding: 25px 20px;
+        padding: 20px 15px;
     }
     
     .premium-mfr-brand-info-wrapper {
@@ -988,18 +1004,18 @@
     }
     
     #premium-mfr-logo.premium-mfr-brand-logo {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
     }
     
     #premium-mfr-title.premium-mfr-brand-title {
-        font-size: 28px;
+        font-size: 24px;
     }
     
     #premium-mfr-top-bar.premium-mfr-top-bar {
         flex-direction: column;
         align-items: stretch;
-        padding: 20px;
+        padding: 15px;
     }
     
     .premium-mfr-controls-wrapper {
@@ -1029,40 +1045,7 @@
     }
     
     .premium-mfr-product-info {
-        padding: 16px;
-    }
-    
-    .premium-mfr-product-name {
-        font-size: 14px;
-        min-height: 40px;
-    }
-    
-    .premium-mfr-price-new {
-        font-size: 20px;
-    }
-    
-    #premium-mfr-description-section.premium-mfr-description-section {
-        padding: 30px 20px;
-    }
-    
-    .premium-mfr-description-title {
-        font-size: 24px;
-    }
-    
-    #premium-mfr-footer.premium-mfr-footer {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-@media (max-width: 480px) {
-    #premium-mfr-title.premium-mfr-brand-title {
-        font-size: 24px;
-    }
-    
-    .premium-mfr-products-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
+        padding: 12px;
     }
     
     .premium-mfr-product-name {
@@ -1070,12 +1053,74 @@
         min-height: 36px;
     }
     
+    .premium-mfr-product-short-description {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
     .premium-mfr-price-new {
         font-size: 18px;
     }
     
+    .premium-mfr-add-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    #premium-mfr-description-section.premium-mfr-description-section {
+        padding: 25px 15px;
+    }
+    
     .premium-mfr-description-title {
+        font-size: 22px;
+    }
+    
+    #premium-mfr-footer.premium-mfr-footer {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #premium-mfr-title.premium-mfr-brand-title {
         font-size: 20px;
+    }
+    
+    .premium-mfr-products-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .premium-mfr-product-name {
+        font-size: 12px;
+        min-height: 32px;
+    }
+    
+    .premium-mfr-product-short-description {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .premium-mfr-price-new {
+        font-size: 16px;
+    }
+    
+    .premium-mfr-add-btn {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .premium-mfr-description-title {
+        font-size: 18px;
+    }
+    
+    .premium-mfr-image-wrapper {
+        padding: 8px;
+    }
+    
+    .premium-mfr-product-image {
+        max-height: 150px;
     }
 }
 </style>
