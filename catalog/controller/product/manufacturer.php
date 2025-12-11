@@ -278,93 +278,110 @@ class ControllerProductManufacturer extends Controller {
 
             if (!empty($results) && is_array($results)) {
                 foreach ($results as $result) {
-                    // Skip if result is not valid (must be array with valid product_id)
-                    if (!is_array($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
+                    try {
+                        // Skip if result is not valid (must be array with valid product_id)
+                        if (!is_array($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
+                            continue;
+                        }
+                    
+                        // Standard product image size for premium consistent display
+                        $image_width = 500;
+                        $image_height = 500;
+                        
+                        if (isset($result['image']) && $result['image']) {
+                            $image = $this->model_tool_image->resize($result['image'], $image_width, $image_height);
+                        } else {
+                            $image = $this->model_tool_image->resize('placeholder.png', $image_width, $image_height);
+                        }
+                        
+                        if (isset($result['featured_image']) && $result['featured_image']) {
+                            $featured_width = (int)$this->config->get('config_featured_image_width');
+                            $featured_height = (int)$this->config->get('config_featured_image_height');
+                            if ($featured_width <= 0) $featured_width = 500;
+                            if ($featured_height <= 0) $featured_height = 500;
+                            $featured_image = $this->model_tool_image->resize($result['featured_image'], $featured_width, $featured_height);
+                        } else {
+                            $featured_width = (int)$this->config->get('config_featured_image_width');
+                            $featured_height = (int)$this->config->get('config_featured_image_height');
+                            if ($featured_width <= 0) $featured_width = 500;
+                            if ($featured_height <= 0) $featured_height = 500;
+                            $featured_image = $this->model_tool_image->resize('placeholder.png', $featured_width, $featured_height);
+                        }
+
+                        $disablePurchase = false;
+                        if (isset($result['quantity']) && isset($result['stock_status']) && $result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
+                            $disablePurchase = true;
+                        }
+
+                        if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+                            $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
+                            $product_price = isset($result['price']) ? $result['price'] : 0;
+                            $price = $this->currency->format($this->tax->calculate($product_price, $tax_class_id, $this->config->get('config_tax')));
+                        } else {
+                            $price = false;
+                        }
+
+                        if (isset($result['special']) && (float)$result['special']) {
+                            $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
+                            $special = $this->currency->format($this->tax->calculate($result['special'], $tax_class_id, $this->config->get('config_tax')));
+                        } else {
+                            $special = false;
+                        }
+
+                        if ($this->config->get('config_tax')) {
+                            $special_price = isset($result['special']) ? $result['special'] : 0;
+                            $product_price = isset($result['price']) ? $result['price'] : 0;
+                            $tax = $this->currency->format((float)$special_price ? $special_price : $product_price);
+                        } else {
+                            $tax = false;
+                        }
+
+                        if ($this->config->get('config_review_status')) {
+                            $rating = isset($result['rating']) ? (int)$result['rating'] : 0;
+                            $reviews = isset($result['reviews']) ? (int)$result['reviews'] : 0;
+                        } else {
+                            $rating = false;
+                            $reviews = 0;
+                        }
+
+                        if(isset($result['manufacturer_thumb']) && $result['manufacturer_thumb']) {
+                            $manufacturer_thumb = $this->config->get('config_ssl') . '/image/' . $result['manufacturer_thumb'];
+                        } else {
+                            $manufacturer_thumb = null;
+                        }
+                        
+                        // Handle short_description - it might be an array
+                        $short_description = '';
+                        if (isset($result['short_description'])) {
+                            if (is_array($result['short_description'])) {
+                                $short_description = implode(' ', array_filter($result['short_description']));
+                            } else {
+                                $short_description = (string)$result['short_description'];
+                            }
+                        }
+                        
+                        $data['products'][] = array(
+                            'product_id'  => isset($result['product_id']) ? $result['product_id'] : 0,
+                            'thumb'       => $image,
+                            'featured_image'   => $featured_image,
+                            'manufacturer' => isset($result['manufacturer']) ? $result['manufacturer'] : '',
+                            'manufacturer_thumb'       => $manufacturer_thumb,
+                            'name'        => isset($result['name']) ? $result['name'] : '',
+                            'short_description' => $short_description,
+                            'price'       => $price,
+                            'disablePurchase' => $disablePurchase,
+                            'stock_status' => isset($result['stock_status']) ? $result['stock_status'] : '',
+                            'special'     => $special,
+                            'tax'         => $tax,
+                            'minimum'     => (isset($result['minimum']) && $result['minimum'] > 0) ? $result['minimum'] : 1,
+                            'rating'      => $rating,
+                            'reviews'     => $reviews,
+                            'href'        => $this->url->link('product/product', 'product_id=' . (isset($result['product_id']) ? $result['product_id'] : 0))
+                        );
+                    } catch (Exception $e) {
+                        // Skip this product if there's an error processing it
                         continue;
                     }
-                
-				// Standard product image size for premium consistent display
-				$image_width = 500;
-				$image_height = 500;
-				
-                if (isset($result['image']) && $result['image']) {
-                    $image = $this->model_tool_image->resize($result['image'], $image_width, $image_height);
-                } else {
-                    $image = $this->model_tool_image->resize('placeholder.png', $image_width, $image_height);
-                }
-                if (isset($result['featured_image']) && $result['featured_image']) {
-                    $featured_width = (int)$this->config->get('config_featured_image_width');
-                    $featured_height = (int)$this->config->get('config_featured_image_height');
-                    if ($featured_width <= 0) $featured_width = 500;
-                    if ($featured_height <= 0) $featured_height = 500;
-                    $featured_image = $this->model_tool_image->resize($result['featured_image'], $featured_width, $featured_height);
-                } else {
-                    $featured_width = (int)$this->config->get('config_featured_image_width');
-                    $featured_height = (int)$this->config->get('config_featured_image_height');
-                    if ($featured_width <= 0) $featured_width = 500;
-                    if ($featured_height <= 0) $featured_height = 500;
-                    $featured_image = $this->model_tool_image->resize('placeholder.png', $featured_width, $featured_height);
-                }
-
-                $disablePurchase = false;
-                if (isset($result['quantity']) && isset($result['stock_status']) && $result['quantity'] <= 0 && $result['stock_status'] != "In Stock") {
-                    $disablePurchase = true;
-                }
-
-                if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-                    $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
-                    $product_price = isset($result['price']) ? $result['price'] : 0;
-                    $price = $this->currency->format($this->tax->calculate($product_price, $tax_class_id, $this->config->get('config_tax')));
-                } else {
-                    $price = false;
-                }
-
-                if (isset($result['special']) && (float)$result['special']) {
-                    $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
-                    $special = $this->currency->format($this->tax->calculate($result['special'], $tax_class_id, $this->config->get('config_tax')));
-                } else {
-                    $special = false;
-                }
-
-                if ($this->config->get('config_tax')) {
-                    $special_price = isset($result['special']) ? $result['special'] : 0;
-                    $product_price = isset($result['price']) ? $result['price'] : 0;
-                    $tax = $this->currency->format((float)$special_price ? $special_price : $product_price);
-                } else {
-                    $tax = false;
-                }
-
-                if ($this->config->get('config_review_status')) {
-                    $rating = isset($result['rating']) ? (int)$result['rating'] : 0;
-                    $reviews = isset($result['reviews']) ? (int)$result['reviews'] : 0;
-                } else {
-                    $rating = false;
-                    $reviews = 0;
-                }
-
-                if(isset($result['manufacturer_thumb']) && $result['manufacturer_thumb']) {
-                    $manufacturer_thumb = $this->config->get('config_ssl') . '/image/' . $result['manufacturer_thumb'];
-                } else {
-                    $manufacturer_thumb = null;
-                }
-                $data['products'][] = array(
-                    'product_id'  => isset($result['product_id']) ? $result['product_id'] : 0,
-                    'thumb'       => $image,
-                    'featured_image'   => $featured_image,
-                    'manufacturer' => isset($result['manufacturer']) ? $result['manufacturer'] : '',
-                    'manufacturer_thumb'       => $manufacturer_thumb,
-                    'name'        => isset($result['name']) ? $result['name'] : '',
-                    'short_description' => isset($result['short_description']) ? (is_array($result['short_description']) ? implode(' ', $result['short_description']) : $result['short_description']) : '',
-                    'price'       => $price,
-                    'disablePurchase' => $disablePurchase,
-                    'stock_status' => isset($result['stock_status']) ? $result['stock_status'] : '',
-                    'special'     => $special,
-                    'tax'         => $tax,
-                    'minimum'     => (isset($result['minimum']) && $result['minimum'] > 0) ? $result['minimum'] : 1,
-                    'rating'      => $rating,
-                    'reviews'     => $reviews,
-                    'href'        => $this->url->link('product/product', 'product_id=' . (isset($result['product_id']) ? $result['product_id'] : 0))
-                );
                 }
             }
 
