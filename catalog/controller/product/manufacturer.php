@@ -599,4 +599,284 @@ class ControllerProductManufacturer extends Controller {
 			}
 		}
 	}
+
+	public function debug() {
+		// Set content type to HTML for debugging
+		header('Content-Type: text/html; charset=utf-8');
+		
+		// Start output buffering
+		ob_start();
+		
+		echo "<!DOCTYPE html><html><head><title>Manufacturer Debug Page</title>";
+		echo "<style>
+			body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+			.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+			h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+			h2 { color: #007bff; margin-top: 30px; border-left: 4px solid #007bff; padding-left: 10px; }
+			.debug-section { background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #dee2e6; }
+			.debug-item { margin: 10px 0; padding: 10px; background: white; border-left: 3px solid #28a745; }
+			.error { border-left-color: #dc3545; background: #fff5f5; }
+			.warning { border-left-color: #ffc107; background: #fffbf0; }
+			.success { border-left-color: #28a745; background: #f0fff4; }
+			pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+			table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+			table th, table td { padding: 10px; text-align: left; border: 1px solid #dee2e6; }
+			table th { background: #007bff; color: white; }
+			table tr:nth-child(even) { background: #f8f9fa; }
+			.badge { display: inline-block; padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+			.badge-success { background: #28a745; color: white; }
+			.badge-danger { background: #dc3545; color: white; }
+			.badge-warning { background: #ffc107; color: #333; }
+			.badge-info { background: #17a2b8; color: white; }
+		</style></head><body>";
+		echo "<div class='container'>";
+		echo "<h1>🔍 Manufacturer Debug Page</h1>";
+		
+		// Get manufacturer_id from request
+		$manufacturer_id = isset($this->request->get['manufacturer_id']) ? (int)$this->request->get['manufacturer_id'] : 0;
+		
+		echo "<div class='debug-section'>";
+		echo "<h2>Request Parameters</h2>";
+		echo "<div class='debug-item'>";
+		echo "<strong>manufacturer_id:</strong> " . ($manufacturer_id > 0 ? $manufacturer_id : "Not provided") . "<br>";
+		echo "<strong>GET Parameters:</strong><br>";
+		echo "<pre>" . print_r($this->request->get, true) . "</pre>";
+		echo "</div></div>";
+		
+		// Load required models
+		$this->load->model('catalog/manufacturer');
+		$this->load->model('catalog/product');
+		
+		// Check manufacturer
+		echo "<div class='debug-section'>";
+		echo "<h2>Manufacturer Information</h2>";
+		
+		if ($manufacturer_id > 0) {
+			try {
+				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($manufacturer_id);
+				
+				if ($manufacturer_info && !empty($manufacturer_info['manufacturer_id'])) {
+					echo "<div class='debug-item success'>";
+					echo "<span class='badge badge-success'>Manufacturer Found</span><br><br>";
+					echo "<table>";
+					foreach ($manufacturer_info as $key => $value) {
+						echo "<tr><th>" . htmlspecialchars($key) . "</th><td>" . htmlspecialchars(print_r($value, true)) . "</td></tr>";
+					}
+					echo "</table>";
+					echo "</div>";
+				} else {
+					echo "<div class='debug-item error'>";
+					echo "<span class='badge badge-danger'>Manufacturer NOT Found</span><br>";
+					echo "Manufacturer ID: " . $manufacturer_id . " does not exist in database.";
+					echo "</div>";
+				}
+			} catch (Exception $e) {
+				echo "<div class='debug-item error'>";
+				echo "<span class='badge badge-danger'>Error Loading Manufacturer</span><br>";
+				echo "Exception: " . htmlspecialchars($e->getMessage()) . "<br>";
+				echo "Trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+				echo "</div>";
+			}
+		} else {
+			echo "<div class='debug-item warning'>";
+			echo "<span class='badge badge-warning'>No Manufacturer ID Provided</span>";
+			echo "</div>";
+		}
+		echo "</div>";
+		
+		// Check products
+		if ($manufacturer_id > 0) {
+			echo "<div class='debug-section'>";
+			echo "<h2>Product Query Debug</h2>";
+			
+			// Get filter data (same as in info method)
+			$sort = isset($this->request->get['sort']) ? $this->request->get['sort'] : 'p.sort_order';
+			$order = isset($this->request->get['order']) ? $this->request->get['order'] : 'ASC';
+			$page = isset($this->request->get['page']) ? (int)$this->request->get['page'] : 1;
+			$limit = isset($this->request->get['limit']) ? (int)$this->request->get['limit'] : (int)$this->config->get('config_product_limit');
+			if ($limit <= 0) {
+				$limit = 20;
+			}
+			
+			$filter_data = array(
+				'filter_manufacturer_id' => $manufacturer_id,
+				'sort'                   => $sort,
+				'order'                  => $order,
+				'start'                  => ($page - 1) * $limit,
+				'limit'                  => $limit
+			);
+			
+			echo "<div class='debug-item'>";
+			echo "<strong>Filter Data:</strong><br>";
+			echo "<pre>" . print_r($filter_data, true) . "</pre>";
+			echo "</div>";
+			
+			// Check config values
+			echo "<div class='debug-item'>";
+			echo "<strong>Configuration Values:</strong><br>";
+			echo "config_store_id: " . (int)$this->config->get('config_store_id') . "<br>";
+			echo "config_language_id: " . (int)$this->config->get('config_language_id') . "<br>";
+			echo "config_customer_group_id: " . (int)$this->config->get('config_customer_group_id') . "<br>";
+			echo "config_product_limit: " . (int)$this->config->get('config_product_limit') . "<br>";
+			echo "</div>";
+			
+			// Try to get total products
+			echo "<div class='debug-item'>";
+			echo "<strong>Total Products Query:</strong><br>";
+			try {
+				$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
+				$product_total = $product_total ? (int)$product_total : 0;
+				
+				if ($product_total > 0) {
+					echo "<span class='badge badge-success'>Total Products Found: " . $product_total . "</span><br>";
+				} else {
+					echo "<span class='badge badge-warning'>Total Products: 0</span><br>";
+					echo "No products found for manufacturer_id = " . $manufacturer_id . "<br>";
+				}
+			} catch (Exception $e) {
+				echo "<span class='badge badge-danger'>Error in getTotalProducts</span><br>";
+				echo "Exception: " . htmlspecialchars($e->getMessage()) . "<br>";
+				echo "Trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+			}
+			echo "</div>";
+			
+			// Try to get products
+			echo "<div class='debug-item'>";
+			echo "<strong>Products Query:</strong><br>";
+			try {
+				$results = $this->model_catalog_product->getProducts($filter_data);
+				
+				if (!is_array($results)) {
+					$results = array();
+				}
+				
+				$product_count = count($results);
+				
+				if ($product_count > 0) {
+					echo "<span class='badge badge-success'>Products Retrieved: " . $product_count . "</span><br><br>";
+					echo "<table>";
+					echo "<tr><th>Product ID</th><th>Name</th><th>Status</th><th>Date Available</th><th>Manufacturer ID</th></tr>";
+					$count = 0;
+					foreach ($results as $product_id => $product) {
+						if ($count >= 10) {
+							echo "<tr><td colspan='5'><em>... showing first 10 products</em></td></tr>";
+							break;
+						}
+						echo "<tr>";
+						echo "<td>" . (isset($product['product_id']) ? $product['product_id'] : 'N/A') . "</td>";
+						echo "<td>" . (isset($product['name']) ? htmlspecialchars($product['name']) : 'N/A') . "</td>";
+						echo "<td>" . (isset($product['status']) ? $product['status'] : 'N/A') . "</td>";
+						echo "<td>" . (isset($product['date_available']) ? $product['date_available'] : 'N/A') . "</td>";
+						echo "<td>" . (isset($product['manufacturer_id']) ? $product['manufacturer_id'] : 'N/A') . "</td>";
+						echo "</tr>";
+						$count++;
+					}
+					echo "</table>";
+				} else {
+					echo "<span class='badge badge-warning'>No Products Retrieved</span><br>";
+					echo "The getProducts() method returned an empty array.<br>";
+				}
+			} catch (Exception $e) {
+				echo "<span class='badge badge-danger'>Error in getProducts</span><br>";
+				echo "Exception: " . htmlspecialchars($e->getMessage()) . "<br>";
+				echo "Trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+			}
+			echo "</div>";
+			
+			// Direct database query check
+			echo "<div class='debug-item'>";
+			echo "<strong>Direct Database Query Check:</strong><br>";
+			try {
+				$store_id = (int)$this->config->get('config_store_id');
+				$language_id = (int)$this->config->get('config_language_id');
+				
+				// Check products directly
+				$sql = "SELECT COUNT(DISTINCT p.product_id) AS total 
+						FROM " . DB_PREFIX . "product p 
+						LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+						LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) 
+						WHERE pd.language_id = '" . $language_id . "' 
+						AND p.status = '1' 
+						AND p.date_available <= NOW() 
+						AND p2s.store_id = '" . $store_id . "'
+						AND p.manufacturer_id = '" . $manufacturer_id . "'";
+				
+				echo "<strong>SQL Query:</strong><br>";
+				echo "<pre>" . htmlspecialchars($sql) . "</pre>";
+				
+				$query = $this->db->query($sql);
+				$direct_count = isset($query->row['total']) ? (int)$query->row['total'] : 0;
+				
+				if ($direct_count > 0) {
+					echo "<span class='badge badge-success'>Direct Query Result: " . $direct_count . " products</span><br>";
+					
+					// Get sample products
+					$sql_samples = "SELECT p.product_id, pd.name, p.status, p.date_available, p.manufacturer_id 
+									FROM " . DB_PREFIX . "product p 
+									LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+									LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) 
+									WHERE pd.language_id = '" . $language_id . "' 
+									AND p.status = '1' 
+									AND p.date_available <= NOW() 
+									AND p2s.store_id = '" . $store_id . "'
+									AND p.manufacturer_id = '" . $manufacturer_id . "'
+									LIMIT 10";
+					
+					$query_samples = $this->db->query($sql_samples);
+					
+					if ($query_samples->num_rows > 0) {
+						echo "<br><strong>Sample Products from Database:</strong><br>";
+						echo "<table>";
+						echo "<tr><th>Product ID</th><th>Name</th><th>Status</th><th>Date Available</th><th>Manufacturer ID</th></tr>";
+						foreach ($query_samples->rows as $row) {
+							echo "<tr>";
+							echo "<td>" . $row['product_id'] . "</td>";
+							echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+							echo "<td>" . $row['status'] . "</td>";
+							echo "<td>" . $row['date_available'] . "</td>";
+							echo "<td>" . $row['manufacturer_id'] . "</td>";
+							echo "</tr>";
+						}
+						echo "</table>";
+					}
+				} else {
+					echo "<span class='badge badge-warning'>Direct Query Result: 0 products</span><br>";
+					echo "No products found in database with manufacturer_id = " . $manufacturer_id . "<br>";
+					
+					// Check if manufacturer_id exists in product table at all
+					$sql_check = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product WHERE manufacturer_id = '" . $manufacturer_id . "'";
+					$query_check = $this->db->query($sql_check);
+					$total_with_manufacturer = isset($query_check->row['total']) ? (int)$query_check->row['total'] : 0;
+					
+					echo "<br><strong>Products with this manufacturer_id (any status):</strong> " . $total_with_manufacturer . "<br>";
+					
+					if ($total_with_manufacturer > 0) {
+						echo "<span class='badge badge-warning'>Products exist but may be inactive or not assigned to store</span><br>";
+					}
+				}
+			} catch (Exception $e) {
+				echo "<span class='badge badge-danger'>Error in Direct Query</span><br>";
+				echo "Exception: " . htmlspecialchars($e->getMessage()) . "<br>";
+				echo "Trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+			}
+			echo "</div>";
+			
+			echo "</div>";
+		}
+		
+		// System Information
+		echo "<div class='debug-section'>";
+		echo "<h2>System Information</h2>";
+		echo "<div class='debug-item'>";
+		echo "<strong>PHP Version:</strong> " . phpversion() . "<br>";
+		echo "<strong>OpenCart Version:</strong> " . (defined('VERSION') ? VERSION : 'Unknown') . "<br>";
+		echo "<strong>Current Time:</strong> " . date('Y-m-d H:i:s') . "<br>";
+		echo "<strong>DB_PREFIX:</strong> " . DB_PREFIX . "<br>";
+		echo "</div></div>";
+		
+		echo "</div></body></html>";
+		
+		$output = ob_get_clean();
+		$this->response->setOutput($output);
+	}
 }
