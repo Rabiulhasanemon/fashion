@@ -28,10 +28,6 @@
         <!-- Main Content -->
         <div class="mfr-main-content grow">
             
-            <?php if (isset($debug_html) && !empty($debug_html)) { ?>
-                <?php echo $debug_html; ?>
-            <?php } ?>
-            
             <!-- Brand Header -->
             <?php if (isset($heading_title)) { ?>
             <div class="mfr-brand-header">
