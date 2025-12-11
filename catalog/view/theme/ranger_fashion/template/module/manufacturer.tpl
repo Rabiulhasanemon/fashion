@@ -269,11 +269,13 @@ console.groupEnd();
 <style>
 /* Premium Manufacturer Slider - New Premium Design */
 #premium-mfr-slider-section.premium-mfr-slider-wrapper {
-    padding: 40px 0;
+    padding: 40px 15px;
     background: none;
     overflow: visible;
     position: relative;
     margin: 30px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #premium-mfr-slider-section.premium-mfr-slider-wrapper::before,
@@ -302,8 +304,9 @@ console.groupEnd();
     max-width: 100%;
     margin: 0 auto;
     position: relative;
-    padding: 0 10px;
+    padding: 0;
     overflow: visible;
+    width: 100%;
 }
 
 #premium-mfr-slider-track.premium-mfr-slider-track {
@@ -370,7 +373,7 @@ console.groupEnd();
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     position: relative;
     z-index: 2;
 }
@@ -413,7 +416,7 @@ console.groupEnd();
 
 .premium-mfr-slider-count {
     position: absolute;
-    bottom: 5px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
     background: none;
