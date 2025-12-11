@@ -246,12 +246,26 @@ class ControllerProductManufacturer extends Controller {
 				if (!is_array($results)) {
 					$results = array();
 				}
+				// Convert associative array to numeric array if needed
+				if (!empty($results) && !isset($results[0])) {
+					$results = array_values($results);
+				}
 			} catch (Exception $e) {
 				$product_total = 0;
 				$results = array();
 			}
 
+            // Ensure products array is initialized
+            if (!isset($data['products']) || !is_array($data['products'])) {
+                $data['products'] = array();
+            }
+
             foreach ($results as $result) {
+                // Skip if result is not valid
+                if (!is_array($result) || empty($result) || !isset($result['product_id'])) {
+                    continue;
+                }
+                
 				// Standard product image size for premium consistent display
 				$image_width = 500;
 				$image_height = 500;
