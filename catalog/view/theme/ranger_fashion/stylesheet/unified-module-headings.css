@@ -92,31 +92,50 @@
 /* Flash Deal module title */
 .premium-flash-title,
 .flash-deal-title,
-.flashdeal-title {
-  font-size: 32px !important;
+.flashdeal-title,
+.rf-module-title,
+.fd-modern-title {
+  font-size: 20px !important;
   font-weight: 700 !important;
-  color: #1a1a1a !important;
+  color: #333333 !important;
   margin: 0 !important;
-  padding: 24px 0 20px 0 !important;
+  padding: 0 !important;
   position: relative !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing: 0.5px !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  line-height: 1.2 !important;
-  text-transform: none !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase !important;
+}
+
+/* RF Module Header Style - Premium Style for All Modules */
+.rf-module-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 25px !important;
+  padding: 15px 20px !important;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-left: 4px solid #FF6A00 !important;
+  border-radius: 0 8px 8px 0 !important;
+  position: relative !important;
+}
+
+.rf-module-header::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
 }
 
 .premium-flash-title::after,
 .flash-deal-title::after,
-.flashdeal-title::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 12px !important;
-  left: 0 !important;
-  width: 80px !important;
-  height: 4px !important;
-  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
-  border-radius: 4px !important;
-  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+.flashdeal-title::after,
+.rf-module-title::after,
+.fd-modern-title::after {
+  display: none !important;
 }
 
 /* Review View module title */

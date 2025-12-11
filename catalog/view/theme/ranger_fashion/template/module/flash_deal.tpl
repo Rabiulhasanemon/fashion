@@ -1,101 +1,92 @@
 <?php if ($products) { ?>
-<div id="premium-flash-deal-module" class="premium-flash-section">
+<div id="rf-flash-deal-module" class="rf-flash-deal-wrapper">
     <div class="container">
-        <div class="fd-modern-header" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
-            <div class="fd-header-left">
-                <h2 class="fd-modern-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
+        <!-- Premium Module Header - Consistent Style -->
+        <div class="rf-module-header" id="rf-flash-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
+            <div class="rf-module-header-left">
+                <h2 class="rf-module-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
             </div>
-            <div class="fd-header-right">
-                <div class="fd-nav-arrows">
-                    <button type="button" class="fd-nav-btn fd-nav-prev" aria-label="Previous">
+            <div class="rf-module-header-right">
+                <div class="rf-carousel-nav">
+                    <button type="button" class="rf-nav-arrow rf-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
                     </button>
-                    <button type="button" class="fd-nav-btn fd-nav-next" aria-label="Next">
+                    <button type="button" class="rf-nav-arrow rf-nav-next" aria-label="Next">
                         <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
         </div>
         
-        <div class="premium-flash-content">
-            <div id="premium-flash-carousel" class="premium-flash-carousel owl-carousel">
+        <!-- Flash Deal Products -->
+        <div class="rf-flash-content">
+            <div id="rf-flash-carousel" class="rf-flash-carousel owl-carousel">
                 <?php foreach ($products as $product) { ?>
-                <div class="premium-flash-item">
-                    <div class="premium-flash-card">
-                        <div class="premium-flash-image-section">
+                <div class="rf-flash-item">
+                    <div class="rf-flash-card">
+                        <!-- Image Section -->
+                        <div class="rf-flash-image-box">
                             <?php if ($product['discount']) { ?>
-                            <div class="premium-flash-discount-badge">-<?php echo (int)$product['discount']; ?>%</div>
+                            <div class="rf-flash-badge">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
-                            <a href="<?php echo $product['href']; ?>" class="premium-flash-image-link">
-                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="premium-flash-image">
+                            <a href="<?php echo $product['href']; ?>" class="rf-flash-img-link">
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="rf-flash-img">
                             </a>
-                            <div class="premium-flash-actions">
-                                <button type="button" class="premium-action-icon" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
-                                    <i class="fa fa-heart"></i>
+                            <div class="rf-flash-quick-actions">
+                                <button type="button" class="rf-quick-btn" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
+                                    <i class="fa fa-heart-o"></i>
                                 </button>
-                                <button type="button" class="premium-action-icon" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                <button type="button" class="rf-quick-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
                                     <i class="fa fa-exchange"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="premium-flash-info-section">
-                            <div class="premium-flash-details">
-                                <?php if ($product['category_name']) { ?>
-                                <div class="premium-flash-category"><?php echo htmlspecialchars($product['category_name']); ?></div>
+                        <!-- Info Section -->
+                        <div class="rf-flash-info-box">
+                            <?php if ($product['category_name']) { ?>
+                            <div class="rf-flash-category"><?php echo htmlspecialchars($product['category_name']); ?></div>
+                            <?php } ?>
+                            
+                            <h3 class="rf-flash-name">
+                                <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                            </h3>
+                            
+                            <div class="rf-flash-stars">
+                                <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                <i class="fa fa-star <?php echo ($i <= $product['rating']) ? 'rf-star-filled' : 'rf-star-empty'; ?>"></i>
                                 <?php } ?>
-                                
-                                <h3 class="premium-flash-product-name">
-                                    <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
-                                </h3>
-                                
-                                <div class="premium-flash-rating">
-                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                    <i class="fa fa-star <?php echo ($i <= $product['rating']) ? 'filled' : ''; ?>"></i>
-                                    <?php } ?>
-                                </div>
-                                
-                                <div class="premium-flash-pricing">
-                                    <?php if ($product['special']) { ?>
-                                    <span class="premium-flash-price-new"><?php echo $product['special']; ?></span>
-                                    <span class="premium-flash-price-old"><?php echo $product['price']; ?></span>
-                                    <?php } else { ?>
-                                    <span class="premium-flash-price-new"><?php echo $product['price']; ?></span>
-                                    <?php } ?>
-                                    <?php if (!empty($product['points']) && $product['points'] > 0) { ?>
-                                    <div class="module-reward-points">
-                                      <i class="fa fa-gift"></i>
-                                      <span>Earn <?php echo $product['points']; ?> points</span>
-                                    </div>
-                                    <?php } ?>
-                                </div>
-                                
-                                <?php if (!empty($product['end_date'])) { ?>
-                                <div class="premium-flash-countdown" data-end-date="<?php echo htmlspecialchars($product['end_date']); ?>">
-                                    <div class="premium-countdown-item">
-                                        <span class="premium-countdown-value">00</span>
-                                        <span class="premium-countdown-label">Days</span>
-                                    </div>
-                                    <div class="premium-countdown-item">
-                                        <span class="premium-countdown-value">00</span>
-                                        <span class="premium-countdown-label">Hrs</span>
-                                    </div>
-                                    <div class="premium-countdown-item">
-                                        <span class="premium-countdown-value">00</span>
-                                        <span class="premium-countdown-label">Min</span>
-                                    </div>
-                                    <div class="premium-countdown-item">
-                                        <span class="premium-countdown-value">00</span>
-                                        <span class="premium-countdown-label">Sec</span>
-                                    </div>
-                                </div>
-                                <?php } ?>
-                                
-                                <button type="button" class="premium-flash-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Add to Cart</span>
-                                </button>
                             </div>
+                            
+                            <div class="rf-flash-price-row">
+                                <?php if ($product['special']) { ?>
+                                <span class="rf-flash-old-price"><?php echo $product['price']; ?></span>
+                                <span class="rf-flash-new-price"><?php echo $product['special']; ?></span>
+                                <?php } else { ?>
+                                <span class="rf-flash-new-price"><?php echo $product['price']; ?></span>
+                                <?php } ?>
+                            </div>
+                            
+                            <?php if (!empty($product['end_date'])) { ?>
+                            <div class="rf-flash-timer" data-end-date="<?php echo htmlspecialchars($product['end_date']); ?>">
+                                <div class="rf-timer-box">
+                                    <span class="rf-timer-num">00</span>
+                                    <span class="rf-timer-txt">Days</span>
+                                </div>
+                                <div class="rf-timer-box">
+                                    <span class="rf-timer-num">00</span>
+                                    <span class="rf-timer-txt">Hrs</span>
+                                </div>
+                                <div class="rf-timer-box">
+                                    <span class="rf-timer-num">00</span>
+                                    <span class="rf-timer-txt">Min</span>
+                                </div>
+                                <div class="rf-timer-box">
+                                    <span class="rf-timer-num">00</span>
+                                    <span class="rf-timer-txt">Sec</span>
+                                </div>
+                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -106,473 +97,488 @@
 </div>
 
 <style>
-/* Premium Flash Deal Module - Unique Styling */
-#premium-flash-deal-module.premium-flash-section {
-    padding: 0px 0;
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+/* =================================================
+   PREMIUM FLASH DEAL MODULE - RF PREFIX
+   New unique classes to avoid conflicts
+   ================================================= */
+
+#rf-flash-deal-module.rf-flash-deal-wrapper {
+    padding: 30px 0;
+    background: #ffffff;
     position: relative;
 }
 
-.premium-flash-container {
-    max-width: 80%;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Flash Deal Modern Header - New Classes (No Conflicts) */
-.fd-modern-header {
+/* Premium Module Header - Global Style for All Modules */
+.rf-module-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 30px;
-    padding: 15px 0;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 25px;
+    padding: 15px 20px;
+    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 4px solid #FF6A00;
+    border-radius: 0 8px 8px 0;
     position: relative;
 }
 
-.fd-header-left {
-    flex: 1;
-    padding-left: 20px;
+.rf-module-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%);
 }
 
-.fd-modern-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
+.rf-module-header-left {
+    flex: 1;
+}
+
+.rf-module-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333333;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
 }
 
-.fd-header-right {
+.rf-module-title::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 100%;
+    background: #FF6A00;
+    border-radius: 2px;
+    display: none;
+}
+
+.rf-module-header-right {
     flex-shrink: 0;
-    padding-right: 20px;
 }
 
-.fd-nav-arrows {
+.rf-carousel-nav {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
-.fd-nav-btn {
-    width: 36px;
-    height: 36px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
-    color: #333;
+.rf-nav-arrow {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #e0e0e0;
+    background: #ffffff;
+    color: #666666;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 14px;
 }
 
-.fd-nav-btn:hover {
-    background: #ff505a;
-    color: #fff;
-    border-color: #ff505a;
+.rf-nav-arrow:hover {
+    background: #FF6A00;
+    color: #ffffff;
+    border-color: #FF6A00;
+    transform: scale(1.05);
 }
 
-.fd-nav-btn:active {
+.rf-nav-arrow:active {
     transform: scale(0.95);
 }
 
-/* Old styles kept for backward compatibility */
-.premium-flash-header {
-    text-align: left;
-    margin-bottom: 40px;
-}
-
-.premium-flash-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 10px 0;
-    letter-spacing: -0.5px;
-    text-align: left;
-}
-
-.premium-flash-subtitle {
-    font-size: 16px;
-    color: #666;
-    font-weight: 400;
-}
-
-.premium-flash-carousel {
+/* Flash Deal Content */
+.rf-flash-content {
     position: relative;
 }
 
-.premium-flash-card {
-    background: #fff;
-    border-radius: 16px;
+.rf-flash-carousel {
+    position: relative;
+}
+
+/* Flash Card */
+.rf-flash-card {
+    background: #ffffff;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    margin: 10px 5px;
-    border: 1px solid rgba(0,0,0,0.05);
+    margin: 5px;
+    border: 1px solid #f0f0f0;
 }
 
-.premium-flash-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+.rf-flash-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-.premium-flash-image-section {
+/* Image Box */
+.rf-flash-image-box {
     position: relative;
     padding-top: 100%;
     overflow: hidden;
     background: #f8f9fa;
 }
 
-.premium-flash-image-link {
+.rf-flash-img-link {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
 }
 
-.premium-flash-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+.rf-flash-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.4s ease;
 }
 
-.premium-flash-card:hover .premium-flash-image {
-    transform: scale(1.1);
+.rf-flash-card:hover .rf-flash-img {
+    transform: scale(1.08);
 }
 
-.premium-flash-discount-badge {
+/* Discount Badge */
+.rf-flash-badge {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
-    color: #fff;
-    padding: 8px 14px;
-    border-radius: 25px;
+    top: 12px;
+    left: 12px;
+    background: #FF6A00;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+    box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
 }
 
-.premium-flash-actions {
+/* Quick Actions */
+.rf-flash-quick-actions {
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 12px;
+    right: 12px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(10px);
     transition: all 0.3s ease;
 }
 
-.premium-flash-card:hover .premium-flash-actions {
+.rf-flash-card:hover .rf-flash-quick-actions {
     opacity: 1;
     transform: translateX(0);
 }
 
-.premium-action-icon {
-    width: 40px;
-    height: 40px;
+.rf-quick-btn {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.95);
+    background: rgba(255, 255, 255, 0.95);
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    color: #666;
+    font-size: 14px;
 }
 
-.premium-action-icon:hover {
-    background: #ff6b9d;
-    color: #fff;
+.rf-quick-btn:hover {
+    background: #FF6A00;
+    color: #ffffff;
     transform: scale(1.1);
 }
 
-.premium-flash-info-section {
-    padding: 20px;
+/* Info Box */
+.rf-flash-info-box {
+    padding: 18px;
+    text-align: left;
 }
 
-.premium-flash-category {
+.rf-flash-category {
     font-size: 12px;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #FF6A00;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
     margin-bottom: 8px;
+    font-weight: 500;
 }
 
-.premium-flash-product-name {
-    font-size: 16px;
+.rf-flash-name {
+    font-size: 15px;
     font-weight: 600;
     margin: 0 0 10px 0;
     line-height: 1.4;
-    min-height: 44px;
+    min-height: 42px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.premium-flash-product-name a {
-    color: #333;
+.rf-flash-name a {
+    color: #333333;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s ease;
 }
 
-.premium-flash-product-name a:hover {
-    color: #ff6b9d;
+.rf-flash-name a:hover {
+    color: #FF6A00;
 }
 
-.premium-flash-rating {
-    margin-bottom: 12px;
+/* Stars */
+.rf-flash-stars {
+    margin-bottom: 10px;
 }
 
-.premium-flash-rating i {
-    color: #e0e0e0;
-    font-size: 14px;
+.rf-flash-stars i {
+    font-size: 13px;
     margin-right: 2px;
 }
 
-.premium-flash-rating i.filled {
-    color: #ffc107;
+.rf-flash-stars .rf-star-filled {
+    color: #FFC107;
 }
 
-.premium-flash-pricing {
+.rf-flash-stars .rf-star-empty {
+    color: #e0e0e0;
+}
+
+/* Price Row */
+.rf-flash-price-row {
     margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.premium-flash-price-new {
-    font-size: 22px;
-    font-weight: 700;
-    color: #ff6b9d;
-    margin-right: 8px;
-}
-
-.premium-flash-price-old {
-    font-size: 16px;
-    color: #999;
+.rf-flash-old-price {
+    font-size: 14px;
+    color: #999999;
     text-decoration: line-through;
 }
 
-.premium-flash-countdown {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    justify-content: center;
+.rf-flash-new-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FF6A00;
 }
 
-.premium-countdown-item {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
+/* Countdown Timer - Orange Theme */
+.rf-flash-timer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.rf-timer-box {
+    background: #FF6A00;
+    border-radius: 6px;
     padding: 8px 10px;
     min-width: 50px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+    box-shadow: 0 2px 6px rgba(255, 106, 0, 0.25);
 }
 
-.premium-countdown-value {
+.rf-timer-num {
     display: block;
     font-size: 16px;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
     line-height: 1;
 }
 
-.premium-countdown-label {
+.rf-timer-txt {
     display: block;
-    font-size: 9px;
-    color: rgba(255,255,255,0.8);
-    text-transform: uppercase;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-}
-
-.premium-flash-cart-btn {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8c9f 100%);
-    border: none;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(255,107,157,0.3);
-}
-
-.premium-flash-cart-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255,107,157,0.4);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: capitalize;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
 }
 
 /* Owl Carousel Navigation */
-#premium-flash-carousel.owl-carousel .owl-nav {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
-    pointer-events: none;
+#rf-flash-carousel.owl-carousel .owl-nav {
+    display: none;
 }
 
-#premium-flash-carousel.owl-carousel .owl-nav button {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #fff !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: none;
-    color: #333 !important;
-    font-size: 18px;
-    transition: all 0.3s ease;
-    pointer-events: auto;
+#rf-flash-carousel.owl-carousel .owl-dots {
+    display: none;
 }
 
-#premium-flash-carousel.owl-carousel .owl-nav button:hover {
-    background: #ff6b9d !important;
-    color: #fff !important;
-    transform: scale(1.1);
-}
+/* =================================================
+   RESPONSIVE DESIGN
+   ================================================= */
 
-/* Responsive */
-@media (max-width: 991px) {
-    .premium-flash-title {
-        font-size: 26px;
+@media (max-width: 1200px) {
+    .rf-flash-name {
+        font-size: 14px;
+        min-height: 40px;
     }
     
-    .premium-flash-card {
-        margin: 10px 3px;
+    .rf-flash-new-price {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 991px) {
+    #rf-flash-deal-module.rf-flash-deal-wrapper {
+        padding: 25px 0;
+    }
+    
+    .rf-module-title {
+        font-size: 18px;
+    }
+    
+    .rf-flash-card {
+        margin: 5px 3px;
     }
 }
 
 @media (max-width: 768px) {
-    #premium-flash-deal-module.premium-flash-section {
-        padding: 0px 0;
+    #rf-flash-deal-module.rf-flash-deal-wrapper {
+        padding: 20px 0;
     }
     
-    .fd-modern-header {
+    .rf-module-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
-        padding: 15px;
+        gap: 12px;
+        padding: 12px 15px;
     }
     
-    .fd-header-left {
-        padding-left: 0;
-        width: 100%;
-    }
-    
-    .fd-header-right {
-        padding-right: 0;
+    .rf-module-header-right {
         width: 100%;
         display: flex;
         justify-content: flex-end;
     }
     
-    .fd-modern-title {
+    .rf-module-title {
         font-size: 16px;
     }
     
-    .fd-nav-btn {
-        width: 32px;
-        height: 32px;
+    .rf-nav-arrow {
+        width: 36px;
+        height: 36px;
         font-size: 12px;
     }
     
-    .premium-flash-title {
-        font-size: 22px;
+    .rf-flash-info-box {
+        padding: 15px;
     }
     
-    .premium-flash-subtitle {
-        font-size: 14px;
-    }
-    
-    .premium-flash-image-section {
-        padding-top: 100%;
-    }
-    
-    .premium-flash-product-name {
-        font-size: 14px;
-        min-height: 40px;
-    }
-    
-    .premium-flash-price-new {
-        font-size: 18px;
-    }
-    
-    .premium-countdown-item {
-        min-width: 45px;
-        padding: 6px 8px;
-    }
-    
-    .premium-countdown-value {
-        font-size: 14px;
-    }
-    
-    .premium-countdown-label {
-        font-size: 8px;
-    }
-    
-    #premium-flash-carousel.owl-carousel .owl-nav button {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .premium-flash-product-name {
+    .rf-flash-name {
         font-size: 13px;
         min-height: 36px;
     }
     
-    .premium-flash-price-new {
+    .rf-flash-new-price {
         font-size: 16px;
     }
     
-    .premium-countdown-item {
+    .rf-flash-old-price {
+        font-size: 12px;
+    }
+    
+    .rf-timer-box {
+        min-width: 45px;
+        padding: 6px 8px;
+    }
+    
+    .rf-timer-num {
+        font-size: 14px;
+    }
+    
+    .rf-timer-txt {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rf-module-header {
+        padding: 10px 12px;
+    }
+    
+    .rf-module-title {
+        font-size: 14px;
+    }
+    
+    .rf-nav-arrow {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .rf-flash-info-box {
+        padding: 12px;
+    }
+    
+    .rf-flash-category {
+        font-size: 11px;
+    }
+    
+    .rf-flash-name {
+        font-size: 12px;
+        min-height: 34px;
+    }
+    
+    .rf-flash-new-price {
+        font-size: 15px;
+    }
+    
+    .rf-timer-box {
         min-width: 40px;
         padding: 5px 6px;
     }
     
-    .premium-countdown-value {
+    .rf-timer-num {
         font-size: 12px;
+    }
+    
+    .rf-timer-txt {
+        font-size: 8px;
+    }
+    
+    .rf-flash-badge {
+        font-size: 11px;
+        padding: 4px 10px;
     }
 }
 </style>
 
 <script>
 jQuery(document).ready(function($) {
-    var $carousel = $('#premium-flash-carousel');
-    var $prevBtn = $('.fd-nav-prev');
-    var $nextBtn = $('.fd-nav-next');
+    var $carousel = $('#rf-flash-carousel');
+    var $prevBtn = $('.rf-nav-prev');
+    var $nextBtn = $('.rf-nav-next');
     
-    // Initialize Owl Carousel with AUTOMATIC SLIDING
+    // Initialize Owl Carousel
     if (typeof $.fn.owlCarousel !== 'undefined') {
         $carousel.owlCarousel({
             loop: true,
             margin: 20,
-            nav: false, // Disable default nav, use custom buttons
+            nav: false,
             dots: false,
-            autoplay: true, // ENABLE AUTOMATIC SLIDING
-            autoplayTimeout: 4000, // 4 seconds between slides
-            autoplayHoverPause: true, // Pause on hover
+            autoplay: true,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
             autoplaySpeed: 800,
             smartSpeed: 600,
             responsive: {
@@ -580,9 +586,9 @@ jQuery(document).ready(function($) {
                     items: 1,
                     margin: 10
                 },
-                576: {
+                480: {
                     items: 2,
-                    margin: 15
+                    margin: 12
                 },
                 768: {
                     items: 2,
@@ -590,7 +596,7 @@ jQuery(document).ready(function($) {
                 },
                 992: {
                     items: 3,
-                    margin: 20
+                    margin: 18
                 },
                 1200: {
                     items: 4,
@@ -599,7 +605,7 @@ jQuery(document).ready(function($) {
             }
         });
         
-        // Connect custom navigation buttons
+        // Custom navigation
         $prevBtn.on('click', function() {
             $carousel.trigger('prev.owl.carousel');
         });
@@ -609,26 +615,26 @@ jQuery(document).ready(function($) {
         });
     }
     
-    // Initialize countdown timers
-    $('.premium-flash-countdown').each(function() {
-        var $countdown = $(this);
-        var endDate = $countdown.data('end-date');
+    // Countdown timers
+    $('.rf-flash-timer').each(function() {
+        var $timer = $(this);
+        var endDate = $timer.data('end-date');
         if (!endDate) return;
         
         var targetDate = new Date(endDate);
         if (isNaN(targetDate.getTime())) return;
         
-        var $items = $countdown.find('.premium-countdown-item');
+        var $boxes = $timer.find('.rf-timer-box');
         
-        function updateCountdown() {
+        function updateTimer() {
             var now = new Date().getTime();
             var distance = targetDate.getTime() - now;
             
             if (distance < 0) {
-                $items.eq(0).find('.premium-countdown-value').text('00');
-                $items.eq(1).find('.premium-countdown-value').text('00');
-                $items.eq(2).find('.premium-countdown-value').text('00');
-                $items.eq(3).find('.premium-countdown-value').text('00');
+                $boxes.eq(0).find('.rf-timer-num').text('00');
+                $boxes.eq(1).find('.rf-timer-num').text('00');
+                $boxes.eq(2).find('.rf-timer-num').text('00');
+                $boxes.eq(3).find('.rf-timer-num').text('00');
                 return;
             }
             
@@ -637,14 +643,14 @@ jQuery(document).ready(function($) {
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
-            $items.eq(0).find('.premium-countdown-value').text(String(days).padStart(2, '0'));
-            $items.eq(1).find('.premium-countdown-value').text(String(hours).padStart(2, '0'));
-            $items.eq(2).find('.premium-countdown-value').text(String(minutes).padStart(2, '0'));
-            $items.eq(3).find('.premium-countdown-value').text(String(seconds).padStart(2, '0'));
+            $boxes.eq(0).find('.rf-timer-num').text(String(days).padStart(2, '0'));
+            $boxes.eq(1).find('.rf-timer-num').text(String(hours).padStart(2, '0'));
+            $boxes.eq(2).find('.rf-timer-num').text(String(minutes).padStart(2, '0'));
+            $boxes.eq(3).find('.rf-timer-num').text(String(seconds).padStart(2, '0'));
         }
         
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
+        updateTimer();
+        setInterval(updateTimer, 1000);
     });
 });
 </script>
