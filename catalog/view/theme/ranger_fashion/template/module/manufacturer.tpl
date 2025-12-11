@@ -137,40 +137,6 @@ console.groupEnd();
           </div>
         </a>
         <?php } ?>
-        <!-- Duplicate for seamless loop -->
-        <?php foreach ($manufacturers as $index => $manufacturer) { 
-          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
-          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
-        ?>
-        <a class="premium-mfr-slider-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index + count($manufacturers); ?>">
-          <div class="premium-mfr-slider-card-inner">
-            <?php if ($image_url) { ?>
-            <div class="premium-mfr-slider-image-wrapper">
-              <img class="premium-mfr-slider-image" 
-                   src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
-                   alt="<?php echo $manufacturer_name; ?>" 
-                   title="<?php echo $manufacturer_name; ?>" 
-                   loading="lazy" 
-                   onload="this.style.opacity='1';"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-              <div class="premium-mfr-slider-fallback" style="display: none;">
-                <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
-              </div>
-            </div>
-            <?php } else { ?>
-            <div class="premium-mfr-slider-fallback">
-              <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
-            </div>
-            <?php } ?>
-            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
-            <div class="premium-mfr-slider-count">
-              <span class="premium-mfr-slider-count-number"><?php echo $manufacturer['product_count']; ?></span>
-              <span class="premium-mfr-slider-count-label"><?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?></span>
-            </div>
-            <?php } ?>
-          </div>
-        </a>
-        <?php } ?>
       <?php } else { ?>
         <div class="premium-mfr-slider-empty">
           <p>No manufacturers available</p>
@@ -179,6 +145,28 @@ console.groupEnd();
     </div>
   </div>
 </div>
+
+<script>
+// Clone brands for seamless infinite scrolling
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('premium-mfr-slider-track');
+        if (track && track.children.length > 0) {
+            // Clone all brand cards for seamless loop
+            const originalCards = Array.from(track.children);
+            originalCards.forEach(function(card) {
+                const clone = card.cloneNode(true);
+                // Update data-index for cloned items
+                const originalIndex = card.getAttribute('data-index');
+                if (originalIndex !== null) {
+                    clone.setAttribute('data-index', originalIndex + '_clone');
+                }
+                track.appendChild(clone);
+            });
+        }
+    });
+})();
+</script>
 
 <!-- Keep old section for backward compatibility -->
 <div id="manufacturer-brand-section" class="container brandloop24_section manufacturer-display-wrapper">
@@ -303,7 +291,7 @@ console.groupEnd();
     display: flex;
     gap: 20px;
     width: max-content;
-    animation: premiumMfrSlide 30s linear infinite;
+    animation: premiumMfrSlide 40s linear infinite;
     will-change: transform;
 }
 
@@ -453,6 +441,12 @@ console.groupEnd();
     100% {
         transform: translateX(-50%);
     }
+}
+
+/* Ensure seamless loop - reset animation when it completes */
+#premium-mfr-slider-track.premium-mfr-slider-track {
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
 
 /* Pause animation on hover */
