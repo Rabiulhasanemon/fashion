@@ -156,6 +156,12 @@
                         <div class="product-head-info">
                             <h1 itemprop="name" class="name"><?php echo $heading_title; ?></h1>
 
+                            <?php if (isset($short_description) && $short_description) { ?>
+                            <div class="product-short-description" style="margin: 15px 0; padding: 12px 0; border-bottom: 1px solid #e9ecef; color: #555; font-size: 14px; line-height: 1.6;">
+                                <?php echo htmlspecialchars($short_description); ?>
+                            </div>
+                            <?php } ?>
+
                             <div class="short-info">
                                 <ul>
                                     <li> <b>Status:</b>  <span><?php echo $stock; ?></span></li>

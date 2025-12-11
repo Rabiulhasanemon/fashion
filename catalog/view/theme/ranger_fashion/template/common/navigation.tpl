@@ -227,12 +227,12 @@ if (!$has_categories) {
 /* Desktop Submenu */
 .desktop-menu .submenu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 12px);
     left: -1.5rem;
-    min-width: 240px;
-    padding: 1.2rem 0;
+    min-width: 260px;
+    padding: 0;
     background: #ffffff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 30px rgba(16, 80, 61, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: 12px;
     z-index: 1001;
     visibility: hidden;
@@ -241,7 +241,7 @@ if (!$has_categories) {
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     list-style: none;
     margin: 0;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(16, 80, 61, 0.1);
     overflow: hidden;
 }
 
@@ -256,28 +256,50 @@ if (!$has_categories) {
     width: 100%;
     margin: 0;
     position: relative;
+    border-bottom: 1px solid rgba(16, 80, 61, 0.05);
+}
+
+.desktop-menu .submenu li:last-child {
+    border-bottom: none;
 }
 
 .desktop-menu .submenu li a {
     display: block;
-    padding: 0.85rem 1.9rem;
+    padding: 12px 24px;
     color: #333333;
     font-weight: 400;
     font-size: 14px;
     letter-spacing: -0.01em;
-    line-height: 1.5;
+    line-height: 1.6;
     text-transform: capitalize;
     text-decoration: none;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     background: transparent;
+    margin: 0;
+}
+
+.desktop-menu .submenu li a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #10503D 0%, #A68A6A 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .desktop-menu .submenu li:hover > a {
-    color: #FF6A00;
-    background: linear-gradient(90deg, rgba(255, 106, 0, 0.05) 0%, rgba(255, 106, 0, 0.02) 100%);
-    padding-left: 2.1rem;
-    font-weight: 500;
+    color: #10503D;
+    background: linear-gradient(90deg, rgba(16, 80, 61, 0.08) 0%, rgba(166, 138, 106, 0.05) 100%);
+    padding-left: 28px;
+    font-weight: 600;
+}
+
+.desktop-menu .submenu li:hover > a::before {
+    opacity: 1;
 }
 
 /* Flash Sale Button */
