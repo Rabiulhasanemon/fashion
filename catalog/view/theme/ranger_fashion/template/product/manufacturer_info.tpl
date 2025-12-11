@@ -220,7 +220,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 30px 20px;
-    background: #f8f9fa;
+    background: none;
 }
 
 .premium-mfr-flex-layout {
