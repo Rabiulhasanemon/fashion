@@ -157,8 +157,6 @@ class ControllerProductManufacturer extends Controller {
                 }
             } catch (Exception $e) {
                 $manufacturer_info = false;
-            } catch (Error $e) {
-                $manufacturer_info = false;
             }
         }
 
@@ -238,9 +236,16 @@ class ControllerProductManufacturer extends Controller {
 			$product_total = 0;
 			$results = array();
 			
+			$product_total = 0;
+			$results = array();
+			
 			try {
 				$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
-				$product_total = $product_total ? (int)$product_total : 0;
+				if ($product_total) {
+					$product_total = (int)$product_total;
+				} else {
+					$product_total = 0;
+				}
 
 				$results = $this->model_catalog_product->getProducts($filter_data);
 				
@@ -250,10 +255,14 @@ class ControllerProductManufacturer extends Controller {
 				}
 				
 				// Filter out any false/null values and convert to numeric array
+				// getProducts() returns associative array with product_id as keys
+				// Some values might be false if getProduct() fails
 				$valid_results = array();
-				foreach ($results as $key => $value) {
-					if (is_array($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
-						$valid_results[] = $value;
+				if (!empty($results)) {
+					foreach ($results as $key => $value) {
+						if (is_array($value) && !empty($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
+							$valid_results[] = $value;
+						}
 					}
 				}
 				$results = $valid_results;
@@ -261,21 +270,17 @@ class ControllerProductManufacturer extends Controller {
 			} catch (Exception $e) {
 				$product_total = 0;
 				$results = array();
-			} catch (Throwable $e) {
-				$product_total = 0;
-				$results = array();
 			}
 
             // Ensure products array is initialized
-            if (!isset($data['products']) || !is_array($data['products'])) {
-                $data['products'] = array();
-            }
+            $data['products'] = array();
 
-            foreach ($results as $result) {
-                // Skip if result is not valid (must be array with valid product_id)
-                if (!is_array($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
-                    continue;
-                }
+            if (!empty($results) && is_array($results)) {
+                foreach ($results as $result) {
+                    // Skip if result is not valid (must be array with valid product_id)
+                    if (!is_array($result) || empty($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
+                        continue;
+                    }
                 
 				// Standard product image size for premium consistent display
 				$image_width = 500;
@@ -359,6 +364,7 @@ class ControllerProductManufacturer extends Controller {
                     'reviews'     => $reviews,
                     'href'        => $this->url->link('product/product', 'product_id=' . (isset($result['product_id']) ? $result['product_id'] : 0))
                 );
+                }
             }
 
 			$url = '';
