@@ -271,7 +271,7 @@ console.groupEnd();
 #premium-mfr-slider-section.premium-mfr-slider-wrapper {
     padding: 40px 0;
     background: none;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     margin: 30px 0;
 }
@@ -282,27 +282,28 @@ console.groupEnd();
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 150px;
+    width: 80px;
     z-index: 10;
     pointer-events: none;
+    opacity: 0.3;
 }
 
 #premium-mfr-slider-section.premium-mfr-slider-wrapper::before {
     left: 0;
-    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
 }
 
 #premium-mfr-slider-section.premium-mfr-slider-wrapper::after {
     right: 0;
-    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(to left, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
 }
 
 #premium-mfr-slider-inner.premium-mfr-slider-inner {
     max-width: 100%;
     margin: 0 auto;
     position: relative;
-    padding: 0 20px;
-    overflow: hidden;
+    padding: 0 10px;
+    overflow: visible;
 }
 
 #premium-mfr-slider-track.premium-mfr-slider-track {
