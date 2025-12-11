@@ -245,12 +245,15 @@ class ControllerProductManufacturer extends Controller {
 				$results = $this->model_catalog_product->getProducts($filter_data);
 				if (!is_array($results)) {
 					$results = array();
-				}
-				// Convert associative array to numeric array if needed
-				if (!empty($results) && !isset($results[0])) {
+				} else {
+					// Convert associative array to numeric array if needed
+					// getProducts() returns array with product_id as keys
 					$results = array_values($results);
 				}
 			} catch (Exception $e) {
+				$product_total = 0;
+				$results = array();
+			} catch (Error $e) {
 				$product_total = 0;
 				$results = array();
 			}
@@ -261,8 +264,8 @@ class ControllerProductManufacturer extends Controller {
             }
 
             foreach ($results as $result) {
-                // Skip if result is not valid
-                if (!is_array($result) || empty($result) || !isset($result['product_id'])) {
+                // Skip if result is not valid (must be array with valid product_id)
+                if (!is_array($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
                     continue;
                 }
                 
