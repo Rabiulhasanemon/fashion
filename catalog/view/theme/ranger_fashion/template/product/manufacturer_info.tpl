@@ -39,9 +39,6 @@
                     <?php } ?>
                     <div id="premium-mfr-details" class="premium-mfr-brand-details">
                         <h1 id="premium-mfr-title" class="premium-mfr-brand-title"><?php echo $heading_title; ?></h1>
-                        <?php if (isset($description) && $description) { ?>
-                        <div id="premium-mfr-description" class="premium-mfr-brand-description"><?php echo $description; ?></div>
-                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -83,9 +80,9 @@
             <?php if (isset($products) && $products) { ?>
             <div id="premium-mfr-products-section" class="premium-mfr-products-section">
                 <div class="premium-mfr-products-grid">
-                        <?php foreach ($products as $product) { ?>
-                        <div class="premium-mfr-product-card">
-                            <div class="premium-mfr-product-card-inner">
+                    <?php foreach ($products as $product) { ?>
+                    <div class="premium-mfr-product-card">
+                        <div class="premium-mfr-product-card-inner">
                                 <?php if (isset($product['special']) && $product['special'] && isset($product['price']) && $product['price']) { ?>
                                 <?php
                                   $price = floatval(str_replace(['৳', ',', ' '], '', $product['price']));
@@ -169,7 +166,7 @@
                                 </div>
                             </div>
                         </div>
-                        <?php } ?>
+                    <?php } ?>
                 </div>
             </div>
             <?php } ?>
@@ -185,7 +182,7 @@
             </div>
             <?php } ?>
             
-            <!-- Premium Footer -->
+            <!-- Footer -->
             <?php if (isset($products) && $products) { ?>
             <div id="premium-mfr-footer" class="premium-mfr-footer">
                 <?php if (isset($pagination)) { ?>
@@ -201,6 +198,18 @@
             </div>
             <?php } ?>
             
+            <!-- Premium Description Section -->
+            <?php if (isset($description) && $description && trim(strip_tags($description)) != '') { ?>
+            <div id="premium-mfr-description-section" class="premium-mfr-description-section">
+                <div class="premium-mfr-description-wrapper">
+                    <h2 class="premium-mfr-description-title">About <?php echo htmlspecialchars($heading_title); ?></h2>
+                    <div id="premium-mfr-description-content" class="premium-mfr-description-content">
+                        <?php echo $description; ?>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+            
             <?php echo $content_bottom; ?>
         </div>
     </div>
@@ -209,25 +218,26 @@
 <style>
 /* ============================================
    PREMIUM MANUFACTURER PAGE - Premium Design
+   Brand Colors: #10503D (Dark Green) & #A68A6A (Brown/Tan)
    ============================================ */
 
 #premium-manufacturer-wrapper.premium-mfr-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
-    background: #f5f5f5;
+    padding: 30px 20px;
+    background: #f8f9fa;
 }
 
-.mfr-flex-layout {
+.premium-mfr-flex-layout {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
 }
 
 @media (min-width: 768px) {
-    .mfr-flex-layout {
+    .premium-mfr-flex-layout {
         flex-direction: row;
-        gap: 20px;
+        gap: 25px;
     }
 }
 
@@ -240,11 +250,11 @@
     background: #ffffff;
     border-radius: 12px;
     padding: 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
     overflow-y: auto;
     transition: all 0.3s ease;
     display: block !important;
-    border: 1px solid #f0f0f0;
+    border: 1px solid rgba(16, 80, 61, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -267,12 +277,12 @@
 }
 
 #premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb {
-    background: #d0d0d0;
+    background: #A68A6A;
     border-radius: 10px;
 }
 
 #premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #b0b0b0;
+    background: #10503D;
 }
 
 /* Premium Main Content */
@@ -287,8 +297,8 @@
     padding: 40px 35px;
     border-radius: 16px;
     margin-bottom: 30px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    border: 1px solid #f0f0f0;
+    box-shadow: 0 8px 30px rgba(16, 80, 61, 0.12);
+    border: 1px solid rgba(16, 80, 61, 0.1);
 }
 
 .premium-mfr-brand-info-wrapper {
@@ -308,14 +318,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #f5f5f5;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 3px solid #10503D;
+    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.15);
     transition: all 0.3s ease;
 }
 
 #premium-mfr-logo.premium-mfr-brand-logo:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(16, 80, 61, 0.25);
 }
 
 #premium-mfr-logo.premium-mfr-brand-logo img {
@@ -333,7 +343,7 @@
 #premium-mfr-title.premium-mfr-brand-title {
     font-size: 36px;
     font-weight: 800;
-    color: #1a1a1a;
+    color: #10503D;
     margin: 0 0 15px 0;
     line-height: 1.3;
     letter-spacing: -0.5px;
@@ -357,8 +367,8 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
+    border: 1px solid rgba(16, 80, 61, 0.1);
 }
 
 .premium-mfr-controls-wrapper {
@@ -375,14 +385,14 @@
 
 .premium-mfr-control-label {
     font-size: 15px;
-    color: #555;
+    color: #10503D;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .premium-mfr-select {
     padding: 10px 16px;
-    border: 2px solid #e8e8e8;
+    border: 2px solid rgba(16, 80, 61, 0.2);
     border-radius: 8px;
     background: #ffffff;
     font-size: 14px;
@@ -394,14 +404,14 @@
 }
 
 .premium-mfr-select:hover {
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    border-color: #10503D;
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.15);
 }
 
 .premium-mfr-select:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.2);
+    border-color: #10503D;
+    box-shadow: 0 4px 16px rgba(16, 80, 61, 0.2);
 }
 
 /* Premium Products Section */
@@ -416,39 +426,6 @@
     padding: 0;
 }
 
-.mfr-products-scroll-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    padding-bottom: 10px;
-    margin-right: 50px;
-}
-
-.mfr-products-scroll-wrapper::-webkit-scrollbar {
-    height: 6px;
-}
-
-.mfr-products-scroll-wrapper::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.mfr-products-scroll-wrapper::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-.mfr-products-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-.mfr-products-scroll {
-    display: flex;
-    gap: 20px;
-    padding: 10px 0;
-}
-
 /* Premium Product Card */
 .premium-mfr-product-card {
     width: 100%;
@@ -458,19 +435,19 @@
     background: #ffffff;
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid #f0f0f0;
+    border: 1px solid rgba(16, 80, 61, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
     height: 100%;
 }
 
 .premium-mfr-product-card-inner:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    border-color: #e0e0e0;
+    box-shadow: 0 12px 40px rgba(16, 80, 61, 0.15);
+    border-color: #A68A6A;
 }
 
 /* Premium Discount Badge */
@@ -478,14 +455,14 @@
     position: absolute;
     top: 15px;
     left: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #fff;
     padding: 8px 14px;
     border-radius: 8px;
     font-weight: 700;
     font-size: 13px;
     z-index: 10;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
     letter-spacing: 0.5px;
 }
 
@@ -525,7 +502,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
     color: #fff;
     padding: 10px 15px;
     display: flex;
@@ -539,7 +516,7 @@
 }
 
 .premium-mfr-delivery-badge i {
-    color: #ffd700;
+    color: #A68A6A;
     font-size: 16px;
 }
 
@@ -562,17 +539,17 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    color: #1a1a1a;
+    color: #10503D;
 }
 
 .premium-mfr-product-name a {
-    color: #1a1a1a;
+    color: #10503D;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .premium-mfr-product-name a:hover {
-    color: #007bff;
+    color: #A68A6A;
 }
 
 /* Premium Rating */
@@ -589,9 +566,9 @@
 }
 
 .premium-mfr-star-filled {
-    color: #ffc107;
+    color: #A68A6A;
     font-size: 16px;
-    text-shadow: 0 1px 2px rgba(255, 193, 7, 0.3);
+    text-shadow: 0 1px 2px rgba(166, 138, 106, 0.3);
 }
 
 .premium-mfr-star-empty {
@@ -623,7 +600,7 @@
 .premium-mfr-price-new {
     font-size: 24px;
     font-weight: 800;
-    color: #1a1a1a;
+    color: #10503D;
     letter-spacing: -0.5px;
 }
 
@@ -631,7 +608,7 @@
 .premium-mfr-add-btn {
     margin-top: auto;
     padding: 14px 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
     border: none;
     color: #ffffff;
     border-radius: 10px;
@@ -643,13 +620,13 @@
     width: 100%;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.3);
 }
 
 .premium-mfr-add-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 6px 25px rgba(16, 80, 61, 0.4);
+    background: linear-gradient(135deg, #1a6b52 0%, #10503D 100%);
 }
 
 .premium-mfr-add-btn:active:not(:disabled) {
@@ -661,48 +638,6 @@
     cursor: not-allowed;
     background: #ccc;
     box-shadow: none;
-}
-
-/* Scroll Button */
-.mfr-scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border: 2px solid #e8e8e8;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 20;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.mfr-scroll-btn:hover {
-    background: #f8f8f8;
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-}
-
-.mfr-scroll-btn i {
-    color: #333;
-    font-size: 16px;
-}
-
-.mfr-scroll-btn-right {
-    right: 10px;
-}
-
-/* Products Grid (Fallback) */
-.mfr-products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
 }
 
 /* Product Card */
@@ -932,13 +867,13 @@
     padding: 30px;
     border-radius: 12px;
     margin-top: 40px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid rgba(16, 80, 61, 0.1);
 }
 
 .premium-mfr-pagination {
@@ -991,21 +926,21 @@
 .premium-mfr-pagination .pagination a {
     color: #666;
     background: #ffffff;
-    border: 1px solid #e8e8e8;
+    border: 1px solid rgba(16, 80, 61, 0.2);
 }
 
 .premium-mfr-pagination .pagination a:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.3);
     border-color: transparent;
 }
 
 .premium-mfr-pagination .pagination .active span {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.3);
 }
 
 /* Premium Empty State */
@@ -1015,8 +950,8 @@
     padding: 80px 30px;
     background: #ffffff;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
+    border: 1px solid rgba(16, 80, 61, 0.1);
 }
 
 .premium-mfr-empty-content {
@@ -1026,14 +961,14 @@
 
 .premium-mfr-empty-icon {
     font-size: 72px;
-    color: #e0e0e0;
+    color: #A68A6A;
     margin-bottom: 20px;
 }
 
 .premium-mfr-empty-title {
     font-size: 26px;
     font-weight: 700;
-    color: #555;
+    color: #10503D;
     margin: 0 0 12px 0;
 }
 
@@ -1044,28 +979,82 @@
     line-height: 1.6;
 }
 
+/* Premium Description Section */
+#premium-mfr-description-section.premium-mfr-description-section {
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 16px;
+    margin-top: 40px;
+    box-shadow: 0 8px 30px rgba(16, 80, 61, 0.12);
+    border: 1px solid rgba(16, 80, 61, 0.1);
+}
+
+.premium-mfr-description-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.premium-mfr-description-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #10503D;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #A68A6A;
+    letter-spacing: -0.5px;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p {
+    margin-bottom: 15px;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content h1,
+#premium-mfr-description-content.premium-mfr-description-content h2,
+#premium-mfr-description-content.premium-mfr-description-content h3 {
+    color: #10503D;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content a {
+    color: #A68A6A;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content a:hover {
+    color: #10503D;
+    text-decoration: underline;
+}
+
 /* Hide module titles */
-.mfr-filter-sidebar .module-heading-wrapper,
-.mfr-filter-sidebar .section-head,
-.mfr-filter-sidebar h2,
-.mfr-filter-sidebar h3 {
+#premium-mfr-sidebar.premium-mfr-filter-sidebar .module-heading-wrapper,
+#premium-mfr-sidebar.premium-mfr-filter-sidebar .section-head,
+#premium-mfr-sidebar.premium-mfr-filter-sidebar h2,
+#premium-mfr-sidebar.premium-mfr-filter-sidebar h3 {
     display: none !important;
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
-    .mfr-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 15px;
+    .premium-mfr-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
     }
     
-    .mfr-brand-title {
-        font-size: 28px;
+    #premium-mfr-title.premium-mfr-brand-title {
+        font-size: 32px;
     }
 }
 
 @media (max-width: 992px) {
-    .mfr-filter-sidebar {
+    #premium-mfr-sidebar.premium-mfr-filter-sidebar {
         position: fixed;
         top: 0;
         right: -320px;
@@ -1079,11 +1068,11 @@
         padding-top: 60px;
     }
     
-    .mfr-filter-sidebar.filter-toggle-show {
+    #premium-mfr-sidebar.premium-mfr-filter-sidebar.filter-toggle-show {
         right: 0;
     }
     
-    .mfr-filter-sidebar .lc-close {
+    #premium-mfr-sidebar.premium-mfr-filter-sidebar .lc-close {
         display: flex !important;
         position: fixed;
         top: 16px;
@@ -1100,19 +1089,19 @@
         cursor: pointer;
     }
     
-    .mfr-filter-sidebar .lc-close:hover {
-        background: #6c5ce7;
+    #premium-mfr-sidebar.premium-mfr-filter-sidebar .lc-close:hover {
+        background: #10503D;
         color: #fff;
     }
     
     /* Filter toggle button */
-    .mfr-top-bar::before {
+    #premium-mfr-top-bar.premium-mfr-top-bar::before {
         content: 'Filter';
         display: flex;
         align-items: center;
         gap: 8px;
         padding: 8px 16px;
-        background: #6c5ce7;
+        background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
         color: #fff;
         border: none;
         border-radius: 4px;
@@ -1124,105 +1113,108 @@
 }
 
 @media (max-width: 768px) {
-    #mfr-wrapper.mfr-container {
+    #premium-manufacturer-wrapper.premium-mfr-container {
         padding: 15px;
     }
     
-    .mfr-brand-header {
-        padding: 20px;
+    #premium-mfr-brand-header.premium-mfr-brand-header {
+        padding: 25px 20px;
     }
     
-    .mfr-brand-info {
+    .premium-mfr-brand-info-wrapper {
         flex-direction: column;
         text-align: center;
     }
     
-    .mfr-brand-logo {
-        width: 100px;
-        height: 100px;
+    #premium-mfr-logo.premium-mfr-brand-logo {
+        width: 120px;
+        height: 120px;
     }
     
-    .mfr-brand-title {
-        font-size: 24px;
+    #premium-mfr-title.premium-mfr-brand-title {
+        font-size: 28px;
     }
     
-    .mfr-top-bar {
+    #premium-mfr-top-bar.premium-mfr-top-bar {
         flex-direction: column;
         align-items: stretch;
-        padding: 15px;
+        padding: 20px;
     }
     
-    .mfr-controls {
+    .premium-mfr-controls-wrapper {
         width: 100%;
         justify-content: space-between;
     }
     
-    .mfr-control-group {
+    .premium-mfr-control-group {
         flex: 1;
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 8px;
     }
     
-    .mfr-select {
+    .premium-mfr-select {
         width: 100%;
         min-width: auto;
     }
     
-    .mfr-products-grid {
+    .premium-mfr-products-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 15px;
     }
     
-    .mfr-product-card:hover {
-        transform: none;
+    .premium-mfr-product-card-inner:hover {
+        transform: translateY(-4px);
     }
     
-    .mfr-product-info {
-        padding: 12px;
+    .premium-mfr-product-info {
+        padding: 16px;
     }
     
-    .mfr-product-name {
-        font-size: 13px;
-        min-height: 36px;
+    .premium-mfr-product-name {
+        font-size: 14px;
+        min-height: 40px;
     }
     
-    .mfr-price-new {
-        font-size: 16px;
+    .premium-mfr-price-new {
+        font-size: 20px;
     }
     
-    .mfr-add-cart-btn {
-        padding: 10px;
-        font-size: 12px;
+    #premium-mfr-description-section.premium-mfr-description-section {
+        padding: 30px 20px;
     }
     
-    .mfr-footer {
+    .premium-mfr-description-title {
+        font-size: 24px;
+    }
+    
+    #premium-mfr-footer.premium-mfr-footer {
         flex-direction: column;
         align-items: stretch;
     }
 }
 
 @media (max-width: 480px) {
-    .mfr-brand-title {
+    #premium-mfr-title.premium-mfr-brand-title {
+        font-size: 24px;
+    }
+    
+    .premium-mfr-products-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .premium-mfr-product-name {
+        font-size: 13px;
+        min-height: 36px;
+    }
+    
+    .premium-mfr-price-new {
+        font-size: 18px;
+    }
+    
+    .premium-mfr-description-title {
         font-size: 20px;
-    }
-    
-    .mfr-products-grid {
-        gap: 10px;
-    }
-    
-    .mfr-product-name {
-        font-size: 12px;
-        min-height: 32px;
-    }
-    
-    .mfr-price-new {
-        font-size: 15px;
-    }
-    
-    .mfr-add-cart-btn {
-        padding: 9px;
-        font-size: 11px;
     }
 }
 </style>
