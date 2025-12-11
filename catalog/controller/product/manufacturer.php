@@ -243,17 +243,25 @@ class ControllerProductManufacturer extends Controller {
 				$product_total = $product_total ? (int)$product_total : 0;
 
 				$results = $this->model_catalog_product->getProducts($filter_data);
+				
+				// Ensure results is an array
 				if (!is_array($results)) {
 					$results = array();
-				} else {
-					// Convert associative array to numeric array if needed
-					// getProducts() returns array with product_id as keys
-					$results = array_values($results);
 				}
+				
+				// Filter out any false/null values and convert to numeric array
+				$valid_results = array();
+				foreach ($results as $key => $value) {
+					if (is_array($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
+						$valid_results[] = $value;
+					}
+				}
+				$results = $valid_results;
+				
 			} catch (Exception $e) {
 				$product_total = 0;
 				$results = array();
-			} catch (Error $e) {
+			} catch (Throwable $e) {
 				$product_total = 0;
 				$results = array();
 			}
