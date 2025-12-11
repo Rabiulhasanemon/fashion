@@ -167,15 +167,6 @@ class ControllerProductManufacturer extends Controller {
             $this->document->setDescription(isset($manufacturer_info['meta_description']) ? $manufacturer_info['meta_description'] : '');
             $this->document->setKeywords(isset($manufacturer_info['meta_keyword']) ? $manufacturer_info['meta_keyword'] : '');
 
-			// Debug: Check if products exist for this manufacturer (regardless of other filters)
-			if (isset($this->request->get['debug'])) {
-				$debug_query = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "'");
-				$debug_query_all = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
-				if (defined('DIR_LOGS')) {
-					$log = new Log('manufacturer_debug.log');
-					$log->write('Debug - Manufacturer ID: ' . $manufacturer_id . ' | All Products: ' . $debug_query->row['total'] . ' | Active Products in Store: ' . $debug_query_all->row['total']);
-				}
-			}
 
 			$url = '';
 
@@ -260,17 +251,20 @@ class ControllerProductManufacturer extends Controller {
 				$data['debug_info']['customer_group_id'] = $this->config->get('config_customer_group_id');
 				$data['debug_info']['filter_data'] = $filter_data;
 				
+				// Get database connection from registry
+				$db = $this->registry->get('db');
+				
 				// Check raw product counts
-				$raw_check = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+				$raw_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
 				$data['debug_info']['raw_products_count'] = $raw_check->row['total'];
 				
-				$active_check = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW()");
+				$active_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW()");
 				$data['debug_info']['active_products_count'] = $active_check->row['total'];
 				
-				$store_check = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
+				$store_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
 				$data['debug_info']['store_products_count'] = $store_check->row['total'];
 				
-				$lang_check = $this->db->query("SELECT COUNT(DISTINCT p.product_id) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "') LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+				$lang_check = $db->query("SELECT COUNT(DISTINCT p.product_id) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "') LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 				$data['debug_info']['lang_products_count'] = $lang_check->row['total'];
 			}
 			
