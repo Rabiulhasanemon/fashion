@@ -100,7 +100,7 @@ console.groupEnd();
 })();
 </script>
 <!-- Premium Manufacturer Slider Section -->
-<div id="premium-mfr-slider-section" class="premium-mfr-slider-wrapper">
+<div id="premium-mfr-slider-section" class="container premium-mfr-slider-wrapper">
   <div id="premium-mfr-slider-inner" class="premium-mfr-slider-inner">
     <div id="premium-mfr-slider-track" class="premium-mfr-slider-track">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
