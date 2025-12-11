@@ -908,58 +908,216 @@
     line-height: 1.6;
 }
 
-/* Premium Description Section */
+/* Premium Description Section - Animated */
 #premium-mfr-description-section.premium-mfr-description-section {
-    background: #ffffff;
-    padding: 50px 40px;
-    border-radius: 16px;
-    margin-top: 40px;
-    box-shadow: 0 8px 30px rgba(16, 80, 61, 0.12);
-    border: 1px solid rgba(16, 80, 61, 0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 30px 25px;
+    border-radius: 12px;
+    margin-top: 30px;
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.1);
+    border: 1px solid rgba(16, 80, 61, 0.08);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+#premium-mfr-description-section.premium-mfr-description-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #10503D 0%, #A68A6A 100%);
+    animation: slideDown 0.6s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        height: 0;
+    }
+    to {
+        height: 100%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .premium-mfr-description-wrapper {
-    max-width: 1000px;
+    max-width: auto;
     margin: 0 auto;
+    position: relative;
+    animation: fadeIn 1s ease-out 0.3s both;
 }
 
 .premium-mfr-description-title {
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 800;
     color: #10503D;
-    margin: 0 0 25px 0;
-    padding-bottom: 15px;
-    border-bottom: 3px solid #A68A6A;
-    letter-spacing: -0.5px;
+    margin: 0 0 18px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #10503D 0%, #A68A6A 100%) 1;
+    letter-spacing: -0.3px;
+    position: relative;
+    display: inline-block;
+    animation: slideInLeft 0.6s ease-out 0.4s both;
+}
+
+.premium-mfr-description-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #10503D 0%, #A68A6A 100%);
+    animation: expandWidth 0.8s ease-out 0.6s forwards;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes expandWidth {
+    to {
+        width: 100%;
+    }
 }
 
 #premium-mfr-description-content.premium-mfr-description-content {
-    font-size: 16px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.7;
     color: #555;
+    animation: fadeIn 1s ease-out 0.5s both;
+    position: relative;
 }
 
 #premium-mfr-description-content.premium-mfr-description-content p {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p:nth-child(1) {
+    animation-delay: 0.6s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p:nth-child(2) {
+    animation-delay: 0.7s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p:nth-child(3) {
+    animation-delay: 0.8s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p:nth-child(4) {
+    animation-delay: 0.9s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content p:nth-child(n+5) {
+    animation-delay: 1s;
 }
 
 #premium-mfr-description-content.premium-mfr-description-content h1,
 #premium-mfr-description-content.premium-mfr-description-content h2,
 #premium-mfr-description-content.premium-mfr-description-content h3 {
     color: #10503D;
-    margin-top: 25px;
-    margin-bottom: 15px;
+    margin-top: 18px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content h1 {
+    font-size: 20px;
+    animation-delay: 0.7s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content h2 {
+    font-size: 18px;
+    animation-delay: 0.75s;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content h3 {
+    font-size: 16px;
+    animation-delay: 0.8s;
 }
 
 #premium-mfr-description-content.premium-mfr-description-content a {
     color: #A68A6A;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    font-weight: 600;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #10503D 0%, #A68A6A 100%);
+    transition: width 0.3s ease;
 }
 
 #premium-mfr-description-content.premium-mfr-description-content a:hover {
     color: #10503D;
-    text-decoration: underline;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content a:hover::after {
+    width: 100%;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content ul,
+#premium-mfr-description-content.premium-mfr-description-content ol {
+    margin: 12px 0;
+    padding-left: 25px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.8s forwards;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content strong {
+    color: #10503D;
+    font-weight: 700;
+}
+
+#premium-mfr-description-content.premium-mfr-description-content em {
+    color: #A68A6A;
+    font-style: italic;
 }
 
 
@@ -1068,11 +1226,35 @@
     }
     
     #premium-mfr-description-section.premium-mfr-description-section {
-        padding: 25px 15px;
+        padding: 20px 15px;
+        margin-top: 20px;
     }
     
     .premium-mfr-description-title {
-        font-size: 22px;
+        font-size: 18px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content p {
+        margin-bottom: 8px;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content h1 {
+        font-size: 16px;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content h2 {
+        font-size: 15px;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content h3 {
+        font-size: 14px;
     }
     
     #premium-mfr-footer.premium-mfr-footer {
@@ -1112,7 +1294,11 @@
     }
     
     .premium-mfr-description-title {
-        font-size: 18px;
+        font-size: 16px;
+    }
+    
+    #premium-mfr-description-content.premium-mfr-description-content {
+        font-size: 11px;
     }
     
     .premium-mfr-image-wrapper {
