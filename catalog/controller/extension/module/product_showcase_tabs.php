@@ -7,7 +7,8 @@ class ControllerExtensionModuleProductShowcaseTabs extends Controller {
 		$this->load->model('tool/image');
 		$this->load->model('extension/module/product_showcase_tabs');
 
-		$data['heading_title'] = $this->language->get('heading_title');
+		// Use module name from admin if provided; fallback to language heading
+		$data['heading_title'] = !empty($setting['name']) ? $setting['name'] : $this->language->get('heading_title');
 
 		// Get module settings
 		$data['module_id'] = isset($setting['module_id']) ? $setting['module_id'] : 0;
