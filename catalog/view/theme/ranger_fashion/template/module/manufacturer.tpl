@@ -416,15 +416,16 @@ console.groupEnd();
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
-    color: #ffffff;
+    background: none;
+    background-color: transparent;
+    color: #000000;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
     z-index: 3;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
+    box-shadow: none;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -435,27 +436,22 @@ console.groupEnd();
 }
 
 .premium-mfr-slider-count::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-    animation: premiumMfrCountShine 3s ease-in-out infinite;
-    pointer-events: none;
+    display: none;
 }
 
 .premium-mfr-slider-card:hover .premium-mfr-slider-count {
-    background: linear-gradient(135deg, #A68A6A 0%, #8b6f4f 100%);
+    background: none;
+    background-color: transparent;
+    color: #000000;
     transform: translateX(-50%) scale(1.15);
-    box-shadow: 0 4px 15px rgba(166, 138, 106, 0.5);
+    box-shadow: none;
     animation: premiumMfrCountPulse 1s ease-in-out infinite, premiumMfrCountFloat 2s ease-in-out infinite, premiumMfrCountBounce 0.6s ease-in-out;
 }
 
 .premium-mfr-slider-count-number {
     font-size: 13px;
     font-weight: 800;
+    color: #000000;
     animation: premiumMfrCountNumberGlow 2s ease-in-out infinite;
     position: relative;
     z-index: 1;
@@ -463,7 +459,8 @@ console.groupEnd();
 
 .premium-mfr-slider-count-label {
     font-size: 10px;
-    opacity: 0.9;
+    opacity: 0.8;
+    color: #000000;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     position: relative;
@@ -474,10 +471,10 @@ console.groupEnd();
 /* Count Badge Animations */
 @keyframes premiumMfrCountPulse {
     0%, 100% {
-        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3), 0 0 0 0 rgba(16, 80, 61, 0.4);
+        opacity: 1;
     }
     50% {
-        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3), 0 0 0 8px rgba(16, 80, 61, 0);
+        opacity: 0.85;
     }
 }
 
@@ -515,10 +512,10 @@ console.groupEnd();
 
 @keyframes premiumMfrCountNumberGlow {
     0%, 100% {
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     }
     50% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+        text-shadow: 0 0 6px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2);
     }
 }
 
