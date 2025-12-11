@@ -156,9 +156,21 @@
                         <div class="product-head-info">
                             <h1 itemprop="name" class="name"><?php echo $heading_title; ?></h1>
 
-                            <?php if (isset($short_description) && $short_description) { ?>
+                            <?php 
+                            // Handle short_description - it might be an array or string
+                            $display_short_description = '';
+                            if (isset($short_description) && $short_description) {
+                                if (is_array($short_description)) {
+                                    $display_short_description = implode(' ', array_filter($short_description));
+                                } else {
+                                    $display_short_description = trim($short_description);
+                                }
+                            }
+                            if ($display_short_description) { 
+                            ?>
                             <div class="product-short-description" style="margin: 15px 0; padding: 12px 0; border-bottom: 1px solid #e9ecef; color: #555; font-size: 14px; line-height: 1.6;">
-                                <?php echo htmlspecialchars($short_description); ?>
+                                <strong style="color: #10503D; font-weight: 600; margin-right: 8px;">Short Description:</strong>
+                                <span><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
                             <?php } ?>
 
