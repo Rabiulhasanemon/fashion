@@ -77,6 +77,7 @@
                     <?php } ?>
                 </div>
             </div>
+            <?php } ?>
             
             <!-- Products Horizontal Scroll -->
             <?php if (isset($products) && $products) { ?>
