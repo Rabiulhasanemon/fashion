@@ -20,11 +20,6 @@
 <div id="premium-manufacturer-wrapper" class="premium-mfr-container">
     <div class="premium-mfr-flex-layout">
         
-        <!-- Filter Sidebar -->
-        <div id="premium-mfr-sidebar" class="premium-mfr-filter-sidebar">
-            <?php echo $column_left; ?>
-        </div>
-        
         <!-- Main Content -->
         <div id="premium-mfr-main" class="premium-mfr-main-content premium-mfr-grow">
             
@@ -104,12 +99,6 @@
                                         <img src="<?php echo isset($product['thumb']) ? $product['thumb'] : ''; ?>" alt="<?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?>" class="premium-mfr-product-image" loading="lazy" />
                                     </div>
                                 </a>
-                                
-                                <!-- Delivery Badge -->
-                                <div class="premium-mfr-delivery-badge">
-                                    <i class="fa fa-rocket"></i>
-                                    <span>12-24 Hours</span>
-                                </div>
                                 
                                 <div class="premium-mfr-product-info">
                                     <h3 class="premium-mfr-product-name">
@@ -234,60 +223,9 @@
     gap: 25px;
 }
 
-@media (min-width: 768px) {
-    .premium-mfr-flex-layout {
-        flex-direction: row;
-        gap: 25px;
-    }
-}
-
-/* Premium Filter Sidebar */
-#premium-mfr-sidebar.premium-mfr-filter-sidebar {
-    flex: none;
-    width: 100%;
-    max-width: 320px;
-    height: auto;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 28px;
-    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.08);
-    overflow-y: auto;
-    transition: all 0.3s ease;
-    display: block !important;
-    border: 1px solid rgba(16, 80, 61, 0.1);
-}
-
-@media (min-width: 768px) {
-    #premium-mfr-sidebar.premium-mfr-filter-sidebar {
-        position: sticky;
-        top: 25px;
-        max-height: calc(100vh - 50px);
-        height: auto;
-        display: block !important;
-    }
-}
-
-#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-track {
-    background: #f8f8f8;
-    border-radius: 10px;
-}
-
-#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb {
-    background: #A68A6A;
-    border-radius: 10px;
-}
-
-#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #10503D;
-}
-
 /* Premium Main Content */
 #premium-mfr-main.premium-mfr-main-content.premium-mfr-grow {
-    flex: 1;
+    width: 100%;
     min-width: 0;
 }
 
@@ -421,7 +359,7 @@
 
 .premium-mfr-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 25px;
     padding: 0;
 }
@@ -481,7 +419,6 @@
     align-items: center;
     justify-content: center;
     padding: 25px;
-    padding-bottom: 60px;
 }
 
 .premium-mfr-product-image {
@@ -494,30 +431,6 @@
 
 .premium-mfr-product-card-inner:hover .premium-mfr-product-image {
     transform: scale(1.08);
-}
-
-/* Premium Delivery Badge */
-.premium-mfr-delivery-badge {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
-    color: #fff;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 5;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.premium-mfr-delivery-badge i {
-    color: #A68A6A;
-    font-size: 16px;
 }
 
 /* Premium Product Info */
@@ -1033,18 +946,18 @@
     text-decoration: underline;
 }
 
-/* Hide module titles */
-#premium-mfr-sidebar.premium-mfr-filter-sidebar .module-heading-wrapper,
-#premium-mfr-sidebar.premium-mfr-filter-sidebar .section-head,
-#premium-mfr-sidebar.premium-mfr-filter-sidebar h2,
-#premium-mfr-sidebar.premium-mfr-filter-sidebar h3 {
-    display: none !important;
-}
 
 /* Responsive */
+@media (max-width: 1400px) {
+    .premium-mfr-products-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+}
+
 @media (max-width: 1200px) {
     .premium-mfr-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
     }
     
@@ -1054,61 +967,9 @@
 }
 
 @media (max-width: 992px) {
-    #premium-mfr-sidebar.premium-mfr-filter-sidebar {
-        position: fixed;
-        top: 0;
-        right: -320px;
-        width: 300px;
-        height: 100vh;
-        z-index: 1000;
-        border-radius: 0;
-        box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
-        transition: right 0.4s ease;
-        max-height: 100vh;
-        padding-top: 60px;
-    }
-    
-    #premium-mfr-sidebar.premium-mfr-filter-sidebar.filter-toggle-show {
-        right: 0;
-    }
-    
-    #premium-mfr-sidebar.premium-mfr-filter-sidebar .lc-close {
-        display: flex !important;
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        z-index: 1001;
-        background: #f5f7fa;
-        color: #64748b;
-        border-radius: 8px;
-        padding: 8px;
-        width: 32px;
-        height: 32px;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    
-    #premium-mfr-sidebar.premium-mfr-filter-sidebar .lc-close:hover {
-        background: #10503D;
-        color: #fff;
-    }
-    
-    /* Filter toggle button */
-    #premium-mfr-top-bar.premium-mfr-top-bar::before {
-        content: 'Filter';
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s ease;
+    .premium-mfr-products-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
     }
 }
 
