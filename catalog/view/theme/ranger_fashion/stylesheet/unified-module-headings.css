@@ -3,38 +3,72 @@
 /* EXCLUDES product names to maintain their own styling */
 
 /* ============================================
-   PREMIUM MODULE HEADING STYLE
+   PREMIUM MODULE HEADING STYLE - UNIFIED DESIGN
+   Orange Left Border Style (Same as Flash Deal)
    ============================================ */
+
+/* Premium Module Header Wrapper - Apply to all modules */
+.rf-module-header,
+.module-heading-wrapper,
+.featured-products__top,
+.latest-products__top,
+.special-products__top,
+.section-head,
+.bs-module-header,
+.rv-module-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 25px !important;
+  padding: 15px 20px !important;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-left: 4px solid #FF6A00 !important;
+  border-radius: 0 8px 8px 0 !important;
+  position: relative !important;
+}
+
+.rf-module-header::after,
+.module-heading-wrapper::after,
+.featured-products__top::after,
+.latest-products__top::after,
+.special-products__top::after,
+.section-head::after,
+.bs-module-header::after,
+.rv-module-heading::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
+}
+
 /* Primary unified classes - Module headings only */
 .cosmetics-module-heading,
 .unified-module-heading,
-.module-heading-title {
-  font-size: 32px !important;
+.module-heading-title,
+.rf-module-title {
+  font-size: 20px !important;
   font-weight: 700 !important;
-  color: #1a1a1a !important;
-  line-height: 1.2 !important;
+  color: #333333 !important;
+  line-height: 1.4 !important;
   text-align: left !important;
   margin: 0 !important;
-  padding: 24px 0 20px 0 !important;
-  text-transform: none !important;
-  letter-spacing: -0.03em !important;
+  padding: 0 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   position: relative !important;
   display: block !important;
 }
 
-/* Premium gradient underline accent - Enhanced */
+/* Remove underline accent - Using left border style now */
 .cosmetics-module-heading::after,
-.unified-module-heading::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 12px !important;
-  left: 0 !important;
-  width: 80px !important;
-  height: 4px !important;
-  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
-  border-radius: 4px !important;
-  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+.unified-module-heading::after,
+.module-heading-title::after,
+.rf-module-title::after {
+  display: none !important;
 }
 
 /* Bestseller module title */
