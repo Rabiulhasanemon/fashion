@@ -1,89 +1,104 @@
 <?php if ($products) { ?>
-<div id="rf-flash-deal-module" class="rf-flash-deal-wrapper">
+<div id="fd-module-wrapper" class="fd-module-container">
     <div class="container">
-        <!-- Premium Module Header - Consistent Style -->
-        <div class="rf-module-header" id="rf-flash-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
-            <div class="rf-module-header-left">
-                <h2 class="rf-module-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
+        <!-- Premium Module Header -->
+        <div class="fd-module-header-wrapper" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
+            <div class="fd-header-content">
+                <h2 class="fd-module-heading"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
             </div>
-            <div class="rf-module-header-right">
-                <div class="rf-carousel-nav">
-                    <button type="button" class="rf-nav-arrow rf-nav-prev" aria-label="Previous">
-                        <i class="fa fa-chevron-left"></i>
-                    </button>
-                    <button type="button" class="rf-nav-arrow rf-nav-next" aria-label="Next">
-                        <i class="fa fa-chevron-right"></i>
-                    </button>
-                </div>
+            <div class="fd-header-controls">
+                <button type="button" class="fd-control-btn fd-prev-btn" aria-label="Previous">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <button type="button" class="fd-control-btn fd-next-btn" aria-label="Next">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
             </div>
         </div>
         
-        <!-- Flash Deal Products -->
-        <div class="rf-flash-content">
-            <div id="rf-flash-carousel" class="rf-flash-carousel owl-carousel">
+        <!-- Flash Deal Products Carousel -->
+        <div class="fd-products-wrapper">
+            <div id="fd-products-carousel" class="fd-carousel owl-carousel">
                 <?php foreach ($products as $product) { ?>
-                <div class="rf-flash-item">
-                    <div class="rf-flash-card">
-                        <!-- Image Section -->
-                        <div class="rf-flash-image-box">
-                            <?php if ($product['discount']) { ?>
-                            <div class="rf-flash-badge">-<?php echo (int)$product['discount']; ?>%</div>
-                            <?php } ?>
-                            <a href="<?php echo $product['href']; ?>" class="rf-flash-img-link">
-                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="rf-flash-img">
+                <div class="fd-product-item">
+                    <div class="fd-product-card">
+                        <!-- Product Image Section -->
+                        <div class="fd-image-container">
+                            <a href="<?php echo $product['href']; ?>" class="fd-image-link">
+                                <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="fd-product-image">
                             </a>
-                            <div class="rf-flash-quick-actions">
-                                <button type="button" class="rf-quick-btn" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
+                            
+                            <!-- Discount Badge - Top Right Corner -->
+                            <?php if ($product['discount']) { ?>
+                            <div class="fd-discount-label">-<?php echo (int)$product['discount']; ?>%</div>
+                            <?php } ?>
+                            
+                            <!-- Quick Action Buttons -->
+                            <div class="fd-action-buttons">
+                                <button type="button" class="fd-action-btn" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
                                     <i class="fa fa-heart-o"></i>
                                 </button>
-                                <button type="button" class="rf-quick-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                <button type="button" class="fd-action-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
                                     <i class="fa fa-exchange"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Info Section -->
-                        <div class="rf-flash-info-box">
+                        <!-- Product Info Section -->
+                        <div class="fd-info-container">
+                            <!-- Category -->
                             <?php if ($product['category_name']) { ?>
-                            <div class="rf-flash-category"><?php echo htmlspecialchars($product['category_name']); ?></div>
+                            <div class="fd-category-text"><?php echo htmlspecialchars($product['category_name']); ?></div>
                             <?php } ?>
                             
-                            <h3 class="rf-flash-name">
+                            <!-- Product Name -->
+                            <h3 class="fd-product-title">
                                 <a href="<?php echo $product['href']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
                             </h3>
                             
-                            <div class="rf-flash-stars">
+                            <!-- Star Rating -->
+                            <div class="fd-rating-stars">
                                 <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                <i class="fa fa-star <?php echo ($i <= $product['rating']) ? 'rf-star-filled' : 'rf-star-empty'; ?>"></i>
+                                <i class="fa fa-star <?php echo ($i <= $product['rating']) ? 'fd-star-active' : 'fd-star-inactive'; ?>"></i>
                                 <?php } ?>
                             </div>
                             
-                            <div class="rf-flash-price-row">
+                            <!-- Price Section -->
+                            <div class="fd-price-section">
                                 <?php if ($product['special']) { ?>
-                                <span class="rf-flash-old-price"><?php echo $product['price']; ?></span>
-                                <span class="rf-flash-new-price"><?php echo $product['special']; ?></span>
+                                <span class="fd-price-original"><?php echo $product['price']; ?></span>
+                                <span class="fd-price-current"><?php echo $product['special']; ?></span>
                                 <?php } else { ?>
-                                <span class="rf-flash-new-price"><?php echo $product['price']; ?></span>
+                                <span class="fd-price-current"><?php echo $product['price']; ?></span>
                                 <?php } ?>
                             </div>
                             
+                            <!-- Countdown Timer - Orange Square Boxes -->
                             <?php if (!empty($product['end_date'])) { ?>
-                            <div class="rf-flash-timer" data-end-date="<?php echo htmlspecialchars($product['end_date']); ?>">
-                                <div class="rf-timer-box">
-                                    <span class="rf-timer-num">00</span>
-                                    <span class="rf-timer-txt">Days</span>
+                            <div class="fd-countdown-wrapper" data-end-date="<?php echo htmlspecialchars($product['end_date']); ?>">
+                                <div class="fd-timer-unit">
+                                    <div class="fd-timer-box">
+                                        <span class="fd-timer-value">00</span>
+                                    </div>
+                                    <span class="fd-timer-label">Days</span>
                                 </div>
-                                <div class="rf-timer-box">
-                                    <span class="rf-timer-num">00</span>
-                                    <span class="rf-timer-txt">Hrs</span>
+                                <div class="fd-timer-unit">
+                                    <div class="fd-timer-box">
+                                        <span class="fd-timer-value">00</span>
+                                    </div>
+                                    <span class="fd-timer-label">Hrs</span>
                                 </div>
-                                <div class="rf-timer-box">
-                                    <span class="rf-timer-num">00</span>
-                                    <span class="rf-timer-txt">Min</span>
+                                <div class="fd-timer-unit">
+                                    <div class="fd-timer-box">
+                                        <span class="fd-timer-value">00</span>
+                                    </div>
+                                    <span class="fd-timer-label">Min</span>
                                 </div>
-                                <div class="rf-timer-box">
-                                    <span class="rf-timer-num">00</span>
-                                    <span class="rf-timer-txt">Sec</span>
+                                <div class="fd-timer-unit">
+                                    <div class="fd-timer-box">
+                                        <span class="fd-timer-value">00</span>
+                                    </div>
+                                    <span class="fd-timer-label">Sec</span>
                                 </div>
                             </div>
                             <?php } ?>
@@ -98,18 +113,18 @@
 
 <style>
 /* =================================================
-   PREMIUM FLASH DEAL MODULE - RF PREFIX
-   New unique classes to avoid conflicts
+   FLASH DEAL MODULE - NEW PREMIUM DESIGN
+   FD Prefix - All New Classes to Avoid Conflicts
    ================================================= */
 
-#rf-flash-deal-module.rf-flash-deal-wrapper {
+#fd-module-wrapper.fd-module-container {
     padding: 30px 0;
     background: #ffffff;
     position: relative;
 }
 
-/* Premium Module Header - Global Style for All Modules */
-.rf-module-header {
+/* Module Header */
+.fd-module-header-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -121,7 +136,7 @@
     position: relative;
 }
 
-.rf-module-header::after {
+.fd-module-header-wrapper::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -131,44 +146,28 @@
     background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%);
 }
 
-.rf-module-header-left {
+.fd-header-content {
     flex: 1;
 }
 
-.rf-module-title {
+.fd-module-heading {
     font-size: 20px;
     font-weight: 700;
     color: #333333;
     margin: 0;
+    padding: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    position: relative;
-    display: inline-block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.4;
 }
 
-.rf-module-title::before {
-    content: '';
-    position: absolute;
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 100%;
-    background: #FF6A00;
-    border-radius: 2px;
-    display: none;
-}
-
-.rf-module-header-right {
-    flex-shrink: 0;
-}
-
-.rf-carousel-nav {
+.fd-header-controls {
     display: flex;
     gap: 10px;
 }
 
-.rf-nav-arrow {
+.fd-control-btn {
     width: 40px;
     height: 40px;
     border: 2px solid #e0e0e0;
@@ -183,51 +182,51 @@
     font-size: 14px;
 }
 
-.rf-nav-arrow:hover {
+.fd-control-btn:hover {
     background: #FF6A00;
     color: #ffffff;
     border-color: #FF6A00;
     transform: scale(1.05);
 }
 
-.rf-nav-arrow:active {
+.fd-control-btn:active {
     transform: scale(0.95);
 }
 
-/* Flash Deal Content */
-.rf-flash-content {
+/* Products Wrapper */
+.fd-products-wrapper {
     position: relative;
 }
 
-.rf-flash-carousel {
+.fd-carousel {
     position: relative;
 }
 
-/* Flash Card */
-.rf-flash-card {
+/* Product Card */
+.fd-product-card {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     margin: 5px;
     border: 1px solid #f0f0f0;
 }
 
-.rf-flash-card:hover {
+.fd-product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-/* Image Box */
-.rf-flash-image-box {
+/* Image Container */
+.fd-image-container {
     position: relative;
     padding-top: 100%;
     overflow: hidden;
     background: #f8f9fa;
 }
 
-.rf-flash-img-link {
+.fd-image-link {
     position: absolute;
     top: 0;
     left: 0;
@@ -239,7 +238,7 @@
     padding: 15px;
 }
 
-.rf-flash-img {
+.fd-product-image {
     max-width: 100%;
     max-height: 100%;
     width: auto;
@@ -248,44 +247,44 @@
     transition: transform 0.4s ease;
 }
 
-.rf-flash-card:hover .rf-flash-img {
+.fd-product-card:hover .fd-product-image {
     transform: scale(1.08);
 }
 
-/* Discount Badge */
-.rf-flash-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #FF6A00;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 13px;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
-}
-
-/* Quick Actions */
-.rf-flash-quick-actions {
+/* Discount Badge - Top Right Corner (Yellow) */
+.fd-discount-label {
     position: absolute;
     top: 12px;
     right: 12px;
+    background: #FFC107;
+    color: #000000;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
+}
+
+/* Action Buttons */
+.fd-action-buttons {
+    position: absolute;
+    top: 12px;
+    left: 12px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     opacity: 0;
-    transform: translateX(10px);
+    transform: translateX(-10px);
     transition: all 0.3s ease;
 }
 
-.rf-flash-card:hover .rf-flash-quick-actions {
+.fd-product-card:hover .fd-action-buttons {
     opacity: 1;
     transform: translateX(0);
 }
 
-.rf-quick-btn {
+.fd-action-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -301,30 +300,31 @@
     font-size: 14px;
 }
 
-.rf-quick-btn:hover {
+.fd-action-btn:hover {
     background: #FF6A00;
     color: #ffffff;
     transform: scale(1.1);
 }
 
-/* Info Box */
-.rf-flash-info-box {
+/* Info Container */
+.fd-info-container {
     padding: 18px;
     text-align: left;
 }
 
-.rf-flash-category {
+/* Category Text - Grey */
+.fd-category-text {
     font-size: 12px;
-    color: #FF6A00;
+    color: #999999;
     text-transform: capitalize;
-    letter-spacing: 0.3px;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
-.rf-flash-name {
+/* Product Title */
+.fd-product-title {
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     margin: 0 0 10px 0;
     line-height: 1.4;
     min-height: 42px;
@@ -334,93 +334,102 @@
     overflow: hidden;
 }
 
-.rf-flash-name a {
+.fd-product-title a {
     color: #333333;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
-.rf-flash-name a:hover {
+.fd-product-title a:hover {
     color: #FF6A00;
 }
 
-/* Stars */
-.rf-flash-stars {
-    margin-bottom: 10px;
+/* Star Rating */
+.fd-rating-stars {
+    margin-bottom: 12px;
+    display: flex;
+    gap: 2px;
 }
 
-.rf-flash-stars i {
+.fd-rating-stars i {
     font-size: 13px;
-    margin-right: 2px;
 }
 
-.rf-flash-stars .rf-star-filled {
+.fd-rating-stars .fd-star-active {
     color: #FFC107;
 }
 
-.rf-flash-stars .rf-star-empty {
+.fd-rating-stars .fd-star-inactive {
     color: #e0e0e0;
 }
 
-/* Price Row */
-.rf-flash-price-row {
+/* Price Section */
+.fd-price-section {
     margin-bottom: 15px;
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
-.rf-flash-old-price {
+.fd-price-original {
     font-size: 14px;
     color: #999999;
     text-decoration: line-through;
 }
 
-.rf-flash-new-price {
+.fd-price-current {
     font-size: 20px;
     font-weight: 700;
     color: #FF6A00;
 }
 
-/* Countdown Timer - Orange Theme */
-.rf-flash-timer {
+/* Countdown Timer - Orange Square Boxes */
+.fd-countdown-wrapper {
     display: flex;
     gap: 8px;
     justify-content: flex-start;
+    margin-bottom: 0;
 }
 
-.rf-timer-box {
+.fd-timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.fd-timer-box {
     background: #FF6A00;
-    border-radius: 6px;
-    padding: 8px 10px;
-    min-width: 50px;
-    text-align: center;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
     box-shadow: 0 2px 6px rgba(255, 106, 0, 0.25);
 }
 
-.rf-timer-num {
-    display: block;
-    font-size: 16px;
+.fd-timer-value {
+    font-size: 18px;
     font-weight: 700;
     color: #ffffff;
     line-height: 1;
 }
 
-.rf-timer-txt {
-    display: block;
+.fd-timer-label {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.9);
+    color: #666666;
     text-transform: capitalize;
-    margin-top: 3px;
-    letter-spacing: 0.3px;
+    font-weight: 500;
 }
 
-/* Owl Carousel Navigation */
-#rf-flash-carousel.owl-carousel .owl-nav {
+/* Owl Carousel */
+#fd-products-carousel.owl-carousel .owl-nav {
     display: none;
 }
 
-#rf-flash-carousel.owl-carousel .owl-dots {
+#fd-products-carousel.owl-carousel .owl-dots {
     display: none;
 }
 
@@ -429,134 +438,142 @@
    ================================================= */
 
 @media (max-width: 1200px) {
-    .rf-flash-name {
+    .fd-product-title {
         font-size: 14px;
         min-height: 40px;
     }
     
-    .rf-flash-new-price {
+    .fd-price-current {
         font-size: 18px;
+    }
+    
+    .fd-timer-box {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .fd-timer-value {
+        font-size: 16px;
     }
 }
 
 @media (max-width: 991px) {
-    #rf-flash-deal-module.rf-flash-deal-wrapper {
+    #fd-module-wrapper.fd-module-container {
         padding: 25px 0;
     }
     
-    .rf-module-title {
+    .fd-module-heading {
         font-size: 18px;
     }
     
-    .rf-flash-card {
+    .fd-product-card {
         margin: 5px 3px;
     }
 }
 
 @media (max-width: 768px) {
-    #rf-flash-deal-module.rf-flash-deal-wrapper {
+    #fd-module-wrapper.fd-module-container {
         padding: 20px 0;
     }
     
-    .rf-module-header {
+    .fd-module-header-wrapper {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
         padding: 12px 15px;
     }
     
-    .rf-module-header-right {
+    .fd-header-controls {
         width: 100%;
-        display: flex;
         justify-content: flex-end;
     }
     
-    .rf-module-title {
+    .fd-module-heading {
         font-size: 16px;
     }
     
-    .rf-nav-arrow {
+    .fd-control-btn {
         width: 36px;
         height: 36px;
         font-size: 12px;
     }
     
-    .rf-flash-info-box {
+    .fd-info-container {
         padding: 15px;
     }
     
-    .rf-flash-name {
+    .fd-product-title {
         font-size: 13px;
         min-height: 36px;
     }
     
-    .rf-flash-new-price {
+    .fd-price-current {
         font-size: 16px;
     }
     
-    .rf-flash-old-price {
+    .fd-price-original {
         font-size: 12px;
     }
     
-    .rf-timer-box {
-        min-width: 45px;
-        padding: 6px 8px;
+    .fd-timer-box {
+        width: 40px;
+        height: 40px;
     }
     
-    .rf-timer-num {
+    .fd-timer-value {
         font-size: 14px;
     }
     
-    .rf-timer-txt {
+    .fd-timer-label {
         font-size: 9px;
     }
 }
 
 @media (max-width: 480px) {
-    .rf-module-header {
+    .fd-module-header-wrapper {
         padding: 10px 12px;
     }
     
-    .rf-module-title {
+    .fd-module-heading {
         font-size: 14px;
     }
     
-    .rf-nav-arrow {
+    .fd-control-btn {
         width: 32px;
         height: 32px;
     }
     
-    .rf-flash-info-box {
+    .fd-info-container {
         padding: 12px;
     }
     
-    .rf-flash-category {
+    .fd-category-text {
         font-size: 11px;
     }
     
-    .rf-flash-name {
+    .fd-product-title {
         font-size: 12px;
         min-height: 34px;
     }
     
-    .rf-flash-new-price {
+    .fd-price-current {
         font-size: 15px;
     }
     
-    .rf-timer-box {
-        min-width: 40px;
-        padding: 5px 6px;
+    .fd-timer-box {
+        width: 35px;
+        height: 35px;
     }
     
-    .rf-timer-num {
+    .fd-timer-value {
         font-size: 12px;
     }
     
-    .rf-timer-txt {
+    .fd-timer-label {
         font-size: 8px;
     }
     
-    .rf-flash-badge {
+    .fd-discount-label {
         font-size: 11px;
         padding: 4px 10px;
     }
@@ -565,9 +582,9 @@
 
 <script>
 jQuery(document).ready(function($) {
-    var $carousel = $('#rf-flash-carousel');
-    var $prevBtn = $('.rf-nav-prev');
-    var $nextBtn = $('.rf-nav-next');
+    var $carousel = $('#fd-products-carousel');
+    var $prevBtn = $('.fd-prev-btn');
+    var $nextBtn = $('.fd-next-btn');
     
     // Initialize Owl Carousel
     if (typeof $.fn.owlCarousel !== 'undefined') {
@@ -616,7 +633,7 @@ jQuery(document).ready(function($) {
     }
     
     // Countdown timers
-    $('.rf-flash-timer').each(function() {
+    $('.fd-countdown-wrapper').each(function() {
         var $timer = $(this);
         var endDate = $timer.data('end-date');
         if (!endDate) return;
@@ -624,17 +641,17 @@ jQuery(document).ready(function($) {
         var targetDate = new Date(endDate);
         if (isNaN(targetDate.getTime())) return;
         
-        var $boxes = $timer.find('.rf-timer-box');
+        var $units = $timer.find('.fd-timer-unit');
         
         function updateTimer() {
             var now = new Date().getTime();
             var distance = targetDate.getTime() - now;
             
             if (distance < 0) {
-                $boxes.eq(0).find('.rf-timer-num').text('00');
-                $boxes.eq(1).find('.rf-timer-num').text('00');
-                $boxes.eq(2).find('.rf-timer-num').text('00');
-                $boxes.eq(3).find('.rf-timer-num').text('00');
+                $units.eq(0).find('.fd-timer-value').text('00');
+                $units.eq(1).find('.fd-timer-value').text('00');
+                $units.eq(2).find('.fd-timer-value').text('00');
+                $units.eq(3).find('.fd-timer-value').text('00');
                 return;
             }
             
@@ -643,10 +660,10 @@ jQuery(document).ready(function($) {
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
-            $boxes.eq(0).find('.rf-timer-num').text(String(days).padStart(2, '0'));
-            $boxes.eq(1).find('.rf-timer-num').text(String(hours).padStart(2, '0'));
-            $boxes.eq(2).find('.rf-timer-num').text(String(minutes).padStart(2, '0'));
-            $boxes.eq(3).find('.rf-timer-num').text(String(seconds).padStart(2, '0'));
+            $units.eq(0).find('.fd-timer-value').text(String(days).padStart(2, '0'));
+            $units.eq(1).find('.fd-timer-value').text(String(hours).padStart(2, '0'));
+            $units.eq(2).find('.fd-timer-value').text(String(minutes).padStart(2, '0'));
+            $units.eq(3).find('.fd-timer-value').text(String(seconds).padStart(2, '0'));
         }
         
         updateTimer();
