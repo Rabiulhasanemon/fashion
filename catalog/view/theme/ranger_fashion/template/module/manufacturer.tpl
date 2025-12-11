@@ -147,29 +147,45 @@ console.groupEnd();
 </div>
 
 <script>
-// Clone brands for seamless infinite scrolling
+// Clone brands multiple times for truly seamless infinite scrolling
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
         const track = document.getElementById('premium-mfr-slider-track');
         if (track && track.children.length > 0) {
-            // Clone all brand cards for seamless loop
+            // Clone all brand cards multiple times for seamless infinite loop
             const originalCards = Array.from(track.children);
-            originalCards.forEach(function(card) {
-                const clone = card.cloneNode(true);
-                // Update data-index for cloned items
-                const originalIndex = card.getAttribute('data-index');
-                if (originalIndex !== null) {
-                    clone.setAttribute('data-index', originalIndex + '_clone');
-                }
-                track.appendChild(clone);
-            });
+            const totalCards = originalCards.length;
+            
+            // Clone 3 times to ensure seamless scrolling (original + 3 clones = 4 sets)
+            for (let cloneSet = 0; cloneSet < 3; cloneSet++) {
+                originalCards.forEach(function(card, index) {
+                    const clone = card.cloneNode(true);
+                    // Update data-index for cloned items
+                    const originalIndex = card.getAttribute('data-index');
+                    if (originalIndex !== null) {
+                        clone.setAttribute('data-index', originalIndex + '_clone_' + cloneSet);
+                    }
+                    // Update href to prevent duplicate link issues
+                    const link = clone.querySelector('a') || clone;
+                    if (link.tagName === 'A') {
+                        const originalHref = link.getAttribute('href');
+                        if (originalHref) {
+                            link.setAttribute('href', originalHref + (cloneSet > 0 ? '#clone' + cloneSet : ''));
+                        }
+                    }
+                    track.appendChild(clone);
+                });
+            }
+            
+            // Ensure smooth animation restart
+            track.style.animation = 'premiumMfrSlide 50s linear infinite';
         }
     });
 })();
 </script>
 
-<!-- Keep old section for backward compatibility -->
-<div id="manufacturer-brand-section" class="container brandloop24_section manufacturer-display-wrapper">
+<!-- Old section hidden - using premium slider instead -->
+<div id="manufacturer-brand-section" class="container brandloop24_section manufacturer-display-wrapper" style="display: none !important;">
   <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
       <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
@@ -291,8 +307,10 @@ console.groupEnd();
     display: flex;
     gap: 20px;
     width: max-content;
-    animation: premiumMfrSlide 40s linear infinite;
+    animation: premiumMfrSlide 50s linear infinite;
     will-change: transform;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
 
 .premium-mfr-slider-card {
@@ -439,14 +457,15 @@ console.groupEnd();
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-50%);
+        transform: translateX(-25%);
     }
 }
 
-/* Ensure seamless loop - reset animation when it completes */
+/* Ensure seamless infinite loop - animation restarts smoothly */
 #premium-mfr-slider-track.premium-mfr-slider-track {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+    animation-fill-mode: both;
 }
 
 /* Pause animation on hover */
@@ -535,14 +554,14 @@ console.groupEnd();
     }
 }
 
-/* Manufacturer Section - Unique IDs and Classes to Avoid Conflicts */
+/* Manufacturer Section - Hidden (using premium slider instead) */
 #manufacturer-brand-section.brandloop24_section.manufacturer-display-wrapper {
-  padding: 20px 0px !important;
-  background: #ffffff !important;
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
   overflow: hidden !important;
-  position: relative !important;
-  display: block !important;
-  visibility: visible !important;
 }
 #manufacturer-brand-section.brandloop24_section.manufacturer-display-wrapper::before {
   content: '';
