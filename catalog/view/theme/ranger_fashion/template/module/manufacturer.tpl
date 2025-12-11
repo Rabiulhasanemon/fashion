@@ -99,6 +99,8 @@ console.groupEnd();
   });
 })();
 </script>
+
+<div class="container">
 <!-- Premium Manufacturer Slider Section -->
 <div id="premium-mfr-slider-section" class="container premium-mfr-slider-wrapper">
   <div id="premium-mfr-slider-inner" class="premium-mfr-slider-inner">
@@ -263,7 +265,7 @@ console.groupEnd();
     </div>
   </div>
 </div>
-
+</div>
 <style>
 /* Premium Manufacturer Slider - New Premium Design */
 #premium-mfr-slider-section.premium-mfr-slider-wrapper {
