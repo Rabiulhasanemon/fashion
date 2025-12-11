@@ -712,14 +712,14 @@
 }
 
 .premium-mfr-price-old {
-    font-size: 12px;
+    font-size: 11px;
     color: #999;
     text-decoration: line-through;
     font-weight: 500;
 }
 
 .premium-mfr-price-new {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 800;
     color: #10503D;
     letter-spacing: -0.5px;
@@ -1409,7 +1409,11 @@
     }
     
     .premium-mfr-price-new {
-        font-size: 18px;
+        font-size: 14px;
+    }
+    
+    .premium-mfr-price-old {
+        font-size: 10px;
     }
     
     .premium-mfr-add-btn {
@@ -1477,7 +1481,11 @@
     }
     
     .premium-mfr-price-new {
-        font-size: 16px;
+        font-size: 13px;
+    }
+    
+    .premium-mfr-price-old {
+        font-size: 9px;
     }
     
     .premium-mfr-add-btn {
