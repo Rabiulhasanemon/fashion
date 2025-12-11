@@ -2,9 +2,41 @@
 class ModelCatalogManufacturer extends Model {
 
     public function getManufacturer($manufacturer_id) {
-        $query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "manufacturer m LEFT JOIN " . DB_PREFIX . "manufacturer_description md ON (m.manufacturer_id = md.manufacturer_id) LEFT JOIN " . DB_PREFIX . "manufacturer_to_store c2s ON (m.manufacturer_id = c2s.manufacturer_id) WHERE m.manufacturer_id = '" . (int)$manufacturer_id . "' AND md.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
-
-        return $query->row;
+        // First, get the manufacturer (must exist)
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+        
+        if (!$query->num_rows) {
+            return false;
+        }
+        
+        $manufacturer = $query->row;
+        
+        // Get description if available for current language
+        $query_desc = $this->db->query("SELECT name, description, meta_title, meta_description, meta_keyword FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+        if ($query_desc->num_rows) {
+            // Merge description fields into manufacturer array (override base table fields if description exists)
+            foreach ($query_desc->row as $key => $value) {
+                if ($value !== null && $value !== '') {
+                    $manufacturer[$key] = $value;
+                }
+            }
+        }
+        
+        // Ensure name field exists - use from description if available, otherwise from base table
+        if (empty($manufacturer['name']) && isset($manufacturer['manufacturer_id'])) {
+            // Try to get name from any language if current language doesn't have it
+            $query_name = $this->db->query("SELECT name FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "' LIMIT 1");
+            if ($query_name->num_rows && !empty($query_name->row['name'])) {
+                $manufacturer['name'] = $query_name->row['name'];
+            }
+        }
+        
+        // Check store assignment (optional - we'll return manufacturer even if not assigned)
+        // But we can add a flag to indicate store assignment status
+        $query_store = $this->db->query("SELECT store_id FROM " . DB_PREFIX . "manufacturer_to_store WHERE manufacturer_id = '" . (int)$manufacturer_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
+        $manufacturer['store_assigned'] = $query_store->num_rows > 0;
+        
+        return $manufacturer;
     }
 
 	public function getManufacturers($data = array()) {

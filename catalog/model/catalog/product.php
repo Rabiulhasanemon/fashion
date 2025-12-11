@@ -157,8 +157,11 @@ class ModelCatalogProduct extends Model {
 			$sql .= ")";
 		}
 
-		if (!empty($data['filter_manufacturer_id'])) {
+		if (isset($data['filter_manufacturer_id']) && $data['filter_manufacturer_id'] > 0) {
 			$sql .= " AND p.manufacturer_id = '" . (int)$data['filter_manufacturer_id'] . "'";
+		} elseif (isset($data['filter_manufacturer_id']) && $data['filter_manufacturer_id'] == 0) {
+			// Explicitly handle manufacturer_id = 0 (no manufacturer)
+			$sql .= " AND (p.manufacturer_id = '0' OR p.manufacturer_id IS NULL)";
 		}
 
         if (!empty($data['filter_price_from'])) {
@@ -217,7 +220,11 @@ class ModelCatalogProduct extends Model {
 
 
 		foreach ($query->rows as $result) {
-			$product_data[$result['product_id']] = $this->getProduct($result['product_id']);
+			$product = $this->getProduct($result['product_id']);
+			// Only add products that successfully loaded (not false)
+			if ($product !== false && is_array($product)) {
+				$product_data[$result['product_id']] = $product;
+			}
 		}
 
 		return $product_data;
@@ -526,8 +533,11 @@ class ModelCatalogProduct extends Model {
 			$sql .= ")";
 		}
 
-		if (!empty($data['filter_manufacturer_id'])) {
+		if (isset($data['filter_manufacturer_id']) && $data['filter_manufacturer_id'] > 0) {
 			$sql .= " AND p.manufacturer_id = '" . (int)$data['filter_manufacturer_id'] . "'";
+		} elseif (isset($data['filter_manufacturer_id']) && $data['filter_manufacturer_id'] == 0) {
+			// Explicitly handle manufacturer_id = 0 (no manufacturer)
+			$sql .= " AND (p.manufacturer_id = '0' OR p.manufacturer_id IS NULL)";
 		}
 
         if (!empty($data['filter_price_from'])) {
