@@ -241,33 +241,22 @@ class ControllerProductManufacturer extends Controller {
 			
 			try {
 				$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
-				if ($product_total) {
-					$product_total = (int)$product_total;
-				} else {
-					$product_total = 0;
-				}
+				$product_total = $product_total ? (int)$product_total : 0;
 
 				$results = $this->model_catalog_product->getProducts($filter_data);
 				
-				// Ensure results is an array
 				if (!is_array($results)) {
 					$results = array();
-				}
-				
-				// Filter out any false/null values and convert to numeric array
-				// getProducts() returns associative array with product_id as keys
-				// Some values might be false if getProduct() fails
-				$valid_results = array();
-				if (!empty($results) && is_array($results)) {
+				} else {
+					// Convert associative array to numeric array and filter invalid products
+					$valid_results = array();
 					foreach ($results as $key => $value) {
-						// Only skip if value is not an array or doesn't have valid product_id
 						if (is_array($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
 							$valid_results[] = $value;
 						}
 					}
+					$results = $valid_results;
 				}
-				$results = $valid_results;
-				
 			} catch (Exception $e) {
 				$product_total = 0;
 				$results = array();
@@ -313,22 +302,30 @@ class ControllerProductManufacturer extends Controller {
                             $disablePurchase = true;
                         }
 
-                        if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+                        if (($this->config->get('config_customer_price') && isset($this->customer) && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
                             $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
                             $product_price = isset($result['price']) ? $result['price'] : 0;
-                            $price = $this->currency->format($this->tax->calculate($product_price, $tax_class_id, $this->config->get('config_tax')));
+                            if (isset($this->tax) && isset($this->currency)) {
+                                $price = $this->currency->format($this->tax->calculate($product_price, $tax_class_id, $this->config->get('config_tax')));
+                            } else {
+                                $price = $this->currency->format($product_price);
+                            }
                         } else {
                             $price = false;
                         }
 
                         if (isset($result['special']) && (float)$result['special']) {
                             $tax_class_id = isset($result['tax_class_id']) ? $result['tax_class_id'] : 0;
-                            $special = $this->currency->format($this->tax->calculate($result['special'], $tax_class_id, $this->config->get('config_tax')));
+                            if (isset($this->tax) && isset($this->currency)) {
+                                $special = $this->currency->format($this->tax->calculate($result['special'], $tax_class_id, $this->config->get('config_tax')));
+                            } else {
+                                $special = $this->currency->format($result['special']);
+                            }
                         } else {
                             $special = false;
                         }
 
-                        if ($this->config->get('config_tax')) {
+                        if ($this->config->get('config_tax') && isset($this->currency)) {
                             $special_price = isset($result['special']) ? $result['special'] : 0;
                             $product_price = isset($result['price']) ? $result['price'] : 0;
                             $tax = $this->currency->format((float)$special_price ? $special_price : $product_price);
