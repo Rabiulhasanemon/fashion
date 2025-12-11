@@ -17,44 +17,44 @@
     </div>
 </section>
 
-<div id="mfr-wrapper" class="mfr-container">
-    <div class="mfr-flex-layout">
+<div id="premium-manufacturer-wrapper" class="premium-mfr-container">
+    <div class="premium-mfr-flex-layout">
         
         <!-- Filter Sidebar -->
-        <div class="mfr-filter-sidebar">
+        <div id="premium-mfr-sidebar" class="premium-mfr-filter-sidebar">
             <?php echo $column_left; ?>
         </div>
         
         <!-- Main Content -->
-        <div class="mfr-main-content grow">
+        <div id="premium-mfr-main" class="premium-mfr-main-content premium-mfr-grow">
             
-            <!-- Brand Header -->
+            <!-- Premium Brand Header -->
             <?php if (isset($heading_title)) { ?>
-            <div class="mfr-brand-header">
-                <div class="mfr-brand-info">
+            <div id="premium-mfr-brand-header" class="premium-mfr-brand-header">
+                <div class="premium-mfr-brand-info-wrapper">
                     <?php if (isset($manufacturer_info) && $manufacturer_info && isset($manufacturer_info['image']) && $manufacturer_info['image']) { ?>
-                    <div class="mfr-brand-logo">
+                    <div id="premium-mfr-logo" class="premium-mfr-brand-logo">
                         <img src="<?php echo $manufacturer_info['image']; ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" />
                     </div>
                     <?php } ?>
-                    <div class="mfr-brand-details">
-                        <h1 class="mfr-brand-title"><?php echo $heading_title; ?></h1>
+                    <div id="premium-mfr-details" class="premium-mfr-brand-details">
+                        <h1 id="premium-mfr-title" class="premium-mfr-brand-title"><?php echo $heading_title; ?></h1>
                         <?php if (isset($description) && $description) { ?>
-                        <div class="mfr-brand-description"><?php echo $description; ?></div>
+                        <div id="premium-mfr-description" class="premium-mfr-brand-description"><?php echo $description; ?></div>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <?php } ?>
             
-            <!-- Top Bar -->
+            <!-- Premium Top Bar -->
             <?php if (isset($products) && $products) { ?>
-            <div class="mfr-top-bar">
-                <div class="mfr-controls">
+            <div id="premium-mfr-top-bar" class="premium-mfr-top-bar">
+                <div class="premium-mfr-controls-wrapper">
                     <?php if (isset($limits) && $limits) { ?>
-                    <div class="mfr-control-group">
-                        <label><?php echo isset($text_limit) ? $text_limit : 'Show'; ?></label>
-                        <select class="mfr-select" onchange="location = this.value;">
+                    <div class="premium-mfr-control-group">
+                        <label class="premium-mfr-control-label"><?php echo isset($text_limit) ? $text_limit : 'Show'; ?></label>
+                        <select id="premium-mfr-limit-select" class="premium-mfr-select" onchange="location = this.value;">
                             <?php foreach ($limits as $limit_item) { ?>
                             <option value="<?php echo isset($limit_item['href']) ? $limit_item['href'] : '#'; ?>" <?php echo (isset($limit_item['value']) && isset($limit) && $limit_item['value'] == $limit) ? 'selected' : ''; ?>>
                                 <?php echo isset($limit_item['text']) ? $limit_item['text'] : ''; ?>
@@ -64,9 +64,9 @@
                     </div>
                     <?php } ?>
                     <?php if (isset($sorts) && $sorts) { ?>
-                    <div class="mfr-control-group">
-                        <label><?php echo isset($text_sort) ? $text_sort : 'Sort'; ?></label>
-                        <select class="mfr-select" onchange="location = this.value;">
+                    <div class="premium-mfr-control-group">
+                        <label class="premium-mfr-control-label"><?php echo isset($text_sort) ? $text_sort : 'Sort'; ?></label>
+                        <select id="premium-mfr-sort-select" class="premium-mfr-select" onchange="location = this.value;">
                             <?php foreach ($sorts as $sort_item) { ?>
                             <option value="<?php echo isset($sort_item['href']) ? $sort_item['href'] : '#'; ?>" <?php echo (isset($sort_item['value']) && isset($sort) && isset($order) && $sort_item['value'] == $sort . '-' . $order) ? 'selected' : ''; ?>>
                                 <?php echo isset($sort_item['text']) ? $sort_item['text'] : ''; ?>
@@ -79,14 +79,13 @@
             </div>
             <?php } ?>
             
-            <!-- Products Horizontal Scroll -->
+            <!-- Premium Products Grid -->
             <?php if (isset($products) && $products) { ?>
-            <div class="mfr-products-scroll-container">
-                <div class="mfr-products-scroll-wrapper">
-                    <div class="mfr-products-scroll">
+            <div id="premium-mfr-products-section" class="premium-mfr-products-section">
+                <div class="premium-mfr-products-grid">
                         <?php foreach ($products as $product) { ?>
-                        <div class="mfr-product-card-scroll">
-                            <div class="mfr-product-card-inner">
+                        <div class="premium-mfr-product-card">
+                            <div class="premium-mfr-product-card-inner">
                                 <?php if (isset($product['special']) && $product['special'] && isset($product['price']) && $product['price']) { ?>
                                 <?php
                                   $price = floatval(str_replace(['৳', ',', ' '], '', $product['price']));
@@ -99,108 +98,103 @@
                                   }
                                 ?>
                                 <?php if ($mark > 0) { ?>
-                                <div class="mfr-discount-badge-scroll"><?php echo round($mark); ?>% OFF</div>
+                                <div class="premium-mfr-discount-badge"><?php echo round($mark); ?>% OFF</div>
                                 <?php } ?>
                                 <?php } ?>
                                 
-                                <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>" class="mfr-product-image-link-scroll">
-                                    <div class="mfr-image-wrapper-scroll">
-                                        <img src="<?php echo isset($product['thumb']) ? $product['thumb'] : ''; ?>" alt="<?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?>" class="mfr-product-image-scroll" loading="lazy" />
+                                <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>" class="premium-mfr-product-image-link">
+                                    <div class="premium-mfr-image-wrapper">
+                                        <img src="<?php echo isset($product['thumb']) ? $product['thumb'] : ''; ?>" alt="<?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?>" class="premium-mfr-product-image" loading="lazy" />
                                     </div>
                                 </a>
                                 
                                 <!-- Delivery Badge -->
-                                <div class="mfr-delivery-badge-scroll">
+                                <div class="premium-mfr-delivery-badge">
                                     <i class="fa fa-rocket"></i>
                                     <span>12-24 Hours</span>
                                 </div>
                                 
-                                <div class="mfr-product-info-scroll">
-                                    <h3 class="mfr-product-name-scroll">
+                                <div class="premium-mfr-product-info">
+                                    <h3 class="premium-mfr-product-name">
                                         <a href="<?php echo isset($product['href']) ? $product['href'] : '#'; ?>"><?php echo isset($product['name']) ? htmlspecialchars($product['name']) : ''; ?></a>
                                     </h3>
                                     
-                                    <div class="mfr-rating-wrapper-scroll">
-                                        <div class="mfr-rating-scroll">
+                                    <div class="premium-mfr-rating-wrapper">
+                                        <div class="premium-mfr-rating">
                                             <?php if (isset($product['rating']) && $product['rating']) { ?>
                                                 <?php for ($i = 1; $i <= 5; $i++) { ?>
                                                     <?php if ($i <= $product['rating']) { ?>
-                                                        <i class="fa fa-star mfr-star-filled-scroll"></i>
+                                                        <i class="fa fa-star premium-mfr-star-filled"></i>
                                                     <?php } else { ?>
-                                                        <i class="fa fa-star mfr-star-empty-scroll"></i>
+                                                        <i class="fa fa-star premium-mfr-star-empty"></i>
                                                     <?php } ?>
                                                 <?php } ?>
                                             <?php } else { ?>
-                                                <i class="fa fa-star mfr-star-empty-scroll"></i>
-                                                <i class="fa fa-star mfr-star-empty-scroll"></i>
-                                                <i class="fa fa-star mfr-star-empty-scroll"></i>
-                                                <i class="fa fa-star mfr-star-empty-scroll"></i>
-                                                <i class="fa fa-star mfr-star-empty-scroll"></i>
+                                                <i class="fa fa-star premium-mfr-star-empty"></i>
+                                                <i class="fa fa-star premium-mfr-star-empty"></i>
+                                                <i class="fa fa-star premium-mfr-star-empty"></i>
+                                                <i class="fa fa-star premium-mfr-star-empty"></i>
+                                                <i class="fa fa-star premium-mfr-star-empty"></i>
                                             <?php } ?>
                                         </div>
                                         <?php if (isset($product['reviews'])) { ?>
-                                        <span class="mfr-review-count-scroll">(<?php echo $product['reviews']; ?>)</span>
+                                        <span class="premium-mfr-review-count">(<?php echo $product['reviews']; ?>)</span>
                                         <?php } else { ?>
-                                        <span class="mfr-review-count-scroll">(0)</span>
+                                        <span class="premium-mfr-review-count">(0)</span>
                                         <?php } ?>
                                     </div>
                                     
-                                    <div class="mfr-price-box-scroll">
+                                    <div class="premium-mfr-price-box">
                                         <?php if (isset($product['special']) && $product['special']) { ?>
                                         <?php if (isset($product['price'])) { ?>
-                                        <span class="mfr-price-old-scroll"><?php echo $product['price']; ?></span>
+                                        <span class="premium-mfr-price-old"><?php echo $product['price']; ?></span>
                                         <?php } ?>
-                                        <span class="mfr-price-new-scroll"><?php echo $product['special']; ?></span>
+                                        <span class="premium-mfr-price-new"><?php echo $product['special']; ?></span>
                                         <?php } else { ?>
                                         <?php if (isset($product['price'])) { ?>
-                                        <span class="mfr-price-new-scroll"><?php echo $product['price']; ?></span>
+                                        <span class="premium-mfr-price-new"><?php echo $product['price']; ?></span>
                                         <?php } ?>
                                         <?php } ?>
                                     </div>
                                     
                                     <?php if(isset($product["disablePurchase"]) && $product["disablePurchase"]) { ?>
-                                    <button class="mfr-add-btn-scroll" disabled>
+                                    <button class="premium-mfr-add-btn" disabled>
                                         <?php echo isset($product["stock_status"]) ? $product["stock_status"] : "Out of Stock"; ?>
                                     </button>
                                     <?php } else { ?>
-                                    <button class="mfr-add-btn-scroll" onclick="cart.add('<?php echo isset($product['product_id']) ? $product['product_id'] : 0; ?>');">
-                                        ADD
+                                    <button class="premium-mfr-add-btn" onclick="cart.add('<?php echo isset($product['product_id']) ? $product['product_id'] : 0; ?>');">
+                                        ADD TO CART
                                     </button>
                                     <?php } ?>
                                 </div>
                             </div>
                         </div>
                         <?php } ?>
-                    </div>
                 </div>
-                <!-- Scroll Button -->
-                <button class="mfr-scroll-btn mfr-scroll-btn-right" onclick="scrollProducts('right')">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
             </div>
             <?php } ?>
             
-            <!-- Empty State -->
+            <!-- Premium Empty State -->
             <?php if (!isset($products) || !$products) { ?>
-            <div class="mfr-empty-state">
-                <div class="mfr-empty-content">
-                    <i class="fa fa-box-open mfr-empty-icon"></i>
-                    <h3 class="mfr-empty-title">Sorry! No Products Found</h3>
-                    <p class="mfr-empty-text">This brand doesn't have any products available at the moment.</p>
+            <div id="premium-mfr-empty-state" class="premium-mfr-empty-state">
+                <div class="premium-mfr-empty-content">
+                    <i class="fa fa-box-open premium-mfr-empty-icon"></i>
+                    <h3 class="premium-mfr-empty-title">Sorry! No Products Found</h3>
+                    <p class="premium-mfr-empty-text">This brand doesn't have any products available at the moment.</p>
                 </div>
             </div>
             <?php } ?>
             
-            <!-- Footer -->
+            <!-- Premium Footer -->
             <?php if (isset($products) && $products) { ?>
-            <div class="mfr-footer">
+            <div id="premium-mfr-footer" class="premium-mfr-footer">
                 <?php if (isset($pagination)) { ?>
-                <div class="mfr-pagination">
+                <div class="premium-mfr-pagination">
                     <?php echo $pagination; ?>
                 </div>
                 <?php } ?>
                 <?php if (isset($results)) { ?>
-                <div class="mfr-results">
+                <div class="premium-mfr-results">
                     <p><?php echo $results; ?></p>
                 </div>
                 <?php } ?>
@@ -214,10 +208,10 @@
 
 <style>
 /* ============================================
-   MANUFACTURER PAGE - Modern Responsive Design
+   PREMIUM MANUFACTURER PAGE - Premium Design
    ============================================ */
 
-#mfr-wrapper.mfr-container {
+#premium-manufacturer-wrapper.premium-mfr-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
@@ -237,167 +231,189 @@
     }
 }
 
-/* Filter Sidebar */
-.mfr-filter-sidebar {
+/* Premium Filter Sidebar */
+#premium-mfr-sidebar.premium-mfr-filter-sidebar {
     flex: none;
     width: 100%;
     max-width: 320px;
     height: auto;
-    background: #fff;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     overflow-y: auto;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.3s ease;
     display: block !important;
+    border: 1px solid #f0f0f0;
 }
 
 @media (min-width: 768px) {
-    .mfr-filter-sidebar {
+    #premium-mfr-sidebar.premium-mfr-filter-sidebar {
         position: sticky;
-        top: 20px;
-        max-height: calc(100vh - 40px);
+        top: 25px;
+        max-height: calc(100vh - 50px);
         height: auto;
         display: block !important;
     }
 }
 
-.mfr-filter-sidebar::-webkit-scrollbar {
-    width: 4px;
+#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar {
+    width: 6px;
 }
 
-.mfr-filter-sidebar::-webkit-scrollbar-track {
-    background: #f1f1f1;
+#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-track {
+    background: #f8f8f8;
+    border-radius: 10px;
 }
 
-.mfr-filter-sidebar::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb {
+    background: #d0d0d0;
+    border-radius: 10px;
 }
 
-.mfr-filter-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #555;
+#premium-mfr-sidebar.premium-mfr-filter-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #b0b0b0;
 }
 
-/* Main Content */
-.mfr-main-content.grow {
+/* Premium Main Content */
+#premium-mfr-main.premium-mfr-main-content.premium-mfr-grow {
     flex: 1;
     min-width: 0;
 }
 
-/* Brand Header */
-.mfr-brand-header {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* Premium Brand Header */
+#premium-mfr-brand-header.premium-mfr-brand-header {
+    background: #ffffff;
+    padding: 40px 35px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border: 1px solid #f0f0f0;
 }
 
-.mfr-brand-info {
+.premium-mfr-brand-info-wrapper {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
     flex-wrap: wrap;
 }
 
-.mfr-brand-logo {
+#premium-mfr-logo.premium-mfr-brand-logo {
     flex-shrink: 0;
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
+    width: 140px;
+    height: 140px;
+    border-radius: 16px;
     overflow: hidden;
-    background: #f8f9fa;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #e8e8e8;
+    border: 2px solid #f5f5f5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
 }
 
-.mfr-brand-logo img {
+#premium-mfr-logo.premium-mfr-brand-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+#premium-mfr-logo.premium-mfr-brand-logo img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    padding: 10px;
+    padding: 15px;
 }
 
-.mfr-brand-details {
+#premium-mfr-details.premium-mfr-brand-details {
     flex: 1;
     min-width: 200px;
 }
 
-.mfr-brand-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #333;
-    margin: 0 0 10px 0;
-    line-height: 1.2;
+#premium-mfr-title.premium-mfr-brand-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
 }
 
-.mfr-brand-description {
-    font-size: 15px;
+#premium-mfr-description.premium-mfr-brand-description {
+    font-size: 16px;
     color: #666;
-    line-height: 1.6;
+    line-height: 1.7;
     margin-top: 10px;
 }
 
-/* Top Bar */
-.mfr-top-bar {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+/* Premium Top Bar */
+#premium-mfr-top-bar.premium-mfr-top-bar {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
 }
 
-.mfr-controls {
+.premium-mfr-controls-wrapper {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
-.mfr-control-group {
+.premium-mfr-control-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-.mfr-control-group label {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
+.premium-mfr-control-label {
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-.mfr-select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #fff;
+.premium-mfr-select {
+    padding: 10px 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    background: #ffffff;
     font-size: 14px;
     color: #333;
     cursor: pointer;
-    min-width: 150px;
+    min-width: 160px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.mfr-select:focus {
+.premium-mfr-select:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.premium-mfr-select:focus {
     outline: none;
-    border-color: #6c5ce7;
+    border-color: #007bff;
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.2);
 }
 
-/* Products Horizontal Scroll Container */
-.mfr-products-scroll-container {
-    position: relative;
-    margin-bottom: 30px;
-    background: #fef5f5;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+/* Premium Products Section */
+#premium-mfr-products-section.premium-mfr-products-section {
+    margin-bottom: 40px;
+}
+
+.premium-mfr-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+    padding: 0;
 }
 
 .mfr-products-scroll-wrapper {
@@ -433,208 +449,218 @@
     padding: 10px 0;
 }
 
-/* Product Card for Scroll */
-.mfr-product-card-scroll {
-    flex: 0 0 auto;
-    width: 280px;
-    min-width: 280px;
+/* Premium Product Card */
+.premium-mfr-product-card {
+    width: 100%;
 }
 
-.mfr-product-card-inner {
-    background: #fff;
-    border-radius: 12px;
+.premium-mfr-product-card-inner {
+    background: #ffffff;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid #e8e8e8;
-    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     height: 100%;
 }
 
-.mfr-product-card-inner:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    border-color: #d0d0d0;
+.premium-mfr-product-card-inner:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: #e0e0e0;
 }
 
-/* Discount Badge - Blue */
-.mfr-discount-badge-scroll {
+/* Premium Discount Badge */
+.premium-mfr-discount-badge {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #007bff;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    letter-spacing: 0.5px;
 }
 
-/* Image */
-.mfr-product-image-link-scroll {
+/* Premium Product Image */
+.premium-mfr-product-image-link {
     display: block;
     text-decoration: none;
 }
 
-.mfr-image-wrapper-scroll {
+.premium-mfr-image-wrapper {
     position: relative;
     overflow: hidden;
-    background: #fafafa;
-    min-height: 220px;
+    background: #ffffff;
+    min-height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    padding-bottom: 50px;
+    padding: 25px;
+    padding-bottom: 60px;
 }
 
-.mfr-product-image-scroll {
+.premium-mfr-product-image {
     width: 100%;
     height: auto;
-    max-height: 200px;
+    max-height: 240px;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.mfr-product-card-inner:hover .mfr-product-image-scroll {
-    transform: scale(1.05);
+.premium-mfr-product-card-inner:hover .premium-mfr-product-image {
+    transform: scale(1.08);
 }
 
-/* Delivery Badge - Dark Grey with Yellow Icon */
-.mfr-delivery-badge-scroll {
+/* Premium Delivery Badge */
+.premium-mfr-delivery-badge {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: #333;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: #fff;
-    padding: 8px 12px;
+    padding: 10px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
     z-index: 5;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.mfr-delivery-badge-scroll i {
-    color: #ffc107;
-    font-size: 14px;
+.premium-mfr-delivery-badge i {
+    color: #ffd700;
+    font-size: 16px;
 }
 
-/* Product Info */
-.mfr-product-info-scroll {
-    padding: 16px;
+/* Premium Product Info */
+.premium-mfr-product-info {
+    padding: 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    background: #ffffff;
 }
 
-.mfr-product-name-scroll {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0 0 10px 0;
-    line-height: 1.4;
-    min-height: 40px;
+.premium-mfr-product-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+    min-height: 45px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    color: #000;
+    color: #1a1a1a;
 }
 
-.mfr-product-name-scroll a {
-    color: #000;
+.premium-mfr-product-name a {
+    color: #1a1a1a;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color 0.3s ease;
 }
 
-.mfr-product-name-scroll a:hover {
+.premium-mfr-product-name a:hover {
     color: #007bff;
 }
 
-/* Rating */
-.mfr-rating-wrapper-scroll {
+/* Premium Rating */
+.premium-mfr-rating-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-.mfr-rating-scroll {
+.premium-mfr-rating {
     display: flex;
-    gap: 2px;
+    gap: 3px;
 }
 
-.mfr-star-filled-scroll {
+.premium-mfr-star-filled {
     color: #ffc107;
-    font-size: 14px;
+    font-size: 16px;
+    text-shadow: 0 1px 2px rgba(255, 193, 7, 0.3);
 }
 
-.mfr-star-empty-scroll {
-    color: #ddd;
-    font-size: 14px;
+.premium-mfr-star-empty {
+    color: #e0e0e0;
+    font-size: 16px;
 }
 
-.mfr-review-count-scroll {
-    font-size: 12px;
-    color: #666;
+.premium-mfr-review-count {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
 }
 
-/* Price */
-.mfr-price-box-scroll {
-    margin-bottom: 12px;
+/* Premium Price */
+.premium-mfr-price-box {
+    margin-bottom: 18px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
-.mfr-price-old-scroll {
-    font-size: 13px;
+.premium-mfr-price-old {
+    font-size: 14px;
     color: #999;
     text-decoration: line-through;
-    font-weight: 400;
+    font-weight: 500;
 }
 
-.mfr-price-new-scroll {
-    font-size: 20px;
-    font-weight: 700;
-    color: #000;
+.premium-mfr-price-new {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
 }
 
-/* Add Button - Green */
-.mfr-add-btn-scroll {
+/* Premium Add Button */
+.premium-mfr-add-btn {
     margin-top: auto;
-    padding: 10px 20px;
-    background: #fff;
-    border: 2px solid #28a745;
-    color: #28a745;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 14px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: #ffffff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
     width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.mfr-add-btn-scroll:hover:not(:disabled) {
-    background: #28a745;
-    color: #fff;
+.premium-mfr-add-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
-.mfr-add-btn-scroll:disabled {
+.premium-mfr-add-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.premium-mfr-add-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    border-color: #ccc;
-    color: #999;
+    background: #ccc;
+    box-shadow: none;
 }
 
 /* Scroll Button */
@@ -900,112 +926,122 @@
     background: #6c757d;
 }
 
-/* Footer */
-.mfr-footer {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 30px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* Premium Footer */
+#premium-mfr-footer.premium-mfr-footer {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
+    border: 1px solid #f0f0f0;
 }
 
-.mfr-pagination {
+.premium-mfr-pagination {
     flex: 1;
 }
 
-.mfr-results {
+.premium-mfr-results {
     flex-shrink: 0;
 }
 
-.mfr-results p {
+.premium-mfr-results p {
     color: #666;
-    font-size: 13px;
+    font-size: 14px;
     margin: 0;
+    font-weight: 500;
 }
 
-/* Pagination */
-.mfr-pagination .pagination {
+/* Premium Pagination */
+.premium-mfr-pagination .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.mfr-pagination .pagination li {
+.premium-mfr-pagination .pagination li {
     list-style: none;
 }
 
-.mfr-pagination .pagination a,
-.mfr-pagination .pagination span {
+.premium-mfr-pagination .pagination a,
+.premium-mfr-pagination .pagination span {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 10px;
-    border-radius: 4px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 10px;
     text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.mfr-pagination .pagination a {
+.premium-mfr-pagination .pagination a {
     color: #666;
-    background: #f5f5f5;
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
 }
 
-.mfr-pagination .pagination a:hover {
-    background: #6c5ce7;
+.premium-mfr-pagination .pagination a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    border-color: transparent;
 }
 
-.mfr-pagination .pagination .active span {
-    background: #6c5ce7;
+.premium-mfr-pagination .pagination .active span {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* Empty State */
-.mfr-empty-state {
+/* Premium Empty State */
+#premium-mfr-empty-state.premium-mfr-empty-state {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 60px 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 80px 30px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
 }
 
-.mfr-empty-content {
-    max-width: 400px;
+.premium-mfr-empty-content {
+    max-width: 450px;
     margin: 0 auto;
 }
 
-.mfr-empty-icon {
-    font-size: 56px;
-    color: #ddd;
-    margin-bottom: 15px;
+.premium-mfr-empty-icon {
+    font-size: 72px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
 }
 
-.mfr-empty-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: #666;
-    margin: 0 0 8px 0;
+.premium-mfr-empty-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #555;
+    margin: 0 0 12px 0;
 }
 
-.mfr-empty-text {
-    color: #999;
-    font-size: 14px;
+.premium-mfr-empty-text {
+    color: #888;
+    font-size: 16px;
     margin: 0;
+    line-height: 1.6;
 }
 
 /* Hide module titles */
