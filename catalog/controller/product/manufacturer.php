@@ -244,28 +244,42 @@ class ControllerProductManufacturer extends Controller {
 			$debug_mode = isset($this->request->get['debug']) && $this->request->get['debug'] == '1';
 			
 			if ($debug_mode) {
-				// Collect debug information
-				$data['debug_info']['manufacturer_id'] = $manufacturer_id;
-				$data['debug_info']['store_id'] = $this->config->get('config_store_id');
-				$data['debug_info']['language_id'] = $this->config->get('config_language_id');
-				$data['debug_info']['customer_group_id'] = $this->config->get('config_customer_group_id');
-				$data['debug_info']['filter_data'] = $filter_data;
-				
-				// Get database connection from registry
-				$db = $this->registry->get('db');
-				
-				// Check raw product counts
-				$raw_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-				$data['debug_info']['raw_products_count'] = $raw_check->row['total'];
-				
-				$active_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW()");
-				$data['debug_info']['active_products_count'] = $active_check->row['total'];
-				
-				$store_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
-				$data['debug_info']['store_products_count'] = $store_check->row['total'];
-				
-				$lang_check = $db->query("SELECT COUNT(DISTINCT p.product_id) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "') LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
-				$data['debug_info']['lang_products_count'] = $lang_check->row['total'];
+				try {
+					// Collect debug information
+					$data['debug_info'] = array();
+					$data['debug_info']['manufacturer_id'] = $manufacturer_id;
+					$data['debug_info']['store_id'] = isset($this->config) ? $this->config->get('config_store_id') : 'N/A';
+					$data['debug_info']['language_id'] = isset($this->config) ? $this->config->get('config_language_id') : 'N/A';
+					$data['debug_info']['customer_group_id'] = isset($this->config) ? $this->config->get('config_customer_group_id') : 'N/A';
+					$data['debug_info']['filter_data'] = $filter_data;
+					
+					// Get database connection from registry (only if available)
+					if (isset($this->registry)) {
+						$db = $this->registry->get('db');
+						if ($db) {
+							// Check raw product counts
+							$raw_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
+							$data['debug_info']['raw_products_count'] = isset($raw_check->row['total']) ? $raw_check->row['total'] : 0;
+							
+							$active_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW()");
+							$data['debug_info']['active_products_count'] = isset($active_check->row['total']) ? $active_check->row['total'] : 0;
+							
+							$store_check = $db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
+							$data['debug_info']['store_products_count'] = isset($store_check->row['total']) ? $store_check->row['total'] : 0;
+							
+							$lang_check = $db->query("SELECT COUNT(DISTINCT p.product_id) as total FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "') LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+							$data['debug_info']['lang_products_count'] = isset($lang_check->row['total']) ? $lang_check->row['total'] : 0;
+						} else {
+							$data['debug_info']['debug_error'] = 'Database connection not available';
+						}
+					} else {
+						$data['debug_info']['debug_error'] = 'Registry not available';
+					}
+				} catch (Exception $debug_e) {
+					$data['debug_info']['debug_error'] = 'Debug error: ' . $debug_e->getMessage();
+				} catch (Error $debug_e) {
+					$data['debug_info']['debug_error'] = 'Debug fatal error: ' . $debug_e->getMessage();
+				}
 			}
 			
 			try {
@@ -553,19 +567,24 @@ class ControllerProductManufacturer extends Controller {
                 $debug_html .= '<div style="background: white; padding: 15px; border: 1px solid #ccc; margin-bottom: 15px;">';
                 $debug_html .= '<h3 style="margin-top: 0; color: #0066cc;">Basic Information</h3>';
                 $debug_html .= '<table style="width: 100%; border-collapse: collapse;">';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold; width: 200px;">Manufacturer ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . htmlspecialchars($data['debug_info']['manufacturer_id']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Store ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . htmlspecialchars($data['debug_info']['store_id']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Language ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . htmlspecialchars($data['debug_info']['language_id']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Customer Group ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . htmlspecialchars($data['debug_info']['customer_group_id']) . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold; width: 200px;">Manufacturer ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . (isset($data['debug_info']['manufacturer_id']) ? htmlspecialchars($data['debug_info']['manufacturer_id']) : 'N/A') . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Store ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . (isset($data['debug_info']['store_id']) ? htmlspecialchars($data['debug_info']['store_id']) : 'N/A') . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Language ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . (isset($data['debug_info']['language_id']) ? htmlspecialchars($data['debug_info']['language_id']) : 'N/A') . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Customer Group ID:</td><td style="padding: 5px; border: 1px solid #ddd;">' . (isset($data['debug_info']['customer_group_id']) ? htmlspecialchars($data['debug_info']['customer_group_id']) : 'N/A') . '</td></tr>';
                 $debug_html .= '</table></div>';
                 
                 $debug_html .= '<div style="background: white; padding: 15px; border: 1px solid #ccc; margin-bottom: 15px;">';
                 $debug_html .= '<h3 style="margin-top: 0; color: #0066cc;">Product Counts</h3>';
                 $debug_html .= '<table style="width: 100%; border-collapse: collapse;">';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold; width: 200px;">Raw Products (All):</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($data['debug_info']['raw_products_count'] > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($data['debug_info']['raw_products_count']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Active Products:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($data['debug_info']['active_products_count'] > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($data['debug_info']['active_products_count']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Store Assigned:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($data['debug_info']['store_products_count'] > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($data['debug_info']['store_products_count']) . '</td></tr>';
-                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">With Language:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($data['debug_info']['lang_products_count'] > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($data['debug_info']['lang_products_count']) . '</td></tr>';
+                $raw_count = isset($data['debug_info']['raw_products_count']) ? $data['debug_info']['raw_products_count'] : 0;
+                $active_count = isset($data['debug_info']['active_products_count']) ? $data['debug_info']['active_products_count'] : 0;
+                $store_count = isset($data['debug_info']['store_products_count']) ? $data['debug_info']['store_products_count'] : 0;
+                $lang_count = isset($data['debug_info']['lang_products_count']) ? $data['debug_info']['lang_products_count'] : 0;
+                
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold; width: 200px;">Raw Products (All):</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($raw_count > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($raw_count) . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Active Products:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($active_count > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($active_count) . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Store Assigned:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($store_count > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($store_count) . '</td></tr>';
+                $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">With Language:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . ($lang_count > 0 ? '#006600' : '#d00') . ';">' . htmlspecialchars($lang_count) . '</td></tr>';
                 $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Query Total:</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . (isset($data['debug_info']['query_total']) && $data['debug_info']['query_total'] > 0 ? '#006600' : '#d00') . ';">' . (isset($data['debug_info']['query_total']) ? htmlspecialchars($data['debug_info']['query_total']) : 'N/A') . '</td></tr>';
                 $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Results (Before Filter):</td><td style="padding: 5px; border: 1px solid #ddd;">' . (isset($data['debug_info']['results_before_filter']) ? htmlspecialchars($data['debug_info']['results_before_filter']) : 'N/A') . '</td></tr>';
                 $debug_html .= '<tr><td style="padding: 5px; border: 1px solid #ddd; font-weight: bold;">Results (After Filter):</td><td style="padding: 5px; border: 1px solid #ddd; color: ' . (isset($data['debug_info']['results_after_filter']) && $data['debug_info']['results_after_filter'] > 0 ? '#006600' : '#d00') . ';">' . (isset($data['debug_info']['results_after_filter']) ? htmlspecialchars($data['debug_info']['results_after_filter']) : 'N/A') . '</td></tr>';
@@ -599,6 +618,13 @@ class ControllerProductManufacturer extends Controller {
                     $debug_html .= '<div style="background: white; padding: 15px; border: 1px solid #ccc; margin-bottom: 15px;">';
                     $debug_html .= '<h3 style="margin-top: 0; color: #0066cc;">First Product Sample</h3>';
                     $debug_html .= '<pre style="background: #f9f9f9; padding: 10px; border: 1px solid #ddd; overflow-x: auto; max-height: 300px; overflow-y: auto;">' . htmlspecialchars(print_r($data['debug_info']['first_product_sample'], true)) . '</pre>';
+                    $debug_html .= '</div>';
+                }
+                
+                if (isset($data['debug_info']['debug_error'])) {
+                    $debug_html .= '<div style="background: #ffe6e6; padding: 15px; border: 2px solid #d00; margin-bottom: 15px;">';
+                    $debug_html .= '<h3 style="margin-top: 0; color: #d00;">⚠️ Debug Error</h3>';
+                    $debug_html .= '<p style="color: #d00;">' . htmlspecialchars($data['debug_info']['debug_error']) . '</p>';
                     $debug_html .= '</div>';
                 }
                 
