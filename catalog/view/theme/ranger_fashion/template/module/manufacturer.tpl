@@ -99,6 +99,88 @@ console.groupEnd();
   });
 })();
 </script>
+<!-- Premium Manufacturer Slider Section -->
+<div id="premium-mfr-slider-section" class="premium-mfr-slider-wrapper">
+  <div id="premium-mfr-slider-inner" class="premium-mfr-slider-inner">
+    <div id="premium-mfr-slider-track" class="premium-mfr-slider-track">
+      <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
+        <?php foreach ($manufacturers as $index => $manufacturer) { 
+          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
+        ?>
+        <a class="premium-mfr-slider-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index; ?>">
+          <div class="premium-mfr-slider-card-inner">
+            <?php if ($image_url) { ?>
+            <div class="premium-mfr-slider-image-wrapper">
+              <img class="premium-mfr-slider-image" 
+                   src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
+                   alt="<?php echo $manufacturer_name; ?>" 
+                   title="<?php echo $manufacturer_name; ?>" 
+                   loading="lazy" 
+                   onload="this.style.opacity='1';"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+              <div class="premium-mfr-slider-fallback" style="display: none;">
+                <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
+              </div>
+            </div>
+            <?php } else { ?>
+            <div class="premium-mfr-slider-fallback">
+              <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
+            </div>
+            <?php } ?>
+            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+            <div class="premium-mfr-slider-count">
+              <span class="premium-mfr-slider-count-number"><?php echo $manufacturer['product_count']; ?></span>
+              <span class="premium-mfr-slider-count-label"><?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?></span>
+            </div>
+            <?php } ?>
+          </div>
+        </a>
+        <?php } ?>
+        <!-- Duplicate for seamless loop -->
+        <?php foreach ($manufacturers as $index => $manufacturer) { 
+          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
+        ?>
+        <a class="premium-mfr-slider-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index + count($manufacturers); ?>">
+          <div class="premium-mfr-slider-card-inner">
+            <?php if ($image_url) { ?>
+            <div class="premium-mfr-slider-image-wrapper">
+              <img class="premium-mfr-slider-image" 
+                   src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
+                   alt="<?php echo $manufacturer_name; ?>" 
+                   title="<?php echo $manufacturer_name; ?>" 
+                   loading="lazy" 
+                   onload="this.style.opacity='1';"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+              <div class="premium-mfr-slider-fallback" style="display: none;">
+                <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
+              </div>
+            </div>
+            <?php } else { ?>
+            <div class="premium-mfr-slider-fallback">
+              <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
+            </div>
+            <?php } ?>
+            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+            <div class="premium-mfr-slider-count">
+              <span class="premium-mfr-slider-count-number"><?php echo $manufacturer['product_count']; ?></span>
+              <span class="premium-mfr-slider-count-label"><?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?></span>
+            </div>
+            <?php } ?>
+          </div>
+        </a>
+        <?php } ?>
+      <?php } else { ?>
+        <div class="premium-mfr-slider-empty">
+          <p>No manufacturers available</p>
+        </div>
+      <?php } ?>
+    </div>
+  </div>
+</div>
+
+<!-- Keep old section for backward compatibility -->
 <div id="manufacturer-brand-section" class="container brandloop24_section manufacturer-display-wrapper">
   <div class="brandloop24_inner manufacturer-inner-container">
     <div class="brandloop24_track manufacturer-track-container">
@@ -179,6 +261,286 @@ console.groupEnd();
 </div>
 
 <style>
+/* Premium Manufacturer Slider - New Premium Design */
+#premium-mfr-slider-section.premium-mfr-slider-wrapper {
+    padding: 40px 0;
+    background: none;
+    overflow: hidden;
+    position: relative;
+    margin: 30px 0;
+}
+
+#premium-mfr-slider-section.premium-mfr-slider-wrapper::before,
+#premium-mfr-slider-section.premium-mfr-slider-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 150px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#premium-mfr-slider-section.premium-mfr-slider-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+}
+
+#premium-mfr-slider-section.premium-mfr-slider-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+}
+
+#premium-mfr-slider-inner.premium-mfr-slider-inner {
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 20px;
+    overflow: hidden;
+}
+
+#premium-mfr-slider-track.premium-mfr-slider-track {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    animation: premiumMfrSlide 30s linear infinite;
+    will-change: transform;
+}
+
+.premium-mfr-slider-card {
+    flex-shrink: 0;
+    width: 180px;
+    height: 120px;
+    text-decoration: none;
+    display: block;
+    position: relative;
+}
+
+.premium-mfr-slider-card-inner {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(16, 80, 61, 0.1);
+    border: 2px solid rgba(16, 80, 61, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-mfr-slider-card-inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(16, 80, 61, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
+}
+
+.premium-mfr-slider-card:hover .premium-mfr-slider-card-inner {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(16, 80, 61, 0.2);
+    border-color: #10503D;
+}
+
+.premium-mfr-slider-card:hover .premium-mfr-slider-card-inner::before {
+    left: 100%;
+}
+
+.premium-mfr-slider-image-wrapper {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.premium-mfr-slider-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    opacity: 0.85;
+    filter: grayscale(20%);
+    transition: all 0.4s ease;
+}
+
+.premium-mfr-slider-card:hover .premium-mfr-slider-image {
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: scale(1.1);
+}
+
+.premium-mfr-slider-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.premium-mfr-slider-fallback-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #10503D;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.premium-mfr-slider-count {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+}
+
+.premium-mfr-slider-card:hover .premium-mfr-slider-count {
+    background: linear-gradient(135deg, #A68A6A 0%, #8b6f4f 100%);
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(166, 138, 106, 0.4);
+}
+
+.premium-mfr-slider-count-number {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.premium-mfr-slider-count-label {
+    font-size: 10px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.premium-mfr-slider-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+}
+
+@keyframes premiumMfrSlide {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Pause animation on hover */
+#premium-mfr-slider-section.premium-mfr-slider-wrapper:hover #premium-mfr-slider-track.premium-mfr-slider-track {
+    animation-play-state: paused;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .premium-mfr-slider-card {
+        width: 160px;
+        height: 110px;
+    }
+    
+    .premium-mfr-slider-card-inner {
+        padding: 18px;
+    }
+    
+    .premium-mfr-slider-image-wrapper {
+        height: 65px;
+    }
+}
+
+@media (max-width: 768px) {
+    #premium-mfr-slider-section.premium-mfr-slider-wrapper {
+        padding: 30px 0;
+        margin: 20px 0;
+    }
+    
+    #premium-mfr-slider-track.premium-mfr-slider-track {
+        gap: 15px;
+        animation-duration: 25s;
+    }
+    
+    .premium-mfr-slider-card {
+        width: 140px;
+        height: 100px;
+    }
+    
+    .premium-mfr-slider-card-inner {
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    .premium-mfr-slider-image-wrapper {
+        height: 60px;
+    }
+    
+    .premium-mfr-slider-count {
+        padding: 5px 10px;
+        font-size: 10px;
+        bottom: 8px;
+    }
+    
+    #premium-mfr-slider-section.premium-mfr-slider-wrapper::before,
+    #premium-mfr-slider-section.premium-mfr-slider-wrapper::after {
+        width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .premium-mfr-slider-card {
+        width: 120px;
+        height: 90px;
+    }
+    
+    .premium-mfr-slider-card-inner {
+        padding: 12px;
+    }
+    
+    .premium-mfr-slider-image-wrapper {
+        height: 50px;
+    }
+    
+    .premium-mfr-slider-count {
+        padding: 4px 8px;
+        font-size: 9px;
+    }
+    
+    .premium-mfr-slider-count-number {
+        font-size: 11px;
+    }
+    
+    .premium-mfr-slider-count-label {
+        font-size: 8px;
+    }
+}
+
 /* Manufacturer Section - Unique IDs and Classes to Avoid Conflicts */
 #manufacturer-brand-section.brandloop24_section.manufacturer-display-wrapper {
   padding: 20px 0px !important;
