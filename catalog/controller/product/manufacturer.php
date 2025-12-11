@@ -258,9 +258,10 @@ class ControllerProductManufacturer extends Controller {
 				// getProducts() returns associative array with product_id as keys
 				// Some values might be false if getProduct() fails
 				$valid_results = array();
-				if (!empty($results)) {
+				if (!empty($results) && is_array($results)) {
 					foreach ($results as $key => $value) {
-						if (is_array($value) && !empty($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
+						// Only skip if value is not an array or doesn't have valid product_id
+						if (is_array($value) && isset($value['product_id']) && (int)$value['product_id'] > 0) {
 							$valid_results[] = $value;
 						}
 					}
@@ -278,7 +279,7 @@ class ControllerProductManufacturer extends Controller {
             if (!empty($results) && is_array($results)) {
                 foreach ($results as $result) {
                     // Skip if result is not valid (must be array with valid product_id)
-                    if (!is_array($result) || empty($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
+                    if (!is_array($result) || !isset($result['product_id']) || (int)$result['product_id'] <= 0) {
                         continue;
                     }
                 
@@ -353,7 +354,7 @@ class ControllerProductManufacturer extends Controller {
                     'manufacturer' => isset($result['manufacturer']) ? $result['manufacturer'] : '',
                     'manufacturer_thumb'       => $manufacturer_thumb,
                     'name'        => isset($result['name']) ? $result['name'] : '',
-                    'short_description' => isset($result['short_description']) ? $result['short_description'] : '',
+                    'short_description' => isset($result['short_description']) ? (is_array($result['short_description']) ? implode(' ', $result['short_description']) : $result['short_description']) : '',
                     'price'       => $price,
                     'disablePurchase' => $disablePurchase,
                     'stock_status' => isset($result['stock_status']) ? $result['stock_status'] : '',
@@ -513,9 +514,13 @@ class ControllerProductManufacturer extends Controller {
             if (!isset($data['results'])) {
                 $data['results'] = '';
             }
-            if (!isset($data['products'])) {
+            // Ensure products array exists (should already be set above)
+            if (!isset($data['products']) || !is_array($data['products'])) {
                 $data['products'] = array();
             }
+            
+            // Debug: Log product count (remove in production)
+            // $data['debug_product_count'] = count($data['products']);
             if (!isset($data['sorts'])) {
                 $data['sorts'] = array();
             }
