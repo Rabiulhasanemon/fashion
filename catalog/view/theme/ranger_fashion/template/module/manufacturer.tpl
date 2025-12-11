@@ -413,7 +413,7 @@ console.groupEnd();
 
 .premium-mfr-slider-count {
     position: absolute;
-    bottom: 10px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
     background: none;
