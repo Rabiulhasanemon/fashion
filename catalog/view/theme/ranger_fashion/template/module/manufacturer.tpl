@@ -429,17 +429,36 @@ console.groupEnd();
     align-items: center;
     gap: 4px;
     transition: all 0.3s ease;
+    animation: premiumMfrCountPulse 2s ease-in-out infinite, premiumMfrCountFloat 3s ease-in-out infinite;
+    overflow: hidden;
+    position: relative;
+}
+
+.premium-mfr-slider-count::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    animation: premiumMfrCountShine 3s ease-in-out infinite;
+    pointer-events: none;
 }
 
 .premium-mfr-slider-card:hover .premium-mfr-slider-count {
     background: linear-gradient(135deg, #A68A6A 0%, #8b6f4f 100%);
-    transform: translateX(-50%) scale(1.1);
-    box-shadow: 0 4px 12px rgba(166, 138, 106, 0.4);
+    transform: translateX(-50%) scale(1.15);
+    box-shadow: 0 4px 15px rgba(166, 138, 106, 0.5);
+    animation: premiumMfrCountPulse 1s ease-in-out infinite, premiumMfrCountFloat 2s ease-in-out infinite, premiumMfrCountBounce 0.6s ease-in-out;
 }
 
 .premium-mfr-slider-count-number {
     font-size: 13px;
     font-weight: 800;
+    animation: premiumMfrCountNumberGlow 2s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
 }
 
 .premium-mfr-slider-count-label {
@@ -447,6 +466,69 @@ console.groupEnd();
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    z-index: 1;
+    animation: premiumMfrCountLabelFade 2.5s ease-in-out infinite;
+}
+
+/* Count Badge Animations */
+@keyframes premiumMfrCountPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3), 0 0 0 0 rgba(16, 80, 61, 0.4);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3), 0 0 0 8px rgba(16, 80, 61, 0);
+    }
+}
+
+@keyframes premiumMfrCountFloat {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0px);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-3px);
+    }
+}
+
+@keyframes premiumMfrCountShine {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes premiumMfrCountBounce {
+    0%, 100% {
+        transform: translateX(-50%) scale(1.15);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.25);
+    }
+}
+
+@keyframes premiumMfrCountNumberGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+}
+
+@keyframes premiumMfrCountLabelFade {
+    0%, 100% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 .premium-mfr-slider-empty {
