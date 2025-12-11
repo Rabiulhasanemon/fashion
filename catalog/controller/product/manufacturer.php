@@ -82,6 +82,11 @@ class ControllerProductManufacturer extends Controller {
 	}
 
 	public function info() {
+        // Enable error reporting for debugging (remove in production)
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        ini_set('log_errors', 1);
+        
         $this->load->language('product/manufacturer');
 
         $this->load->model('catalog/manufacturer');
@@ -590,10 +595,21 @@ class ControllerProductManufacturer extends Controller {
 					$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/product/manufacturer_info.tpl', $data));
 				} catch (Exception $e) {
 					// Fallback to default template
-					$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
+					try {
+						$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
+					} catch (Exception $e2) {
+						// If both templates fail, show error
+						echo "Error loading template: " . $e2->getMessage();
+						echo "<br>Trace: <pre>" . $e2->getTraceAsString() . "</pre>";
+					}
 				}
 			} else {
-				$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
+				try {
+					$this->response->setOutput($this->load->view('default/template/product/manufacturer_info.tpl', $data));
+				} catch (Exception $e) {
+					echo "Error loading default template: " . $e->getMessage();
+					echo "<br>Trace: <pre>" . $e->getTraceAsString() . "</pre>";
+				}
 			}
 		} else {
 			$url = '';
