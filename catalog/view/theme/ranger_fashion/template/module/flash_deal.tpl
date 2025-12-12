@@ -1,12 +1,10 @@
 <?php if ($products) { ?>
 <div id="fd-module-wrapper" class="fd-module-container">
     <div class="container">
-        <!-- Premium Module Header -->
+        <!-- Simple Module Header -->
         <div class="fd-module-header-wrapper" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
             <div class="fd-header-content">
-                <h2 class="fd-module-heading">
-                    <span class="fd-title-flash">Flash</span><span class="fd-title-deal"> Deal</span>
-                </h2>
+                <h2 class="fd-module-heading">Flash Deal</h2>
             </div>
         </div>
         
@@ -27,18 +25,6 @@
                             <div class="fd-discount-label">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
                             
-                            <!-- Quick Action Buttons - Bottom Left -->
-                            <div class="fd-action-buttons">
-                                <button type="button" class="fd-action-btn" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
-                                    <i class="fa fa-heart-o"></i>
-                                </button>
-                                <button type="button" class="fd-action-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
-                                    <i class="fa fa-exchange"></i>
-                                </button>
-                                <button type="button" class="fd-action-btn fd-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
-                                    <i class="fa fa-shopping-cart"></i>
-                                </button>
-                            </div>
                         </div>
                         
                         <!-- Product Info Section -->
@@ -99,6 +85,16 @@
                                 </div>
                             </div>
                             <?php } ?>
+                            
+                            <!-- Action Buttons - Bottom Left of Info Area -->
+                            <div class="fd-action-buttons">
+                                <button type="button" class="fd-action-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                    <i class="fa fa-exchange"></i>
+                                </button>
+                                <button type="button" class="fd-action-btn fd-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,20 +116,16 @@
     position: relative;
 }
 
-/* Module Header */
+/* Simple Module Header */
 .fd-module-header-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     padding: 0;
     background: transparent;
     border: none;
     position: relative;
-}
-
-.fd-module-header-wrapper::after {
-    display: none;
 }
 
 .fd-header-content {
@@ -141,37 +133,15 @@
 }
 
 .fd-module-heading {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     color: #000000;
     margin: 0;
     padding: 0;
     text-transform: none;
     letter-spacing: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     line-height: 1.4;
-    position: relative;
-    display: inline-block;
-}
-
-.fd-title-flash {
-    color: #000000;
-    position: relative;
-    display: inline-block;
-}
-
-.fd-title-flash::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: #FF6A00;
-}
-
-.fd-title-deal {
-    color: #000000;
 }
 
 /* Products Wrapper */
@@ -232,61 +202,52 @@
     transform: scale(1.08);
 }
 
-/* Discount Badge - Top Right/Left Corner (Yellow-Orange) */
+/* Discount Badge - Top Right Corner (Yellow) */
 .fd-discount-label {
     position: absolute;
     top: 12px;
     right: 12px;
     background: #FFC107;
     color: #000000;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: 4px;
     font-weight: 700;
     font-size: 13px;
     z-index: 10;
-    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
     line-height: 1;
 }
 
-/* Action Buttons - Bottom Left */
+/* Action Buttons - Bottom Left of Info Area */
 .fd-action-buttons {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
     display: flex;
     flex-direction: row;
     gap: 8px;
-    opacity: 1;
-    transform: translateX(0);
-    transition: all 0.3s ease;
-    z-index: 10;
+    margin-top: 12px;
+    align-items: center;
 }
 
 .fd-action-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 106, 0, 0.9);
+    background: #FF6A00;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     color: #ffffff;
     font-size: 14px;
 }
 
 .fd-action-btn:hover {
-    background: #FF6A00;
-    color: #ffffff;
-    transform: scale(1.1);
-    box-shadow: 0 3px 8px rgba(255, 106, 0, 0.4);
+    background: #ff8533;
+    transform: scale(1.05);
 }
 
 .fd-cart-btn {
-    background: rgba(255, 106, 0, 0.9);
+    background: #FF6A00;
 }
 
 /* Info Container */
@@ -327,7 +288,7 @@
     color: #FF6A00;
 }
 
-/* Star Rating - Gray Outlines */
+/* Star Rating - Gray Outlines Only */
 .fd-rating-stars {
     margin-bottom: 12px;
     display: flex;
@@ -336,17 +297,14 @@
 
 .fd-rating-stars i {
     font-size: 13px;
-}
-
-.fd-rating-stars .fd-star-active {
-    color: #FFC107;
-}
-
-.fd-rating-stars .fd-star-inactive {
     color: #e0e0e0;
 }
 
-.fd-rating-stars i.fa-star {
+.fd-rating-stars .fd-star-active {
+    color: #e0e0e0;
+}
+
+.fd-rating-stars .fd-star-inactive {
     color: #e0e0e0;
 }
 
@@ -409,6 +367,11 @@
     color: #666666;
     text-transform: capitalize;
     font-weight: 500;
+    margin-top: 4px;
+}
+
+.fd-timer-unit:last-child .fd-timer-label {
+    color: #ffffff;
 }
 
 /* Owl Carousel */
