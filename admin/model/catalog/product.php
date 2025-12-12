@@ -2279,9 +2279,14 @@ class ModelCatalogProduct extends Model {
 		// Update product discounts
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting discount update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		
-		// Clean up any product_id = 0 records first
+		// Clean up any product_id = 0 and ID = 0 records first
 		try {
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_id = 0");
+			// Also clean up product_discount_id = 0 if column exists
+			$check_col = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_discount LIKE 'product_discount_id'");
+			if ($check_col && $check_col->num_rows) {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_discount_id = 0");
+			}
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_discount: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -2301,8 +2306,21 @@ class ModelCatalogProduct extends Model {
 				$date_end = isset($product_discount['date_end']) && $product_discount['date_end'] ? $this->db->escape($product_discount['date_end']) : '0000-00-00';
 				
 				if ($customer_group_id >= 0 && $quantity >= 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', quantity = '" . $quantity . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
-					$discount_count++;
+					try {
+						$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', quantity = '" . $quantity . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+						$discount_count++;
+					} catch (Exception $e) {
+						// If duplicate entry, clean and retry
+						if (stripos($e->getMessage(), 'duplicate') !== false || stripos($e->getMessage(), 'primary') !== false) {
+							try {
+								$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_discount_id = 0");
+								$this->db->query("INSERT INTO " . DB_PREFIX . "product_discount SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', quantity = '" . $quantity . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+								$discount_count++;
+							} catch (Exception $e2) {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Failed to insert discount after retry: ' . $e2->getMessage() . PHP_EOL, FILE_APPEND);
+							}
+						}
+					}
 				}
 			}
 		} else {
@@ -2313,9 +2331,14 @@ class ModelCatalogProduct extends Model {
 		// Update product specials
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Starting special update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		
-		// Clean up any product_id = 0 records first
+		// Clean up any product_id = 0 and ID = 0 records first
 		try {
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = 0");
+			// Also clean up product_special_id = 0 if column exists
+			$check_col = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_special LIKE 'product_special_id'");
+			if ($check_col && $check_col->num_rows) {
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_special_id = 0");
+			}
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_special: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 		}
@@ -2334,8 +2357,21 @@ class ModelCatalogProduct extends Model {
 				$date_end = isset($product_special['date_end']) && $product_special['date_end'] ? $this->db->escape($product_special['date_end']) : '0000-00-00';
 				
 				if ($customer_group_id >= 0) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
-					$special_count++;
+					try {
+						$this->db->query("INSERT INTO " . DB_PREFIX . "product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+						$special_count++;
+					} catch (Exception $e) {
+						// If duplicate entry, clean and retry
+						if (stripos($e->getMessage(), 'duplicate') !== false || stripos($e->getMessage(), 'primary') !== false) {
+							try {
+								$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_special_id = 0");
+								$this->db->query("INSERT INTO " . DB_PREFIX . "product_special SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', priority = '" . $priority . "', price = '" . $price . "', date_start = '" . $date_start . "', date_end = '" . $date_end . "'");
+								$special_count++;
+							} catch (Exception $e2) {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Failed to insert special after retry: ' . $e2->getMessage() . PHP_EOL, FILE_APPEND);
+							}
+						}
+					}
 				}
 			}
 		} else {

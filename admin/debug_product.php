@@ -123,20 +123,23 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
                 'product_image' => 'product_image_id',
                 'product_option' => 'product_option_id',
                 'product_option_value' => 'product_option_value_id',
-                'product_attribute' => 'product_attribute_id',
                 'product_discount' => 'product_discount_id',
                 'product_special' => 'product_special_id'
             );
             
             foreach ($auto_inc_cleanup as $table => $id_field) {
                 try {
-                    $result = $db->query("DELETE FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
-                    if ($result) {
-                        $cleaned++;
-                        echo "<p>✓ Cleaned table: " . $table . " (" . $id_field . " = 0)</p>";
+                    // Check if column exists first
+                    $column_check = $db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE '" . $id_field . "'");
+                    if ($column_check && $column_check->num_rows) {
+                        $result = $db->query("DELETE FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
+                        if ($result) {
+                            $cleaned++;
+                            echo "<p>✓ Cleaned table: " . $table . " (" . $id_field . " = 0)</p>";
+                        }
                     }
                 } catch (Exception $e) {
-                    // Table might not have this field
+                    echo "<p>⚠️ Warning cleaning " . $table . ": " . $e->getMessage() . "</p>";
                 }
             }
             
@@ -174,15 +177,21 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
             
             foreach ($auto_inc_tables as $table => $id_field) {
                 try {
-                    $check = $db->query("SELECT COUNT(*) as count FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
-                    if ($check && $check->num_rows) {
-                        $count = (int)$check->row['count'];
-                        if ($count > 0) {
-                            $found_id_zero = true;
-                            echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-danger">' . $count . '</span></td><td>⚠️ Found</td></tr>';
-                        } else {
-                            echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-success">0</span></td><td>✓ Clean</td></tr>';
+                    // First check if the column exists
+                    $column_check = $db->query("SHOW COLUMNS FROM `" . DB_PREFIX . $table . "` LIKE '" . $id_field . "'");
+                    if ($column_check && $column_check->num_rows) {
+                        $check = $db->query("SELECT COUNT(*) as count FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
+                        if ($check && $check->num_rows) {
+                            $count = (int)$check->row['count'];
+                            if ($count > 0) {
+                                $found_id_zero = true;
+                                echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-danger">' . $count . '</span></td><td>⚠️ Found</td></tr>';
+                            } else {
+                                echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-success">0</span></td><td>✓ Clean</td></tr>';
+                            }
                         }
+                    } else {
+                        echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td>-</td><td>ℹ️ Column not found</td></tr>';
                     }
                 } catch (Exception $e) {
                     echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td>-</td><td>❌ Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
