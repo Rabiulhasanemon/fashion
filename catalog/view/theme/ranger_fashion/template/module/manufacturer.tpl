@@ -176,24 +176,24 @@ jQuery(document).ready(function($) {
             smartSpeed: 800,
             responsive: {
                 0: {
-                    items: 2,
-                    margin: 10
+                    items: 3,
+                    margin: 8
                 },
                 480: {
-                    items: 2,
-                    margin: 12
+                    items: 4,
+                    margin: 8
                 },
                 768: {
-                    items: 3,
-                    margin: 15
+                    items: 5,
+                    margin: 10
                 },
                 992: {
-                    items: 4,
-                    margin: 18
+                    items: 6,
+                    margin: 12
                 },
                 1200: {
-                    items: 5,
-                    margin: 20
+                    items: 7,
+                    margin: 15
                 }
             }
         });
@@ -289,7 +289,7 @@ jQuery(document).ready(function($) {
    ================================================= */
 
 #brc-section-wrapper.brc-main-wrapper {
-    padding: 40px 0;
+    padding: 30px 0;
     background: #ffffff;
     width: 100%;
     position: relative;
@@ -305,7 +305,7 @@ jQuery(document).ready(function($) {
 }
 
 .brc-item-wrapper {
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
 .brc-card-link {
@@ -322,9 +322,9 @@ jQuery(document).ready(function($) {
 
 .brc-card-container {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -332,16 +332,16 @@ jQuery(document).ready(function($) {
 }
 
 .brc-card-link:hover .brc-card-container {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 /* Top Section - Logo Area with Pastel Background */
 .brc-top-section {
-    padding: 30px 20px;
+    padding: 20px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 120px;
+    min-height: 90px;
     position: relative;
 }
 
@@ -355,7 +355,7 @@ jQuery(document).ready(function($) {
 
 .brc-logo-image {
     max-width: 100%;
-    max-height: 80px;
+    max-height: 60px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -364,7 +364,7 @@ jQuery(document).ready(function($) {
 }
 
 .brc-card-link:hover .brc-logo-image {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .brc-logo-fallback-text {
@@ -376,7 +376,7 @@ jQuery(document).ready(function($) {
 }
 
 .brc-fallback-name {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     color: #000000;
     text-align: center;
@@ -385,26 +385,26 @@ jQuery(document).ready(function($) {
 
 /* Bottom Section - Brand Name and Product Count */
 .brc-bottom-section {
-    padding: 20px;
+    padding: 12px 15px;
     background: #ffffff;
     text-align: center;
 }
 
 .brc-name-text {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 700;
     color: #000000;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    line-height: 1.3;
+    line-height: 1.2;
 }
 
 .brc-count-text {
-    font-size: 13px;
+    font-size: 11px;
     color: #999999;
     font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    line-height: 1.3;
+    line-height: 1.2;
 }
 
 .brc-empty-message {
@@ -416,58 +416,24 @@ jQuery(document).ready(function($) {
 /* Responsive Design */
 @media (max-width: 1200px) {
     .brc-top-section {
-        min-height: 110px;
-        padding: 25px 18px;
+        min-height: 85px;
+        padding: 18px 12px;
     }
     
     .brc-logo-image {
-        max-height: 75px;
+        max-height: 55px;
+    }
+    
+    .brc-bottom-section {
+        padding: 10px 12px;
     }
 }
 
 @media (max-width: 991px) {
     #brc-section-wrapper.brc-main-wrapper {
-        padding: 35px 0;
+        padding: 25px 0;
     }
     
-    .brc-top-section {
-        min-height: 100px;
-        padding: 25px 15px;
-    }
-    
-    .brc-logo-image {
-        max-height: 70px;
-    }
-}
-
-@media (max-width: 768px) {
-    #brc-section-wrapper.brc-main-wrapper {
-        padding: 30px 0;
-    }
-    
-    .brc-top-section {
-        min-height: 90px;
-        padding: 20px 12px;
-    }
-    
-    .brc-logo-image {
-        max-height: 60px;
-    }
-    
-    .brc-bottom-section {
-        padding: 15px;
-    }
-    
-    .brc-name-text {
-        font-size: 14px;
-    }
-    
-    .brc-count-text {
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 480px) {
     .brc-top-section {
         min-height: 80px;
         padding: 15px 10px;
@@ -477,21 +443,63 @@ jQuery(document).ready(function($) {
         max-height: 50px;
     }
     
-    .brc-fallback-name {
-        font-size: 14px;
+    .brc-bottom-section {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    #brc-section-wrapper.brc-main-wrapper {
+        padding: 20px 0;
+    }
+    
+    .brc-top-section {
+        min-height: 75px;
+        padding: 12px 8px;
+    }
+    
+    .brc-logo-image {
+        max-height: 45px;
     }
     
     .brc-bottom-section {
-        padding: 12px;
+        padding: 8px;
     }
     
     .brc-name-text {
-        font-size: 13px;
-        margin-bottom: 6px;
+        font-size: 12px;
     }
     
     .brc-count-text {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brc-top-section {
+        min-height: 70px;
+        padding: 10px 6px;
+    }
+    
+    .brc-logo-image {
+        max-height: 40px;
+    }
+    
+    .brc-fallback-name {
+        font-size: 12px;
+    }
+    
+    .brc-bottom-section {
+        padding: 8px 6px;
+    }
+    
+    .brc-name-text {
         font-size: 11px;
+        margin-bottom: 3px;
+    }
+    
+    .brc-count-text {
+        font-size: 9px;
     }
 }
 
