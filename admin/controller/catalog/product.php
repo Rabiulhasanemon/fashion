@@ -298,6 +298,47 @@ class ControllerCatalogProduct extends Controller {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Product ID: ' . $product_id . PHP_EOL, FILE_APPEND);
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - POST data keys: ' . implode(', ', array_keys($this->request->post)) . PHP_EOL, FILE_APPEND);
 			
+			// DEBUG: Check for product_id = 0 records before editing
+			$check_zero = $this->db->query("SELECT COUNT(*) as count FROM " . DB_PREFIX . "product WHERE product_id = 0");
+			if ($check_zero && $check_zero->num_rows && $check_zero->row['count'] > 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [WARNING] Found ' . $check_zero->row['count'] . ' product(s) with product_id = 0. Cleaning up...' . PHP_EOL, FILE_APPEND);
+				// Clean up before proceeding
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+			}
+			
+			// DEBUG: Verify product exists
+			$verify_product = $this->db->query("SELECT product_id, model, sku FROM " . DB_PREFIX . "product WHERE product_id = '" . $product_id . "' LIMIT 1");
+			if (!$verify_product || !$verify_product->num_rows) {
+				$error_msg = "Product with ID " . $product_id . " does not exist.";
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ERROR] ' . $error_msg . PHP_EOL, FILE_APPEND);
+				$this->session->data['error_warning'] = $error_msg;
+				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], 'SSL'));
+				return;
+			}
+			
+			// DEBUG: Check for duplicate model or SKU if they're being changed
+			if (isset($this->request->post['model']) && !empty($this->request->post['model'])) {
+				$check_model = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape($this->request->post['model']) . "' AND product_id != '" . $product_id . "' LIMIT 1");
+				if ($check_model && $check_model->num_rows > 0) {
+					$error_msg = "Model '" . $this->request->post['model'] . "' already exists for another product (ID: " . $check_model->row['product_id'] . ")";
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ERROR] ' . $error_msg . PHP_EOL, FILE_APPEND);
+					$this->session->data['error_warning'] = $error_msg;
+					$this->getForm();
+					return;
+				}
+			}
+			
+			if (isset($this->request->post['sku']) && !empty($this->request->post['sku'])) {
+				$check_sku = $this->db->query("SELECT product_id FROM " . DB_PREFIX . "product WHERE sku = '" . $this->db->escape($this->request->post['sku']) . "' AND product_id != '" . $product_id . "' LIMIT 1");
+				if ($check_sku && $check_sku->num_rows > 0) {
+					$error_msg = "SKU '" . $this->request->post['sku'] . "' already exists for another product (ID: " . $check_sku->row['product_id'] . ")";
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [ERROR] ' . $error_msg . PHP_EOL, FILE_APPEND);
+					$this->session->data['error_warning'] = $error_msg;
+					$this->getForm();
+					return;
+				}
+			}
+			
 			// Log detailed information about each tab's data
 			$tab_fields = array(
 				'image' => 'Main Image',
@@ -423,18 +464,35 @@ class ControllerCatalogProduct extends Controller {
 			} catch (Exception $e) {
 				// Product update failed
 				$error_message = $e->getMessage();
+				$db_error = '';
+				$db_errno = 0;
+				
+				// Try to get detailed database error information
+				if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+					if (property_exists($this->db->link, 'error')) {
+						$db_error = $this->db->link->error;
+					}
+					if (property_exists($this->db->link, 'errno')) {
+						$db_errno = $this->db->link->errno;
+					}
+				}
+				
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
+				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] Database Error: ' . $db_error . ' (Error No: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] File: ' . $e->getFile() . ', Line: ' . $e->getLine() . PHP_EOL, FILE_APPEND);
 				file_put_contents(DIR_LOGS . 'product_insert_error.log', date('Y-m-d H:i:s') . ' - [EDIT] Trace: ' . $e->getTraceAsString() . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] EXCEPTION: ' . $error_message . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Database Error: ' . $db_error . ' (Error No: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
 				
 				// Check if it's a duplicate entry error - attempt automatic cleanup
-				if (stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected, attempting automatic cleanup...' . PHP_EOL, FILE_APPEND);
+				if ($db_errno == 1062 || stripos($error_message, 'duplicate') !== false || stripos($error_message, 'primary') !== false) {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected (Error #' . $db_errno . '), attempting automatic cleanup...' . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Full error message: ' . $db_error . PHP_EOL, FILE_APPEND);
 					
 					// Attempt aggressive cleanup
 					$this->load->model('catalog/product');
 					try {
-						// Clean up product_id = 0 records
+						// Clean up product_id = 0 records from all related tables
 						$cleanup_tables = array(
 							'product_description', 'product_to_store', 'product_to_category',
 							'product_image', 'product_option', 'product_option_value',
@@ -443,37 +501,57 @@ class ControllerCatalogProduct extends Controller {
 							'product_compatible', 'product_to_layout', 'product_to_download'
 						);
 						
+						$cleaned_count = 0;
 						foreach ($cleanup_tables as $table) {
 							try {
-								$this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+								$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
+								if ($check_table && $check_table->num_rows) {
+									$delete_result = $this->db->query("DELETE FROM " . DB_PREFIX . $table . " WHERE product_id = 0");
+									if ($delete_result) {
+										$cleaned_count++;
+									}
+								}
 							} catch (Exception $e) {
-								// Ignore errors
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup warning for ' . $table . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 							}
 						}
 						
 						// Clean up main product table
 						try {
 							$this->db->query("DELETE FROM " . DB_PREFIX . "product WHERE product_id = 0");
+							$cleaned_count++;
 						} catch (Exception $e) {
-							// Ignore errors
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup warning for product table: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 						}
 						
 						// Clean up url_alias
 						try {
 							$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
 						} catch (Exception $e) {
-							// Ignore errors
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup warning for url_alias: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 						}
 						
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup completed, you can try saving again' . PHP_EOL, FILE_APPEND);
-						$error_message = "Database error: Duplicate entry detected. The system has automatically cleaned up product_id = 0 records. Please try saving again.";
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup completed (' . $cleaned_count . ' tables cleaned). You can try saving again.' . PHP_EOL, FILE_APPEND);
+						
+						// Provide more detailed error message
+						if ($db_errno == 1062) {
+							$error_message = "Database error: Duplicate entry detected (MySQL Error #1062). The system has automatically cleaned up product_id = 0 records from " . $cleaned_count . " tables. Please try saving again. If the error persists, check the log file for details.";
+						} else {
+							$error_message = "Database error: Duplicate entry detected. The system has automatically cleaned up product_id = 0 records. Please try saving again.";
+						}
 					} catch (Exception $cleanup_error) {
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Cleanup failed: ' . $cleanup_error->getMessage() . PHP_EOL, FILE_APPEND);
-						$error_message = "Database error: Duplicate entry detected. This usually means there's a product with product_id = 0 in the database. The system attempted to clean this up but failed. Please contact support or run the cleanup script manually.";
+						$error_message = "Database error: Duplicate entry detected (Error #" . $db_errno . "). The system attempted to clean this up but failed. Error details: " . $db_error . ". Please check the log file or contact support.";
+					}
+				} else {
+					// Not a duplicate entry error - show original error
+					$error_message = "Error updating product: " . $error_message;
+					if ($db_error) {
+						$error_message .= " (Database Error: " . $db_error . ")";
 					}
 				}
 				
-				$this->session->data['error_warning'] = 'Error updating product: ' . $error_message;
+				$this->session->data['error_warning'] = $error_message;
 				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Error occurred, showing form with error message' . PHP_EOL, FILE_APPEND);
 				error_log('Product update error: ' . $error_message);
 			}
