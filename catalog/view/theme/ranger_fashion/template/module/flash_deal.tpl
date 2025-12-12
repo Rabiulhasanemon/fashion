@@ -110,7 +110,7 @@
    ================================================= */
 
 .fld-main-container {
-    padding: 30px 0;
+    padding: 0px 0;
     background: #ffffff;
     position: relative;
     width: 100%;

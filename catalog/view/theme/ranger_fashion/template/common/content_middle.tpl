@@ -21,7 +21,7 @@
         border-radius: 18px;
         background: #fff;
         box-shadow: 0;
-        padding: 5px !important;
+        padding: 0px !important;
         position: relative;
         overflow: hidden;
     }

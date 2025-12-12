@@ -122,7 +122,7 @@ if (empty($tabs)) {
 <style>
 /* Deal of Day Section */
 .deal-of-day-section {
-    padding: 40px 0;
+    padding: 23px 0;
     background-color: #fff;
 }
 
@@ -143,7 +143,7 @@ if (empty($tabs)) {
 }
 
 .mt-20 {
-    margin-top: 20px !important;
+    margin-top: 0px !important;
 }
 
 /* Modern Header - New Classes (tcp- prefix) */
