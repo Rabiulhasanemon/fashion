@@ -3,7 +3,9 @@
     <div class="container">
         <!-- Simple Header -->
         <div class="fld-header-box">
-            <h2 class="fld-title-text">Flash Deal</h2>
+            <h2 class="fld-title-text">
+                <span class="fld-title-flash">Flash</span><span class="fld-title-deal"> Deal</span>
+            </h2>
         </div>
         
         <!-- Products Carousel -->
@@ -12,7 +14,7 @@
                 <?php foreach ($products as $product) { ?>
                 <div class="fld-item-wrapper">
                     <div class="fld-card-box">
-                        <!-- Product Image -->
+                        <!-- Product Image - Left Side -->
                         <div class="fld-img-wrapper">
                             <a href="<?php echo $product['href']; ?>" class="fld-img-link">
                                 <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="fld-img">
@@ -22,9 +24,19 @@
                             <?php if ($product['discount']) { ?>
                             <div class="fld-badge-yellow">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
+                            
+                            <!-- Action Buttons - Bottom Left of Image -->
+                            <div class="fld-buttons-box">
+                                <button type="button" class="fld-btn-circle" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                    <i class="fa fa-exchange"></i>
+                                </button>
+                                <button type="button" class="fld-btn-circle fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </button>
+                            </div>
                         </div>
                         
-                        <!-- Product Details -->
+                        <!-- Product Details - Right Side -->
                         <div class="fld-details-box">
                             <!-- Category -->
                             <?php if ($product['category_name']) { ?>
@@ -82,16 +94,6 @@
                                 </div>
                             </div>
                             <?php } ?>
-                            
-                            <!-- Action Buttons -->
-                            <div class="fld-buttons-box">
-                                <button type="button" class="fld-btn-circle" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
-                                    <i class="fa fa-exchange"></i>
-                                </button>
-                                <button type="button" class="fld-btn-circle fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
-                                    <i class="fa fa-shopping-cart"></i>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,6 +132,25 @@
     line-height: 1.4;
 }
 
+.fld-title-flash {
+    position: relative;
+    display: inline-block;
+}
+
+.fld-title-flash::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #FF6A00;
+}
+
+.fld-title-deal {
+    color: #000000;
+}
+
 /* Carousel Container */
 .fld-carousel-container {
     position: relative;
@@ -152,32 +173,33 @@
     transition: all 0.3s ease;
     height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: stretch;
 }
 
 .fld-card-box:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Image Wrapper */
+/* Image Wrapper - Left Side */
 .fld-img-wrapper {
     position: relative;
-    width: 100%;
-    padding-top: 100%;
+    width: 45%;
+    min-width: 200px;
     overflow: hidden;
     background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
 .fld-img-link {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 15px;
 }
 
 .fld-img {
@@ -208,13 +230,15 @@
     line-height: 1;
 }
 
-/* Details Box */
+/* Details Box - Right Side */
 .fld-details-box {
     padding: 18px;
     text-align: left;
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    width: 55%;
 }
 
 /* Category Text */
@@ -327,13 +351,16 @@
     color: #ffffff;
 }
 
-/* Action Buttons */
-.fld-buttons-box {
+/* Action Buttons - Bottom Left of Image */
+.fld-img-wrapper .fld-buttons-box {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
     display: flex;
     flex-direction: row;
     gap: 8px;
     align-items: center;
-    margin-top: auto;
+    z-index: 10;
 }
 
 .fld-btn-circle {
@@ -416,7 +443,28 @@
         font-size: 16px;
     }
     
+    /* Switch to vertical layout on mobile */
+    .fld-card-box {
+        flex-direction: column;
+    }
+    
+    .fld-img-wrapper {
+        width: 100%;
+        min-width: auto;
+        padding-top: 100%;
+        padding: 15px;
+    }
+    
+    .fld-img-link {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
     .fld-details-box {
+        width: 100%;
         padding: 15px;
     }
     
