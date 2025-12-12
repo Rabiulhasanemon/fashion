@@ -117,7 +117,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
                 }
             }
             
-            // Also clean up ID = 0 records in auto-increment tables
+            // Also clean up ID = 0 records in auto-increment tables and fix AUTO_INCREMENT
             $auto_inc_cleanup = array(
                 'product_reward' => 'product_reward_id',
                 'product_image' => 'product_image_id',
@@ -137,6 +137,16 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
                             $cleaned++;
                             echo "<p>✓ Cleaned table: " . $table . " (" . $id_field . " = 0)</p>";
                         }
+                        
+                        // Fix AUTO_INCREMENT value
+                        $max_check = $db->query("SELECT MAX(" . $id_field . ") as max_id FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " > 0");
+                        $max_id = 0;
+                        if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+                            $max_id = (int)$max_check->row['max_id'];
+                        }
+                        $next_id = max($max_id + 1, 1);
+                        $db->query("ALTER TABLE `" . DB_PREFIX . $table . "` AUTO_INCREMENT = " . $next_id);
+                        echo "<p>✓ Fixed AUTO_INCREMENT for " . $table . " to " . $next_id . "</p>";
                     }
                 } catch (Exception $e) {
                     echo "<p>⚠️ Warning cleaning " . $table . ": " . $e->getMessage() . "</p>";

@@ -2286,6 +2286,15 @@ class ModelCatalogProduct extends Model {
 			$check_col = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_discount LIKE 'product_discount_id'");
 			if ($check_col && $check_col->num_rows) {
 				$this->db->query("DELETE FROM " . DB_PREFIX . "product_discount WHERE product_discount_id = 0");
+				
+				// Fix auto-increment value
+				$max_check = $this->db->query("SELECT MAX(product_discount_id) as max_id FROM " . DB_PREFIX . "product_discount WHERE product_discount_id > 0");
+				$max_id = 0;
+				if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+					$max_id = (int)$max_check->row['max_id'];
+				}
+				$next_id = max($max_id + 1, 1);
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "product_discount AUTO_INCREMENT = " . $next_id);
 			}
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_discount: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
@@ -2338,6 +2347,15 @@ class ModelCatalogProduct extends Model {
 			$check_col = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_special LIKE 'product_special_id'");
 			if ($check_col && $check_col->num_rows) {
 				$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_special_id = 0");
+				
+				// Fix auto-increment value
+				$max_check = $this->db->query("SELECT MAX(product_special_id) as max_id FROM " . DB_PREFIX . "product_special WHERE product_special_id > 0");
+				$max_id = 0;
+				if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+					$max_id = (int)$max_check->row['max_id'];
+				}
+				$next_id = max($max_id + 1, 1);
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "product_special AUTO_INCREMENT = " . $next_id);
 			}
 		} catch (Exception $e) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_special: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
@@ -2399,6 +2417,16 @@ class ModelCatalogProduct extends Model {
 			if ($check_structure && $check_structure->num_rows) {
 				// Table has product_reward_id field - clean up ID = 0 records
 				$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_reward_id = 0");
+				
+				// Fix auto-increment value - get max ID and set auto_increment to next value
+				$max_check = $this->db->query("SELECT MAX(product_reward_id) as max_id FROM " . DB_PREFIX . "product_reward WHERE product_reward_id > 0");
+				$max_id = 0;
+				if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+					$max_id = (int)$max_check->row['max_id'];
+				}
+				$next_id = max($max_id + 1, 1);
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "product_reward AUTO_INCREMENT = " . $next_id);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Fixed product_reward AUTO_INCREMENT to ' . $next_id . PHP_EOL, FILE_APPEND);
 			}
 			// Also clean up product_id = 0 records
 			$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = 0");
@@ -2444,8 +2472,18 @@ class ModelCatalogProduct extends Model {
 								try {
 									$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_reward_id = 0");
 									$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = 0");
+									
+									// Fix auto-increment value
+									$max_check = $this->db->query("SELECT MAX(product_reward_id) as max_id FROM " . DB_PREFIX . "product_reward WHERE product_reward_id > 0");
+									$max_id = 0;
+									if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+										$max_id = (int)$max_check->row['max_id'];
+									}
+									$next_id = max($max_id + 1, 1);
+									$this->db->query("ALTER TABLE " . DB_PREFIX . "product_reward AUTO_INCREMENT = " . $next_id);
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Fixed AUTO_INCREMENT to ' . $next_id . ' before retry' . PHP_EOL, FILE_APPEND);
 								} catch (Exception $e) {
-									// Ignore
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Error during cleanup: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 								}
 								
 								// Retry the insert
