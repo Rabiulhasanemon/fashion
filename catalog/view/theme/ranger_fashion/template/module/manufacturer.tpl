@@ -101,9 +101,9 @@ console.groupEnd();
 </script>
 
 <div class="container">
-<!-- New Brand Card Style Section -->
-<div id="mbr-brand-section" class="mbr-wrapper">
-  <div class="mbr-grid-container">
+<!-- Brand Cards Carousel - New Classes (BRC Prefix) -->
+<div id="brc-section-wrapper" class="brc-main-wrapper">
+  <div id="brc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>" class="brc-owl-carousel owl-carousel">
     <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
       <?php 
       $pastel_colors = array('#E6E6FA', '#FFB6C1', '#B0E0E6', '#F0E68C', '#DDA0DD', '#98D8C8', '#F7DC6F', '#F8BBD0');
@@ -113,42 +113,44 @@ console.groupEnd();
         $product_count = isset($manufacturer['product_count']) ? (int)$manufacturer['product_count'] : 0;
         $bg_color = $pastel_colors[$index % count($pastel_colors)];
       ?>
-      <a class="mbr-card-link" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>">
-        <div class="mbr-card-box">
-          <!-- Top Section - Logo Area with Pastel Background -->
-          <div class="mbr-card-top" style="background-color: <?php echo $bg_color; ?>;">
-            <?php if ($image_url) { ?>
-            <div class="mbr-logo-wrapper">
-              <img class="mbr-logo-img" 
-                   src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
-                   alt="<?php echo $manufacturer_name; ?>" 
-                   title="<?php echo $manufacturer_name; ?>" 
-                   loading="lazy" 
-                   onload="this.style.opacity='1';"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-              <div class="mbr-logo-fallback" style="display: none;">
-                <span class="mbr-logo-text"><?php echo $manufacturer_name; ?></span>
+      <div class="brc-item-wrapper">
+        <a class="brc-card-link" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>">
+          <div class="brc-card-container">
+            <!-- Top Section - Logo Area with Pastel Background -->
+            <div class="brc-top-section" style="background-color: <?php echo $bg_color; ?>;">
+              <?php if ($image_url) { ?>
+              <div class="brc-logo-container">
+                <img class="brc-logo-image" 
+                     src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
+                     alt="<?php echo $manufacturer_name; ?>" 
+                     title="<?php echo $manufacturer_name; ?>" 
+                     loading="lazy" 
+                     onload="this.style.opacity='1';"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="brc-logo-fallback-text" style="display: none;">
+                  <span class="brc-fallback-name"><?php echo $manufacturer_name; ?></span>
+                </div>
               </div>
+              <?php } else { ?>
+              <div class="brc-logo-fallback-text">
+                <span class="brc-fallback-name"><?php echo $manufacturer_name; ?></span>
+              </div>
+              <?php } ?>
             </div>
-            <?php } else { ?>
-            <div class="mbr-logo-fallback">
-              <span class="mbr-logo-text"><?php echo $manufacturer_name; ?></span>
+            
+            <!-- Bottom Section - Brand Name and Product Count -->
+            <div class="brc-bottom-section">
+              <div class="brc-name-text"><?php echo $manufacturer_name; ?></div>
+              <?php if ($product_count > 0) { ?>
+              <div class="brc-count-text"><?php echo $product_count; ?> <?php echo $product_count == 1 ? 'Product' : 'Products'; ?></div>
+              <?php } ?>
             </div>
-            <?php } ?>
           </div>
-          
-          <!-- Bottom Section - Brand Name and Product Count -->
-          <div class="mbr-card-bottom">
-            <div class="mbr-brand-name"><?php echo $manufacturer_name; ?></div>
-            <?php if ($product_count > 0) { ?>
-            <div class="mbr-product-count"><?php echo $product_count; ?> <?php echo $product_count == 1 ? 'Product' : 'Products'; ?></div>
-            <?php } ?>
-          </div>
-        </div>
-      </a>
+        </a>
+      </div>
       <?php } ?>
     <?php } else { ?>
-      <div class="mbr-empty">
+      <div class="brc-empty-message">
         <p>No manufacturers available</p>
       </div>
     <?php } ?>
@@ -156,41 +158,47 @@ console.groupEnd();
 </div>
 
 <script>
-// Clone brands multiple times for truly seamless infinite scrolling
-(function() {
-    document.addEventListener('DOMContentLoaded', function() {
-        const track = document.getElementById('premium-mfr-slider-track');
-        if (track && track.children.length > 0) {
-            // Clone all brand cards multiple times for seamless infinite loop
-            const originalCards = Array.from(track.children);
-            const totalCards = originalCards.length;
-            
-            // Clone 3 times to ensure seamless scrolling (original + 3 clones = 4 sets)
-            for (let cloneSet = 0; cloneSet < 3; cloneSet++) {
-                originalCards.forEach(function(card, index) {
-                    const clone = card.cloneNode(true);
-                    // Update data-index for cloned items
-                    const originalIndex = card.getAttribute('data-index');
-                    if (originalIndex !== null) {
-                        clone.setAttribute('data-index', originalIndex + '_clone_' + cloneSet);
-                    }
-                    // Update href to prevent duplicate link issues
-                    const link = clone.querySelector('a') || clone;
-                    if (link.tagName === 'A') {
-                        const originalHref = link.getAttribute('href');
-                        if (originalHref) {
-                            link.setAttribute('href', originalHref + (cloneSet > 0 ? '#clone' + cloneSet : ''));
-                        }
-                    }
-                    track.appendChild(clone);
-                });
+jQuery(document).ready(function($) {
+    var carouselId = '#brc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>';
+    var $carousel = $(carouselId);
+    
+    // Initialize Owl Carousel with automatic sliding
+    if (typeof $.fn.owlCarousel !== 'undefined') {
+        $carousel.owlCarousel({
+            loop: true,
+            margin: 20,
+            nav: false,
+            dots: false,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: false,
+            autoplaySpeed: 1000,
+            smartSpeed: 800,
+            responsive: {
+                0: {
+                    items: 2,
+                    margin: 10
+                },
+                480: {
+                    items: 2,
+                    margin: 12
+                },
+                768: {
+                    items: 3,
+                    margin: 15
+                },
+                992: {
+                    items: 4,
+                    margin: 18
+                },
+                1200: {
+                    items: 5,
+                    margin: 20
+                }
             }
-            
-            // Ensure smooth animation restart
-            track.style.animation = 'premiumMfrSlide 50s linear infinite';
-        }
-    });
-})();
+        });
+    }
+});
 </script>
 
 <!-- Old section hidden - using premium slider instead -->
@@ -276,35 +284,43 @@ console.groupEnd();
 
 <style>
 /* =================================================
-   NEW BRAND CARD STYLE - MBR Prefix
-   Matches Image Design: Rounded Cards with Pastel Top
+   BRAND CARDS CAROUSEL - BRC Prefix (New Classes)
+   Auto-Sliding Carousel with Pastel Top Design
    ================================================= */
 
-#mbr-brand-section.mbr-wrapper {
+#brc-section-wrapper.brc-main-wrapper {
     padding: 40px 0;
     background: #ffffff;
     width: 100%;
+    position: relative;
 }
 
-.mbr-grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    width: 100%;
+/* Owl Carousel Overrides */
+.brc-owl-carousel.owl-carousel .owl-nav {
+    display: none !important;
 }
 
-.mbr-card-link {
+.brc-owl-carousel.owl-carousel .owl-dots {
+    display: none !important;
+}
+
+.brc-item-wrapper {
+    padding: 0 10px;
+}
+
+.brc-card-link {
     text-decoration: none;
     color: inherit;
     display: block;
     transition: transform 0.3s ease;
+    height: 100%;
 }
 
-.mbr-card-link:hover {
+.brc-card-link:hover {
     transform: translateY(-5px);
 }
 
-.mbr-card-box {
+.brc-card-container {
     background: #ffffff;
     border-radius: 12px;
     overflow: hidden;
@@ -315,12 +331,12 @@ console.groupEnd();
     height: 100%;
 }
 
-.mbr-card-link:hover .mbr-card-box {
+.brc-card-link:hover .brc-card-container {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* Top Section - Logo Area with Pastel Background */
-.mbr-card-top {
+.brc-top-section {
     padding: 30px 20px;
     display: flex;
     align-items: center;
@@ -329,7 +345,7 @@ console.groupEnd();
     position: relative;
 }
 
-.mbr-logo-wrapper {
+.brc-logo-container {
     width: 100%;
     height: 100%;
     display: flex;
@@ -337,7 +353,7 @@ console.groupEnd();
     justify-content: center;
 }
 
-.mbr-logo-img {
+.brc-logo-image {
     max-width: 100%;
     max-height: 80px;
     width: auto;
@@ -347,11 +363,11 @@ console.groupEnd();
     transition: transform 0.3s ease;
 }
 
-.mbr-card-link:hover .mbr-logo-img {
+.brc-card-link:hover .brc-logo-image {
     transform: scale(1.1);
 }
 
-.mbr-logo-fallback {
+.brc-logo-fallback-text {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -359,7 +375,7 @@ console.groupEnd();
     height: 100%;
 }
 
-.mbr-logo-text {
+.brc-fallback-name {
     font-size: 18px;
     font-weight: 600;
     color: #000000;
@@ -368,13 +384,13 @@ console.groupEnd();
 }
 
 /* Bottom Section - Brand Name and Product Count */
-.mbr-card-bottom {
+.brc-bottom-section {
     padding: 20px;
     background: #ffffff;
     text-align: center;
 }
 
-.mbr-brand-name {
+.brc-name-text {
     font-size: 16px;
     font-weight: 700;
     color: #000000;
@@ -383,7 +399,7 @@ console.groupEnd();
     line-height: 1.3;
 }
 
-.mbr-product-count {
+.brc-count-text {
     font-size: 13px;
     color: #999999;
     font-weight: 400;
@@ -391,8 +407,7 @@ console.groupEnd();
     line-height: 1.3;
 }
 
-.mbr-empty {
-    grid-column: 1 / -1;
+.brc-empty-message {
     text-align: center;
     padding: 40px;
     color: #999999;
@@ -400,89 +415,82 @@ console.groupEnd();
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .mbr-grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 18px;
+    .brc-top-section {
+        min-height: 110px;
+        padding: 25px 18px;
+    }
+    
+    .brc-logo-image {
+        max-height: 75px;
     }
 }
 
 @media (max-width: 991px) {
-    .mbr-grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 15px;
+    #brc-section-wrapper.brc-main-wrapper {
+        padding: 35px 0;
     }
     
-    .mbr-card-top {
+    .brc-top-section {
         min-height: 100px;
         padding: 25px 15px;
     }
     
-    .mbr-logo-img {
+    .brc-logo-image {
         max-height: 70px;
     }
 }
 
 @media (max-width: 768px) {
-    #mbr-brand-section.mbr-wrapper {
+    #brc-section-wrapper.brc-main-wrapper {
         padding: 30px 0;
     }
     
-    .mbr-grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 12px;
-    }
-    
-    .mbr-card-top {
+    .brc-top-section {
         min-height: 90px;
         padding: 20px 12px;
     }
     
-    .mbr-logo-img {
+    .brc-logo-image {
         max-height: 60px;
     }
     
-    .mbr-card-bottom {
+    .brc-bottom-section {
         padding: 15px;
     }
     
-    .mbr-brand-name {
+    .brc-name-text {
         font-size: 14px;
     }
     
-    .mbr-product-count {
+    .brc-count-text {
         font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    .mbr-grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-    }
-    
-    .mbr-card-top {
+    .brc-top-section {
         min-height: 80px;
         padding: 15px 10px;
     }
     
-    .mbr-logo-img {
+    .brc-logo-image {
         max-height: 50px;
     }
     
-    .mbr-logo-text {
+    .brc-fallback-name {
         font-size: 14px;
     }
     
-    .mbr-card-bottom {
+    .brc-bottom-section {
         padding: 12px;
     }
     
-    .mbr-brand-name {
+    .brc-name-text {
         font-size: 13px;
         margin-bottom: 6px;
     }
     
-    .mbr-product-count {
+    .brc-count-text {
         font-size: 11px;
     }
 }
