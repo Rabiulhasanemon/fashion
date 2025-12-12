@@ -65,7 +65,7 @@
     margin-bottom: 25px;
     padding: 15px 20px;
     background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
-    border-left: 4px solid #FF6A00;
+    border-left: 4px solid #fafafa;
     border-radius: 0 8px 8px 0;
     position: relative;
     gap: 16px;
