@@ -11,6 +11,7 @@ class ControllerModuleManufacturer extends Controller {
 
 		$data['heading_title'] = $this->language->get('heading_title');
         $data['name'] = isset($setting['name']) ? $setting['name'] : '';
+        $data['manufacturer_list_url'] = $this->url->link('product/manufacturer');
 
 		$this->load->model('catalog/manufacturer');
 		$this->load->model('catalog/product');

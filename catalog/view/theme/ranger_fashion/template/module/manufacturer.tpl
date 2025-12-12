@@ -103,6 +103,10 @@ console.groupEnd();
 <div class="container">
 <!-- Brand Cards Carousel - New Classes (BRC Prefix) -->
 <div id="brc-section-wrapper" class="brc-main-wrapper">
+  <div class="brc-header-section">
+    <h2 class="brc-section-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'All Brands'; ?></h2>
+    <a href="<?php echo isset($manufacturer_list_url) ? $manufacturer_list_url : 'index.php?route=product/manufacturer'; ?>" class="brc-see-all-btn">See All</a>
+  </div>
   <div id="brc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>" class="brc-owl-carousel owl-carousel">
     <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
       <?php 
@@ -295,6 +299,43 @@ jQuery(document).ready(function($) {
     position: relative;
 }
 
+/* Header Section with See All Button */
+.brc-header-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.brc-section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.brc-see-all-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #FF6A00;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+.brc-see-all-btn:hover {
+    background: #ff8533;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+    color: #ffffff;
+}
+
 /* Owl Carousel Overrides */
 .brc-owl-carousel.owl-carousel .owl-nav {
     display: none !important;
@@ -453,6 +494,20 @@ jQuery(document).ready(function($) {
         padding: 20px 0;
     }
     
+    .brc-header-section {
+        padding: 0 10px;
+        margin-bottom: 15px;
+    }
+    
+    .brc-section-title {
+        font-size: 18px;
+    }
+    
+    .brc-see-all-btn {
+        padding: 6px 16px;
+        font-size: 13px;
+    }
+    
     .brc-top-section {
         min-height: 75px;
         padding: 12px 8px;
@@ -476,6 +531,22 @@ jQuery(document).ready(function($) {
 }
 
 @media (max-width: 480px) {
+    .brc-header-section {
+        padding: 0 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .brc-section-title {
+        font-size: 16px;
+    }
+    
+    .brc-see-all-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+    
     .brc-top-section {
         min-height: 70px;
         padding: 10px 6px;
