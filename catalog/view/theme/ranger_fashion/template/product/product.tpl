@@ -305,6 +305,9 @@
                 <div class="col-lg-8 col-md-12">
                     <ul class="nav-tab-bars mb-3">
                         <li class="nav-tab active" onclick="openTab(event, 'description')">Description</li>
+                        <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
+                        <li class="nav-tab" onclick="openTab(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Specifications'; ?></li>
+                        <?php } ?>
                         <li class="nav-tab" onclick="openTab(event, 'product-video')">Product Video</li>
                         <li class="nav-tab" onclick="openTab(event, 'write-review')"><?php echo $tab_review; ?></li>
                     </ul>
@@ -312,6 +315,37 @@
                     <div class="single-tab-details product-description" id="description" style="display: block;">
                         <div itemprop="description" class="seo-description"><?php echo $description ?></div>
                     </div>
+
+                    <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
+                    <div class="single-tab-details product-attributes" id="product-attributes" style="display: none;">
+                        <div class="modern-attributes-wrapper">
+                            <?php foreach ($attribute_groups as $attribute_group) { ?>
+                            <div class="attribute-group-card">
+                                <div class="attribute-group-header">
+                                    <h3 class="attribute-group-title">
+                                        <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                        <?php echo htmlspecialchars($attribute_group['name']); ?>
+                                    </h3>
+                                </div>
+                                <div class="attribute-group-body">
+                                    <div class="attribute-list">
+                                        <?php foreach ($attribute_group['attribute'] as $attribute) { ?>
+                                        <div class="attribute-item">
+                                            <div class="attribute-name">
+                                                <span class="attribute-label"><?php echo htmlspecialchars($attribute['name']); ?></span>
+                                            </div>
+                                            <div class="attribute-value">
+                                                <span class="attribute-text"><?php echo htmlspecialchars($attribute['text']); ?></span>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php } ?>
 
                     <div class="single-tab-details product-video" id="product-video" style="display: none;">
                         <?php if (isset($video_url) && !empty($video_url)) { ?>
@@ -846,6 +880,149 @@
     }
     .prx-contact-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Modern Attributes Styles */
+.modern-attributes-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.attribute-group-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+}
+
+.attribute-group-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.attribute-group-header {
+    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
+    padding: 18px 24px;
+    border-bottom: 2px solid #0d3f2f;
+}
+
+.attribute-group-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.attribute-group-title i {
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.attribute-group-body {
+    padding: 0;
+}
+
+.attribute-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.attribute-item {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+    align-items: center;
+}
+
+.attribute-item:last-child {
+    border-bottom: none;
+}
+
+.attribute-item:hover {
+    background-color: #f8f9fa;
+}
+
+.attribute-item:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+.attribute-item:nth-child(even):hover {
+    background-color: #f0f2f5;
+}
+
+.attribute-name {
+    display: flex;
+    align-items: center;
+}
+
+.attribute-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 12px;
+}
+
+.attribute-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background: #A68A6A;
+    border-radius: 50%;
+}
+
+.attribute-value {
+    display: flex;
+    align-items: center;
+}
+
+.attribute-text {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+/* Responsive Design for Attributes */
+@media (max-width: 768px) {
+    .attribute-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 14px 18px;
+    }
+    
+    .attribute-group-header {
+        padding: 14px 18px;
+    }
+    
+    .attribute-group-title {
+        font-size: 16px;
+    }
+    
+    .attribute-label {
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+    
+    .attribute-text {
+        font-size: 13px;
     }
 }
 </style>
