@@ -422,7 +422,7 @@
 
 @media (max-width: 991px) {
     .fld-main-container {
-        padding: 25px 0;
+        padding: 0px 0;
     }
     
     .fld-title-text {
@@ -436,7 +436,7 @@
 
 @media (max-width: 768px) {
     .fld-main-container {
-        padding: 20px 0;
+        padding: 0px 0;
     }
     
     .fld-title-text {
