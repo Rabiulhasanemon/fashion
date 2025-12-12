@@ -262,7 +262,7 @@
                             <?php if (!empty($whatsapp_link)) { ?>
                             <a class="prx-contact-card prx-contact-card--whatsapp" href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener" title="Order on WhatsApp">
                                 <div class="prx-contact-icon prx-icon-animated">
-                                    <i class="fa fa-whatsapp"></i>
+                                    <i class="fab fa-whatsapp"></i>
                                 </div>
                             </a>
                             <?php } ?>
@@ -669,8 +669,8 @@
     text-decoration: none;
     color: inherit;
     transition: all 0.3s ease;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     position: relative;
     overflow: hidden;
 }
@@ -702,9 +702,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 36px;
     position: relative;
     z-index: 1;
+}
+.prx-contact-icon i {
+    display: block;
+    line-height: 1;
 }
 .prx-contact-card--whatsapp .prx-contact-icon {
     background: rgba(37,211,102,0.15);
@@ -928,11 +932,11 @@
         gap: 10px;
     }
     .prx-contact-card {
-        width: 55px;
-        height: 55px;
+        width: 70px;
+        height: 70px;
     }
     .prx-contact-icon {
-        font-size: 22px;
+        font-size: 32px;
     }
 }
 
