@@ -1668,8 +1668,24 @@ class ModelCatalogProduct extends Model {
 					// Delete any existing record for this specific product and customer group first (safety)
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . $customer_group_id . "'");
 					
-					// Insert the new reward points
-					$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+					// Check and fix AUTO_INCREMENT before insert
+					try {
+						$check_ai = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_reward WHERE Extra LIKE '%auto_increment%'");
+						if ($check_ai && $check_ai->num_rows > 0) {
+							$max_check = $this->db->query("SELECT MAX(product_reward_id) as max_id FROM " . DB_PREFIX . "product_reward WHERE product_reward_id > 0");
+							$max_id = 0;
+							if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+								$max_id = (int)$max_check->row['max_id'];
+							}
+							$next_id = max($max_id + 1, 1);
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "product_reward AUTO_INCREMENT = " . $next_id);
+						}
+					} catch (Exception $e) {
+						// Ignore
+					}
+					
+					// Insert the new reward points using REPLACE INTO to handle duplicates
+					$insert_result = $this->db->query("REPLACE INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
 					if ($insert_result) {
 						$reward_count++;
 						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [REWARD] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
@@ -2446,8 +2462,28 @@ class ModelCatalogProduct extends Model {
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . $customer_group_id . "'");
 					
 					// Insert the new reward points with error handling
+					// Use REPLACE INTO to handle any duplicate key issues automatically
 					try {
-						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+						// First, check if there's an auto-increment field
+						$has_auto_inc = false;
+						$check_ai = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_reward WHERE Extra LIKE '%auto_increment%'");
+						if ($check_ai && $check_ai->num_rows > 0) {
+							$has_auto_inc = true;
+						}
+						
+						// If table has auto-increment, ensure it's set correctly before insert
+						if ($has_auto_inc) {
+							$max_check = $this->db->query("SELECT MAX(product_reward_id) as max_id FROM " . DB_PREFIX . "product_reward WHERE product_reward_id > 0");
+							$max_id = 0;
+							if ($max_check && $max_check->num_rows && isset($max_check->row['max_id']) && $max_check->row['max_id'] !== null) {
+								$max_id = (int)$max_check->row['max_id'];
+							}
+							$next_id = max($max_id + 1, 1);
+							$this->db->query("ALTER TABLE " . DB_PREFIX . "product_reward AUTO_INCREMENT = " . $next_id);
+						}
+						
+						// Use REPLACE INTO to handle duplicates - it will delete and reinsert if key exists
+						$insert_result = $this->db->query("REPLACE INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
 						
 						if ($insert_result) {
 							$reward_count++;
@@ -2486,8 +2522,8 @@ class ModelCatalogProduct extends Model {
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Error during cleanup: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 								}
 								
-								// Retry the insert
-								$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+								// Retry using REPLACE INTO which handles duplicates automatically
+								$insert_result = $this->db->query("REPLACE INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
 								if ($insert_result) {
 									$reward_count++;
 									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Retry successful for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
