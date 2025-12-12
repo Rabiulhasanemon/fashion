@@ -101,50 +101,57 @@ console.groupEnd();
 </script>
 
 <div class="container">
-<!-- Premium Manufacturer Slider Section -->
-<div id="premium-mfr-slider-section" class="premium-mfr-slider-wrapper">
-  <div id="premium-mfr-slider-inner" class="premium-mfr-slider-inner">
-    <div id="premium-mfr-slider-track" class="premium-mfr-slider-track">
-      <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
-        <?php foreach ($manufacturers as $index => $manufacturer) { 
-          $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
-          $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
-        ?>
-        <a class="premium-mfr-slider-card" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>" data-index="<?php echo $index; ?>">
-          <div class="premium-mfr-slider-card-inner">
+<!-- New Brand Card Style Section -->
+<div id="mbr-brand-section" class="mbr-wrapper">
+  <div class="mbr-grid-container">
+    <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>
+      <?php 
+      $pastel_colors = array('#E6E6FA', '#FFB6C1', '#B0E0E6', '#F0E68C', '#DDA0DD', '#98D8C8', '#F7DC6F', '#F8BBD0');
+      foreach ($manufacturers as $index => $manufacturer) { 
+        $image_url = !empty($manufacturer['thumb']) ? $manufacturer['thumb'] : '';
+        $manufacturer_name = isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : '';
+        $product_count = isset($manufacturer['product_count']) ? (int)$manufacturer['product_count'] : 0;
+        $bg_color = $pastel_colors[$index % count($pastel_colors)];
+      ?>
+      <a class="mbr-card-link" href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" title="<?php echo $manufacturer_name; ?>" data-manufacturer-id="<?php echo isset($manufacturer['manufacturer_id']) ? $manufacturer['manufacturer_id'] : ''; ?>">
+        <div class="mbr-card-box">
+          <!-- Top Section - Logo Area with Pastel Background -->
+          <div class="mbr-card-top" style="background-color: <?php echo $bg_color; ?>;">
             <?php if ($image_url) { ?>
-            <div class="premium-mfr-slider-image-wrapper">
-              <img class="premium-mfr-slider-image" 
+            <div class="mbr-logo-wrapper">
+              <img class="mbr-logo-img" 
                    src="<?php echo htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'); ?>" 
                    alt="<?php echo $manufacturer_name; ?>" 
                    title="<?php echo $manufacturer_name; ?>" 
                    loading="lazy" 
                    onload="this.style.opacity='1';"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-              <div class="premium-mfr-slider-fallback" style="display: none;">
-                <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="mbr-logo-fallback" style="display: none;">
+                <span class="mbr-logo-text"><?php echo $manufacturer_name; ?></span>
               </div>
             </div>
             <?php } else { ?>
-            <div class="premium-mfr-slider-fallback">
-              <span class="premium-mfr-slider-fallback-text"><?php echo $manufacturer_name; ?></span>
-            </div>
-            <?php } ?>
-            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
-            <div class="premium-mfr-slider-count">
-              <span class="premium-mfr-slider-count-number"><?php echo $manufacturer['product_count']; ?></span>
-              <span class="premium-mfr-slider-count-label"><?php echo $manufacturer['product_count'] == 1 ? 'Product' : 'Products'; ?></span>
+            <div class="mbr-logo-fallback">
+              <span class="mbr-logo-text"><?php echo $manufacturer_name; ?></span>
             </div>
             <?php } ?>
           </div>
-        </a>
-        <?php } ?>
-      <?php } else { ?>
-        <div class="premium-mfr-slider-empty">
-          <p>No manufacturers available</p>
+          
+          <!-- Bottom Section - Brand Name and Product Count -->
+          <div class="mbr-card-bottom">
+            <div class="mbr-brand-name"><?php echo $manufacturer_name; ?></div>
+            <?php if ($product_count > 0) { ?>
+            <div class="mbr-product-count"><?php echo $product_count; ?> <?php echo $product_count == 1 ? 'Product' : 'Products'; ?></div>
+            <?php } ?>
+          </div>
         </div>
+      </a>
       <?php } ?>
-    </div>
+    <?php } else { ?>
+      <div class="mbr-empty">
+        <p>No manufacturers available</p>
+      </div>
+    <?php } ?>
   </div>
 </div>
 
@@ -266,9 +273,229 @@ console.groupEnd();
   </div>
 </div>
 </div>
+
 <style>
-/* Premium Manufacturer Slider - New Premium Design */
+/* =================================================
+   NEW BRAND CARD STYLE - MBR Prefix
+   Matches Image Design: Rounded Cards with Pastel Top
+   ================================================= */
+
+#mbr-brand-section.mbr-wrapper {
+    padding: 40px 0;
+    background: #ffffff;
+    width: 100%;
+}
+
+.mbr-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.mbr-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.mbr-card-link:hover {
+    transform: translateY(-5px);
+}
+
+.mbr-card-box {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mbr-card-link:hover .mbr-card-box {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Top Section - Logo Area with Pastel Background */
+.mbr-card-top {
+    padding: 30px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    position: relative;
+}
+
+.mbr-logo-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mbr-logo-img {
+    max-width: 100%;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    opacity: 1;
+    transition: transform 0.3s ease;
+}
+
+.mbr-card-link:hover .mbr-logo-img {
+    transform: scale(1.1);
+}
+
+.mbr-logo-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.mbr-logo-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+/* Bottom Section - Brand Name and Product Count */
+.mbr-card-bottom {
+    padding: 20px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.mbr-brand-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    line-height: 1.3;
+}
+
+.mbr-product-count {
+    font-size: 13px;
+    color: #999999;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    line-height: 1.3;
+}
+
+.mbr-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #999999;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .mbr-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 18px;
+    }
+}
+
+@media (max-width: 991px) {
+    .mbr-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+    }
+    
+    .mbr-card-top {
+        min-height: 100px;
+        padding: 25px 15px;
+    }
+    
+    .mbr-logo-img {
+        max-height: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    #mbr-brand-section.mbr-wrapper {
+        padding: 30px 0;
+    }
+    
+    .mbr-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+    
+    .mbr-card-top {
+        min-height: 90px;
+        padding: 20px 12px;
+    }
+    
+    .mbr-logo-img {
+        max-height: 60px;
+    }
+    
+    .mbr-card-bottom {
+        padding: 15px;
+    }
+    
+    .mbr-brand-name {
+        font-size: 14px;
+    }
+    
+    .mbr-product-count {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mbr-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .mbr-card-top {
+        min-height: 80px;
+        padding: 15px 10px;
+    }
+    
+    .mbr-logo-img {
+        max-height: 50px;
+    }
+    
+    .mbr-logo-text {
+        font-size: 14px;
+    }
+    
+    .mbr-card-bottom {
+        padding: 12px;
+    }
+    
+    .mbr-brand-name {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
+    .mbr-product-count {
+        font-size: 11px;
+    }
+}
+
+/* =================================================
+   OLD PREMIUM SLIDER - HIDDEN
+   ================================================= */
 #premium-mfr-slider-section.premium-mfr-slider-wrapper {
+    display: none !important;
+}
+
+/* Premium Manufacturer Slider - New Premium Design */
+#premium-mfr-slider-section-old.premium-mfr-slider-wrapper {
     padding: 40px 15px;
     background: none;
     overflow: visible;
