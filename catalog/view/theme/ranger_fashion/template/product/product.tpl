@@ -260,20 +260,16 @@
 
                         <div class="prx-contact-grid">
                             <?php if (!empty($whatsapp_link)) { ?>
-                            <a class="prx-contact-card prx-contact-card--whatsapp" href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener">
-                                <div class="prx-contact-icon"><i class="fa fa-whatsapp"></i></div>
-                                <div class="prx-contact-text">
-                                    <span class="prx-contact-label">Order on WhatsApp</span>
-                                    <span class="prx-contact-value"><?php echo $primary_contact_number; ?></span>
+                            <a class="prx-contact-card prx-contact-card--whatsapp" href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener" title="Order on WhatsApp">
+                                <div class="prx-contact-icon prx-icon-animated">
+                                    <i class="fa fa-whatsapp"></i>
                                 </div>
                             </a>
                             <?php } ?>
                             <?php if (!empty($primary_contact_tel)) { ?>
-                            <a class="prx-contact-card prx-contact-card--call" href="<?php echo $primary_contact_tel; ?>">
-                                <div class="prx-contact-icon"><i class="fa fa-phone"></i></div>
-                                <div class="prx-contact-text">
-                                    <span class="prx-contact-label">Call for Order</span>
-                                    <span class="prx-contact-value"><?php echo $primary_contact_number; ?></span>
+                            <a class="prx-contact-card prx-contact-card--call" href="<?php echo $primary_contact_tel; ?>" title="Call for Order">
+                                <div class="prx-contact-icon prx-icon-animated">
+                                    <i class="fa fa-phone"></i>
                                 </div>
                             </a>
                             <?php } ?>
@@ -658,61 +654,100 @@
     transform: translateY(-2px);
 }
 .prx-contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: flex;
     gap: 12px;
     margin-bottom: 24px;
+    justify-content: flex-start;
 }
 .prx-contact-card {
     border: 1px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-.prx-contact-card:hover {
-    border-color: #ff6a00;
-    transform: translateY(-2px);
-}
-.prx-contact-card--whatsapp {
-    background: #f0fff5;
-}
-.prx-contact-card--call {
-    background: #fff8f0;
-}
-.prx-contact-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    border-radius: 16px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.04);
-    font-size: 18px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    width: 60px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+}
+.prx-contact-card:hover {
+    border-color: #ff6a00;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.prx-contact-card--whatsapp {
+    background: #f0fff5;
+    border-color: rgba(37,211,102,0.3);
+}
+.prx-contact-card--whatsapp:hover {
+    border-color: #25d366;
+    box-shadow: 0 8px 20px rgba(37,211,102,0.3);
+}
+.prx-contact-card--call {
+    background: #fff8f0;
+    border-color: rgba(255,106,0,0.3);
+}
+.prx-contact-card--call:hover {
+    border-color: #ff6a00;
+    box-shadow: 0 8px 20px rgba(255,106,0,0.3);
+}
+.prx-contact-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    position: relative;
+    z-index: 1;
 }
 .prx-contact-card--whatsapp .prx-contact-icon {
     background: rgba(37,211,102,0.15);
     color: #25d366;
 }
 .prx-contact-card--call .prx-contact-icon {
-    background: rgba(0,0,0,0.08);
+    background: rgba(255,106,0,0.15);
     color: #ff6a00;
 }
+/* Icon Animations */
+.prx-icon-animated {
+    animation: iconPulse 2s ease-in-out infinite;
+}
+.prx-contact-card:hover .prx-icon-animated {
+    animation: iconBounce 0.6s ease-in-out;
+}
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+@keyframes iconBounce {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+    }
+    25% {
+        transform: scale(1.15) translateY(-5px);
+    }
+    50% {
+        transform: scale(1.1) translateY(-2px);
+    }
+    75% {
+        transform: scale(1.15) translateY(-5px);
+    }
+}
 .prx-contact-label {
-    display: block;
-    font-size: 12px;
-    color: #6f6f6f;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    display: none;
 }
 .prx-contact-value {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111;
+    display: none;
 }
 .prx-option-wrap {
     margin: 20px 0;
@@ -890,7 +925,14 @@
         grid-template-columns: 1fr;
     }
     .prx-contact-grid {
-        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .prx-contact-card {
+        width: 55px;
+        height: 55px;
+    }
+    .prx-contact-icon {
+        font-size: 22px;
     }
 }
 
