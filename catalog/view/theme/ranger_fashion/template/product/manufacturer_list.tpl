@@ -25,19 +25,45 @@
     <div class="mfr-list-content">
         <?php if (isset($categories) && $categories) { ?>
         <div class="mfr-brands-grid">
-            <?php foreach ($categories as $category) { ?>
+            <?php 
+            $pastel_colors = array('#E6E6FA', '#FFB6C1', '#B0E0E6', '#F0E68C', '#DDA0DD', '#98D8C8', '#F7DC6F', '#F8BBD0');
+            $color_index = 0;
+            foreach ($categories as $category) { ?>
             <?php if (isset($category['manufacturer']) && $category['manufacturer']) { ?>
-            <?php foreach ($category['manufacturer'] as $manufacturer) { ?>
+            <?php foreach ($category['manufacturer'] as $manufacturer) { 
+                $bg_color = $pastel_colors[$color_index % count($pastel_colors)];
+                $color_index++;
+            ?>
             <div class="mfr-brand-card">
                 <a href="<?php echo isset($manufacturer['href']) ? $manufacturer['href'] : '#'; ?>" class="mfr-brand-link">
-                    <div class="mfr-brand-image-wrapper">
-                        <img src="<?php echo isset($manufacturer['image']) ? $manufacturer['image'] : ''; ?>" 
-                             alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
-                             class="mfr-brand-image" 
-                             loading="lazy" />
-                    </div>
-                    <div class="mfr-brand-name">
-                        <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>
+                    <div class="mfr-card-container">
+                        <!-- Top Section - Logo Area with Pastel Background -->
+                        <div class="mfr-top-section" style="background-color: <?php echo $bg_color; ?>;">
+                            <?php if (isset($manufacturer['image']) && $manufacturer['image']) { ?>
+                            <div class="mfr-logo-container">
+                                <img src="<?php echo htmlspecialchars($manufacturer['image'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                     alt="<?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>" 
+                                     class="mfr-logo-image" 
+                                     loading="lazy"
+                                     onload="this.style.opacity='1';"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                <div class="mfr-logo-fallback-text" style="display: none;">
+                                    <span class="mfr-fallback-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?></span>
+                                </div>
+                            </div>
+                            <?php } else { ?>
+                            <div class="mfr-logo-fallback-text">
+                                <span class="mfr-fallback-name"><?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?></span>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        
+                        <!-- Bottom Section - Brand Name -->
+                        <div class="mfr-bottom-section">
+                            <div class="mfr-name-text">
+                                <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>
+                            </div>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -63,12 +89,12 @@
 </div>
 
 <style>
-/* Manufacturer List Page Styles */
+/* Manufacturer List Page Styles - Matching BRC Brand Card Style */
 #mfr-list-wrapper.mfr-list-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 40px 20px;
-    background: #f5f5f5;
+    background: #ffffff;
 }
 
 .mfr-list-header {
@@ -110,66 +136,105 @@
 /* Brands Grid */
 .mfr-brands-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
 }
 
-/* Brand Card */
+/* Brand Card - Matching BRC Style */
 .mfr-brand-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #e8e8e8;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .mfr-brand-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-    border-color: #ff8c00;
 }
 
 .mfr-brand-link {
     display: block;
     text-decoration: none;
-    padding: 20px;
+    color: inherit;
+    height: 100%;
 }
 
-.mfr-brand-image-wrapper {
-    width: 100%;
-    height: 120px;
+.mfr-card-container {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mfr-brand-card:hover .mfr-card-container {
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Top Section - Logo Area with Pastel Background */
+.mfr-top-section {
+    padding: 20px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fafafa;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    padding: 15px;
+    min-height: 90px;
+    position: relative;
 }
 
-.mfr-brand-image {
+.mfr-logo-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mfr-logo-image {
     max-width: 100%;
-    max-height: 100%;
+    max-height: 60px;
+    width: auto;
+    height: auto;
     object-fit: contain;
+    opacity: 1;
     transition: transform 0.3s ease;
 }
 
-.mfr-brand-card:hover .mfr-brand-image {
-    transform: scale(1.1);
+.mfr-brand-card:hover .mfr-logo-image {
+    transform: scale(1.08);
 }
 
-.mfr-brand-name {
-    text-align: center;
-    font-size: 15px;
+.mfr-logo-fallback-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.mfr-fallback-name {
+    font-size: 14px;
     font-weight: 600;
-    color: #333;
-    margin-top: 10px;
-    line-height: 1.4;
+    color: #000000;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 }
 
-.mfr-brand-link:hover .mfr-brand-name {
-    color: #ff8c00;
+/* Bottom Section - Brand Name */
+.mfr-bottom-section {
+    padding: 12px 15px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.mfr-name-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #000000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    line-height: 1.2;
 }
 
 /* Empty State */
@@ -223,19 +288,37 @@
 /* Responsive */
 @media (max-width: 1200px) {
     .mfr-brands-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 18px;
+    }
+    
+    .mfr-top-section {
+        min-height: 85px;
+        padding: 18px 12px;
+    }
+    
+    .mfr-logo-image {
+        max-height: 55px;
     }
 }
 
 @media (max-width: 992px) {
     .mfr-brands-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 18px;
+        gap: 15px;
     }
     
     .mfr-list-title {
         font-size: 28px;
+    }
+    
+    .mfr-top-section {
+        min-height: 80px;
+        padding: 15px 10px;
+    }
+    
+    .mfr-logo-image {
+        max-height: 50px;
     }
 }
 
@@ -254,15 +337,20 @@
     
     .mfr-brands-grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
+        gap: 12px;
     }
     
-    .mfr-brand-image-wrapper {
-        height: 100px;
+    .mfr-top-section {
+        min-height: 75px;
+        padding: 12px 8px;
     }
     
-    .mfr-brand-name {
-        font-size: 14px;
+    .mfr-logo-image {
+        max-height: 45px;
+    }
+    
+    .mfr-name-text {
+        font-size: 12px;
     }
 }
 
@@ -273,15 +361,24 @@
     
     .mfr-brands-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 10px;
     }
     
-    .mfr-brand-image-wrapper {
-        height: 80px;
+    .mfr-top-section {
+        min-height: 70px;
+        padding: 10px 6px;
     }
     
-    .mfr-brand-name {
-        font-size: 13px;
+    .mfr-logo-image {
+        max-height: 40px;
+    }
+    
+    .mfr-fallback-name {
+        font-size: 12px;
+    }
+    
+    .mfr-name-text {
+        font-size: 11px;
     }
 }
 </style>
