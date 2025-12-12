@@ -4,7 +4,15 @@
         <!-- Premium Module Header -->
         <div class="fd-module-header-wrapper" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
             <div class="fd-header-content">
-                <h2 class="fd-module-heading"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal'; ?></h2>
+                <h2 class="fd-module-heading">
+                    <?php 
+                    $title = isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal';
+                    $title_parts = explode(' ', $title, 2);
+                    $first_word = isset($title_parts[0]) ? $title_parts[0] : 'Flash';
+                    $rest = isset($title_parts[1]) ? $title_parts[1] : 'Deal';
+                    ?>
+                    <span class="fd-title-flash"><?php echo $first_word; ?></span> <span class="fd-title-deal"><?php echo $rest; ?></span>
+                </h2>
             </div>
             <div class="fd-header-controls">
                 <button type="button" class="fd-control-btn fd-prev-btn" aria-label="Previous">
@@ -160,6 +168,27 @@
     letter-spacing: 0.5px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.4;
+    display: inline-block;
+}
+
+.fd-title-flash {
+    position: relative;
+    display: inline-block;
+}
+
+.fd-title-flash::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #FF6A00;
+    border-radius: 2px;
+}
+
+.fd-title-deal {
+    margin-left: 8px;
 }
 
 .fd-header-controls {
@@ -210,7 +239,7 @@
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     margin: 5px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #FFE0B2;
 }
 
 .fd-product-card:hover {
@@ -251,7 +280,7 @@
     transform: scale(1.08);
 }
 
-/* Discount Badge - Top Right Corner (Yellow) */
+/* Discount Badge - Top Right Corner (Yellow-Orange) */
 .fd-discount-label {
     position: absolute;
     top: 12px;
@@ -264,6 +293,7 @@
     font-size: 13px;
     z-index: 10;
     box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
+    border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 /* Action Buttons */
@@ -344,7 +374,7 @@
     color: #FF6A00;
 }
 
-/* Star Rating */
+/* Star Rating - Always Gray Outlines */
 .fd-rating-stars {
     margin-bottom: 12px;
     display: flex;
@@ -353,10 +383,11 @@
 
 .fd-rating-stars i {
     font-size: 13px;
+    color: #e0e0e0;
 }
 
 .fd-rating-stars .fd-star-active {
-    color: #FFC107;
+    color: #e0e0e0;
 }
 
 .fd-rating-stars .fd-star-inactive {
