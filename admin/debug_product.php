@@ -110,10 +110,33 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
                     $result = $db->query("DELETE FROM `" . DB_PREFIX . $table . "` WHERE product_id = 0");
                     if ($result) {
                         $cleaned++;
-                        echo "<p>✓ Cleaned table: " . $table . "</p>";
+                        echo "<p>✓ Cleaned table: " . $table . " (product_id = 0)</p>";
                     }
                 } catch (Exception $e) {
                     echo "<p>✗ Error cleaning " . $table . ": " . $e->getMessage() . "</p>";
+                }
+            }
+            
+            // Also clean up ID = 0 records in auto-increment tables
+            $auto_inc_cleanup = array(
+                'product_reward' => 'product_reward_id',
+                'product_image' => 'product_image_id',
+                'product_option' => 'product_option_id',
+                'product_option_value' => 'product_option_value_id',
+                'product_attribute' => 'product_attribute_id',
+                'product_discount' => 'product_discount_id',
+                'product_special' => 'product_special_id'
+            );
+            
+            foreach ($auto_inc_cleanup as $table => $id_field) {
+                try {
+                    $result = $db->query("DELETE FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
+                    if ($result) {
+                        $cleaned++;
+                        echo "<p>✓ Cleaned table: " . $table . " (" . $id_field . " = 0)</p>";
+                    }
+                } catch (Exception $e) {
+                    // Table might not have this field
                 }
             }
             
@@ -129,9 +152,55 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
         }
         ?>
 
+        <!-- Check for ID = 0 records in auto-increment tables -->
+        <div class="section">
+            <h2>1. ID = 0 Records Check (Auto-increment Tables)</h2>
+            <?php
+            // Check tables with auto-increment IDs that might have ID = 0
+            $auto_inc_tables = array(
+                'product_reward' => 'product_reward_id',
+                'product_image' => 'product_image_id',
+                'product_option' => 'product_option_id',
+                'product_option_value' => 'product_option_value_id',
+                'product_attribute' => 'product_attribute_id',
+                'product_discount' => 'product_discount_id',
+                'product_special' => 'product_special_id'
+            );
+            
+            $found_id_zero = false;
+            echo '<h3>Auto-increment ID = 0 Records</h3>';
+            echo '<table>';
+            echo '<tr><th>Table</th><th>ID Field</th><th>Count</th><th>Status</th></tr>';
+            
+            foreach ($auto_inc_tables as $table => $id_field) {
+                try {
+                    $check = $db->query("SELECT COUNT(*) as count FROM `" . DB_PREFIX . $table . "` WHERE " . $id_field . " = 0");
+                    if ($check && $check->num_rows) {
+                        $count = (int)$check->row['count'];
+                        if ($count > 0) {
+                            $found_id_zero = true;
+                            echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-danger">' . $count . '</span></td><td>⚠️ Found</td></tr>';
+                        } else {
+                            echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td><span class="badge badge-success">0</span></td><td>✓ Clean</td></tr>';
+                        }
+                    }
+                } catch (Exception $e) {
+                    echo '<tr><td>' . $table . '</td><td>' . $id_field . '</td><td>-</td><td>❌ Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                }
+            }
+            echo '</table>';
+            
+            if ($found_id_zero) {
+                echo '<div class="error" style="margin-top: 15px; padding: 10px;"><strong>⚠️ Warning:</strong> Found ID = 0 records in auto-increment tables! This can cause duplicate entry errors.</div>';
+            } else {
+                echo '<div class="success" style="margin-top: 15px; padding: 10px;"><strong>✓ Good:</strong> No ID = 0 records found in auto-increment tables.</div>';
+            }
+            ?>
+        </div>
+
         <!-- Check for product_id = 0 records -->
         <div class="section">
-            <h2>1. Product ID = 0 Records Check</h2>
+            <h2>2. Product ID = 0 Records Check</h2>
             <?php
             $tables_to_check = array('product', 'product_description', 'product_to_store', 'product_to_category', 
                                     'product_image', 'product_option', 'product_option_value', 'product_filter', 
@@ -170,7 +239,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         <!-- Duplicate Models -->
         <div class="section">
-            <h2>2. Duplicate Models Check</h2>
+            <h2>3. Duplicate Models Check</h2>
             <?php
             try {
                 $dup_models = $db->query("SELECT model, COUNT(*) as count, GROUP_CONCAT(product_id) as product_ids 
@@ -197,7 +266,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         <!-- Duplicate SKUs -->
         <div class="section">
-            <h2>3. Duplicate SKUs Check</h2>
+            <h2>4. Duplicate SKUs Check</h2>
             <?php
             try {
                 $dup_skus = $db->query("SELECT sku, COUNT(*) as count, GROUP_CONCAT(product_id) as product_ids 
@@ -225,7 +294,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
         <!-- Product Information -->
         <?php if ($product_id > 0) { ?>
         <div class="section">
-            <h2>4. Product Information (ID: <?php echo $product_id; ?>)</h2>
+            <h2>5. Product Information (ID: <?php echo $product_id; ?>)</h2>
             <?php
             try {
                 $product = $db->query("SELECT * FROM `" . DB_PREFIX . "product` WHERE product_id = '" . (int)$product_id . "'");
@@ -267,7 +336,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         <!-- Database Info -->
         <div class="section">
-            <h2>5. Database Information</h2>
+            <h2>6. Database Information</h2>
             <?php
             try {
                 $auto_inc = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "product'");
@@ -285,7 +354,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         <!-- Recent Errors -->
         <div class="section">
-            <h2>6. Recent Error Logs</h2>
+            <h2>7. Recent Error Logs</h2>
             <?php
             $error_log = DIR_LOGS . 'product_insert_error.log';
             if (file_exists($error_log)) {

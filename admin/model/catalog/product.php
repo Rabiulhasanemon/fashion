@@ -2356,6 +2356,20 @@ class ModelCatalogProduct extends Model {
 		// Delete existing rewards for this product
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "'");
 		
+		// Clean up product_reward table - remove any records with ID = 0 or product_id = 0
+		try {
+			// Check if table has an auto-increment ID field
+			$check_structure = $this->db->query("SHOW COLUMNS FROM " . DB_PREFIX . "product_reward LIKE 'product_reward_id'");
+			if ($check_structure && $check_structure->num_rows) {
+				// Table has product_reward_id field - clean up ID = 0 records
+				$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_reward_id = 0");
+			}
+			// Also clean up product_id = 0 records
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = 0");
+		} catch (Exception $e) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Warning cleaning product_reward: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+		}
+		
 		$reward_count = 0;
 		if (isset($data['product_reward']) && is_array($data['product_reward'])) {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Processing ' . count($data['product_reward']) . ' reward(s)' . PHP_EOL, FILE_APPEND);
@@ -2367,14 +2381,54 @@ class ModelCatalogProduct extends Model {
 					// Delete any existing record for this specific product and customer group first (safety)
 					$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . $customer_group_id . "'");
 					
-					// Insert the new reward points
-					$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
-					
-					if ($insert_result) {
-						$reward_count++;
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
-					} else {
-						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert reward for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
+					// Insert the new reward points with error handling
+					try {
+						$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+						
+						if ($insert_result) {
+							$reward_count++;
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Inserted reward for customer_group_id: ' . $customer_group_id . ', points: ' . $points . PHP_EOL, FILE_APPEND);
+						} else {
+							// Check for duplicate entry error and retry
+							$db_error = '';
+							$db_errno = 0;
+							if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+								if (property_exists($this->db->link, 'error')) {
+									$db_error = $this->db->link->error;
+								}
+								if (property_exists($this->db->link, 'errno')) {
+									$db_errno = $this->db->link->errno;
+								}
+							}
+							
+							if ($db_errno == 1062 || stripos($db_error, 'duplicate') !== false || stripos($db_error, 'primary') !== false) {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Duplicate entry error detected, cleaning and retrying...' . PHP_EOL, FILE_APPEND);
+								
+								// Clean up any ID = 0 records
+								try {
+									$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_reward_id = 0");
+									$this->db->query("DELETE FROM " . DB_PREFIX . "product_reward WHERE product_id = 0");
+								} catch (Exception $e) {
+									// Ignore
+								}
+								
+								// Retry the insert
+								$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_reward SET product_id = '" . (int)$product_id . "', customer_group_id = '" . $customer_group_id . "', points = '" . $points . "'");
+								if ($insert_result) {
+									$reward_count++;
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Retry successful for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
+								} else {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Retry FAILED for customer_group_id: ' . $customer_group_id . PHP_EOL, FILE_APPEND);
+									throw new Exception("Failed to insert product_reward after retry: " . $db_error);
+								}
+							} else {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] FAILED to insert reward for customer_group_id: ' . $customer_group_id . ' - Error: ' . $db_error . PHP_EOL, FILE_APPEND);
+								throw new Exception("Failed to insert product_reward: " . $db_error);
+							}
+						}
+					} catch (Exception $e) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] Exception inserting reward: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+						// Don't throw - continue with other rewards
 					}
 				}
 			}
