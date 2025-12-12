@@ -5,22 +5,8 @@
         <div class="fd-module-header-wrapper" id="fd-header-<?php echo isset($module_id) ? $module_id : time(); ?>">
             <div class="fd-header-content">
                 <h2 class="fd-module-heading">
-                    <?php 
-                    $title = isset($heading_title) ? htmlspecialchars($heading_title) : 'Flash Deal';
-                    $title_parts = explode(' ', $title, 2);
-                    $first_word = isset($title_parts[0]) ? $title_parts[0] : 'Flash';
-                    $rest = isset($title_parts[1]) ? $title_parts[1] : 'Deal';
-                    ?>
-                    <span class="fd-title-flash"><?php echo $first_word; ?></span> <span class="fd-title-deal"><?php echo $rest; ?></span>
+                    <span class="fd-title-flash">Flash</span><span class="fd-title-deal"> Deal</span>
                 </h2>
-            </div>
-            <div class="fd-header-controls">
-                <button type="button" class="fd-control-btn fd-prev-btn" aria-label="Previous">
-                    <i class="fa fa-chevron-left"></i>
-                </button>
-                <button type="button" class="fd-control-btn fd-next-btn" aria-label="Next">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
             </div>
         </div>
         
@@ -41,13 +27,16 @@
                             <div class="fd-discount-label">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
                             
-                            <!-- Quick Action Buttons -->
+                            <!-- Quick Action Buttons - Bottom Left -->
                             <div class="fd-action-buttons">
                                 <button type="button" class="fd-action-btn" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" title="Wishlist">
                                     <i class="fa fa-heart-o"></i>
                                 </button>
                                 <button type="button" class="fd-action-btn" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
                                     <i class="fa fa-exchange"></i>
+                                </button>
+                                <button type="button" class="fd-action-btn fd-cart-btn" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i>
                                 </button>
                             </div>
                         </div>
@@ -135,23 +124,16 @@
 .fd-module-header-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: 25px;
-    padding: 15px 20px;
-    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
-    border-left: 4px solid #FF6A00;
-    border-radius: 0 8px 8px 0;
+    padding: 0;
+    background: transparent;
+    border: none;
     position: relative;
 }
 
 .fd-module-header-wrapper::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%);
+    display: none;
 }
 
 .fd-header-content {
@@ -159,19 +141,21 @@
 }
 
 .fd-module-heading {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
-    color: #333333;
+    color: #000000;
     margin: 0;
     padding: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.4;
+    position: relative;
     display: inline-block;
 }
 
 .fd-title-flash {
+    color: #000000;
     position: relative;
     display: inline-block;
 }
@@ -181,45 +165,13 @@
     position: absolute;
     bottom: -4px;
     left: 0;
-    right: 0;
+    width: 100%;
     height: 3px;
     background: #FF6A00;
-    border-radius: 2px;
 }
 
 .fd-title-deal {
-    margin-left: 8px;
-}
-
-.fd-header-controls {
-    display: flex;
-    gap: 10px;
-}
-
-.fd-control-btn {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #e0e0e0;
-    background: #ffffff;
-    color: #666666;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    font-size: 14px;
-}
-
-.fd-control-btn:hover {
-    background: #FF6A00;
-    color: #ffffff;
-    border-color: #FF6A00;
-    transform: scale(1.05);
-}
-
-.fd-control-btn:active {
-    transform: scale(0.95);
+    color: #000000;
 }
 
 /* Products Wrapper */
@@ -234,12 +186,12 @@
 /* Product Card */
 .fd-product-card {
     background: #ffffff;
-    border-radius: 8px;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     transition: all 0.3s ease;
     margin: 5px;
-    border: 1px solid #FFE0B2;
+    border: 1px solid #FFCC80;
 }
 
 .fd-product-card:hover {
@@ -280,7 +232,7 @@
     transform: scale(1.08);
 }
 
-/* Discount Badge - Top Right Corner (Yellow-Orange) */
+/* Discount Badge - Top Right/Left Corner (Yellow-Orange) */
 .fd-discount-label {
     position: absolute;
     top: 12px;
@@ -288,45 +240,41 @@
     background: #FFC107;
     color: #000000;
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     font-weight: 700;
     font-size: 13px;
     z-index: 10;
     box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
-    border: 1px solid rgba(255, 152, 0, 0.3);
+    line-height: 1;
 }
 
-/* Action Buttons */
+/* Action Buttons - Bottom Left */
 .fd-action-buttons {
     position: absolute;
-    top: 12px;
+    bottom: 12px;
     left: 12px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
-}
-
-.fd-product-card:hover .fd-action-buttons {
     opacity: 1;
     transform: translateX(0);
+    transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .fd-action-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 106, 0, 0.9);
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    color: #666;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    color: #ffffff;
     font-size: 14px;
 }
 
@@ -334,6 +282,11 @@
     background: #FF6A00;
     color: #ffffff;
     transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(255, 106, 0, 0.4);
+}
+
+.fd-cart-btn {
+    background: rgba(255, 106, 0, 0.9);
 }
 
 /* Info Container */
@@ -374,7 +327,7 @@
     color: #FF6A00;
 }
 
-/* Star Rating - Always Gray Outlines */
+/* Star Rating - Gray Outlines */
 .fd-rating-stars {
     margin-bottom: 12px;
     display: flex;
@@ -383,14 +336,17 @@
 
 .fd-rating-stars i {
     font-size: 13px;
-    color: #e0e0e0;
 }
 
 .fd-rating-stars .fd-star-active {
-    color: #e0e0e0;
+    color: #FFC107;
 }
 
 .fd-rating-stars .fd-star-inactive {
+    color: #e0e0e0;
+}
+
+.fd-rating-stars i.fa-star {
     color: #e0e0e0;
 }
 
@@ -614,10 +570,8 @@
 <script>
 jQuery(document).ready(function($) {
     var $carousel = $('#fd-products-carousel');
-    var $prevBtn = $('.fd-prev-btn');
-    var $nextBtn = $('.fd-next-btn');
     
-    // Initialize Owl Carousel
+    // Initialize Owl Carousel with automatic sliding
     if (typeof $.fn.owlCarousel !== 'undefined') {
         $carousel.owlCarousel({
             loop: true,
@@ -625,17 +579,17 @@ jQuery(document).ready(function($) {
             nav: false,
             dots: false,
             autoplay: true,
-            autoplayTimeout: 4000,
-            autoplayHoverPause: true,
-            autoplaySpeed: 800,
-            smartSpeed: 600,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: false,
+            autoplaySpeed: 1000,
+            smartSpeed: 800,
             responsive: {
                 0: {
                     items: 1,
                     margin: 10
                 },
                 480: {
-                    items: 2,
+                    items: 1,
                     margin: 12
                 },
                 768: {
@@ -643,23 +597,14 @@ jQuery(document).ready(function($) {
                     margin: 15
                 },
                 992: {
-                    items: 3,
+                    items: 2,
                     margin: 18
                 },
                 1200: {
-                    items: 4,
+                    items: 2,
                     margin: 20
                 }
             }
-        });
-        
-        // Custom navigation
-        $prevBtn.on('click', function() {
-            $carousel.trigger('prev.owl.carousel');
-        });
-        
-        $nextBtn.on('click', function() {
-            $carousel.trigger('next.owl.carousel');
         });
     }
     
