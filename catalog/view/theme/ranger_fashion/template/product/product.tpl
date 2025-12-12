@@ -156,62 +156,37 @@
                         <div class="product-head-info">
                             <h1 itemprop="name" class="name"><?php echo $heading_title; ?></h1>
 
-                            <div class="product-short-description" style="margin: 15px 0; padding: 16px 0; border-bottom: 1px solid #e9ecef;">
-                                <div class="product-info-grid">
-                                    <?php if (isset($manufacturer) && $manufacturer) { ?>
-                                    <div class="product-info-item">
-                                        <strong class="info-label" style="color: #10503D; font-weight: 600; margin-right: 8px;">Brand:</strong>
-                                        <span class="info-value">
-                                            <?php if (isset($manufacturers) && $manufacturers) { ?>
-                                            <a href="<?php echo $manufacturers; ?>" style="color: #A68A6A; text-decoration: none; font-weight: 500;"><?php echo htmlspecialchars($manufacturer); ?></a>
-                                            <?php } else { ?>
-                                            <span style="color: #555;"><?php echo htmlspecialchars($manufacturer); ?></span>
-                                            <?php } ?>
-                                        </span>
-                                    </div>
-                                    <?php } ?>
-                                    
-                                    <?php if (isset($price) && $price) { ?>
-                                    <div class="product-info-item">
-                                        <strong class="info-label" style="color: #10503D; font-weight: 600; margin-right: 8px;">Regular Price:</strong>
-                                        <span class="info-value" style="color: #666; text-decoration: line-through; font-size: 14px;"><?php echo $price; ?></span>
-                                    </div>
-                                    <?php } ?>
-                                    
-                                    <?php if (isset($special) && $special) { ?>
-                                    <div class="product-info-item">
-                                        <strong class="info-label" style="color: #10503D; font-weight: 600; margin-right: 8px;">Special Price:</strong>
-                                        <span class="info-value" style="color: #FF6A00; font-weight: 600; font-size: 16px;"><?php echo $special; ?></span>
-                                    </div>
-                                    <?php } elseif (isset($price) && $price) { ?>
-                                    <div class="product-info-item">
-                                        <strong class="info-label" style="color: #10503D; font-weight: 600; margin-right: 8px;">Price:</strong>
-                                        <span class="info-value" style="color: #FF6A00; font-weight: 600; font-size: 16px;"><?php echo $price; ?></span>
-                                    </div>
-                                    <?php } ?>
-                                    
-                                    <?php 
-                                    // Handle short_description - it might be an array or string
-                                    $display_short_description = '';
-                                    if (isset($short_description) && $short_description) {
-                                        if (is_array($short_description)) {
-                                            $display_short_description = implode(' ', array_filter($short_description));
-                                        } else {
-                                            $display_short_description = trim($short_description);
-                                        }
-                                    }
-                                    if ($display_short_description) { 
-                                    ?>
-                                    <div class="product-info-item product-info-full">
-                                        <strong class="info-label" style="color: #10503D; font-weight: 600; margin-right: 8px;">Short Description:</strong>
-                                        <span class="info-value" style="color: #555; font-size: 14px; line-height: 1.6;"><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
-                                    </div>
-                                    <?php } ?>
-                                </div>
+                            <?php 
+                            // Handle short_description - it might be an array or string
+                            $display_short_description = '';
+                            if (isset($short_description) && $short_description) {
+                                if (is_array($short_description)) {
+                                    $display_short_description = implode(' ', array_filter($short_description));
+                                } else {
+                                    $display_short_description = trim($short_description);
+                                }
+                            }
+                            if ($display_short_description) { 
+                            ?>
+                            <div class="product-short-description" style="margin: 15px 0; padding: 12px 0; border-bottom: 1px solid #e9ecef; color: #555; font-size: 14px; line-height: 1.6;">
+                                <strong style="color: #10503D; font-weight: 600; margin-right: 8px;">Short Description:</strong>
+                                <span><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
+                            <?php } ?>
 
                             <div class="short-info">
                                 <ul>
+                                    <?php if (isset($manufacturer) && $manufacturer) { ?>
+                                    <li> <b>Brand:</b>  <span><a href="<?php echo isset($manufacturers) ? $manufacturers : '#'; ?>" style="color: #10503D; text-decoration: none;"><?php echo $manufacturer; ?></a></span></li>
+                                    <?php } ?>
+                                    <?php if (isset($price) && $price) { ?>
+                                    <li> <b>Regular Price:</b>  <span><?php echo $price; ?></span></li>
+                                    <?php } ?>
+                                    <?php if (isset($special) && $special) { ?>
+                                    <li> <b>Price:</b>  <span style="color: #FF6A00; font-weight: 600;"><?php echo $special; ?></span></li>
+                                    <?php } elseif (isset($price) && $price) { ?>
+                                    <li> <b>Price:</b>  <span style="color: #FF6A00; font-weight: 600;"><?php echo $price; ?></span></li>
+                                    <?php } ?>
                                     <li> <b>Status:</b>  <span><?php echo $stock; ?></span></li>
                                     <li><b>Rating:</b>  <span><?php echo $rating; ?>/5.0 </span> <?php echo $reviews; ?></li>
                                     <?php if ($sku) { ?>
@@ -916,55 +891,6 @@
     }
     .prx-contact-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-/* Product Short Description Info Grid */
-.product-info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px 20px;
-    align-items: center;
-}
-
-.product-info-item {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 8px 0;
-}
-
-.product-info-item.product-info-full {
-    grid-column: 1 / -1;
-    margin-top: 8px;
-    padding-top: 12px;
-    border-top: 1px solid #f0f0f0;
-}
-
-.info-label {
-    white-space: nowrap;
-    margin-right: 8px;
-}
-
-.info-value {
-    flex: 1;
-    min-width: 0;
-}
-
-@media (max-width: 768px) {
-    .product-info-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    
-    .product-info-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-    
-    .info-label {
-        margin-right: 0;
     }
 }
 
