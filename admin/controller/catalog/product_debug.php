@@ -25,8 +25,32 @@ class ControllerCatalogProductDebug extends Controller {
 		}
 		
 		// Get debug information
-		$data['debug_info'] = $this->getDebugInfo($product_id);
+		try {
+			$data['debug_info'] = $this->getDebugInfo($product_id);
+		} catch (Exception $e) {
+			$data['debug_info'] = array();
+			$data['error'] = 'Error getting debug info: ' . $e->getMessage();
+		}
 		$data['current_product_id'] = $product_id;
+		
+		// Ensure debug_info is always an array
+		if (!isset($data['debug_info']) || !is_array($data['debug_info'])) {
+			$data['debug_info'] = array();
+		}
+		
+		// Initialize empty arrays if not set
+		if (!isset($data['debug_info']['zero_records'])) {
+			$data['debug_info']['zero_records'] = array();
+		}
+		if (!isset($data['debug_info']['duplicate_models'])) {
+			$data['debug_info']['duplicate_models'] = array();
+		}
+		if (!isset($data['debug_info']['duplicate_skus'])) {
+			$data['debug_info']['duplicate_skus'] = array();
+		}
+		if (!isset($data['debug_info']['recent_errors'])) {
+			$data['debug_info']['recent_errors'] = array();
+		}
 		
 		// Load template
 		$data['header'] = $this->load->controller('common/header');
@@ -37,7 +61,13 @@ class ControllerCatalogProductDebug extends Controller {
 	}
 	
 	private function getDebugInfo($product_id = 0) {
-		$info = array();
+		$info = array(
+			'zero_records' => array(),
+			'duplicate_models' => array(),
+			'duplicate_skus' => array(),
+			'recent_errors' => array(),
+			'auto_increment' => array()
+		);
 		
 		// 1. Check for product_id = 0 records
 		$info['zero_records'] = array();

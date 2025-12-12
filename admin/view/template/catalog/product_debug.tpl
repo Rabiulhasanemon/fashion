@@ -24,11 +24,32 @@
     </div>
     <?php } ?>
     
+    <?php if (isset($error)) { ?>
+    <div class="alert alert-danger">
+      <strong>Error:</strong> <?php echo $error; ?>
+    </div>
+    <?php } ?>
+    
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-bug"></i> Product Debug Information</h3>
       </div>
       <div class="panel-body">
+        
+        <?php if (!isset($debug_info) || empty($debug_info)) { ?>
+        <div class="alert alert-warning">
+          <strong>Warning:</strong> Debug information is not available. Please check the error logs.
+          <br><small>Debug Info Status: <?php echo isset($debug_info) ? 'Set' : 'Not Set'; ?></small>
+        </div>
+        <?php } ?>
+        
+        <!-- Debug Test Output -->
+        <div class="alert alert-info">
+          <strong>Debug Test:</strong> 
+          <br>Debug Info exists: <?php echo isset($debug_info) ? 'Yes' : 'No'; ?>
+          <br>Zero Records count: <?php echo isset($debug_info['zero_records']) ? count($debug_info['zero_records']) : 'N/A'; ?>
+          <br>Current Product ID: <?php echo isset($current_product_id) ? $current_product_id : 'Not Set'; ?>
+        </div>
         
         <div class="row">
           <div class="col-md-12">
