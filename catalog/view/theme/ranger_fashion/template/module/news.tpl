@@ -55,11 +55,11 @@
    ================================================= */
 
 .nws-module-wrapper {
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    background: linear-gradient(135deg, #a68a6a 0%, #10503d 100%);
     padding: 12px 0;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(255, 106, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.2);
 }
 
 .nws-content-box {
