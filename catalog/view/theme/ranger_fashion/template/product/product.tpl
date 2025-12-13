@@ -154,7 +154,7 @@
                 <div class="col-md-6 col-sm-12">
                     <div class="product-info-all">
                         <div class="product-head-info">
-                            <h1 itemprop="name" class="name"><?php echo $heading_title; ?></h1>
+                            <h1 itemprop="name" class="product-name-premium"><?php echo $heading_title; ?></h1>
 
                             <?php 
                             // Handle short_description - it might be an array or string
@@ -168,9 +168,8 @@
                             }
                             if ($display_short_description) { 
                             ?>
-                            <div class="product-short-description" style="margin: 15px 0; padding: 12px 0; border-bottom: 1px solid #e9ecef; color: #555; font-size: 14px; line-height: 1.6;">
-                                <strong style="color: #10503D; font-weight: 600; margin-right: 8px;">Short Description:</strong>
-                                <span><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
+                            <div class="product-short-description-premium">
+                                <span class="short-desc-text"><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
                             <?php } ?>
 
@@ -554,6 +553,162 @@
 <?php echo $footer; ?>
 
 <style>
+/* =================================================
+   PREMIUM PRODUCT NAME & SHORT DESCRIPTION
+   ================================================= */
+.product-name-premium {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #1a1a1a;
+    margin: 0 0 24px 0;
+    padding: 0;
+    letter-spacing: -0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    text-transform: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: relative;
+    display: block;
+}
+
+.product-name-premium::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6A00 0%, #FF8533 100%);
+    border-radius: 2px;
+}
+
+.product-short-description-premium {
+    margin: 32px 0 28px 0;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 4px solid #FF6A00;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-short-description-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #FF6A00 0%, transparent 100%);
+}
+
+.short-desc-text {
+    display: block;
+    color: #4a4a4a;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .product-name-premium {
+        font-size: 38px;
+        margin-bottom: 22px;
+    }
+    
+    .product-short-description-premium {
+        margin: 28px 0 24px 0;
+        padding: 18px 22px;
+    }
+    
+    .short-desc-text {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+}
+
+@media (max-width: 991px) {
+    .product-name-premium {
+        font-size: 34px;
+        margin-bottom: 20px;
+        letter-spacing: -0.3px;
+    }
+    
+    .product-name-premium::after {
+        width: 70px;
+        height: 3px;
+        bottom: -10px;
+    }
+    
+    .product-short-description-premium {
+        margin: 24px 0 20px 0;
+        padding: 16px 20px;
+        border-left-width: 3px;
+    }
+    
+    .short-desc-text {
+        font-size: 15px;
+        line-height: 1.65;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-name-premium {
+        font-size: 28px;
+        margin-bottom: 18px;
+        letter-spacing: -0.2px;
+    }
+    
+    .product-name-premium::after {
+        width: 60px;
+        height: 3px;
+        bottom: -8px;
+    }
+    
+    .product-short-description-premium {
+        margin: 20px 0 18px 0;
+        padding: 14px 18px;
+        border-radius: 10px;
+    }
+    
+    .short-desc-text {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-name-premium {
+        font-size: 24px;
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+    
+    .product-name-premium::after {
+        width: 50px;
+        height: 2px;
+        bottom: -6px;
+    }
+    
+    .product-short-description-premium {
+        margin: 18px 0 16px 0;
+        padding: 12px 16px;
+        border-left-width: 3px;
+    }
+    
+    .short-desc-text {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+}
+
 .prx-cart-option {
     border: 1px solid #f0f0f0;
     border-radius: 12px;
