@@ -1,0 +1,38 @@
+===========================================
+QUICK FIX FOR GIT MERGE CONFLICT
+===========================================
+
+PROBLEM: cPanel has uncommitted changes that conflict with merge
+
+SOLUTION: Run these commands via SSH on your server:
+
+-------------------------------------------
+STEP 1: Connect via SSH
+-------------------------------------------
+ssh your_username@your_server.com
+
+-------------------------------------------
+STEP 2: Navigate to repository
+-------------------------------------------
+cd ~/public_html/fashion
+# OR wherever your repository is located
+
+-------------------------------------------
+STEP 3: Resolve the conflict
+-------------------------------------------
+git stash
+git pull origin main
+
+-------------------------------------------
+DONE! The conflict is resolved.
+-------------------------------------------
+
+ALTERNATIVE (if you don't have SSH):
+1. Go to cPanel → Git Version Control
+2. Find the uncommitted file: featured_category.tpl
+3. Click "Discard Changes" or "Revert"
+4. Try pull/merge again
+
+===========================================
+
+

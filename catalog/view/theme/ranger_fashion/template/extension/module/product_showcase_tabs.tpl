@@ -718,33 +718,39 @@
     transform: scale(1.05);
 }
 
-/* Discount Badge - Top Left */
+/* Discount Badge - Top Left - Matching Uploaded Image Style */
 .psh-new-badge {
     position: absolute;
     top: 8px;
     left: 8px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 700;
     color: #ffffff;
     z-index: 2;
-    line-height: 1.4;
+    line-height: 1.3;
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .psh-new-badge-blue {
     background: #2196F3;
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
 }
 
 .psh-new-badge-red {
     background: #f44336;
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
 }
 
 .psh-new-badge i {
-    font-size: 10px;
+    font-size: 11px;
+    margin-right: 2px;
 }
 
 /* Delivery Time - Top Right */
@@ -904,8 +910,13 @@
     }
     
     .psh-new-badge {
+        font-size: 11px;
+        padding: 5px 10px;
+        gap: 3px;
+    }
+    
+    .psh-new-badge i {
         font-size: 10px;
-        padding: 3px 8px;
     }
     
     .psh-new-delivery {
@@ -934,8 +945,13 @@
     }
     
     .psh-new-badge {
+        font-size: 10px;
+        padding: 4px 8px;
+        gap: 2px;
+    }
+    
+    .psh-new-badge i {
         font-size: 9px;
-        padding: 2px 6px;
     }
     
     .psh-new-delivery {
