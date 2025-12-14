@@ -261,7 +261,7 @@
     flex-wrap: wrap;
 }
 
-/* Premium Brand Logo - Compact Design */
+/* Premium Brand Logo - Compact Design with Animations */
 #premium-mfr-logo.premium-mfr-brand-logo {
     flex-shrink: 0;
     width: 80px;
@@ -274,14 +274,51 @@
     justify-content: center;
     border: 2px solid rgba(16, 80, 61, 0.15);
     box-shadow: 0 2px 8px rgba(16, 80, 61, 0.1);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    animation: logoEntrance 0.8s ease-out, logoFloat 3s ease-in-out 1s infinite;
+}
+
+/* Logo Glow Effect */
+#premium-mfr-logo.premium-mfr-brand-logo::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(166, 138, 106, 0.15) 0%, transparent 70%);
+    animation: logoGlow 3s ease-in-out infinite;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* Animated Border on Hover */
+#premium-mfr-logo.premium-mfr-brand-logo::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 10px;
+    padding: 2px;
+    background: linear-gradient(45deg, #10503D, #A68A6A, #10503D);
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#premium-mfr-logo.premium-mfr-brand-logo:hover::after {
+    animation: borderRotate 2s linear infinite;
+    opacity: 1;
 }
 
 #premium-mfr-logo.premium-mfr-brand-logo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.15);
-    border-color: rgba(16, 80, 61, 0.25);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(16, 80, 61, 0.2), 0 0 20px rgba(166, 138, 106, 0.15);
+    border-color: rgba(16, 80, 61, 0.3);
+    animation: logoEntrance 0.8s ease-out, logoFloat 2s ease-in-out infinite, logoPulse 2s ease-in-out infinite;
 }
 
 #premium-mfr-logo.premium-mfr-brand-logo img {
@@ -291,11 +328,79 @@
     padding: 10px;
     position: relative;
     z-index: 1;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: logoImageFade 1s ease-out 0.3s both;
 }
 
 #premium-mfr-logo.premium-mfr-brand-logo:hover img {
-    transform: scale(1.03);
+    transform: scale(1.08) rotate(2deg);
+}
+
+/* Logo Animation Keyframes */
+@keyframes logoEntrance {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) rotate(-10deg);
+    }
+    50% {
+        transform: scale(1.05) rotate(5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.1), 0 0 0 0 rgba(16, 80, 61, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(16, 80, 61, 0.1), 0 0 0 8px rgba(16, 80, 61, 0);
+    }
+}
+
+@keyframes logoGlow {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(0.9) rotate(0deg);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1) rotate(180deg);
+    }
+}
+
+@keyframes logoImageFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes borderRotate {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 
