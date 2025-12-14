@@ -27,7 +27,12 @@
       <?php foreach (array_chunk($category['manufacturer'], 4) as $manufacturers) { ?>
       <div class="row">
         <?php foreach ($manufacturers as $manufacturer) { ?>
-        <div class="col-sm-3"><a href="<?php echo $manufacturer['href']; ?>"><?php echo $manufacturer['name']; ?></a></div>
+        <div class="col-sm-3">
+            <a href="<?php echo $manufacturer['href']; ?>"><?php echo $manufacturer['name']; ?></a>
+            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+            <span class="text-muted" style="font-size: 12px;"> (<?php echo $manufacturer['product_count']; ?>)</span>
+            <?php } ?>
+        </div>
         <?php } ?>
       </div>
       <?php } ?>

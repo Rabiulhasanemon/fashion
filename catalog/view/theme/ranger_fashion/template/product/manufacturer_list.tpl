@@ -63,6 +63,11 @@
                             <div class="mfr-name-text">
                                 <?php echo isset($manufacturer['name']) ? htmlspecialchars($manufacturer['name']) : ''; ?>
                             </div>
+                            <?php if (isset($manufacturer['product_count']) && $manufacturer['product_count'] > 0) { ?>
+                            <div class="mfr-product-count">
+                                <?php echo $manufacturer['product_count']; ?> product<?php echo $manufacturer['product_count'] > 1 ? 's' : ''; ?>
+                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </a>
@@ -235,6 +240,16 @@
     color: #000000;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.mfr-product-count {
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    line-height: 1.2;
+    margin-top: 4px;
 }
 
 /* Empty State */

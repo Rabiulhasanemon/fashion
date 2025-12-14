@@ -4,6 +4,7 @@ class ControllerProductManufacturer extends Controller {
 		$this->load->language('product/manufacturer');
 
 		$this->load->model('catalog/manufacturer');
+		$this->load->model('catalog/product');
 
 		$this->load->model('tool/image');
 
@@ -57,10 +58,25 @@ class ControllerProductManufacturer extends Controller {
 
 				$manufacturer_id = isset($result['manufacturer_id']) ? $result['manufacturer_id'] : 0;
 				
+				// Get product count for this manufacturer
+				$product_count = 0;
+				if ($manufacturer_id > 0) {
+					$filter_data = array(
+						'filter_manufacturer_id' => $manufacturer_id
+					);
+					try {
+						$product_count = $this->model_catalog_product->getTotalProducts($filter_data);
+						$product_count = $product_count ? (int)$product_count : 0;
+					} catch (Exception $e) {
+						$product_count = 0;
+					}
+				}
+				
 				$data['categories'][$key]['manufacturer'][] = array(
 					'name' => $result['name'],
 					'image' => $image,
-					'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id)
+					'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $manufacturer_id),
+					'product_count' => $product_count
 				);
 			}
 		}
