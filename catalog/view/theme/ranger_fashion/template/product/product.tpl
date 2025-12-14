@@ -152,48 +152,80 @@
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-12">
-                    <div class="product-info-all">
-                        <div class="product-head-info">
-                            <h1 itemprop="name" class="product-name-premium"><?php echo $heading_title; ?></h1>
-
-                            <?php 
-                            // Handle short_description - it might be an array or string
-                            $display_short_description = '';
-                            if (isset($short_description) && $short_description) {
-                                if (is_array($short_description)) {
-                                    $display_short_description = implode(' ', array_filter($short_description));
-                                } else {
-                                    $display_short_description = trim($short_description);
-                                }
-                            }
-                            if ($display_short_description) { 
-                            ?>
-                            <div class="product-short-description-premium">
-                                <span class="short-desc-text"><?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <div class="ppd-new-product-info">
+                        <!-- Product Title -->
+                        <h1 itemprop="name" class="ppd-new-title"><?php echo $heading_title; ?></h1>
+                        
+                        <!-- Product Metadata -->
+                        <div class="ppd-new-metadata">
+                            <?php if (isset($manufacturer) && $manufacturer) { ?>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Brand:</span>
+                                <span class="ppd-new-meta-value"><a href="<?php echo isset($manufacturers) ? $manufacturers : '#'; ?>" class="ppd-new-meta-link"><?php echo $manufacturer; ?></a></span>
                             </div>
                             <?php } ?>
-
-                            <div class="short-info">
-                                <ul>
-                                    <?php if (isset($manufacturer) && $manufacturer) { ?>
-                                    <li> <b>Brand:</b>  <span><a href="<?php echo isset($manufacturers) ? $manufacturers : '#'; ?>" style="color: #10503D; text-decoration: none;"><?php echo $manufacturer; ?></a></span></li>
-                                    <?php } ?>
-                                    <?php if (isset($price) && $price) { ?>
-                                    <li> <b>Regular Price:</b>  <span><?php echo $price; ?></span></li>
-                                    <?php } ?>
-                                    <?php if (isset($special) && $special) { ?>
-                                    <li> <b>Price:</b>  <span style="color: #FF6A00; font-weight: 600;"><?php echo $special; ?></span></li>
-                                    <?php } elseif (isset($price) && $price) { ?>
-                                    <li> <b>Price:</b>  <span style="color: #FF6A00; font-weight: 600;"><?php echo $price; ?></span></li>
-                                    <?php } ?>
-                                    <li> <b>Status:</b>  <span><?php echo $stock; ?></span></li>
-                                    <li><b>Rating:</b>  <span><?php echo $rating; ?>/5.0 </span> <?php echo $reviews; ?></li>
-                                    <?php if ($sku) { ?>
-                                    <li> <b>SKU: </b><?php echo $sku; ?></li>
-                                    <?php } ?>
-                                </ul>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Status:</span>
+                                <span class="ppd-new-meta-value"><?php echo $stock; ?></span>
                             </div>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Rating:</span>
+                                <span class="ppd-new-meta-value"><?php echo $rating; ?>/5.0 Review (<?php echo isset($no_of_review) ? $no_of_review : 0; ?>)</span>
+                            </div>
+                            <?php if ($sku) { ?>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">SKU:</span>
+                                <span class="ppd-new-meta-value"><?php echo $sku; ?></span>
+                            </div>
+                            <?php } ?>
                         </div>
+                        
+                        <!-- Pricing Section with Discount Badge -->
+                        <div class="ppd-new-pricing-section">
+                            <div class="ppd-new-price-container">
+                                <?php 
+                                $discountPercent = 0;
+                                $discountAmount = 0;
+                                if (!$disablePurchase && $special) {
+                                    $p = floatval(str_replace(['৳', ','], '', $price));
+                                    $s = floatval(str_replace(['৳', ','], '', $special));
+                                    $discountAmount = $p - $s;
+                                    if ($p > 0) {
+                                        $discountPercent = round(($discountAmount / $p) * 100);
+                                    }
+                                }
+                                ?>
+                                <?php if ($disablePurchase || !$special) { ?>
+                                <span class="ppd-new-price-current"><?php echo $price; ?></span>
+                                <?php } else { ?>
+                                <span class="ppd-new-price-current"><?php echo $special; ?></span>
+                                <span class="ppd-new-price-old"><?php echo $price; ?></span>
+                                <span class="ppd-new-save-text">Save <?php echo $discountAmount; ?> TK.</span>
+                                <?php } ?>
+                            </div>
+                            <?php if ($special && !$disablePurchase && $discountPercent > 0) { ?>
+                            <div class="ppd-new-discount-badge">
+                                <?php echo $discountPercent; ?>% OFF
+                            </div>
+                            <?php } ?>
+                        </div>
+                        
+                        <!-- Product Description -->
+                        <?php 
+                        $display_short_description = '';
+                        if (isset($short_description) && $short_description) {
+                            if (is_array($short_description)) {
+                                $display_short_description = implode(' ', array_filter($short_description));
+                            } else {
+                                $display_short_description = trim($short_description);
+                            }
+                        }
+                        if ($display_short_description) { 
+                        ?>
+                        <div class="ppd-new-description">
+                            <?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                        <?php } ?>
 
                         <?php if ($options) { ?>
                         <div class="p-opt-wrap prx-option-wrap">
@@ -216,89 +248,75 @@
                         </div>
                         <?php } ?>
 
-                        <div class="cart-option prx-cart-option" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                            <link itemprop="availability" href="http://schema.org/<?php echo $stock_meta; ?>"/><link itemprop="itemCondition" href="http://schema.org/NewCondition">
-                            <meta itemprop="priceCurrency" content="BDT" /><meta itemprop="price" content="<?php echo $raw_price; ?>" />
-
-                            <div class="price-wrap prx-price-wrap">
-                                <input type="hidden" name="enable_emi" checked value="0"/>
-
-                                <?php if ($disablePurchase || !$special) { ?>
-                                <span class="price product-price"><span><?php echo $price; ?></span></span>
-                                <?php } else { ?>
-                                <span class="price product-price"><span> <ins style="text-decoration: none;"><?php echo $special; ?></ins> </span></span>
-                                <span class="price-old product-price"><span> <del><?php echo $price; ?></del> </span></span>
-                                <?php
-                                  $p = floatval(str_replace(['৳', ','], '', $price));
-                                  $s = floatval(str_replace(['৳', ','], '', $special));
-                                  $discountAmount = $p - $s;
-                                ?>
-                                <span class="save">Save <?php echo $discountAmount; ?> TK.</span>
-                                <?php } ?>
-                                <?php if (!empty($product_reward_points)) { ?>
-                                <div class="prx-reward-pill">
-                                    <i class="fa fa-gift"></i>
-                                    <span>Earn <?php echo $product_reward_points; ?> reward points</span>
-                                </div>
-                                <?php } ?>
-                            </div>
-                            <div class="prx-action-grid">
-                                <div class="prx-qty-control" data-min-qty="<?php echo (int)$minimum; ?>">
-                                    <span class="prx-qty-btn prx-qty-btn--minus"><i class="material-icons">remove</i></span>
-                                    <span class="qty"><input type="text" name="quantity" id="input-quantity" value="<?php echo $minimum; ?>" size="2"></span>
-                                    <span class="prx-qty-btn prx-qty-btn--plus"><i class="material-icons">add</i></span>
-                                    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
-                                </div>
-                                <div class="prx-cta-buttons">
-                                    <button id="button-cart" class="prx-btn prx-btn--cart" <?php echo $disablePurchase ? "disabled" : ""; ?>><i class="fa fa-shopping-cart"></i><span>Add to Cart</span></button>
-                                    <button id="buy-now" class="prx-btn prx-btn--buy" <?php echo $disablePurchase ? "disabled" : ""; ?>><i class="fa fa-bolt"></i><span>Buy Now</span></button>
-                                    <button type="button" class="prx-btn prx-btn--compare" onclick="compare.add('<?php echo $product_id; ?>');"><i class="fa fa-exchange"></i><span>Compare</span></button>
-                                </div>
+                        <!-- Quantity Selector -->
+                        <div class="ppd-new-quantity-section" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                            <link itemprop="availability" href="http://schema.org/<?php echo $stock_meta; ?>"/>
+                            <link itemprop="itemCondition" href="http://schema.org/NewCondition"/>
+                            <meta itemprop="priceCurrency" content="BDT" />
+                            <meta itemprop="price" content="<?php echo $raw_price; ?>" />
+                            
+                            <div class="ppd-new-qty-control" data-min-qty="<?php echo (int)$minimum; ?>">
+                                <button type="button" class="ppd-new-qty-btn ppd-new-qty-minus">-</button>
+                                <input type="text" name="quantity" id="input-quantity" class="ppd-new-qty-input" value="<?php echo $minimum; ?>" size="2">
+                                <button type="button" class="ppd-new-qty-btn ppd-new-qty-plus">+</button>
+                                <input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
                             </div>
                         </div>
-
-                        <div class="prx-contact-grid">
-                            <?php if (!empty($whatsapp_link)) { ?>
-                            <a class="prx-contact-card prx-contact-card--whatsapp" href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener" title="Order on WhatsApp">
-                                <div class="prx-contact-icon prx-icon-animated">
-                                    <i class="fab fa-whatsapp"></i>
-                                </div>
-                            </a>
-                            <?php } ?>
-                            <?php if (!empty($primary_contact_tel)) { ?>
-                            <a class="prx-contact-card prx-contact-card--call" href="<?php echo $primary_contact_tel; ?>" title="Call for Order">
-                                <div class="prx-contact-icon prx-icon-animated">
-                                    <i class="fa fa-phone"></i>
-                                </div>
-                            </a>
-                            <?php } ?>
+                        
+                        <!-- Action Buttons -->
+                        <div class="ppd-new-action-buttons">
+                            <button id="button-cart" class="ppd-new-btn ppd-new-btn-bag" <?php echo $disablePurchase ? "disabled" : ""; ?>>
+                                Add to Bag
+                            </button>
+                            <button id="buy-now" class="ppd-new-btn ppd-new-btn-buy" <?php echo $disablePurchase ? "disabled" : ""; ?>>
+                                Buy Now
+                            </button>
+                            <button type="button" class="ppd-new-btn ppd-new-btn-wishlist" onclick="wishlist.add('<?php echo $product_id; ?>');">
+                                <i class="fa fa-heart"></i>
+                            </button>
+                            <button type="button" class="ppd-new-btn ppd-new-btn-compare" onclick="compare.add('<?php echo $product_id; ?>');">
+                                <i class="fa fa-exchange"></i>
+                            </button>
                         </div>
 
-                        <div class="save-and-share-wrap">
-                            <button class="btn btn-outline" onclick="wishlist.add('<?php echo $product_id; ?>');" type="button"><span class="material-icons">favorite_border</span> Add To Wishlist </button>
-
-                            <div class="social-share">
-                                <div class="share-on">
-                                    <span class="share" >Share:</span>
-                                    <span class="share-ico" data-type="facebook">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                          <path d="M8.00016 1.35999C4.3335 1.35999 1.3335 4.35332 1.3335 8.03999C1.3335 11.3733 3.7735 14.14 6.96016 14.64V9.97332H5.26683V8.03999H6.96016V6.56665C6.96016 4.89332 7.9535 3.97332 9.48016 3.97332C10.2068 3.97332 10.9668 4.09999 10.9668 4.09999V5.74665H10.1268C9.30016 5.74665 9.04016 6.25999 9.04016 6.78665V8.03999H10.8935L10.5935 9.97332H9.04016V14.64C10.6111 14.3919 12.0416 13.5903 13.0734 12.38C14.1053 11.1697 14.6704 9.63041 14.6668 8.03999C14.6668 4.35332 11.6668 1.35999 8.00016 1.35999Z" fill="#5E5E5E"/>
-                                        </svg>
-                                    </span>
-                                    <span class="share-ico" data-type="whatsapp">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                          <path d="M8.00066 1.33331C11.6827 1.33331 14.6673 4.31798 14.6673 7.99998C14.6673 11.682 11.6827 14.6666 8.00066 14.6666C6.8225 14.6687 5.66505 14.3569 4.64733 13.7633L1.33666 14.6666L2.23799 11.3546C1.64397 10.3366 1.33193 9.17866 1.33399 7.99998C1.33399 4.31798 4.31866 1.33331 8.00066 1.33331ZM5.72866 4.86665L5.59533 4.87198C5.50912 4.87792 5.42489 4.90056 5.34733 4.93865C5.27504 4.97965 5.20904 5.03084 5.15133 5.09065C5.07133 5.16598 5.02599 5.23131 4.97733 5.29465C4.73074 5.61525 4.59798 6.00886 4.59999 6.41331C4.60133 6.73998 4.68666 7.05798 4.81999 7.35531C5.09266 7.95665 5.54133 8.59331 6.13333 9.18331C6.27599 9.32531 6.416 9.46798 6.56666 9.60065C7.30228 10.2482 8.17885 10.7153 9.12666 10.9646L9.50533 11.0226C9.62866 11.0293 9.752 11.02 9.876 11.014C10.0701 11.0037 10.2597 10.9512 10.4313 10.86C10.5186 10.8149 10.6038 10.7659 10.6867 10.7133C10.6867 10.7133 10.7149 10.6942 10.77 10.6533C10.86 10.5866 10.9153 10.5393 10.99 10.4613C11.046 10.4035 11.0927 10.3364 11.13 10.26C11.182 10.1513 11.234 9.94398 11.2553 9.77131C11.2713 9.63931 11.2667 9.56731 11.2647 9.52265C11.262 9.45131 11.2027 9.37731 11.138 9.34598L10.75 9.17198C10.75 9.17198 10.17 8.91931 9.81533 8.75798C9.7782 8.74182 9.73844 8.73256 9.698 8.73065C9.65238 8.72587 9.60627 8.73096 9.56279 8.74557C9.51931 8.76018 9.47948 8.78396 9.446 8.81531C9.44266 8.81398 9.39799 8.85198 8.91599 9.43598C8.88833 9.47315 8.85022 9.50125 8.80653 9.51668C8.76284 9.53212 8.71554 9.53419 8.67066 9.52265C8.62721 9.51107 8.58466 9.49636 8.54333 9.47865C8.46066 9.44398 8.43199 9.43065 8.37533 9.40665C7.99258 9.23992 7.63829 9.0143 7.32533 8.73798C7.24133 8.66465 7.16333 8.58465 7.08333 8.50731C6.82107 8.25612 6.5925 7.97197 6.40333 7.66198L6.36399 7.59865C6.33617 7.55584 6.31335 7.50999 6.29599 7.46198C6.27066 7.36398 6.33666 7.28531 6.33666 7.28531C6.33666 7.28531 6.49866 7.10798 6.57399 7.01198C6.64733 6.91865 6.70933 6.82798 6.74933 6.76331C6.82799 6.63665 6.85266 6.50665 6.81133 6.40598C6.62466 5.94998 6.43177 5.49642 6.23266 5.04531C6.19333 4.95598 6.07666 4.89198 5.97066 4.87931C5.93466 4.87487 5.89866 4.87131 5.86266 4.86865C5.77315 4.86351 5.68339 4.8644 5.59399 4.87131L5.72866 4.86665Z" fill="#5E5E5E"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div class="copy-link">
+                        <!-- Assistance Section -->
+                        <div class="ppd-new-assistance-section">
+                            <p class="ppd-new-assistance-text">Having trouble ordering? Order via WhatsApp.</p>
+                            <h4 class="ppd-new-assistance-heading">Need Assistance?</h4>
+                            <div class="ppd-new-assistance-buttons">
+                                <?php if (!empty($whatsapp_link)) { ?>
+                                <a href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener" class="ppd-new-assistance-btn ppd-new-assistance-whatsapp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                                <?php } ?>
+                                <?php if (!empty($primary_contact_tel)) { ?>
+                                <a href="<?php echo $primary_contact_tel; ?>" class="ppd-new-assistance-btn ppd-new-assistance-call">
+                                    <i class="fa fa-phone"></i> Call Us
+                                </a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        
+                        <!-- Share Section -->
+                        <div class="ppd-new-share-section">
+                            <span class="ppd-new-share-label">Share:</span>
+                            <div class="ppd-new-share-icons">
+                                <span class="ppd-new-share-icon" data-type="facebook">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8.00016 1.35999C4.3335 1.35999 1.3335 4.35332 1.3335 8.03999C1.3335 11.3733 3.7735 14.14 6.96016 14.64V9.97332H5.26683V8.03999H6.96016V6.56665C6.96016 4.89332 7.9535 3.97332 9.48016 3.97332C10.2068 3.97332 10.9668 4.09999 10.9668 4.09999V5.74665H10.1268C9.30016 5.74665 9.04016 6.25999 9.04016 6.78665V8.03999H10.8935L10.5935 9.97332H9.04016V14.64C10.6111 14.3919 12.0416 13.5903 13.0734 12.38C14.1053 11.1697 14.6704 9.63041 14.6668 8.03999C14.6668 4.35332 11.6668 1.35999 8.00016 1.35999Z" fill="#5E5E5E"/>
+                                    </svg>
+                                </span>
+                                <span class="ppd-new-share-icon" data-type="whatsapp">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8.00066 1.33331C11.6827 1.33331 14.6673 4.31798 14.6673 7.99998C14.6673 11.682 11.6827 14.6666 8.00066 14.6666C6.8225 14.6687 5.66505 14.3569 4.64733 13.7633L1.33666 14.6666L2.23799 11.3546C1.64397 10.3366 1.33193 9.17866 1.33399 7.99998C1.33399 4.31798 4.31866 1.33331 8.00066 1.33331ZM5.72866 4.86665L5.59533 4.87198C5.50912 4.87792 5.42489 4.90056 5.34733 4.93865C5.27504 4.97965 5.20904 5.03084 5.15133 5.09065C5.07133 5.16598 5.02599 5.23131 4.97733 5.29465C4.73074 5.61525 4.59798 6.00886 4.59999 6.41331C4.60133 6.73998 4.68666 7.05798 4.81999 7.35531C5.09266 7.95665 5.54133 8.59331 6.13333 9.18331C6.27599 9.32531 6.416 9.46798 6.56666 9.60065C7.30228 10.2482 8.17885 10.7153 9.12666 10.9646L9.50533 11.0226C9.62866 11.0293 9.752 11.02 9.876 11.014C10.0701 11.0037 10.2597 10.9512 10.4313 10.86C10.5186 10.8149 10.6038 10.7659 10.6867 10.7133C10.6867 10.7133 10.7149 10.6942 10.77 10.6533C10.86 10.5866 10.9153 10.5393 10.99 10.4613C11.046 10.4035 11.0927 10.3364 11.13 10.26C11.182 10.1513 11.234 9.94398 11.2553 9.77131C11.2713 9.63931 11.2667 9.56731 11.2647 9.52265C11.262 9.45131 11.2027 9.37731 11.138 9.34598L10.75 9.17198C10.75 9.17198 10.17 8.91931 9.81533 8.75798C9.7782 8.74182 9.73844 8.73256 9.698 8.73065C9.65238 8.72587 9.60627 8.73096 9.56279 8.74557C9.51931 8.76018 9.47948 8.78396 9.446 8.81531C9.44266 8.81398 9.39799 8.85198 8.91599 9.43598C8.88833 9.47315 8.85022 9.50125 8.80653 9.51668C8.76284 9.53212 8.71554 9.53419 8.67066 9.52265C8.62721 9.51107 8.58466 9.49636 8.54333 9.47865C8.46066 9.44398 8.43199 9.43065 8.37533 9.40665C7.99258 9.23992 7.63829 9.0143 7.32533 8.73798C7.24133 8.66465 7.16333 8.58465 7.08333 8.50731C6.82107 8.25612 6.5925 7.97197 6.40333 7.66198L6.36399 7.59865C6.33617 7.55584 6.31335 7.50999 6.29599 7.46198C6.27066 7.36398 6.33666 7.28531 6.33666 7.28531C6.33666 7.28531 6.49866 7.10798 6.57399 7.01198C6.64733 6.91865 6.70933 6.82798 6.74933 6.76331C6.82799 6.63665 6.85266 6.50665 6.81133 6.40598C6.62466 5.94998 6.43177 5.49642 6.23266 5.04531C6.19333 4.95598 6.07666 4.89198 5.97066 4.87931C5.93466 4.87487 5.89866 4.87131 5.86266 4.86865C5.77315 4.86351 5.68339 4.8644 5.59399 4.87131L5.72866 4.86665Z" fill="#5E5E5E"/>
+                                    </svg>
+                                </span>
+                                <span class="ppd-new-share-icon ppd-new-copy-link">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                         <path d="M12.6667 1.33331C13.0203 1.33331 13.3594 1.47379 13.6095 1.72384C13.8595 1.97389 14 2.31302 14 2.66665V10.6666C14 11.0203 13.8595 11.3594 13.6095 11.6095C13.3594 11.8595 13.0203 12 12.6667 12H11.3333V13.3333C11.3333 13.6869 11.1929 14.0261 10.9428 14.2761C10.6928 14.5262 10.3536 14.6666 10 14.6666H3.33333C2.97971 14.6666 2.64057 14.5262 2.39052 14.2761C2.14048 14.0261 2 13.6869 2 13.3333V5.33331C2 4.97969 2.14048 4.64055 2.39052 4.3905C2.64057 4.14046 2.97971 3.99998 3.33333 3.99998H4.66667V2.66665C4.66667 2.31302 4.80714 1.97389 5.05719 1.72384C5.30724 1.47379 5.64638 1.33331 6 1.33331H12.6667ZM6.66667 9.99998H5.33333C5.16341 10.0002 4.99998 10.0652 4.87642 10.1819C4.75286 10.2985 4.67851 10.4579 4.66855 10.6276C4.65859 10.7972 4.71378 10.9642 4.82284 11.0945C4.9319 11.2248 5.0866 11.3086 5.25533 11.3286L5.33333 11.3333H6.66667C6.83659 11.3331 7.00002 11.2681 7.12358 11.1514C7.24714 11.0348 7.32149 10.8753 7.33145 10.7057C7.34141 10.5361 7.28622 10.3691 7.17716 10.2388C7.0681 10.1085 6.9134 10.0247 6.74467 10.0046L6.66667 9.99998ZM12.6667 2.66665H6V3.99998H10C10.3536 3.99998 10.6928 4.14046 10.9428 4.3905C11.1929 4.64055 11.3333 4.97969 11.3333 5.33331V10.6666H12.6667V2.66665ZM8 7.33331H5.33333C5.15652 7.33331 4.98695 7.40355 4.86193 7.52858C4.7369 7.6536 4.66667 7.82317 4.66667 7.99998C4.66667 8.17679 4.7369 8.34636 4.86193 8.47138C4.98695 8.59641 5.15652 8.66665 5.33333 8.66665H8C8.17681 8.66665 8.34638 8.59641 8.4714 8.47138C8.59643 8.34636 8.66667 8.17679 8.66667 7.99998C8.66667 7.82317 8.59643 7.6536 8.4714 7.52858C8.34638 7.40355 8.17681 7.33331 8 7.33331Z" fill="#5E5E5E"/>
                                     </svg>
-                                     Copy Link
-                                </div>
+                                </span>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -1237,6 +1255,407 @@
         font-size: 13px;
     }
 }
+
+/* =================================================
+   NEW PRODUCT PAGE DESIGN - ppd-new- Classes
+   Matches Uploaded Image Style
+   ================================================= */
+
+.ppd-new-product-info {
+    padding: 0;
+}
+
+/* Product Title */
+.ppd-new-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* Metadata Section */
+.ppd-new-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ppd-new-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.ppd-new-meta-label {
+    font-weight: 600;
+    color: #333;
+    min-width: 80px;
+}
+
+.ppd-new-meta-value {
+    color: #666;
+}
+
+.ppd-new-meta-link {
+    color: #10503D;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.ppd-new-meta-link:hover {
+    color: #0d3f2f;
+    text-decoration: underline;
+}
+
+/* Pricing Section */
+.ppd-new-pricing-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-price-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.ppd-new-price-current {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e91e63;
+    line-height: 1.2;
+}
+
+.ppd-new-price-old {
+    font-size: 18px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+.ppd-new-save-text {
+    font-size: 14px;
+    color: #4caf50;
+    font-weight: 600;
+}
+
+/* Discount Badge */
+.ppd-new-discount-badge {
+    background: #9c27b0;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
+/* Product Description */
+.ppd-new-description {
+    margin-bottom: 24px;
+    padding: 16px 0;
+    color: #555;
+    font-size: 14px;
+    line-height: 1.6;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* Quantity Section */
+.ppd-new-quantity-section {
+    margin-bottom: 20px;
+}
+
+.ppd-new-qty-control {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ppd-new-qty-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.ppd-new-qty-btn:hover {
+    background: #e0e0e0;
+}
+
+.ppd-new-qty-input {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Action Buttons */
+.ppd-new-action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ppd-new-btn-bag {
+    background: #8b4513;
+    color: #ffffff;
+    flex: 1;
+    min-width: 150px;
+}
+
+.ppd-new-btn-bag:hover {
+    background: #6b3410;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.ppd-new-btn-buy {
+    background: #2196F3;
+    color: #ffffff;
+    flex: 1;
+    min-width: 150px;
+}
+
+.ppd-new-btn-buy:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.ppd-new-btn-wishlist,
+.ppd-new-btn-compare {
+    background: #ffffff;
+    color: #333;
+    border: 1px solid #ddd;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.ppd-new-btn-wishlist:hover,
+.ppd-new-btn-compare:hover {
+    background: #f5f5f5;
+    border-color: #bbb;
+    transform: translateY(-2px);
+}
+
+.ppd-new-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Assistance Section */
+.ppd-new-assistance-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.ppd-new-assistance-text {
+    margin: 0 0 12px 0;
+    color: #4caf50;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ppd-new-assistance-heading {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ppd-new-assistance-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-assistance-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.ppd-new-assistance-whatsapp {
+    background: #25d366;
+    color: #ffffff;
+}
+
+.ppd-new-assistance-whatsapp:hover {
+    background: #20ba5a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    color: #ffffff;
+}
+
+.ppd-new-assistance-call {
+    background: #2196F3;
+    color: #ffffff;
+}
+
+.ppd-new-assistance-call:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    color: #ffffff;
+}
+
+/* Share Section */
+.ppd-new-share-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ppd-new-share-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ppd-new-share-icons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.ppd-new-share-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.ppd-new-share-icon:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.ppd-new-copy-link {
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ppd-new-title {
+        font-size: 24px;
+    }
+    
+    .ppd-new-price-current {
+        font-size: 24px;
+    }
+    
+    .ppd-new-price-old {
+        font-size: 16px;
+    }
+    
+    .ppd-new-discount-badge {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    
+    .ppd-new-pricing-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .ppd-new-action-buttons {
+        flex-direction: column;
+    }
+    
+    .ppd-new-btn-bag,
+    .ppd-new-btn-buy {
+        width: 100%;
+    }
+    
+    .ppd-new-btn-wishlist,
+    .ppd-new-btn-compare {
+        width: 100%;
+        height: 44px;
+    }
+    
+    .ppd-new-assistance-buttons {
+        flex-direction: column;
+    }
+    
+    .ppd-new-assistance-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .ppd-new-title {
+        font-size: 20px;
+    }
+    
+    .ppd-new-price-current {
+        font-size: 20px;
+    }
+    
+    .ppd-new-meta-item {
+        font-size: 13px;
+    }
+    
+    .ppd-new-meta-label {
+        min-width: 70px;
+    }
+}
 </style>
 
 <script>
@@ -1272,7 +1691,8 @@ fbq && fbq('track', 'ViewContent', {
     }
 
 
-    const copyLinkElement = document.querySelector('.copy-link');
+    // Copy Link Handler - Support both old and new classes
+    const copyLinkElement = document.querySelector('.copy-link') || document.querySelector('.ppd-new-copy-link');
 
     if (copyLinkElement) {
         copyLinkElement.addEventListener('click', () => {
@@ -1282,10 +1702,14 @@ fbq && fbq('track', 'ViewContent', {
                     const copyMessage = document.createElement('div');
                     copyMessage.classList.add('copy-message');
                     copyMessage.textContent = 'Copied!';
+                    copyMessage.style.cssText = 'position: absolute; background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-top: 4px;';
+                    copyLinkElement.style.position = 'relative';
                     copyLinkElement.appendChild(copyMessage);
 
                     setTimeout(() => {
-                        copyLinkElement.removeChild(copyMessage);
+                        if (copyLinkElement.contains(copyMessage)) {
+                            copyLinkElement.removeChild(copyMessage);
+                        }
                     }, 2000);
                 })
                 .catch(err => {
@@ -1344,12 +1768,13 @@ fbq && fbq('track', 'ViewContent', {
             });
         });
 
-        const qtyWrapper = document.querySelector('.prx-qty-control');
+        // Quantity Control - Support both old and new classes
+        const qtyWrapper = document.querySelector('.prx-qty-control') || document.querySelector('.ppd-new-qty-control');
         const qtyInput = document.getElementById('input-quantity');
 
         if (qtyWrapper && qtyInput) {
-            const minusBtn = qtyWrapper.querySelector('.prx-qty-btn--minus');
-            const plusBtn = qtyWrapper.querySelector('.prx-qty-btn--plus');
+            const minusBtn = qtyWrapper.querySelector('.prx-qty-btn--minus') || qtyWrapper.querySelector('.ppd-new-qty-minus');
+            const plusBtn = qtyWrapper.querySelector('.prx-qty-btn--plus') || qtyWrapper.querySelector('.ppd-new-qty-plus');
             const minQty = parseInt(qtyWrapper.dataset.minQty, 10) || 1;
 
             const sanitizeValue = (val) => {
