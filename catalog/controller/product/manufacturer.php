@@ -243,6 +243,15 @@ class ControllerProductManufacturer extends Controller {
 				$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
 				$product_total = $product_total ? (int)$product_total : 0;
 
+				// Get total count of ALL products for this manufacturer (including inactive, future dates, etc.)
+				$total_all_products = $this->getTotalAllManufacturerProducts($manufacturer_id);
+				$hidden_products_count = max(0, $total_all_products - $product_total);
+				
+				// Store the hidden products count in data array for template use
+				$data['total_all_products'] = $total_all_products;
+				$data['hidden_products_count'] = $hidden_products_count;
+				$data['showing_products_count'] = $product_total;
+
 				$results = $this->model_catalog_product->getProducts($filter_data);
 				
 				if (!is_array($results)) {
@@ -658,6 +667,34 @@ class ControllerProductManufacturer extends Controller {
 			} else {
 				$this->response->setOutput($this->load->view('default/template/error/not_found.tpl', $data));
 			}
+		}
+	}
+
+	/**
+	 * Get total count of ALL products for a manufacturer (regardless of status, date, store, language)
+	 * This includes inactive products, products with future dates, products not assigned to store, etc.
+	 */
+	private function getTotalAllManufacturerProducts($manufacturer_id) {
+		if ($manufacturer_id <= 0) {
+			return 0;
+		}
+		
+		try {
+			$sql = "SELECT COUNT(DISTINCT p.product_id) AS total 
+					FROM " . DB_PREFIX . "product p 
+					WHERE p.manufacturer_id = '" . (int)$manufacturer_id . "'";
+			
+			$query = $this->db->query($sql);
+			
+			if ($query && isset($query->row['total'])) {
+				return (int)$query->row['total'];
+			}
+			
+			return 0;
+		} catch (Exception $e) {
+			// Log error but don't break the page
+			error_log('Error counting all manufacturer products: ' . $e->getMessage());
+			return 0;
 		}
 	}
 

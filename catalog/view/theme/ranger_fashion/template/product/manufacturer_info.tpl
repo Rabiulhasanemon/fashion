@@ -75,7 +75,7 @@
             <?php if (isset($products) && $products) { ?>
             <div id="premium-mfr-products-section" class="premium-mfr-products-section">
                 <div class="premium-mfr-products-grid">
-                    <?php foreach ($products as $product) { ?>
+                        <?php foreach ($products as $product) { ?>
                     <div class="premium-mfr-product-card">
                         <div class="premium-mfr-product-card-inner">
                                 <?php if (isset($product['special']) && $product['special'] && isset($product['price']) && $product['price']) { ?>
@@ -161,8 +161,8 @@
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
-                </div>
+                        <?php } ?>
+                    </div>
             </div>
             <?php } ?>
             
@@ -188,6 +188,15 @@
                 <?php if (isset($results)) { ?>
                 <div class="premium-mfr-results">
                     <p><?php echo $results; ?></p>
+                </div>
+                <?php } ?>
+                <?php if (isset($hidden_products_count) && $hidden_products_count > 0) { ?>
+                <div class="premium-mfr-hidden-products-info">
+                    <p class="premium-mfr-hidden-products-text">
+                        <i class="fa fa-info-circle"></i>
+                        <strong><?php echo $hidden_products_count; ?></strong> product<?php echo $hidden_products_count > 1 ? 's' : ''; ?> in this brand <?php echo $hidden_products_count > 1 ? 'are' : 'is'; ?> not showing 
+                        (<?php echo isset($showing_products_count) ? $showing_products_count : 0; ?> showing out of <?php echo isset($total_all_products) ? $total_all_products : 0; ?> total)
+                    </p>
                 </div>
                 <?php } ?>
             </div>
@@ -269,7 +278,7 @@
     transition: all 0.3s ease;
     position: relative;
     animation: logoEntrance 1s ease-out, logoFloat 3s ease-in-out 1s infinite;
-}
+    }
 
 #premium-mfr-logo.premium-mfr-brand-logo::before {
     content: '';
@@ -361,7 +370,7 @@
     0%, 100% {
         opacity: 0.3;
         transform: scale(0.8);
-    }
+}
     50% {
         opacity: 0.6;
         transform: scale(1.2);
@@ -388,7 +397,7 @@
     }
     100% {
         background-position: 0% 50%;
-    }
+}
 }
 
 #premium-mfr-details.premium-mfr-brand-details {
@@ -1012,6 +1021,37 @@
     font-weight: 500;
 }
 
+.premium-mfr-hidden-products-info {
+    margin-top: 15px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+    border-radius: 10px;
+    border-left: 4px solid #A68A6A;
+    box-shadow: 0 2px 10px rgba(166, 138, 106, 0.15);
+}
+
+.premium-mfr-hidden-products-text {
+    color: #8b6914;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.premium-mfr-hidden-products-text i {
+    color: #A68A6A;
+    font-size: 16px;
+}
+
+.premium-mfr-hidden-products-text strong {
+    color: #10503D;
+    font-weight: 700;
+    font-size: 15px;
+}
+
 /* Premium Pagination */
 .premium-mfr-pagination .pagination {
     display: flex;
@@ -1245,8 +1285,8 @@
     font-weight: 700;
     opacity: 0;
     animation: fadeInUp 0.6s ease-out forwards;
-}
-
+    }
+    
 #premium-mfr-description-content.premium-mfr-description-content h1 {
     font-size: 20px;
     animation-delay: 0.7s;
@@ -1283,12 +1323,12 @@
 
 #premium-mfr-description-content.premium-mfr-description-content a:hover {
     color: #10503D;
-}
-
+    }
+    
 #premium-mfr-description-content.premium-mfr-description-content a:hover::after {
     width: 100%;
-}
-
+    }
+    
 #premium-mfr-description-content.premium-mfr-description-content ul,
 #premium-mfr-description-content.premium-mfr-description-content ol {
     margin: 12px 0;
@@ -1305,13 +1345,13 @@
 #premium-mfr-description-content.premium-mfr-description-content strong {
     color: #10503D;
     font-weight: 700;
-}
-
+    }
+    
 #premium-mfr-description-content.premium-mfr-description-content em {
     color: #A68A6A;
     font-style: italic;
-}
-
+    }
+    
 
 /* Responsive */
 @media (max-width: 1400px) {

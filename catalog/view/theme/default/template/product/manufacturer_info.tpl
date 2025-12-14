@@ -99,6 +99,17 @@
         <div class="col-sm-6 text-left"><?php echo $pagination; ?></div>
         <div class="col-sm-6 text-right"><?php echo $results; ?></div>
       </div>
+      <?php if (isset($hidden_products_count) && $hidden_products_count > 0) { ?>
+      <div class="row" style="margin-top: 15px;">
+        <div class="col-sm-12">
+          <div class="alert alert-info" style="background: #fff5e6; border-left: 4px solid #A68A6A; color: #8b6914;">
+            <i class="fa fa-info-circle"></i>
+            <strong><?php echo $hidden_products_count; ?></strong> product<?php echo $hidden_products_count > 1 ? 's' : ''; ?> in this brand <?php echo $hidden_products_count > 1 ? 'are' : 'is'; ?> not showing 
+            (<?php echo isset($showing_products_count) ? $showing_products_count : 0; ?> showing out of <?php echo isset($total_all_products) ? $total_all_products : 0; ?> total)
+          </div>
+        </div>
+      </div>
+      <?php } ?>
       <?php } else { ?>
       <p><?php echo $text_empty; ?></p>
       <div class="buttons">
