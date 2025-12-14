@@ -489,6 +489,77 @@
     </section>
     
     <!-- Related Products Section -->
+    <?php 
+    if (isset($products) && is_array($products) && count($products) > 0) { ?>
+    <section class="newproduct-section popular-category-sec related-products-showcase" style="padding: 50px 0; background-color: #f8f9fa;">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="h3">Related Products</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="popular-category-slider owl-carousel related-products-slider">
+                        <?php foreach ($products as $product) { ?>
+                        <div class="slider-item">
+                            <div class="product-card">
+                                <div class="product-thumb">
+                                    <?php if ($product['special']) { ?>
+                                    <?php
+                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                    $discount = 0;
+                                    if ($price > 0) {
+                                        $discountAmount = $price - $special;
+                                        $discount = round(($discountAmount / $price) * 100, 0);
+                                    }
+                                    if ($discount > 0) {
+                                    ?>
+                                    <div class="product-badge product-badge2 bg-info">-<?php echo $discount; ?>%</div>
+                                    <?php } ?>
+                                    <?php } ?>
+                                    
+                                    <?php if ($product['featured_image']) { ?>
+                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['featured_image']; ?>" />
+                                    <?php } else { ?>
+                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['thumb']; ?>" />
+                                    <?php } ?>
+                                    
+                                    <div class="product-button-group">
+                                        <a class="product-button wishlist_store" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
+                                        <a class="product-button product_compare" onclick="compare.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>
+                                        <?php if (!$product['disablePurchase']) { ?>
+                                        <a class="product-button add_to_single_cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <div class="product-card-body">
+                                    <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h3>
+                                    
+                                    <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
+                                    <div class="rating-stars">
+                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                        <i class="fas fa-star<?php echo $i <= $product['rating'] ? ' filled' : ''; ?>"></i>
+                                        <?php } ?>
+                                    </div>
+                                    <?php } ?>
+                                    
+                                    <h4 class="product-price">
+                                        <?php if ($product['special']) { ?>
+                                        <del><?php echo $product['price']; ?></del> <?php echo $product['special']; ?>
+                                        <?php } else { ?>
+                                        <?php echo $product['price']; ?>
+                                        <?php } ?>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
 
     <!-- Compatible Products Section -->
     <?php 
@@ -1092,6 +1163,269 @@
 .compatible-products-showcase .product-price del {
     color: #9e9e9e;
     font-size: 13px;
+}
+
+/* Related Products Section */
+.related-products-showcase {
+    padding: 50px 0;
+    background: #f8f9fa;
+}
+
+.related-products-showcase .section-title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.related-products-showcase .section-title .h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+}
+
+.related-products-showcase .section-title .h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #FF6A00 0%, #FF8533 100%);
+    border-radius: 2px;
+}
+
+.related-products-showcase .product-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-products-showcase .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.related-products-showcase .product-thumb {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.related-products-showcase .product-thumb img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.3s ease;
+}
+
+.related-products-showcase .product-card:hover .product-thumb img {
+    transform: scale(1.05);
+}
+
+.related-products-showcase .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+
+.related-products-showcase .product-button-group {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.related-products-showcase .product-card:hover .product-button-group {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.related-products-showcase .product-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.related-products-showcase .product-button:hover {
+    background: #FF6A00;
+    color: #fff;
+    border-color: #FF6A00;
+    transform: scale(1.1);
+}
+
+.related-products-showcase .product-card-body {
+    padding: 18px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-products-showcase .product-title {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    min-height: 42px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.related-products-showcase .product-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.related-products-showcase .product-title a:hover {
+    color: #FF6A00;
+}
+
+.related-products-showcase .rating-stars {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 2px;
+}
+
+.related-products-showcase .rating-stars i {
+    font-size: 12px;
+    color: #e0e0e0;
+}
+
+.related-products-showcase .rating-stars i.filled {
+    color: #ffc107;
+}
+
+.related-products-showcase .product-price {
+    margin: auto 0 0 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FF6A00;
+}
+
+.related-products-showcase .product-price del {
+    color: #9e9e9e;
+    font-size: 14px;
+    font-weight: 400;
+    margin-right: 8px;
+}
+
+/* Owl Carousel Navigation for Related Products */
+.related-products-slider.owl-carousel .owl-nav {
+    position: absolute;
+    top: -60px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.related-products-slider.owl-carousel .owl-nav button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.related-products-slider.owl-carousel .owl-nav button:hover {
+    background: #FF6A00;
+    color: #fff;
+    border-color: #FF6A00;
+    transform: scale(1.1);
+}
+
+.related-products-slider.owl-carousel .owl-nav button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Design for Related Products */
+@media (max-width: 768px) {
+    .related-products-showcase {
+        padding: 40px 0;
+    }
+    
+    .related-products-showcase .section-title .h3 {
+        font-size: 24px;
+    }
+    
+    .related-products-showcase .product-thumb img {
+        height: 180px;
+    }
+    
+    .related-products-slider.owl-carousel .owl-nav {
+        top: -50px;
+    }
+    
+    .related-products-slider.owl-carousel .owl-nav button {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .related-products-showcase {
+        padding: 30px 0;
+    }
+    
+    .related-products-showcase .section-title .h3 {
+        font-size: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .related-products-showcase .section-title .h3::after {
+        width: 50px;
+        height: 2px;
+    }
+    
+    .related-products-showcase .product-thumb img {
+        height: 160px;
+    }
+    
+    .related-products-showcase .product-card-body {
+        padding: 14px;
+    }
+    
+    .related-products-showcase .product-title {
+        font-size: 14px;
+        min-height: 38px;
+    }
+    
+    .related-products-showcase .product-price {
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1936,6 +2270,49 @@ fbq && fbq('track', 'ViewContent', {
 
         // Initialize Owl Carousel for Related Products
         if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
+            // Initialize Owl Carousel for Related Products
+            var $relatedSlider = jQuery('.related-products-slider');
+            if ($relatedSlider.length && $relatedSlider.find('.slider-item').length > 0) {
+                if ($relatedSlider.data('owl.carousel')) {
+                    $relatedSlider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+                }
+                $relatedSlider.addClass('owl-carousel').owlCarousel({
+                    loop: false,
+                    margin: 10,
+                    nav: true,
+                    dots: false,
+                    autoplay: true,
+                    autoplayTimeout: 4000,
+                    autoplayHoverPause: true,
+                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+                    responsive: {
+                        0: {
+                            items: 2,
+                            margin: 6,
+                            slideBy: 2
+                        },
+                        576: {
+                            items: 3,
+                            margin: 8,
+                            slideBy: 2
+                        },
+                        768: {
+                            items: 4,
+                            margin: 10,
+                            slideBy: 2
+                        },
+                        992: {
+                            items: 4,
+                            margin: 10
+                        },
+                        1200: {
+                            items: 5,
+                            margin: 15
+                        }
+                    }
+                });
+            }
+            
             // Initialize Owl Carousel for Compatible Products
             var $compatibleSlider = jQuery('.compatible-products-slider');
             if ($compatibleSlider.length && $compatibleSlider.find('.slider-item').length > 0) {
