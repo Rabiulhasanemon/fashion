@@ -753,22 +753,15 @@
     margin-right: 2px;
 }
 
-/* Delivery Time - Top Right */
+/* Delivery Time - Below Image, Left-Aligned */
 .psh-new-delivery {
-    position: absolute;
-    top: 8px;
-    right: 8px;
     display: flex;
     align-items: center;
     gap: 4px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 4px 8px;
-    border-radius: 4px;
+    margin-bottom: 8px;
     font-size: 10px;
     font-weight: 600;
     color: #666666;
-    z-index: 2;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .psh-new-delivery i {
@@ -835,13 +828,22 @@
     font-weight: 500;
 }
 
+/* Bottom Section - Price and ADD Button */
+.psh-new-bottom-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    gap: 10px;
+}
+
 /* Price Box */
 .psh-new-price-box {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
     flex-wrap: wrap;
+    flex: 1;
 }
 
 .psh-new-price-old {
@@ -857,21 +859,21 @@
     color: #333333;
 }
 
-/* ADD Button */
+/* ADD Button - Bottom Right */
 .psh-new-add-btn {
-    width: 100%;
-    padding: 10px 16px;
+    padding: 8px 20px;
     background: transparent;
     border: 2px solid #10503D;
     border-radius: 6px;
     color: #10503D;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-top: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .psh-new-add-btn:hover {
@@ -905,8 +907,8 @@
     }
     
     .psh-new-add-btn {
-        padding: 8px 14px;
-        font-size: 13px;
+        padding: 7px 16px;
+        font-size: 12px;
     }
     
     .psh-new-badge {
@@ -921,7 +923,12 @@
     
     .psh-new-delivery {
         font-size: 9px;
-        padding: 3px 6px;
+        margin-bottom: 6px;
+    }
+    
+    .psh-new-bottom-section {
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }
 
@@ -940,8 +947,8 @@
     }
     
     .psh-new-add-btn {
-        padding: 7px 12px;
-        font-size: 12px;
+        padding: 6px 14px;
+        font-size: 11px;
     }
     
     .psh-new-badge {
@@ -956,7 +963,7 @@
     
     .psh-new-delivery {
         font-size: 8px;
-        padding: 2px 5px;
+        margin-bottom: 5px;
     }
     
     .psh-new-stars i {
@@ -965,6 +972,16 @@
     
     .psh-new-review-count {
         font-size: 10px;
+    }
+    
+    .psh-new-bottom-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .psh-new-add-btn {
+        align-self: flex-end;
     }
 }
 </style>
@@ -1078,16 +1095,16 @@
                 html += '<div class="psh-new-badge ' + badgeClass + '">' + badgeIcon + discountPercent + '% OFF</div>';
             }
             
-            // Delivery time indicator - Top Right
-            html += '<div class="psh-new-delivery">';
-            html += '<i class="fa fa-rocket"></i>';
-            html += '<span>12-24 Hours</span>';
-            html += '</div>';
-            
             html += '<img alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" class="psh-new-product-img" />';
             html += '</div>';
             
             html += '<div class="psh-new-product-details">';
+            
+            // Delivery time indicator - Below image, left-aligned
+            html += '<div class="psh-new-delivery">';
+            html += '<i class="fa fa-rocket"></i>';
+            html += '<span>12-24 Hours</span>';
+            html += '</div>';
             
             // Product name
             html += '<h3 class="psh-new-product-name"><a href="' + product.href + '">' + product.name + '</a></h3>';
@@ -1103,7 +1120,8 @@
             html += '<span class="psh-new-review-count">(' + reviewCount + ')</span>';
             html += '</div>';
             
-            // Price
+            // Price and ADD button container
+            html += '<div class="psh-new-bottom-section">';
             html += '<div class="psh-new-price-box">';
             if (product.special) {
                 html += '<span class="psh-new-price-old">' + product.price + '</span>';
@@ -1113,8 +1131,9 @@
             }
             html += '</div>';
             
-            // ADD button
+            // ADD button - Bottom Right
             html += '<button type="button" class="psh-new-add-btn" onclick="cart.add(\'' + product.product_id + '\');">ADD</button>';
+            html += '</div>';
             
             html += '</div>';
             html += '</div>';
