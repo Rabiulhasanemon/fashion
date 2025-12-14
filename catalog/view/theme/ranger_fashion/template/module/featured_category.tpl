@@ -91,14 +91,15 @@
 }
 
 .shop-cat-image-container {
-    background-color: #f4e6e7;
+    background-color: #fce4ec;
     border-radius: 12px;
-    border: 1px solid transparent;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
 
 .shop-cat-card-link:hover .shop-cat-image-container {
-    border-color: #ff8c00;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .shop-cat-image-wrapper {
@@ -106,13 +107,16 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 151px;
-    padding: 10px;
+    height: 140px;
+    padding: 5px;
+    min-height: 140px;
 }
 
 .shop-cat-image {
-    width: 125px;
-    height: 125px;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     display: block;
 }
@@ -155,11 +159,15 @@
 @media (min-width: 768px) {
     .shop-cat-card-grid {
         grid-template-columns: repeat(4, 1fr);
-        grid-gap: 5px;
+        grid-gap: 8px;
     }
     
     .shop-cat-title {
         font-size: 28px;
+    }
+    
+    .shop-cat-image-wrapper {
+        padding: 4px;
     }
 }
 
@@ -183,27 +191,29 @@
 
 @media (min-width: 1200px) {
     .shop-cat-card-grid {
-        grid-template-columns: repeat(5, 1fr);
-        grid-gap: 5px;
+        grid-template-columns: repeat(6, 1fr);
+        grid-gap: 8px;
     }
 }
 
 @media (min-width: 1280px) {
     .shop-cat-card-grid {
-        grid-template-columns: repeat(5, 1fr);
-        grid-gap: 5px;
+        grid-template-columns: repeat(7, 1fr);
+        grid-gap: 8px;
     }
 }
 
 @media (min-width: 1400px) {
     .shop-cat-card-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(8, 1fr);
+        grid-gap: 10px;
     }
 }
 
 @media (min-width: 1600px) {
     .shop-cat-card-grid {
         grid-template-columns: repeat(8, 1fr);
+        grid-gap: 12px;
     }
 }
 
@@ -228,11 +238,14 @@
     
     .shop-cat-image-wrapper {
         height: 120px;
+        padding: 4px;
     }
     
     .shop-cat-image {
-        width: 100px;
-        height: 100px;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
     }
     
     .shop-cat-content {
@@ -252,11 +265,14 @@
     
     .shop-cat-image-wrapper {
         height: 100px;
+        padding: 3px;
     }
     
     .shop-cat-image {
-        width: 80px;
-        height: 80px;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
     }
     
     .shop-cat-content {
