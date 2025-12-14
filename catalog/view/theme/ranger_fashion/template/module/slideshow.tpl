@@ -1,13 +1,13 @@
 <style>
-/* Enhanced Premium Slideshow Styles */
+/* Clean Image-Only Slideshow - Mobile Responsive */
 .fullscreen-slideshow {
     position: relative;
     width: 100%;
-    height: 650px; /* Increased height for better impact */
+    height: 600px;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    background: #000; /* Fallback background */
+    background: #000;
 }
 
 .fullscreen-slideshow .slide-item {
@@ -19,8 +19,6 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s linear;
-    display: flex;
-    align-items: center;
 }
 
 .fullscreen-slideshow .slide-item.active {
@@ -30,187 +28,16 @@
 }
 
 .fullscreen-slideshow .slide-image {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 0;
-    transform: scale(1.1);
+    display: block;
+    transform: scale(1.05);
     transition: transform 6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .fullscreen-slideshow .slide-item.active .slide-image {
     transform: scale(1);
-}
-
-.fullscreen-slideshow .slide-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
-    z-index: 1;
-}
-
-.fullscreen-slideshow .slide-content {
-    position: relative;
-    z-index: 2;
-    max-width: 80%;
-    margin: 0 auto;
-    padding: 0 40px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-.fullscreen-slideshow .content-left {
-    flex: 0 0 50%;
-    max-width: 600px;
-    color: #fff;
-    padding-right: 60px;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: 0.3s;
-}
-
-.fullscreen-slideshow .slide-item.active .content-left {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.fullscreen-slideshow .badge {
-    display: inline-block;
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
-    color: #fff;
-}
-
-.fullscreen-slideshow .main-title {
-    font-size: 56px;
-    font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 20px;
-    color: #fff;
-    font-family: 'Jost', sans-serif;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.fullscreen-slideshow .subtitle {
-    font-size: 20px;
-    line-height: 1.6;
-    margin-bottom: 40px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 300;
-    max-width: 90%;
-}
-
-.fullscreen-slideshow .promo-section {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 35px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.fullscreen-slideshow .promo-text {
-    font-size: 16px;
-    color: #fff;
-    margin-bottom: 15px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.fullscreen-slideshow .promo-text i {
-    color: #ffd700;
-}
-
-.fullscreen-slideshow .promo-code-wrapper {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.fullscreen-slideshow .promo-input {
-    flex: 1;
-    padding: 14px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 1px;
-    text-align: center;
-    font-family: monospace;
-}
-
-.fullscreen-slideshow .copy-btn {
-    padding: 14px 28px;
-    background: #fff;
-    border: none;
-    border-radius: 10px;
-    color: #333;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.fullscreen-slideshow .copy-btn:hover {
-    background: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-
-.fullscreen-slideshow .shop-btn {
-    padding: 18px 45px;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-}
-
-.fullscreen-slideshow .shop-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
-    background: linear-gradient(45deg, #ff5252, #ff7676);
-}
-
-.fullscreen-slideshow .shop-btn i {
-    transition: transform 0.3s ease;
-}
-
-.fullscreen-slideshow .shop-btn:hover i {
-    transform: translateX(5px);
 }
 
 /* Navigation Controls */
@@ -268,97 +95,56 @@
     transform: scale(1.1);
 }
 
-/* Mobile Styles */
+/* Mobile Responsive Styles */
 @media (max-width: 992px) {
-    .fullscreen-slideshow .main-title {
-        font-size: 42px;
-    }
-    .fullscreen-slideshow .content-left {
-        flex: 0 0 70%;
-        max-width: 100%;
+    .fullscreen-slideshow {
+        height: 500px;
     }
 }
 
 @media (max-width: 768px) {
     .fullscreen-slideshow {
-        height: 550px;
-    }
-    
-    .fullscreen-slideshow .slide-content {
-        padding: 0 25px;
-        justify-content: center;
-        text-align: center;
-    }
-    
-    .fullscreen-slideshow .content-left {
-        flex: 1;
-        padding-right: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .fullscreen-slideshow .badge {
-        margin-bottom: 15px;
-    }
-    
-    .fullscreen-slideshow .main-title {
-        font-size: 32px;
-        margin-bottom: 15px;
-    }
-    
-    .fullscreen-slideshow .subtitle {
-        font-size: 16px;
-        margin-bottom: 25px;
-    }
-    
-    .fullscreen-slideshow .promo-section {
-        padding: 20px;
-        margin-bottom: 25px;
-        width: 100%;
-    }
-    
-    .fullscreen-slideshow .promo-code-wrapper {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .fullscreen-slideshow .promo-input,
-    .fullscreen-slideshow .copy-btn {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .fullscreen-slideshow .shop-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 16px 30px;
+        height: 400px;
     }
     
     .fullscreen-slideshow .slide-nav {
         bottom: 20px;
         right: 50%;
         transform: translateX(50%);
-        width: 100%;
+        width: auto;
         justify-content: center;
     }
     
     .fullscreen-slideshow .nav-btn {
-        display: none; /* Hide arrows on mobile */
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .fullscreen-slideshow .slide-dot {
+        width: 10px;
+        height: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .fullscreen-slideshow {
-        height: 500px;
+        height: 300px;
     }
     
-    .fullscreen-slideshow .main-title {
-        font-size: 28px;
+    .fullscreen-slideshow .slide-nav {
+        bottom: 15px;
     }
     
-    .fullscreen-slideshow .slide-overlay {
-        background: rgba(0,0,0,0.4); /* Darker overlay for better text readability */
+    .fullscreen-slideshow .nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .fullscreen-slideshow .slide-dot {
+        width: 8px;
+        height: 8px;
     }
 }
 </style>
@@ -367,34 +153,9 @@
     <?php foreach ($banners as $index => $banner) { ?>
     <div class="slide-item <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>">
         <?php if ($banner['link']) { ?>
-        <a href="<?php echo $banner['link']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+        <a href="<?php echo $banner['link']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: block;"></a>
         <?php } ?>
-        <img src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" class="slide-image" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-            <div class="content-left">
-                <div class="badge">Premium Collection</div>
-                <h1 class="main-title"><?php echo !empty($banner['title']) ? htmlspecialchars($banner['title']) : 'Your Moment of Calm, Your Skin\'s Renewal'; ?></h1>
-                <p class="subtitle"><?php echo !empty($banner['description']) ? htmlspecialchars($banner['description']) : 'A soothing touch of moisture to restore, protect, and enhance your skin\'s natural glow.'; ?></p>
-                
-                <div class="promo-section">
-                    <p class="promo-text"><i class="fas fa-tag"></i> Use Promo Code MEGA50 & Get an Extra 10% Off!</p>
-                    <div class="promo-code-wrapper">
-                        <input type="text" class="promo-input" value="MEGA50" readonly id="promo-code-<?php echo $index; ?>">
-                        <button type="button" class="copy-btn" onclick="copyPromoCode('promo-code-<?php echo $index; ?>', this)">
-                            <i class="fas fa-copy"></i>
-                            <span>Copy</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <?php if ($banner['link']) { ?>
-                <a href="<?php echo $banner['link']; ?>" class="shop-btn">Shop Now <i class="fas fa-arrow-right"></i></a>
-                <?php } else { ?>
-                <button type="button" class="shop-btn" onclick="window.location.href='<?php echo isset($base) && $base ? $base : 'index.php?route=common/home'; ?>'">Shop Now <i class="fas fa-arrow-right"></i></button>
-                <?php } ?>
-            </div>
-        </div>
+        <img src="<?php echo $banner['image']; ?>" alt="<?php echo isset($banner['title']) ? htmlspecialchars($banner['title']) : 'Slide'; ?>" class="slide-image" />
     </div>
     <?php } ?>
     
@@ -532,29 +293,4 @@
     // Start auto-slide
     startAutoSlide();
 })();
-
-// Copy promo code function
-function copyPromoCode(inputId, button) {
-    const input = document.getElementById(inputId);
-    if (input) {
-        input.select();
-        input.setSelectionRange(0, 99999);
-        
-        try {
-            document.execCommand('copy');
-            const originalText = button.querySelector('span').textContent;
-            button.querySelector('span').textContent = 'Copied!';
-            button.style.background = '#4caf50';
-            button.style.color = '#fff';
-            
-            setTimeout(function() {
-                button.querySelector('span').textContent = originalText;
-                button.style.background = '';
-                button.style.color = '';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
-        }
-    }
-}
 </script>
