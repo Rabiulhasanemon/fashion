@@ -24,16 +24,6 @@
                             <?php if ($product['discount']) { ?>
                             <div class="fld-badge-yellow">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
-                            
-                            <!-- Action Buttons - Bottom Left of Image -->
-                            <div class="fld-buttons-box">
-                                <button type="button" class="fld-btn-circle" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
-                                    <i class="fa fa-exchange"></i>
-                                </button>
-                                <button type="button" class="fld-btn-circle fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
-                                    <i class="fa fa-shopping-cart"></i>
-                                </button>
-                            </div>
                         </div>
                         
                         <!-- Product Details - Right Side -->
@@ -63,6 +53,16 @@
                                 <?php } else { ?>
                                 <span class="fld-price-new"><?php echo $product['price']; ?></span>
                                 <?php } ?>
+                            </div>
+                            
+                            <!-- Action Buttons - Center Position in Product Info -->
+                            <div class="fld-buttons-box">
+                                <button type="button" class="fld-btn-circle" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
+                                    <i class="fa fa-exchange"></i>
+                                </button>
+                                <button type="button" class="fld-btn-circle fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </button>
                             </div>
                             
                             <!-- Countdown Timer -->
@@ -351,40 +351,83 @@
     color: #ffffff;
 }
 
-/* Action Buttons - Bottom Left of Image */
-.fld-img-wrapper .fld-buttons-box {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
+/* Action Buttons - Center Position in Product Info - Premium Design */
+.fld-details-box .fld-buttons-box {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 12px;
     align-items: center;
-    z-index: 10;
+    justify-content: center;
+    margin: 20px 0 15px 0;
+    padding: 15px 0;
+    position: relative;
 }
 
 .fld-btn-circle {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #FF6A00;
-    border: none;
+    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     color: #ffffff;
-    font-size: 14px;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.fld-btn-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.fld-btn-circle:hover::before {
+    width: 100%;
+    height: 100%;
 }
 
 .fld-btn-circle:hover {
-    background: #ff8533;
-    transform: scale(1.05);
+    background: linear-gradient(135deg, #1a6b52 0%, #10503D 100%);
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 20px rgba(16, 80, 61, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.fld-btn-circle:active {
+    transform: translateY(-1px) scale(1.05);
+}
+
+.fld-btn-circle i {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.fld-btn-circle:hover i {
+    transform: scale(1.15);
 }
 
 .fld-btn-cart {
-    background: #FF6A00;
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+}
+
+.fld-btn-cart:hover {
+    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    box-shadow: 0 8px 20px rgba(255, 106, 0, 0.5);
 }
 
 /* Owl Carousel Overrides */
@@ -535,10 +578,16 @@
         padding: 4px 8px;
     }
     
+    .fld-details-box .fld-buttons-box {
+        margin: 15px 0 12px 0;
+        padding: 12px 0;
+        gap: 10px;
+    }
+    
     .fld-btn-circle {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
     }
 }
 </style>
