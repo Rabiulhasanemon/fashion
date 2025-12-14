@@ -110,7 +110,7 @@
    ================================================= */
 
 .fld-main-container {
-    padding: 0px 0;
+    padding: 20px 0;
     background: #ffffff;
     position: relative;
     width: 100%;
@@ -118,12 +118,12 @@
 
 /* Header */
 .fld-header-box {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     padding: 0;
 }
 
 .fld-title-text {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: #000000;
     margin: 0;
@@ -163,12 +163,13 @@
 
 /* Product Card */
 .fld-item-wrapper {
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
 .fld-card-box {
     background: #ffffff;
     border: 1px solid #FFCC80;
+    border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
     height: 100%;
@@ -184,14 +185,14 @@
 /* Image Wrapper - Left Side */
 .fld-img-wrapper {
     position: relative;
-    width: 45%;
-    min-width: 200px;
+    width: 40%;
+    min-width: 140px;
     overflow: hidden;
     background: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 12px;
 }
 
 .fld-img-link {
@@ -218,45 +219,45 @@
 /* Discount Badge */
 .fld-badge-yellow {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     background: #FFC107;
     color: #000000;
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 11px;
     z-index: 10;
     line-height: 1;
 }
 
 /* Details Box - Right Side */
 .fld-details-box {
-    padding: 18px;
+    padding: 12px;
     text-align: left;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 55%;
+    width: 60%;
 }
 
 /* Category Text */
 .fld-cat-text {
-    font-size: 12px;
+    font-size: 10px;
     color: #999999;
     text-transform: capitalize;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 400;
 }
 
 /* Product Name */
 .fld-name-text {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
-    margin: 0 0 10px 0;
-    line-height: 1.4;
-    min-height: 42px;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+    min-height: 34px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -275,33 +276,33 @@
 
 /* Star Rating */
 .fld-stars-box {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     display: flex;
     gap: 2px;
 }
 
 .fld-star-grey {
-    font-size: 13px;
+    font-size: 11px;
     color: #e0e0e0;
 }
 
 /* Price Box */
 .fld-price-box {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .fld-price-old {
-    font-size: 14px;
+    font-size: 12px;
     color: #999999;
     text-decoration: line-through;
 }
 
 .fld-price-new {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
     color: #FF6A00;
 }
@@ -309,22 +310,22 @@
 /* Countdown Timer */
 .fld-timer-container {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .fld-timer-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
 }
 
 .fld-timer-square {
     background: #FF6A00;
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -333,18 +334,18 @@
 }
 
 .fld-timer-num {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffffff;
     line-height: 1;
 }
 
 .fld-timer-text {
-    font-size: 10px;
+    font-size: 9px;
     color: #666666;
     text-transform: capitalize;
     font-weight: 500;
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 .fld-timer-text-white {
@@ -355,17 +356,17 @@
 .fld-details-box .fld-buttons-box {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
     justify-content: center;
-    margin: 20px 0 15px 0;
-    padding: 15px 0;
+    margin: 12px 0 8px 0;
+    padding: 0;
     position: relative;
 }
 
 .fld-btn-circle {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -375,8 +376,8 @@
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     color: #ffffff;
-    font-size: 16px;
-    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.25);
+    font-size: 14px;
+    box-shadow: 0 3px 8px rgba(16, 80, 61, 0.25);
     position: relative;
     overflow: hidden;
 }
@@ -444,116 +445,17 @@
    ================================================= */
 
 @media (max-width: 1200px) {
-    .fld-name-text {
-        font-size: 14px;
-        min-height: 40px;
-    }
-    
-    .fld-price-new {
-        font-size: 18px;
-    }
-    
-    .fld-timer-square {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .fld-timer-num {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 991px) {
     .fld-main-container {
-        padding: 0px 0;
+        padding: 18px 0;
     }
     
     .fld-title-text {
-        font-size: 18px;
-    }
-    
-    .fld-item-wrapper {
-        padding: 0 8px;
-    }
-}
-
-@media (max-width: 768px) {
-    .fld-main-container {
-        padding: 0px 0;
-    }
-    
-    .fld-title-text {
-        font-size: 16px;
-    }
-    
-    /* Switch to vertical layout on mobile */
-    .fld-card-box {
-        flex-direction: column;
-    }
-    
-    .fld-img-wrapper {
-        width: 100%;
-        min-width: auto;
-        padding-top: 100%;
-        padding: 15px;
-    }
-    
-    .fld-img-link {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    
-    .fld-details-box {
-        width: 100%;
-        padding: 15px;
-    }
-    
-    .fld-name-text {
-        font-size: 13px;
-        min-height: 36px;
-    }
-    
-    .fld-price-new {
-        font-size: 16px;
-    }
-    
-    .fld-price-old {
-        font-size: 12px;
-    }
-    
-    .fld-timer-square {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .fld-timer-num {
-        font-size: 14px;
-    }
-    
-    .fld-timer-text {
-        font-size: 9px;
-    }
-}
-
-@media (max-width: 480px) {
-    .fld-title-text {
-        font-size: 14px;
-    }
-    
-    .fld-details-box {
-        padding: 12px;
-    }
-    
-    .fld-cat-text {
-        font-size: 11px;
+        font-size: 17px;
     }
     
     .fld-name-text {
         font-size: 12px;
-        min-height: 34px;
+        min-height: 32px;
     }
     
     .fld-price-new {
@@ -566,6 +468,106 @@
     }
     
     .fld-timer-num {
+        font-size: 13px;
+    }
+    
+    .fld-img-wrapper {
+        padding: 10px;
+    }
+    
+    .fld-details-box {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 991px) {
+    .fld-main-container {
+        padding: 15px 0;
+    }
+    
+    .fld-title-text {
+        font-size: 16px;
+    }
+    
+    .fld-header-box {
+        margin-bottom: 12px;
+    }
+    
+    .fld-item-wrapper {
+        padding: 0 6px;
+    }
+    
+    .fld-img-wrapper {
+        width: 38%;
+        min-width: 120px;
+        padding: 10px;
+    }
+    
+    .fld-details-box {
+        width: 62%;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .fld-main-container {
+        padding: 15px 0;
+    }
+    
+    .fld-title-text {
+        font-size: 15px;
+    }
+    
+    .fld-header-box {
+        margin-bottom: 10px;
+    }
+    
+    .fld-item-wrapper {
+        padding: 0 5px;
+    }
+    
+    /* Switch to vertical layout on mobile */
+    .fld-card-box {
+        flex-direction: column;
+        border-radius: 6px;
+    }
+    
+    .fld-img-wrapper {
+        width: 100%;
+        min-width: auto;
+        padding: 12px;
+        aspect-ratio: 1;
+    }
+    
+    .fld-img-link {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .fld-details-box {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .fld-name-text {
+        font-size: 12px;
+        min-height: 32px;
+    }
+    
+    .fld-price-new {
+        font-size: 15px;
+    }
+    
+    .fld-price-old {
+        font-size: 11px;
+    }
+    
+    .fld-timer-square {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .fld-timer-num {
         font-size: 12px;
     }
     
@@ -573,21 +575,142 @@
         font-size: 8px;
     }
     
-    .fld-badge-yellow {
-        font-size: 11px;
-        padding: 4px 8px;
+    .fld-timer-container {
+        gap: 5px;
     }
     
     .fld-details-box .fld-buttons-box {
-        margin: 15px 0 12px 0;
-        padding: 12px 0;
-        gap: 10px;
+        margin: 10px 0 8px 0;
+        gap: 8px;
     }
     
     .fld-btn-circle {
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fld-main-container {
+        padding: 12px 0;
+    }
+    
+    .fld-title-text {
         font-size: 14px;
+    }
+    
+    .fld-header-box {
+        margin-bottom: 8px;
+    }
+    
+    .fld-item-wrapper {
+        padding: 0 4px;
+    }
+    
+    .fld-img-wrapper {
+        padding: 10px;
+    }
+    
+    .fld-details-box {
+        padding: 10px;
+    }
+    
+    .fld-cat-text {
+        font-size: 9px;
+        margin-bottom: 4px;
+    }
+    
+    .fld-name-text {
+        font-size: 11px;
+        min-height: 28px;
+        margin-bottom: 6px;
+    }
+    
+    .fld-stars-box {
+        margin-bottom: 6px;
+    }
+    
+    .fld-star-grey {
+        font-size: 10px;
+    }
+    
+    .fld-price-box {
+        margin-bottom: 8px;
+        gap: 6px;
+    }
+    
+    .fld-price-new {
+        font-size: 14px;
+    }
+    
+    .fld-price-old {
+        font-size: 10px;
+    }
+    
+    .fld-timer-container {
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+    
+    .fld-timer-square {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .fld-timer-num {
+        font-size: 11px;
+    }
+    
+    .fld-timer-text {
+        font-size: 7px;
+    }
+    
+    .fld-badge-yellow {
+        font-size: 10px;
+        padding: 3px 6px;
+        top: 6px;
+        right: 6px;
+    }
+    
+    .fld-details-box .fld-buttons-box {
+        margin: 8px 0 6px 0;
+        gap: 6px;
+    }
+    
+    .fld-btn-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .fld-main-container {
+        padding: 10px 0;
+    }
+    
+    .fld-title-text {
+        font-size: 13px;
+    }
+    
+    .fld-timer-square {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .fld-timer-num {
+        font-size: 10px;
+    }
+    
+    .fld-timer-text {
+        font-size: 6px;
+    }
+    
+    .fld-btn-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 11px;
     }
 }
 </style>
@@ -612,23 +735,31 @@ jQuery(document).ready(function($) {
             responsive: {
                 0: {
                     items: 1,
-                    margin: 10
+                    margin: 8
                 },
                 480: {
                     items: 1,
-                    margin: 12
+                    margin: 10
+                },
+                576: {
+                    items: 2,
+                    margin: 8
                 },
                 768: {
                     items: 2,
-                    margin: 15
+                    margin: 10
                 },
                 992: {
                     items: 2,
-                    margin: 18
+                    margin: 12
                 },
                 1200: {
-                    items: 2,
-                    margin: 20
+                    items: 3,
+                    margin: 15
+                },
+                1400: {
+                    items: 3,
+                    margin: 18
                 }
             }
         });
