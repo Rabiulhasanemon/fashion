@@ -111,11 +111,11 @@
 
 @media (max-width: 768px) {
     .fullscreen-slideshow {
-        height: 450px;
+        height: 400px;
     }
     
     .fullscreen-slideshow .slide-image {
-        object-fit: contain;
+        object-fit: cover;
         width: 100%;
         height: 100%;
         transform: none;
@@ -148,11 +148,11 @@
 
 @media (max-width: 480px) {
     .fullscreen-slideshow {
-        height: 350px;
+        height: 300px;
     }
     
     .fullscreen-slideshow .slide-image {
-        object-fit: contain;
+        object-fit: cover;
         width: 100%;
         height: 100%;
         transform: none;
