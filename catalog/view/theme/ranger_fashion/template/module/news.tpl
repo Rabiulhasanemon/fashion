@@ -50,21 +50,25 @@
 
 <style>
 /* =================================================
-   NEWS MODULE - NWS Prefix (New Classes)
-   Animated Sliding News Ticker
+   NEWS MODULE - Clean Minimalist Style
+   White Rounded Rectangle Design
    ================================================= */
 
 .nws-module-wrapper {
-    background: linear-gradient(135deg, #a68a6a 0%, #10503d 100%);
-    padding: 12px 0;
+    background: #f5f5f5;
+    padding: 15px 0;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.2);
 }
 
 .nws-content-box {
     position: relative;
     overflow: hidden;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .nws-slider-container {
@@ -92,33 +96,32 @@
     align-items: center;
     gap: 12px;
     text-decoration: none;
-    color: #ffffff;
+    color: #333333;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    transition: opacity 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .nws-article-link:hover {
-    opacity: 0.8;
+    color: #10503D;
 }
 
 .nws-badge {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    background: #f0f0f0;
+    color: #666666;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .nws-text {
-    color: #ffffff;
-    line-height: 1.5;
+    color: #333333;
+    line-height: 1.6;
 }
 
 /* Animation */
@@ -139,7 +142,12 @@
 /* Responsive */
 @media (max-width: 768px) {
     .nws-module-wrapper {
-        padding: 10px 0;
+        padding: 12px 0;
+    }
+    
+    .nws-content-box {
+        padding: 12px 15px;
+        border-radius: 10px;
     }
     
     .nws-article-link,
@@ -161,7 +169,12 @@
 
 @media (max-width: 480px) {
     .nws-module-wrapper {
-        padding: 8px 0;
+        padding: 10px 0;
+    }
+    
+    .nws-content-box {
+        padding: 10px 12px;
+        border-radius: 8px;
     }
     
     .nws-article-link,
