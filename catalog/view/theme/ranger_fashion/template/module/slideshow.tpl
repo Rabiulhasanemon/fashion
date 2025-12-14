@@ -103,15 +103,17 @@
 }
 
 /* Mobile Responsive Styles */
+/* Tablet View (768px - 992px) */
 @media (max-width: 992px) {
     .fullscreen-slideshow {
-        height: 500px;
+        height: 450px;
     }
 }
 
+/* Mobile View (480px - 768px) */
 @media (max-width: 768px) {
     .fullscreen-slideshow {
-        height: 400px;
+        height: 280px;
     }
     
     .fullscreen-slideshow .slide-image {
@@ -146,9 +148,10 @@
     }
 }
 
+/* Small Mobile View (below 480px) */
 @media (max-width: 480px) {
     .fullscreen-slideshow {
-        height: 300px;
+        height: 220px;
     }
     
     .fullscreen-slideshow .slide-image {
