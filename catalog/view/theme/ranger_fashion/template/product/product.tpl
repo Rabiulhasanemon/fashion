@@ -1656,6 +1656,118 @@
         min-width: 70px;
     }
 }
+
+/* =================================================
+   PRODUCT IMAGE ZOOM EFFECT ON HOVER
+   ================================================= */
+
+.lux-media-grid__viewer {
+    position: relative;
+    overflow: hidden;
+}
+
+.lux-stage {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.lux-stage__link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+}
+
+.lux-stage__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* Zoom effect on hover */
+.lux-stage__link:hover .lux-stage__image {
+    transform: scale(1.5);
+    cursor: zoom-out;
+}
+
+/* Smooth zoom out when mouse leaves */
+.lux-stage__link:not(:hover) .lux-stage__image {
+    transform: scale(1);
+}
+
+/* Zoom icon styling */
+.lux-stage__zoom {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lux-stage__zoom svg {
+    width: 18px;
+    height: 18px;
+    color: #333;
+}
+
+.lux-stage__link:hover .lux-stage__zoom {
+    opacity: 1;
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .lux-stage__link:hover .lux-stage__image {
+        transform: scale(1.2);
+    }
+    
+    .lux-stage__zoom {
+        width: 36px;
+        height: 36px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .lux-stage__zoom svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lux-stage__link:hover .lux-stage__image {
+        transform: scale(1.1);
+    }
+    
+    .lux-stage__zoom {
+        width: 32px;
+        height: 32px;
+        bottom: 8px;
+        right: 8px;
+    }
+    
+    .lux-stage__zoom svg {
+        width: 14px;
+        height: 14px;
+    }
+}
 </style>
 
 <script>
