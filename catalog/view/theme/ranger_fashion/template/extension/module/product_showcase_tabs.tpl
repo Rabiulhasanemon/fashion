@@ -475,6 +475,11 @@
     width: 100%;
 }
 
+.pst-slider-item .psh-new-product-card {
+    min-height: auto;
+    width: 100%;
+}
+
 /* Owl Carousel Navigation */
 .pst-slider.owl-carousel .owl-nav div {
     width: 40px;
@@ -667,6 +672,285 @@
         padding: 5px;
     }
 }
+
+/* =================================================
+   NEW PRODUCT SHOWCASE STYLE - psh-new- Classes
+   Matches Uploaded Image Design
+   ================================================= */
+
+.psh-new-product-card {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.psh-new-product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.psh-new-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 75%;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.psh-new-product-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.3s ease;
+}
+
+.psh-new-product-card:hover .psh-new-product-img {
+    transform: scale(1.05);
+}
+
+/* Discount Badge - Top Left */
+.psh-new-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    z-index: 2;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.psh-new-badge-blue {
+    background: #2196F3;
+}
+
+.psh-new-badge-red {
+    background: #f44336;
+}
+
+.psh-new-badge i {
+    font-size: 10px;
+}
+
+/* Delivery Time - Top Right */
+.psh-new-delivery {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #666666;
+    z-index: 2;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.psh-new-delivery i {
+    font-size: 10px;
+    color: #2196F3;
+}
+
+/* Product Details */
+.psh-new-product-details {
+    padding: 12px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.psh-new-product-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    min-height: 36px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.psh-new-product-name a {
+    color: #333333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.psh-new-product-name a:hover {
+    color: #10503D;
+}
+
+/* Rating Box */
+.psh-new-rating-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.psh-new-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.psh-new-stars i {
+    font-size: 11px;
+    color: #e0e0e0;
+}
+
+.psh-new-stars i.psh-new-star-filled {
+    color: #ffc107;
+}
+
+.psh-new-review-count {
+    font-size: 11px;
+    color: #999999;
+    font-weight: 500;
+}
+
+/* Price Box */
+.psh-new-price-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.psh-new-price-old {
+    font-size: 13px;
+    color: #999999;
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+.psh-new-price-current {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333333;
+}
+
+/* ADD Button */
+.psh-new-add-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: 2px solid #10503D;
+    border-radius: 6px;
+    color: #10503D;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: auto;
+}
+
+.psh-new-add-btn:hover {
+    background: #10503D;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
+}
+
+.psh-new-add-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design for New Style */
+@media (max-width: 768px) {
+    .psh-new-product-details {
+        padding: 10px;
+    }
+    
+    .psh-new-product-name {
+        font-size: 12px;
+        min-height: 32px;
+    }
+    
+    .psh-new-price-current {
+        font-size: 15px;
+    }
+    
+    .psh-new-price-old {
+        font-size: 12px;
+    }
+    
+    .psh-new-add-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+    
+    .psh-new-badge {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+    
+    .psh-new-delivery {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .psh-new-product-name {
+        font-size: 11px;
+        min-height: 30px;
+    }
+    
+    .psh-new-price-current {
+        font-size: 14px;
+    }
+    
+    .psh-new-price-old {
+        font-size: 11px;
+    }
+    
+    .psh-new-add-btn {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+    
+    .psh-new-badge {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+    
+    .psh-new-delivery {
+        font-size: 8px;
+        padding: 2px 5px;
+    }
+    
+    .psh-new-stars i {
+        font-size: 10px;
+    }
+    
+    .psh-new-review-count {
+        font-size: 10px;
+    }
+}
 </style>
 
 <script>
@@ -754,66 +1038,67 @@
         var html = '';
         
         products.forEach(function(product) {
+            // Calculate discount percentage if not provided
+            var discountPercent = product.discount || 0;
+            if (!discountPercent && product.price && product.special) {
+                var priceNum = parseFloat(product.price.replace(/[^\d.]/g, ''));
+                var specialNum = parseFloat(product.special.replace(/[^\d.]/g, ''));
+                if (priceNum > 0) {
+                    discountPercent = Math.round(((priceNum - specialNum) / priceNum) * 100);
+                }
+            }
+            
+            // Get review count (default to 0 if not provided)
+            var reviewCount = product.reviews || 0;
+            
             html += '<div class="pst-slider-item">';
-            html += '<div class="pst-product-card">';
-            html += '<div class="pst-product-image-box">';
+            html += '<div class="psh-new-product-card">';
+            html += '<div class="psh-new-image-wrapper">';
             
-            // Discount badge - Top Right (if no reward points)
-            if (product.discount && (!product.points || product.points <= 0)) {
-                html += '<div class="pst-product-badge">-' + product.discount + '%</div>';
+            // Discount badge - Top Left (Blue/Red banner)
+            if (discountPercent > 0) {
+                var badgeClass = discountPercent >= 30 ? 'psh-new-badge-red' : 'psh-new-badge-blue';
+                var badgeIcon = discountPercent >= 30 ? '<i class="fa fa-bolt"></i> ' : '';
+                html += '<div class="psh-new-badge ' + badgeClass + '">' + badgeIcon + discountPercent + '% OFF</div>';
             }
             
-            // Reward Points - Top Right
-            if (product.points && product.points > 0) {
-                html += '<div class="pst-reward-points">';
-                html += '<i class="fa fa-gift"></i>';
-                html += '<span>Earn ' + product.points + ' points</span>';
-                html += '</div>';
-                // If both discount and reward points exist, show discount below reward points
-                if (product.discount) {
-                    html += '<div class="pst-product-badge" style="top: 50px;">-' + product.discount + '%</div>';
-                }
-            } else if (product.discount) {
-                // Only discount, show at top right
-                html += '<div class="pst-product-badge">-' + product.discount + '%</div>';
-            }
-            
-            html += '<img alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" />';
-            html += '<div class="pst-product-buttons">';
-            html += '<button type="button" class="pst-btn-action" onclick="wishlist.add(\'' + product.product_id + '\');" title="Wishlist"><i class="fa fa-heart"></i></button>';
-            html += '<button type="button" class="pst-btn-action" onclick="compare.add(\'' + product.product_id + '\');" title="Compare"><i class="fa fa-exchange"></i></button>';
-            html += '<button type="button" class="pst-btn-action" onclick="cart.add(\'' + product.product_id + '\');" title="Add to Cart"><i class="fa fa-shopping-cart"></i></button>';
+            // Delivery time indicator - Top Right
+            html += '<div class="psh-new-delivery">';
+            html += '<i class="fa fa-rocket"></i>';
+            html += '<span>12-24 Hours</span>';
             html += '</div>';
+            
+            html += '<img alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" class="psh-new-product-img" />';
             html += '</div>';
-            html += '<div class="pst-product-info">';
             
-            // Category
-            if (product.category_name) {
-                html += '<div class="pst-product-category"><a href="' + (product.category_href || '#') + '">' + product.category_name + '</a></div>';
+            html += '<div class="psh-new-product-details">';
+            
+            // Product name
+            html += '<h3 class="psh-new-product-name"><a href="' + product.href + '">' + product.name + '</a></h3>';
+            
+            // Rating with review count
+            html += '<div class="psh-new-rating-box">';
+            html += '<div class="psh-new-stars">';
+            var ratingValue = product.rating || 0;
+            for (var i = 1; i <= 5; i++) {
+                html += '<i class="fa fa-star' + (i <= Math.round(ratingValue) ? ' psh-new-star-filled' : '') + '"></i>';
             }
-            
-            // Product title
-            html += '<h3 class="pst-product-name"><a href="' + product.href + '">' + product.name + '</a></h3>';
-            
-            // Rating
-            if (product.rating) {
-                html += '<div class="pst-product-rating">';
-                for (var i = 1; i <= 5; i++) {
-                    html += '<i class="fa fa-star' + (i <= product.rating ? ' filled' : '') + '"></i>';
-                }
-                html += '</div>';
-            }
+            html += '</div>';
+            html += '<span class="psh-new-review-count">(' + reviewCount + ')</span>';
+            html += '</div>';
             
             // Price
-            html += '<div class="pst-product-price-box">';
-            html += '<div class="pst-product-price">';
+            html += '<div class="psh-new-price-box">';
             if (product.special) {
-                html += '<del>' + product.price + '</del> ' + product.special;
+                html += '<span class="psh-new-price-old">' + product.price + '</span>';
+                html += '<span class="psh-new-price-current">' + product.special + '</span>';
             } else if (product.price) {
-                html += product.price;
+                html += '<span class="psh-new-price-current">' + product.price + '</span>';
             }
             html += '</div>';
-            html += '</div>';
+            
+            // ADD button
+            html += '<button type="button" class="psh-new-add-btn" onclick="cart.add(\'' + product.product_id + '\');">ADD</button>';
             
             html += '</div>';
             html += '</div>';

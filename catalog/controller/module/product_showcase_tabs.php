@@ -140,6 +140,13 @@ class ControllerModuleProductShowcaseTabs extends Controller {
 						// Get rating
 						$rating = (int)$product_info['rating'];
 
+						// Get review count
+						$review_count = 0;
+						$review_query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "review WHERE product_id = '" . (int)$product_info['product_id'] . "' AND status = '1'");
+						if ($review_query->num_rows) {
+							$review_count = (int)$review_query->row['total'];
+						}
+
 						$json['products'][] = array(
 							'product_id' => $product_info['product_id'],
 							'thumb' => $image,
@@ -150,6 +157,7 @@ class ControllerModuleProductShowcaseTabs extends Controller {
 							'special' => $special,
 							'discount' => $discount_percentage,
 							'rating' => $rating,
+							'reviews' => $review_count,
 							'href' => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
 						);
 					}
