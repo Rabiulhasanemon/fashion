@@ -15,6 +15,9 @@ class ControllerCommonSeoUrl extends Controller
             if (!isset($this->request->get['route'])) {
                 if(count($parts) > 1) {
                     $this->request->get['route'] = implode("/", $parts);
+                } elseif (count($parts) == 1 && $parts[0] == 'brand') {
+                    // Handle brand route
+                    $this->request->get['route'] = 'brand';
                 } else {
                     $this->request->get['route'] = 'error/not_found';
                 }
@@ -26,7 +29,19 @@ class ControllerCommonSeoUrl extends Controller
     }
 
     public function coreDecoder($parts) {
+        // Handle brand route directly
+        if (count($parts) == 1 && $parts[0] == 'brand') {
+            $this->request->get['route'] = 'brand';
+            return;
+        }
+        
         foreach ($parts as $part) {
+            // Check if this is the brand route
+            if ($part == 'brand' && count($parts) == 1) {
+                $this->request->get['route'] = 'brand';
+                return;
+            }
+            
             $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($part) . "'");
             if ($query->num_rows) {
                 $url = explode('=', $query->row['query']);
@@ -47,6 +62,11 @@ class ControllerCommonSeoUrl extends Controller
                     $this->request->get['blog_category_id'] = $url[1];
                 }
             } else {
+                // If part is "brand" and it's the first part, set route to brand
+                if ($part == 'brand' && !isset($this->request->get['route'])) {
+                    $this->request->get['route'] = 'brand';
+                    continue;
+                }
                 return;
             }
         }
@@ -57,8 +77,8 @@ class ControllerCommonSeoUrl extends Controller
             } elseif (isset($this->request->get['category_id'])) {
                 $this->request->get['route'] = 'product/category';
             } elseif (isset($this->request->get['manufacturer_id'])) {
-                // Check if it's a brand route first
-                if (isset($this->request->get['route']) && strpos($this->request->get['route'], 'brand') !== false) {
+                // Check if URL contains "brand" to determine route
+                if (isset($parts) && in_array('brand', $parts)) {
                     $this->request->get['route'] = 'brand/info';
                 } else {
                     $this->request->get['route'] = 'product/manufacturer/info';
