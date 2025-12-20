@@ -279,6 +279,11 @@ class ControllerAccountRegister extends Controller {
 				$this->response->redirect($this->url->link('account/login', '', 'SSL'));
 				return;
 			}
+			} else {
+				// Missing critical fields - show errors but don't completely block
+				// Errors are already set by validate(), just continue to show form
+				error_log('Registration: Missing minimum required fields');
+			}
 		}
 
 		$data['breadcrumbs'] = array();
