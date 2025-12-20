@@ -108,15 +108,20 @@ class ControllerAccountLogin extends Controller
 
                 // Redirect after successful login
                 if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect'])) {
-                    $redirect_url = str_replace('&amp;', '&', $this->request->post['redirect']);
-                    $config_url = $this->config->get('config_url');
-                    $config_ssl = $this->config->get('config_ssl');
-                    
-                    if (($config_url && strpos($redirect_url, $config_url) !== false) || 
-                        ($config_ssl && strpos($redirect_url, $config_ssl) !== false)) {
-                        unset($this->session->data['redirect']);
-                        $this->response->redirect($redirect_url);
-                        return;
+                    $redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
+                    if ($redirect_url) {
+                        $config_url = $this->config->get('config_url');
+                        $config_ssl = $this->config->get('config_ssl');
+                        
+                        $config_url_str = is_array($config_url) ? '' : (string)$config_url;
+                        $config_ssl_str = is_array($config_ssl) ? '' : (string)$config_ssl;
+                        
+                        if (($config_url_str && strpos($redirect_url, $config_url_str) !== false) || 
+                            ($config_ssl_str && strpos($redirect_url, $config_ssl_str) !== false)) {
+                            unset($this->session->data['redirect']);
+                            $this->response->redirect($redirect_url);
+                            return;
+                        }
                     }
                 }
                 

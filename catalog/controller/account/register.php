@@ -82,13 +82,14 @@ class ControllerAccountRegister extends Controller {
 							
 							// Redirect after successful registration
 							if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
-								$redirect_url = str_replace('&amp;', '&', $this->request->post['redirect']);
-								$this->response->redirect($redirect_url);
-								return;
-							} else {
-								$this->response->redirect($this->url->link('account/account', '', 'SSL'));
-								return;
+								$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
+								if ($redirect_url) {
+									$this->response->redirect($redirect_url);
+									return;
+								}
 							}
+							$this->response->redirect($this->url->link('account/account', '', 'SSL'));
+							return;
 						} else {
 							// Login failed, redirect to login page with success message
 							$success_msg = $this->language->get('text_success');

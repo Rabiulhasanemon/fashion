@@ -33,8 +33,23 @@ class ControllerAccountDebug extends Controller {
         }
         
         // Test POST data
-        $debug_info['post_data'] = isset($_POST) ? $_POST : 'No POST data';
+        $debug_info['post_data'] = isset($_POST) && !empty($_POST) ? $_POST : 'No POST data';
         $debug_info['request_method'] = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'Unknown';
+        $debug_info['request_post'] = isset($this->request->post) ? $this->request->post : 'No request->post';
+        
+        // Test login validation
+        try {
+            if (isset($this->request->post['username']) && isset($this->request->post['password'])) {
+                $this->load->model('account/customer');
+                $username = $this->request->post['username'];
+                $login_attempts = $this->model_account_customer->getLoginAttempts($username);
+                $debug_info['login_attempts'] = $login_attempts ? print_r($login_attempts, true) : 'No login attempts';
+            } else {
+                $debug_info['login_attempts'] = 'No username/password in POST';
+            }
+        } catch (Exception $e) {
+            $debug_info['login_attempts'] = 'Error: ' . $e->getMessage();
+        }
         
         // Test session
         try {
@@ -54,7 +69,8 @@ class ControllerAccountDebug extends Controller {
         // Test config
         try {
             $config_url = $this->config->get('config_url');
-            $debug_info['config'] = 'Available (URL: ' . ($config_url ? $config_url : 'Not set') . ')';
+            $config_url_str = is_array($config_url) ? print_r($config_url, true) : (string)$config_url;
+            $debug_info['config'] = 'Available (URL: ' . ($config_url_str ? $config_url_str : 'Not set') . ')';
         } catch (Exception $e) {
             $debug_info['config'] = 'Error: ' . $e->getMessage();
         }
@@ -69,8 +85,9 @@ class ControllerAccountDebug extends Controller {
         echo '<div class="debug-box"><h1>Account Debug Information</h1>';
         
         foreach ($debug_info as $key => $value) {
-            $class = (strpos($value, 'Error') !== false) ? 'error' : '';
-            echo '<div class="item ' . $class . '"><strong>' . htmlspecialchars($key) . ':</strong> ' . htmlspecialchars(print_r($value, true)) . '</div>';
+            $value_str = is_array($value) ? print_r($value, true) : (string)$value;
+            $class = (is_string($value_str) && strpos($value_str, 'Error') !== false) ? 'error' : '';
+            echo '<div class="item ' . $class . '"><strong>' . htmlspecialchars($key) . ':</strong> ' . htmlspecialchars($value_str) . '</div>';
         }
         
         echo '</div>';
