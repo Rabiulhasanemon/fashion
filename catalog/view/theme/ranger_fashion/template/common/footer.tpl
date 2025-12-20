@@ -341,3 +341,138 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/8801711664166" 
+   target="_blank" 
+   class="wa-new-float-btn" 
+   title="Chat with us on WhatsApp">
+    <div class="wa-new-icon-wrapper">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+    <div class="wa-new-pulse-ring"></div>
+    <div class="wa-new-pulse-ring-delay"></div>
+</a>
+
+<style>
+/* WhatsApp Floating Button - New Classes to Avoid Conflicts */
+.wa-new-float-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.wa-new-float-btn:hover {
+    background: #20BA5A;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+}
+
+.wa-new-icon-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wa-new-float-btn i {
+    font-size: 32px;
+    color: #ffffff;
+    animation: wa-new-icon-bounce 2s infinite;
+}
+
+/* Pulse Ring Animation */
+.wa-new-pulse-ring,
+.wa-new-pulse-ring-delay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border: 2px solid #25D366;
+    border-radius: 50%;
+    opacity: 0;
+    animation: wa-new-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.wa-new-pulse-ring-delay {
+    animation-delay: 1s;
+}
+
+/* Icon Bounce Animation */
+@keyframes wa-new-icon-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Pulse Ring Animation */
+@keyframes wa-new-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wa-new-float-btn {
+        width: 56px;
+        height: 56px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .wa-new-float-btn i {
+        font-size: 28px;
+    }
+    
+    .wa-new-pulse-ring,
+    .wa-new-pulse-ring-delay {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wa-new-float-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .wa-new-float-btn i {
+        font-size: 24px;
+    }
+    
+    .wa-new-pulse-ring,
+    .wa-new-pulse-ring-delay {
+        width: 50px;
+        height: 50px;
+    }
+}
+</style>
