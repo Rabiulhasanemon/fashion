@@ -161,7 +161,7 @@
 .fld-owl-carousel .owl-item {
     display: flex;
     align-items: stretch;
-    height: 180px;
+    height: 240px;
 }
 
 .fld-owl-carousel .owl-stage {
@@ -172,7 +172,7 @@
 /* Product Card */
 .fld-item-wrapper {
     padding: 0 8px;
-    height: 180px;
+    height: 240px;
     display: flex;
     align-items: stretch;
 }
@@ -183,12 +183,12 @@
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
-    height: 180px;
+    height: 240px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    min-height: 180px;
-    max-height: 180px;
+    min-height: 240px;
+    max-height: 240px;
 }
 
 .fld-card-box:hover {
@@ -261,7 +261,7 @@
 
 /* Details Box - Right Side */
 .fld-details-box {
-    padding: 12px;
+    padding: 14px;
     text-align: left;
     flex: 1;
     display: flex;
@@ -269,6 +269,7 @@
     justify-content: flex-start;
     width: 60%;
     height: 100%;
+    overflow: hidden;
 }
 
 /* Category Text */
@@ -286,9 +287,10 @@
 .fld-name-text {
     font-size: 16px;
     font-weight: 600;
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
     line-height: 1.5;
-    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -309,11 +311,12 @@
 
 /* Star Rating */
 .fld-stars-box {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     gap: 2px;
     flex-shrink: 0;
-    height: 16px;
+    height: 18px;
+    align-items: center;
 }
 
 .fld-star-grey {
@@ -323,23 +326,23 @@
 
 /* Price Box */
 .fld-price-box {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
     flex-shrink: 0;
-    min-height: 24px;
+    min-height: 28px;
 }
 
 .fld-price-old {
-    font-size: 12px;
+    font-size: 13px;
     color: #999999;
     text-decoration: line-through;
 }
 
 .fld-price-new {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: #FF6A00;
 }
@@ -349,7 +352,8 @@
     display: flex;
     gap: 6px;
     justify-content: flex-start;
-    margin-bottom: 10px;
+    margin-top: auto;
+    margin-bottom: 0;
     flex-shrink: 0;
     min-height: 50px;
 }
@@ -503,11 +507,17 @@
     }
     
     .fld-item-wrapper {
-        height: 170px;
+        height: 230px;
     }
     
     .fld-owl-carousel .owl-item {
-        height: 170px;
+        height: 230px;
+    }
+    
+    .fld-card-box {
+        height: 230px;
+        min-height: 230px;
+        max-height: 230px;
     }
     
     .fld-img-wrapper {
@@ -534,11 +544,11 @@
     
     .fld-item-wrapper {
         padding: 0 6px;
-        height: 160px;
+        height: 220px;
     }
     
     .fld-owl-carousel .owl-item {
-        height: 160px;
+        height: 220px;
     }
     
     .fld-img-wrapper {
@@ -549,13 +559,13 @@
     
     .fld-details-box {
         width: 62%;
-        padding: 10px;
+        padding: 12px;
     }
     
     .fld-card-box {
-        height: 160px;
-        min-height: 160px;
-        max-height: 160px;
+        height: 220px;
+        min-height: 220px;
+        max-height: 220px;
     }
 }
 
