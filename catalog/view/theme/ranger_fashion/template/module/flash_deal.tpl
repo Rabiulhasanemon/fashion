@@ -55,13 +55,10 @@
                                 <?php } ?>
                             </div>
                             
-                            <!-- Action Buttons - Center Position in Product Info -->
+                            <!-- Action Buttons - Left Side -->
                             <div class="fld-buttons-box">
-                                <button type="button" class="fld-btn-circle" onclick="compare.add('<?php echo $product['product_id']; ?>');" title="Compare">
-                                    <i class="fa fa-exchange"></i>
-                                </button>
-                                <button type="button" class="fld-btn-circle fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
-                                    <i class="fa fa-shopping-cart"></i>
+                                <button type="button" class="fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i> Add to Cart
                                 </button>
                             </div>
                             
@@ -172,10 +169,12 @@
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
-    height: 100%;
+    height: 180px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    min-height: 180px;
+    max-height: 180px;
 }
 
 .fld-card-box:hover {
@@ -192,7 +191,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 0;
+    margin: 0;
 }
 
 .fld-img-link {
@@ -204,12 +204,12 @@
 }
 
 .fld-img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.4s ease;
+    padding: 0;
+    margin: 0;
 }
 
 .fld-card-box:hover .fld-img {
@@ -233,12 +233,12 @@
 
 /* Details Box - Right Side */
 .fld-details-box {
-    padding: 12px;
+    padding: 10px;
     text-align: left;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     width: 60%;
 }
 
@@ -253,15 +253,16 @@
 
 /* Product Name */
 .fld-name-text {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     margin: 0 0 8px 0;
-    line-height: 1.3;
-    min-height: 34px;
+    line-height: 1.5;
+    min-height: 48px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .fld-name-text a {
@@ -352,83 +353,50 @@
     color: #ffffff;
 }
 
-/* Action Buttons - Center Position in Product Info - Premium Design */
+/* Action Buttons - Left Side */
 .fld-details-box .fld-buttons-box {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 0;
     align-items: center;
-    justify-content: center;
-    margin: 12px 0 8px 0;
+    justify-content: flex-start;
+    margin: 8px 0 0 0;
     padding: 0;
     position: relative;
 }
 
-.fld-btn-circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+.fld-btn-cart {
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     color: #ffffff;
-    font-size: 14px;
-    box-shadow: 0 3px 8px rgba(16, 80, 61, 0.25);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
     position: relative;
     overflow: hidden;
-}
-
-.fld-btn-circle::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-}
-
-.fld-btn-circle:hover::before {
-    width: 100%;
-    height: 100%;
-}
-
-.fld-btn-circle:hover {
-    background: linear-gradient(135deg, #1a6b52 0%, #10503D 100%);
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 8px 20px rgba(16, 80, 61, 0.4);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.fld-btn-circle:active {
-    transform: translateY(-1px) scale(1.05);
-}
-
-.fld-btn-circle i {
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-}
-
-.fld-btn-circle:hover i {
-    transform: scale(1.15);
-}
-
-.fld-btn-cart {
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+    gap: 6px;
+    white-space: nowrap;
 }
 
 .fld-btn-cart:hover {
     background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
-    box-shadow: 0 8px 20px rgba(255, 106, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.fld-btn-cart:active {
+    transform: translateY(0);
+}
+
+.fld-btn-cart i {
+    font-size: 14px;
 }
 
 /* Owl Carousel Overrides */
@@ -500,12 +468,18 @@
     .fld-img-wrapper {
         width: 38%;
         min-width: 120px;
-        padding: 10px;
+        padding: 0;
     }
     
     .fld-details-box {
         width: 62%;
-        padding: 10px;
+        padding: 8px;
+    }
+    
+    .fld-card-box {
+        height: 160px;
+        min-height: 160px;
+        max-height: 160px;
     }
 }
 
@@ -530,12 +504,15 @@
     .fld-card-box {
         flex-direction: column;
         border-radius: 6px;
+        height: auto;
+        min-height: auto;
+        max-height: none;
     }
     
     .fld-img-wrapper {
         width: 100%;
         min-width: auto;
-        padding: 12px;
+        padding: 0;
         aspect-ratio: 1;
     }
     
@@ -546,12 +523,12 @@
     
     .fld-details-box {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
     }
     
     .fld-name-text {
-        font-size: 12px;
-        min-height: 32px;
+        font-size: 14px;
+        min-height: 42px;
     }
     
     .fld-price-new {
@@ -580,14 +557,13 @@
     }
     
     .fld-details-box .fld-buttons-box {
-        margin: 10px 0 8px 0;
-        gap: 8px;
+        margin: 8px 0 6px 0;
+        gap: 0;
     }
     
-    .fld-btn-circle {
-        width: 34px;
-        height: 34px;
-        font-size: 13px;
+    .fld-btn-cart {
+        padding: 7px 14px;
+        font-size: 12px;
     }
 }
 
@@ -609,11 +585,11 @@
     }
     
     .fld-img-wrapper {
-        padding: 10px;
+        padding: 0;
     }
     
     .fld-details-box {
-        padding: 10px;
+        padding: 8px;
     }
     
     .fld-cat-text {
@@ -622,9 +598,14 @@
     }
     
     .fld-name-text {
-        font-size: 11px;
-        min-height: 28px;
+        font-size: 13px;
+        min-height: 39px;
         margin-bottom: 6px;
+    }
+    
+    .fld-btn-cart {
+        padding: 6px 12px;
+        font-size: 12px;
     }
     
     .fld-stars-box {
@@ -675,12 +656,11 @@
     
     .fld-details-box .fld-buttons-box {
         margin: 8px 0 6px 0;
-        gap: 6px;
+        gap: 0;
     }
     
-    .fld-btn-circle {
-        width: 32px;
-        height: 32px;
+    .fld-btn-cart {
+        padding: 6px 12px;
         font-size: 12px;
     }
 }
@@ -707,9 +687,8 @@
         font-size: 6px;
     }
     
-    .fld-btn-circle {
-        width: 30px;
-        height: 30px;
+    .fld-btn-cart {
+        padding: 5px 10px;
         font-size: 11px;
     }
 }
