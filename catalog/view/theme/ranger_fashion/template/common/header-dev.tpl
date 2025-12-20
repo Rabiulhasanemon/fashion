@@ -88,8 +88,8 @@
     <div class="header-top-announcement">
         <div class="container">
             <span class="best-offer-badge">BEST OFFER</span>
-            <span>Free Shipping on Orders Over $230</span>
-            <a href="#" class="shop-now-link">Shop Now ></a>
+            <span>Free Shipping on Orders Over 2000 tk</span>
+            <a href="<?php echo isset($shop_now_url) ? $shop_now_url : 'index.php?route=product/special'; ?>" class="shop-now-link">Shop Now ></a>
         </div>
     </div>
 

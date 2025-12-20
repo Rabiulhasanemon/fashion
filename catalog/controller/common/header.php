@@ -85,6 +85,7 @@ class ControllerCommonHeader extends Controller {
         $data['compare_count'] = $compare_count;
         $data['item_count'] = $this->cart->countProducts();
         $data['flash_sale_url'] = $this->url->link('product/special');
+        $data['shop_now_url'] = $this->url->link('product/special');
 
         // Big Offer Button (from module settings)
         $data['big_offer'] = array();
