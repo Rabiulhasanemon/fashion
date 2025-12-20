@@ -713,19 +713,19 @@
 
 .psh-new-product-img {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     padding: 0;
     margin: 0;
-    transform: translate(-50%, -50%);
     transition: transform 0.3s ease;
 }
 
 .psh-new-product-card:hover .psh-new-product-img {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: scale(1.05);
 }
 
 /* Discount Badge - Top Right - Matching Uploaded Image Style (Red Banner with Lightning Bolt) */
