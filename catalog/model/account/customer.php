@@ -73,34 +73,6 @@ class ModelAccountCustomer extends Model {
 				}
 			}
 			
-			if (!$customer_id || $customer_id <= 0) {
-				error_log('addCustomer Warning: Failed to get customer ID after insert. Last ID: ' . $customer_id . ' - Checking if customer exists');
-				// Check if customer was actually inserted by email
-				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
-				if ($check_query && $check_query->num_rows > 0) {
-					$customer_id = $check_query->row['customer_id'];
-					error_log('addCustomer: Found existing customer with same email. ID: ' . $customer_id);
-					// Continue with existing customer ID
-				} else {
-					// Last attempt - try to insert again with INSERT IGNORE
-					error_log('addCustomer: Attempting INSERT IGNORE as fallback');
-					$fallback_sql = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $customer_sql);
-					$fallback_query = $this->db->query($fallback_sql);
-					if ($fallback_query !== false) {
-						$customer_id = $this->db->getLastId();
-						if ($customer_id && $customer_id > 0) {
-							error_log('addCustomer: Fallback insert succeeded. ID: ' . $customer_id);
-						} else {
-							error_log('addCustomer: Fallback also failed - returning false');
-							return false;
-						}
-					} else {
-						error_log('addCustomer: All insert attempts failed - returning false');
-						return false;
-					}
-				}
-			}
-			
 			// Final verification - ensure customer actually exists in database
 			if ($customer_id && $customer_id > 0) {
 				$verify_query = $this->db->query("SELECT customer_id, email, firstname FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
