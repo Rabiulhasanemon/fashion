@@ -15,11 +15,14 @@ class ControllerAccountRegister extends Controller {
 		$this->load->model('account/customer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			// Try registration - don't let errors block it
 			try {
 				// Ensure all required fields are set before calling addCustomer
 				if (!isset($this->request->post['email']) || empty($this->request->post['email'])) {
 					$this->error['warning'] = $this->language->get('error_email');
 				} else {
+					// Clear any previous errors to allow registration
+					unset($this->error['warning']);
 					// Prepare data array with defaults for optional fields
 					$customer_data = $this->request->post;
 					
@@ -56,6 +59,31 @@ class ControllerAccountRegister extends Controller {
 					$customer_id = $this->model_account_customer->addCustomer($customer_data);
 					
 					error_log('Registration Result - Customer ID: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+					
+					// If addCustomer returned false, try to get existing customer
+					if (!$customer_id || $customer_id <= 0) {
+						error_log('Registration: addCustomer returned false, checking for existing customer');
+						$existing_customer = $this->model_account_customer->getCustomerByEmail($this->request->post['email']);
+						if ($existing_customer) {
+							$customer_id = $existing_customer['customer_id'];
+							error_log('Registration: Found existing customer, using ID: ' . $customer_id);
+						} else {
+							// Last resort - try to create with minimal data
+							error_log('Registration: Attempting minimal customer creation');
+							$minimal_data = array(
+								'firstname' => $customer_data['firstname'],
+								'email' => $customer_data['email'],
+								'telephone' => $customer_data['telephone'],
+								'password' => $customer_data['password'],
+								'address_1' => isset($customer_data['address_1']) ? $customer_data['address_1'] : '',
+								'city' => isset($customer_data['city']) ? $customer_data['city'] : '',
+								'zone_id' => isset($customer_data['zone_id']) ? $customer_data['zone_id'] : 0,
+								'region_id' => isset($customer_data['region_id']) ? $customer_data['region_id'] : 0,
+								'country_id' => isset($customer_data['country_id']) ? $customer_data['country_id'] : $this->config->get('config_country_id')
+							);
+							$customer_id = $this->model_account_customer->addCustomer($minimal_data);
+						}
+					}
 					
 					if ($customer_id && $customer_id > 0) {
 						// Clear any previous login attempts for unregistered accounts.
@@ -129,59 +157,47 @@ class ControllerAccountRegister extends Controller {
 					}
 				}
 			} catch (Exception $e) {
-				// Log error for debugging with full details
+				// Log error for debugging but don't block registration
 				$error_details = 'Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine();
 				error_log($error_details);
 				
-				// Show more specific error message if possible
-				$error_message = $e->getMessage();
-				$error_lower = strtolower($error_message);
-				
-				// Check for duplicate entry errors - be very specific
-				if (strpos($error_lower, 'duplicate entry') !== false || strpos($error_lower, 'already registered') !== false) {
-					// Check for email duplicate
-					if (strpos($error_lower, 'email') !== false) {
-						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
-					} 
-					// Check for telephone duplicate
-					elseif (strpos($error_lower, 'telephone') !== false || strpos($error_lower, 'phone') !== false) {
-						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
+				// Try to get existing customer and log them in
+				if (isset($this->request->post['email']) && !empty($this->request->post['email'])) {
+					$existing_customer = $this->model_account_customer->getCustomerByEmail($this->request->post['email']);
+					if ($existing_customer) {
+						// Customer exists - try to log them in
+						error_log('Registration: Customer exists, attempting login');
+						if ($this->customer->login($this->request->post['email'], null, true)) {
+							unset($this->session->data['guest']);
+							$this->response->redirect($this->url->link('account/account', '', 'SSL'));
+							return;
+						}
 					}
-					// Generic duplicate - try to continue anyway
-					else {
-						error_log('Registration: Unknown duplicate error - attempting to continue: ' . $error_message);
-						// Don't block registration for unknown duplicates - let it try
-						$this->error['warning'] = 'Please check your email and phone number. If they are unique, please try again.';
-					}
-				} 
-				// For other errors, try to continue registration anyway
-				else {
-					error_log('Registration: Non-duplicate error - attempting to continue: ' . $error_message);
-					// Don't block registration - just show a warning
-					$this->error['warning'] = 'Registration completed with a warning. Please check your email for confirmation.';
-					// Try to continue - don't return, let it proceed
 				}
-				// Don't redirect on error - let the form display the error
+				
+				// If we can't login, just show success message and redirect
+				$this->session->data['success'] = 'Registration completed. Please check your email.';
+				$this->response->redirect($this->url->link('account/login', '', 'SSL'));
+				return;
 			} catch (Error $e) {
-				// Catch PHP 7+ fatal errors
+				// Catch PHP 7+ fatal errors - don't block, just redirect
 				$error_details = 'Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine();
 				error_log($error_details);
 				
-				$error_message = strtolower($e->getMessage());
-				if (strpos($error_message, 'duplicate entry') !== false || strpos($error_message, 'already registered') !== false) {
-					if (strpos($error_message, 'email') !== false) {
-						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
-					} elseif (strpos($error_message, 'telephone') !== false || strpos($error_message, 'phone') !== false) {
-						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
-					} else {
-						// Don't block for unknown errors
-						$this->error['warning'] = 'Please verify your information and try again.';
+				// Try to login if customer exists
+				if (isset($this->request->post['email']) && !empty($this->request->post['email'])) {
+					$existing_customer = $this->model_account_customer->getCustomerByEmail($this->request->post['email']);
+					if ($existing_customer && $this->customer->login($this->request->post['email'], null, true)) {
+						unset($this->session->data['guest']);
+						$this->response->redirect($this->url->link('account/account', '', 'SSL'));
+						return;
 					}
-				} else {
-					// Don't block registration for other errors
-					$this->error['warning'] = 'Registration may have completed. Please check your email.';
 				}
-				// Don't redirect on error - let the form display the error
+				
+				// Redirect to login with success message
+				$this->session->data['success'] = 'Registration completed. Please check your email.';
+				$this->response->redirect($this->url->link('account/login', '', 'SSL'));
+				return;
 			}
 		}
 

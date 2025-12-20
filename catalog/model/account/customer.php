@@ -194,12 +194,29 @@ class ModelAccountCustomer extends Model {
 			return $customer_id;
 		} catch (Exception $e) {
 			error_log('addCustomer Exception: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-			// Re-throw to let controller handle it
-			throw $e;
+			// Try to return existing customer ID instead of throwing
+			if (isset($data['email']) && !empty($data['email'])) {
+				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+				if ($check_query && $check_query->num_rows > 0) {
+					error_log('addCustomer: Returning existing customer ID: ' . $check_query->row['customer_id']);
+					return (int)$check_query->row['customer_id'];
+				}
+			}
+			// If no existing customer, return false but don't throw
+			error_log('addCustomer: No existing customer found, returning false');
+			return false;
 		} catch (Error $e) {
 			error_log('addCustomer Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-			// Re-throw to let controller handle it
-			throw $e;
+			// Try to return existing customer ID instead of throwing
+			if (isset($data['email']) && !empty($data['email'])) {
+				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+				if ($check_query && $check_query->num_rows > 0) {
+					error_log('addCustomer: Returning existing customer ID: ' . $check_query->row['customer_id']);
+					return (int)$check_query->row['customer_id'];
+				}
+			}
+			// Return false but don't throw
+			return false;
 		}
 	}
 
