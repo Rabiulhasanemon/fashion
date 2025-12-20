@@ -292,9 +292,25 @@ class ControllerAccountLogin extends Controller
             if (!$this->customer->login($this->request->post['username'], $this->request->post['password'])) {
                 $this->error['warning'] = $this->language->get('error_login');
 
-                $this->model_account_customer->addLoginAttempt($this->request->post['username']);
+                // Add login attempt - wrap in try-catch to prevent fatal errors
+                try {
+                    if (isset($this->request->post['username']) && !empty($this->request->post['username'])) {
+                        $this->model_account_customer->addLoginAttempt($this->request->post['username']);
+                    }
+                } catch (Exception $e) {
+                    error_log('Login Attempt Logging Error: ' . $e->getMessage());
+                    // Don't break login process if logging fails
+                }
             } else {
-                $this->model_account_customer->deleteLoginAttempts($this->request->post['username']);
+                // Clear login attempts on successful login
+                try {
+                    if (isset($this->request->post['username']) && !empty($this->request->post['username'])) {
+                        $this->model_account_customer->deleteLoginAttempts($this->request->post['username']);
+                    }
+                } catch (Exception $e) {
+                    error_log('Delete Login Attempts Error: ' . $e->getMessage());
+                    // Don't break login process if cleanup fails
+                }
 
                 $this->event->trigger('post.customer.login');
             }

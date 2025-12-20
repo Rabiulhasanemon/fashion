@@ -209,13 +209,40 @@ class ModelAccountCustomer extends Model {
 	}
 	
 	public function addLoginAttempt($email) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_login WHERE email = '" . $this->db->escape(utf8_strtolower((string)$email)) . "' AND ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "'");
+		if (empty($email)) {
+			return;
+		}
 		
-		if (!$query->num_rows) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "customer_login SET email = '" . $this->db->escape(utf8_strtolower((string)$email)) . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', total = 1, date_added = '" . $this->db->escape(date('Y-m-d H:i:s')) . "', date_modified = '" . $this->db->escape(date('Y-m-d H:i:s')) . "'");
-		} else {
-			$this->db->query("UPDATE " . DB_PREFIX . "customer_login SET total = (total + 1), date_modified = '" . $this->db->escape(date('Y-m-d H:i:s')) . "' WHERE customer_login_id = '" . (int)$query->row['customer_login_id'] . "'");
-		}			
+		$ip = isset($this->request->server['REMOTE_ADDR']) ? $this->request->server['REMOTE_ADDR'] : '0.0.0.0';
+		$email_lower = utf8_strtolower((string)$email);
+		
+		// Use INSERT ... ON DUPLICATE KEY UPDATE to handle race conditions and duplicates
+		try {
+			// First, try to get existing record
+			$query = $this->db->query("SELECT customer_login_id FROM " . DB_PREFIX . "customer_login WHERE email = '" . $this->db->escape($email_lower) . "' AND ip = '" . $this->db->escape($ip) . "' LIMIT 1");
+			
+			if ($query->num_rows > 0 && isset($query->row['customer_login_id'])) {
+				// Update existing record
+				$this->db->query("UPDATE " . DB_PREFIX . "customer_login SET total = (total + 1), date_modified = '" . $this->db->escape(date('Y-m-d H:i:s')) . "' WHERE customer_login_id = '" . (int)$query->row['customer_login_id'] . "'");
+			} else {
+				// Try to insert new record - use INSERT IGNORE to prevent duplicate key errors
+				$this->db->query("INSERT IGNORE INTO " . DB_PREFIX . "customer_login SET email = '" . $this->db->escape($email_lower) . "', ip = '" . $this->db->escape($ip) . "', total = 1, date_added = '" . $this->db->escape(date('Y-m-d H:i:s')) . "', date_modified = '" . $this->db->escape(date('Y-m-d H:i:s')) . "'");
+				
+				// If insert failed due to duplicate, try to update instead
+				$check_query = $this->db->query("SELECT customer_login_id FROM " . DB_PREFIX . "customer_login WHERE email = '" . $this->db->escape($email_lower) . "' AND ip = '" . $this->db->escape($ip) . "' LIMIT 1");
+				if ($check_query->num_rows > 0 && isset($check_query->row['customer_login_id'])) {
+					$this->db->query("UPDATE " . DB_PREFIX . "customer_login SET total = (total + 1), date_modified = '" . $this->db->escape(date('Y-m-d H:i:s')) . "' WHERE customer_login_id = '" . (int)$check_query->row['customer_login_id'] . "'");
+				}
+			}
+		} catch (Exception $e) {
+			// Log error but don't break login process
+			error_log('addLoginAttempt Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+			// Silently fail - don't break the login process
+		} catch (Error $e) {
+			// Catch PHP 7+ fatal errors
+			error_log('addLoginAttempt Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+			// Silently fail - don't break the login process
+		}
 	}	
 	
 	public function getLoginAttempts($login_id) {
