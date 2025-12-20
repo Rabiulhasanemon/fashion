@@ -158,9 +158,23 @@
     position: relative;
 }
 
+.fld-owl-carousel .owl-item {
+    display: flex;
+    align-items: stretch;
+    height: 220px;
+}
+
+.fld-owl-carousel .owl-stage {
+    display: flex;
+    align-items: stretch;
+}
+
 /* Product Card */
 .fld-item-wrapper {
     padding: 0 8px;
+    height: 220px;
+    display: flex;
+    align-items: stretch;
 }
 
 .fld-card-box {
@@ -169,12 +183,12 @@
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
-    height: 180px;
+    height: 220px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    min-height: 180px;
-    max-height: 180px;
+    min-height: 220px;
+    max-height: 220px;
 }
 
 .fld-card-box:hover {
@@ -233,13 +247,14 @@
 
 /* Details Box - Right Side */
 .fld-details-box {
-    padding: 10px;
+    padding: 12px;
     text-align: left;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 60%;
+    height: 100%;
 }
 
 /* Category Text */
@@ -249,6 +264,8 @@
     text-transform: capitalize;
     margin-bottom: 6px;
     font-weight: 400;
+    flex-shrink: 0;
+    height: 14px;
 }
 
 /* Product Name */
@@ -257,12 +274,13 @@
     font-weight: 600;
     margin: 0 0 8px 0;
     line-height: 1.5;
-    min-height: 48px;
+    height: 48px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    flex-shrink: 0;
 }
 
 .fld-name-text a {
@@ -280,6 +298,8 @@
     margin-bottom: 8px;
     display: flex;
     gap: 2px;
+    flex-shrink: 0;
+    height: 16px;
 }
 
 .fld-star-grey {
@@ -294,6 +314,8 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    flex-shrink: 0;
+    min-height: 24px;
 }
 
 .fld-price-old {
@@ -314,6 +336,8 @@
     gap: 6px;
     justify-content: flex-start;
     margin-bottom: 10px;
+    flex-shrink: 0;
+    min-height: 50px;
 }
 
 .fld-timer-item {
@@ -360,9 +384,11 @@
     gap: 0;
     align-items: center;
     justify-content: flex-start;
-    margin: 8px 0 0 0;
+    margin: auto 0 0 0;
     padding: 0;
     position: relative;
+    flex-shrink: 0;
+    min-height: 36px;
 }
 
 .fld-btn-cart {
@@ -439,8 +465,12 @@
         font-size: 13px;
     }
     
+    .fld-item-wrapper {
+        height: 210px;
+    }
+    
     .fld-img-wrapper {
-        padding: 10px;
+        padding: 0;
     }
     
     .fld-details-box {
@@ -463,6 +493,7 @@
     
     .fld-item-wrapper {
         padding: 0 6px;
+        height: 200px;
     }
     
     .fld-img-wrapper {
@@ -473,13 +504,13 @@
     
     .fld-details-box {
         width: 62%;
-        padding: 8px;
+        padding: 10px;
     }
     
     .fld-card-box {
-        height: 160px;
-        min-height: 160px;
-        max-height: 160px;
+        height: 200px;
+        min-height: 200px;
+        max-height: 200px;
     }
 }
 
