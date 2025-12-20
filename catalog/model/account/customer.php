@@ -29,23 +29,51 @@ class ModelAccountCustomer extends Model {
 			$salt = substr(md5(uniqid(rand(), true)), 0, 9);
 			$password_hash = sha1($salt . sha1($salt . sha1($data['password'])));
 
-			$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");
+			// Build and execute customer insert query
+			$customer_sql = "INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()";
+			
+			error_log('addCustomer: Attempting customer insert for email: ' . $data['email']);
+			$customer_query = $this->db->query($customer_sql);
+			
+			if (!$customer_query) {
+				error_log('addCustomer Error: Customer INSERT query failed');
+				throw new Exception('Failed to insert customer record');
+			}
 
 			$customer_id = $this->db->getLastId();
 			
 			if (!$customer_id || $customer_id <= 0) {
-				error_log('addCustomer Error: Failed to get customer ID after insert');
-				return false;
+				error_log('addCustomer Error: Failed to get customer ID after insert. Last ID: ' . $customer_id);
+				// Check if customer was actually inserted by email
+				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+				if ($check_query->num_rows > 0) {
+					$customer_id = $check_query->row['customer_id'];
+					error_log('addCustomer: Found existing customer with same email. ID: ' . $customer_id);
+				} else {
+					throw new Exception('Customer insert failed - no customer ID returned');
+				}
 			}
+			
+			error_log('addCustomer: Customer created successfully. ID: ' . $customer_id);
 
-			$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', company = '" . $this->db->escape(isset($data['company']) ? $data['company'] : "") . "', address_1 = '" . $this->db->escape(isset($data['address_1']) ? $data['address_1'] : "") . "', address_2 = '" . $this->db->escape(isset($data['address_2']) ? $data['address_2'] : "") . "', city = '" . $this->db->escape(isset($data['city']) ? $data['city'] : "") . "', postcode = '" . (isset($data['postcode']) ? $this->db->escape($data['postcode']) : "") . "', country_id = '" . (int)(isset($data['country_id']) ? $data['country_id'] : $this->config->get('config_country_id')) . "', zone_id = '" . (int)(isset($data['zone_id']) ? $data['zone_id'] : 0) . "', region_id = '" . (int)(isset($data['region_id']) ? $data['region_id'] : 0) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['address']) ? serialize($data['custom_field']['address']) : '') . "'");
+			// Build and execute address insert query
+			$address_sql = "INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', company = '" . $this->db->escape(isset($data['company']) ? $data['company'] : "") . "', address_1 = '" . $this->db->escape(isset($data['address_1']) ? $data['address_1'] : "") . "', address_2 = '" . $this->db->escape(isset($data['address_2']) ? $data['address_2'] : "") . "', city = '" . $this->db->escape(isset($data['city']) ? $data['city'] : "") . "', postcode = '" . (isset($data['postcode']) ? $this->db->escape($data['postcode']) : "") . "', country_id = '" . (int)(isset($data['country_id']) ? $data['country_id'] : $this->config->get('config_country_id')) . "', zone_id = '" . (int)(isset($data['zone_id']) ? $data['zone_id'] : 0) . "', region_id = '" . (int)(isset($data['region_id']) ? $data['region_id'] : 0) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['address']) ? serialize($data['custom_field']['address']) : '') . "'";
+			
+			error_log('addCustomer: Attempting address insert for customer ID: ' . $customer_id);
+			$address_query = $this->db->query($address_sql);
+
+			if (!$address_query) {
+				error_log('addCustomer Warning: Address INSERT query failed, but continuing');
+			}
 
 			$address_id = $this->db->getLastId();
 			
 			if ($address_id && $address_id > 0) {
 				$this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+				error_log('addCustomer: Address created and linked. Address ID: ' . $address_id);
 			} else {
 				error_log('addCustomer Warning: Failed to create address, but customer created. Customer ID: ' . $customer_id);
+				// Don't fail registration if address creation fails - customer is more important
 			}
 
 			$this->load->language('mail/customer');
