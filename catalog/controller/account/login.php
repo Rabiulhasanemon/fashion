@@ -58,34 +58,49 @@ class ControllerAccountLogin extends Controller
         $this->document->setTitle($this->language->get('heading_title'));
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            unset($this->session->data['guest']);
+            try {
+                unset($this->session->data['guest']);
 
-            // Default Shipping Address
-            $this->load->model('account/address');
+                // Default Shipping Address
+                $this->load->model('account/address');
 
-            if ($this->config->get('config_tax_customer') == 'payment') {
-                $this->session->data['payment_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
-            }
+                if ($this->config->get('config_tax_customer') == 'payment') {
+                    $address_id = $this->customer->getAddressId();
+                    if ($address_id) {
+                        $this->session->data['payment_address'] = $this->model_account_address->getAddress($address_id);
+                    }
+                }
 
-            if ($this->config->get('config_tax_customer') == 'shipping') {
-                $this->session->data['shipping_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
-            }
+                if ($this->config->get('config_tax_customer') == 'shipping') {
+                    $address_id = $this->customer->getAddressId();
+                    if ($address_id) {
+                        $this->session->data['shipping_address'] = $this->model_account_address->getAddress($address_id);
+                    }
+                }
 
-            // Add to activity log
-            $this->load->model('account/activity');
+                // Add to activity log
+                $this->load->model('account/activity');
 
-            $activity_data = array(
-                'customer_id' => $this->customer->getId(),
-                'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName()
-            );
+                $customer_id = $this->customer->getId();
+                if ($customer_id) {
+                    $activity_data = array(
+                        'customer_id' => $customer_id,
+                        'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName()
+                    );
 
-            $this->model_account_activity->addActivity('login', $activity_data);
+                    $this->model_account_activity->addActivity('login', $activity_data);
+                }
 
-            if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], $this->config->get('config_url')) !== false || strpos($this->request->post['redirect'], $this->config->get('config_ssl')) !== false)) {
-                unset($this->session->data['redirect']);
-                $this->response->redirect(str_replace('&amp;', '&', $this->request->post['redirect']));
-            } else {
-                $this->response->redirect($this->url->link('account/account', '', 'SSL'));
+                if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], $this->config->get('config_url')) !== false || strpos($this->request->post['redirect'], $this->config->get('config_ssl')) !== false)) {
+                    unset($this->session->data['redirect']);
+                    $this->response->redirect(str_replace('&amp;', '&', $this->request->post['redirect']));
+                } else {
+                    $this->response->redirect($this->url->link('account/account', '', 'SSL'));
+                }
+            } catch (Exception $e) {
+                // Log error for debugging
+                error_log('Login Error: ' . $e->getMessage());
+                $this->error['warning'] = $this->language->get('error_login');
             }
         }
 
