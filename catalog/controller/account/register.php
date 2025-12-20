@@ -81,15 +81,30 @@ class ControllerAccountRegister extends Controller {
 							}
 							
 							// Redirect after successful registration
-							if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
-								$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
-								if ($redirect_url) {
-									$this->response->redirect($redirect_url);
+							try {
+								if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
+									$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
+									if ($redirect_url && filter_var($redirect_url, FILTER_VALIDATE_URL)) {
+										$this->response->redirect($redirect_url);
+										return;
+									}
+								}
+								// Default redirect to account page
+								$account_url = $this->url->link('account/account', '', 'SSL');
+								if ($account_url) {
+									$this->response->redirect($account_url);
+									return;
+								} else {
+									// Fallback to home if account URL fails
+									$this->response->redirect($this->url->link('common/home'));
 									return;
 								}
+							} catch (Exception $redirect_error) {
+								error_log('Register Redirect Error: ' . $redirect_error->getMessage());
+								// Fallback: redirect to home
+								$this->response->redirect($this->url->link('common/home'));
+								return;
 							}
-							$this->response->redirect($this->url->link('account/account', '', 'SSL'));
-							return;
 						} else {
 							// Login failed, redirect to login page with success message
 							$success_msg = $this->language->get('text_success');
@@ -111,10 +126,12 @@ class ControllerAccountRegister extends Controller {
 				// Log error for debugging
 				error_log('Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
 				$this->error['warning'] = 'An error occurred during registration. Please try again.';
+				// Don't redirect on error - let the form display the error
 			} catch (Error $e) {
 				// Catch PHP 7+ fatal errors
 				error_log('Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
 				$this->error['warning'] = 'An error occurred during registration. Please try again.';
+				// Don't redirect on error - let the form display the error
 			}
 		}
 

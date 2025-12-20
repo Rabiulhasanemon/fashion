@@ -125,18 +125,36 @@ class ControllerAccountLogin extends Controller
                     }
                 }
                 
-                // Default redirect
-                $this->response->redirect($this->url->link('account/account', '', 'SSL'));
-                return;
+                // Default redirect - ensure URL is valid
+                try {
+                    $account_url = $this->url->link('account/account', '', 'SSL');
+                    if ($account_url) {
+                        $this->response->redirect($account_url);
+                        return;
+                    }
+                } catch (Exception $redirect_error) {
+                    error_log('Login Redirect Error: ' . $redirect_error->getMessage());
+                    // Fallback: redirect to home
+                    $this->response->redirect($this->url->link('common/home'));
+                    return;
+                }
                 
             } catch (Exception $e) {
                 // Log error for debugging
-                error_log('Login Error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+                error_log('Login Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
                 $this->error['warning'] = $this->language->get('error_login');
+                if (!$this->error['warning']) {
+                    $this->error['warning'] = 'Login failed. Please try again.';
+                }
+                // Don't redirect on error - let the form display the error
             } catch (Error $e) {
-                // Catch PHP 7+ errors
-                error_log('Login Fatal Error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+                // Catch PHP 7+ fatal errors
+                error_log('Login Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
                 $this->error['warning'] = $this->language->get('error_login');
+                if (!$this->error['warning']) {
+                    $this->error['warning'] = 'Login failed. Please try again.';
+                }
+                // Don't redirect on error - let the form display the error
             }
         }
 
@@ -191,8 +209,20 @@ class ControllerAccountLogin extends Controller
               $data['google_login_url'] = null;
         }
 
-        if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], $this->config->get('config_url')) !== false || strpos($this->request->post['redirect'], $this->config->get('config_ssl')) !== false)) {
-            $data['redirect'] = $this->request->post['redirect'];
+        if (isset($this->request->post['redirect']) && !is_array($this->request->post['redirect'])) {
+            $redirect_post = $this->request->post['redirect'];
+            $config_url = $this->config->get('config_url');
+            $config_ssl = $this->config->get('config_ssl');
+            
+            $config_url_str = is_array($config_url) ? '' : (string)$config_url;
+            $config_ssl_str = is_array($config_ssl) ? '' : (string)$config_ssl;
+            
+            if (($config_url_str && strpos($redirect_post, $config_url_str) !== false) || 
+                ($config_ssl_str && strpos($redirect_post, $config_ssl_str) !== false)) {
+                $data['redirect'] = $redirect_post;
+            } else {
+                $data['redirect'] = '';
+            }
         } elseif (isset($this->session->data['redirect'])) {
             $data['redirect'] = $this->session->data['redirect'];
         } else {
