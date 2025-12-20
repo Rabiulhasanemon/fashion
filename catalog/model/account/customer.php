@@ -116,11 +116,20 @@ class ModelAccountCustomer extends Model {
 					$mail->send();
 				}
 			}
+			}
+
+			$this->event->trigger('post.customer.add', $customer_id);
+
+			return $customer_id;
+		} catch (Exception $e) {
+			error_log('addCustomer Exception: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+			// Re-throw to let controller handle it
+			throw $e;
+		} catch (Error $e) {
+			error_log('addCustomer Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+			// Re-throw to let controller handle it
+			throw $e;
 		}
-
-		$this->event->trigger('post.customer.add', $customer_id);
-
-		return $customer_id;
 	}
 
 	public function addCustomerByTelephone($telephone) {
