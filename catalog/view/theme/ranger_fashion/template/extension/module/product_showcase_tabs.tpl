@@ -688,6 +688,8 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin: 0;
+    padding: 0;
 }
 
 .psh-new-product-card:hover {
@@ -700,7 +702,9 @@
     width: 100%;
     padding-top: 75%;
     overflow: hidden;
-    background: #f8f9fa;
+    background: #ffffff;
+    margin: 0;
+    border: none;
 }
 
 .psh-new-product-img {
@@ -709,8 +713,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 15px;
+    object-fit: cover;
+    padding: 0;
+    margin: 0;
     transition: transform 0.3s ease;
 }
 
@@ -789,11 +794,11 @@
 }
 
 .psh-new-product-name {
-    font-size: 13px;
-    font-weight: 500;
-    margin: 0 0 8px 0;
-    line-height: 1.4;
-    min-height: 36px;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+    min-height: 48px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -805,6 +810,7 @@
     color: #333333;
     text-decoration: none;
     transition: color 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 }
 
 .psh-new-product-name a:hover {
@@ -905,8 +911,8 @@
     }
     
     .psh-new-product-name {
-        font-size: 12px;
-        min-height: 32px;
+        font-size: 15px;
+        min-height: 45px;
     }
     
     .psh-new-price-current {
@@ -945,8 +951,8 @@
 
 @media (max-width: 480px) {
     .psh-new-product-name {
-        font-size: 11px;
-        min-height: 30px;
+        font-size: 14px;
+        min-height: 42px;
     }
     
     .psh-new-price-current {
