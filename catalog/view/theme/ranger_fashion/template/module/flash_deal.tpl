@@ -24,6 +24,13 @@
                             <?php if ($product['discount']) { ?>
                             <div class="fld-badge-yellow">-<?php echo (int)$product['discount']; ?>%</div>
                             <?php } ?>
+                            
+                            <!-- Add to Cart Button - Over Image -->
+                            <div class="fld-buttons-box-overlay">
+                                <button type="button" class="fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
+                                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Product Details - Right Side -->
@@ -53,13 +60,6 @@
                                 <?php } else { ?>
                                 <span class="fld-price-new"><?php echo $product['price']; ?></span>
                                 <?php } ?>
-                            </div>
-                            
-                            <!-- Action Buttons - Left Side -->
-                            <div class="fld-buttons-box">
-                                <button type="button" class="fld-btn-cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" title="Add to Cart">
-                                    <i class="fa fa-shopping-cart"></i> Add to Cart
-                                </button>
                             </div>
                             
                             <!-- Countdown Timer -->
@@ -161,7 +161,7 @@
 .fld-owl-carousel .owl-item {
     display: flex;
     align-items: stretch;
-    height: 220px;
+    height: 180px;
 }
 
 .fld-owl-carousel .owl-stage {
@@ -172,7 +172,7 @@
 /* Product Card */
 .fld-item-wrapper {
     padding: 0 8px;
-    height: 220px;
+    height: 180px;
     display: flex;
     align-items: stretch;
 }
@@ -183,12 +183,12 @@
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
-    height: 220px;
+    height: 180px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    min-height: 220px;
-    max-height: 220px;
+    min-height: 180px;
+    max-height: 180px;
 }
 
 .fld-card-box:hover {
@@ -243,6 +243,20 @@
     font-size: 11px;
     z-index: 10;
     line-height: 1;
+}
+
+/* Add to Cart Button Overlay on Image */
+.fld-buttons-box-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    z-index: 15;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
 }
 
 /* Details Box - Right Side */
@@ -377,18 +391,41 @@
     color: #ffffff;
 }
 
-/* Action Buttons - Left Side */
-.fld-details-box .fld-buttons-box {
+/* Action Buttons - Overlay on Image */
+.fld-buttons-box-overlay .fld-btn-cart {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    border: none;
     display: flex;
-    flex-direction: row;
-    gap: 0;
     align-items: center;
-    justify-content: flex-start;
-    margin: auto 0 0 0;
-    padding: 0;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 106, 0, 0.5);
     position: relative;
-    flex-shrink: 0;
-    min-height: 36px;
+    overflow: hidden;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.fld-buttons-box-overlay .fld-btn-cart:hover {
+    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+.fld-buttons-box-overlay .fld-btn-cart:active {
+    transform: translateY(0);
+}
+
+.fld-buttons-box-overlay .fld-btn-cart i {
+    font-size: 13px;
 }
 
 .fld-btn-cart {
@@ -466,7 +503,11 @@
     }
     
     .fld-item-wrapper {
-        height: 210px;
+        height: 170px;
+    }
+    
+    .fld-owl-carousel .owl-item {
+        height: 170px;
     }
     
     .fld-img-wrapper {
@@ -493,7 +534,11 @@
     
     .fld-item-wrapper {
         padding: 0 6px;
-        height: 200px;
+        height: 160px;
+    }
+    
+    .fld-owl-carousel .owl-item {
+        height: 160px;
     }
     
     .fld-img-wrapper {
@@ -508,9 +553,9 @@
     }
     
     .fld-card-box {
-        height: 200px;
-        min-height: 200px;
-        max-height: 200px;
+        height: 160px;
+        min-height: 160px;
+        max-height: 160px;
     }
 }
 
@@ -532,6 +577,14 @@
     }
     
     /* Switch to vertical layout on mobile */
+    .fld-item-wrapper {
+        height: auto;
+    }
+    
+    .fld-owl-carousel .owl-item {
+        height: auto;
+    }
+    
     .fld-card-box {
         flex-direction: column;
         border-radius: 6px;
@@ -560,6 +613,15 @@
     .fld-name-text {
         font-size: 14px;
         min-height: 42px;
+    }
+    
+    .fld-buttons-box-overlay {
+        padding: 6px;
+    }
+    
+    .fld-buttons-box-overlay .fld-btn-cart {
+        font-size: 11px;
+        padding: 6px 10px;
     }
     
     .fld-price-new {
