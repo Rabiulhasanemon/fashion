@@ -31,57 +31,88 @@ class ControllerAccountRegister extends Controller {
 						if (!isset($customer_data['city'])) {
 							$customer_data['city'] = '';
 						}
-						if (!isset($customer_data['zone_id'])) {
+						if (!isset($customer_data['zone_id']) || empty($customer_data['zone_id'])) {
 							$customer_data['zone_id'] = 0;
 						}
-						if (!isset($customer_data['region_id'])) {
+						if (!isset($customer_data['region_id']) || empty($customer_data['region_id'])) {
 							$customer_data['region_id'] = 0;
 						}
 					} else {
 						// If address registration is not required, set default values
 						$customer_data['address_1'] = isset($customer_data['address_1']) ? $customer_data['address_1'] : '';
 						$customer_data['city'] = isset($customer_data['city']) ? $customer_data['city'] : '';
-						$customer_data['zone_id'] = isset($customer_data['zone_id']) ? $customer_data['zone_id'] : 0;
-						$customer_data['region_id'] = isset($customer_data['region_id']) ? $customer_data['region_id'] : 0;
+						$customer_data['zone_id'] = isset($customer_data['zone_id']) && !empty($customer_data['zone_id']) ? $customer_data['zone_id'] : 0;
+						$customer_data['region_id'] = isset($customer_data['region_id']) && !empty($customer_data['region_id']) ? $customer_data['region_id'] : 0;
+					}
+					
+					// Ensure country_id is set
+					if (!isset($customer_data['country_id']) || empty($customer_data['country_id'])) {
+						$customer_data['country_id'] = $this->config->get('config_country_id') ? $this->config->get('config_country_id') : 0;
 					}
 					
 					$customer_id = $this->model_account_customer->addCustomer($customer_data);
 					
-					if ($customer_id) {
+					if ($customer_id && $customer_id > 0) {
 						// Clear any previous login attempts for unregistered accounts.
-						$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
+						if (method_exists($this->model_account_customer, 'deleteLoginAttempts')) {
+							$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
+						}
 						
 						// Login the customer
 						if ($this->customer->login($this->request->post['email'], null, true)) {
 							unset($this->session->data['guest']);
 
 							// Add to activity log
-							$this->load->model('account/activity');
+							if ($this->customer->isLogged()) {
+								$this->load->model('account/activity');
 
-							$activity_data = array(
-								'customer_id' => $customer_id,
-								'name'        => $this->request->post['firstname'] . (isset($this->request->post['lastname']) ? ' ' . $this->request->post['lastname'] : "")
-							);
+								$firstname = isset($this->request->post['firstname']) ? $this->request->post['firstname'] : '';
+								$lastname = isset($this->request->post['lastname']) ? $this->request->post['lastname'] : '';
+								$full_name = trim($firstname . ' ' . $lastname);
+								
+								if ($full_name && method_exists($this->model_account_activity, 'addActivity')) {
+									$activity_data = array(
+										'customer_id' => $customer_id,
+										'name'        => $full_name
+									);
 
-							$this->model_account_activity->addActivity('register', $activity_data);
+									$this->model_account_activity->addActivity('register', $activity_data);
+								}
+							}
 							
-							if (isset($this->request->post['redirect']) && $this->request->post['redirect'] && $this->customer->isLogged()) {
-								$this->response->redirect(str_replace('&amp;', '&', $this->request->post['redirect']));
+							// Redirect after successful registration
+							if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
+								$redirect_url = str_replace('&amp;', '&', $this->request->post['redirect']);
+								$this->response->redirect($redirect_url);
+								return;
 							} else {
 								$this->response->redirect($this->url->link('account/account', '', 'SSL'));
+								return;
 							}
 						} else {
 							// Login failed, redirect to login page with success message
-							$this->session->data['success'] = $this->language->get('text_success') ? $this->language->get('text_success') : 'Your account has been created successfully. Please login.';
+							$success_msg = $this->language->get('text_success');
+							if (!$success_msg) {
+								$success_msg = 'Your account has been created successfully. Please login.';
+							}
+							$this->session->data['success'] = $success_msg;
 							$this->response->redirect($this->url->link('account/login', '', 'SSL'));
+							return;
 						}
 					} else {
-						$this->error['warning'] = $this->language->get('error_register') ? $this->language->get('error_register') : 'Unable to create account. Please try again.';
+						$this->error['warning'] = $this->language->get('error_register');
+						if (!$this->error['warning']) {
+							$this->error['warning'] = 'Unable to create account. Please try again.';
+						}
 					}
 				}
 			} catch (Exception $e) {
 				// Log error for debugging
-				error_log('Registration Error: ' . $e->getMessage());
+				error_log('Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
+				$this->error['warning'] = 'An error occurred during registration. Please try again.';
+			} catch (Error $e) {
+				// Catch PHP 7+ fatal errors
+				error_log('Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
 				$this->error['warning'] = 'An error occurred during registration. Please try again.';
 			}
 		}

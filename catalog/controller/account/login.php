@@ -61,45 +61,76 @@ class ControllerAccountLogin extends Controller
             try {
                 unset($this->session->data['guest']);
 
-                // Default Shipping Address
-                $this->load->model('account/address');
+                // Default Shipping Address - Only if customer is logged in
+                if ($this->customer->isLogged()) {
+                    $this->load->model('account/address');
 
-                if ($this->config->get('config_tax_customer') == 'payment') {
-                    $address_id = $this->customer->getAddressId();
-                    if ($address_id) {
-                        $this->session->data['payment_address'] = $this->model_account_address->getAddress($address_id);
+                    if ($this->config->get('config_tax_customer') == 'payment') {
+                        $address_id = $this->customer->getAddressId();
+                        if ($address_id && $address_id > 0) {
+                            $address = $this->model_account_address->getAddress($address_id);
+                            if ($address) {
+                                $this->session->data['payment_address'] = $address;
+                            }
+                        }
+                    }
+
+                    if ($this->config->get('config_tax_customer') == 'shipping') {
+                        $address_id = $this->customer->getAddressId();
+                        if ($address_id && $address_id > 0) {
+                            $address = $this->model_account_address->getAddress($address_id);
+                            if ($address) {
+                                $this->session->data['shipping_address'] = $address;
+                            }
+                        }
+                    }
+
+                    // Add to activity log
+                    $this->load->model('account/activity');
+
+                    $customer_id = $this->customer->getId();
+                    if ($customer_id && $customer_id > 0) {
+                        $first_name = $this->customer->getFirstName();
+                        $last_name = $this->customer->getLastName();
+                        
+                        if ($first_name || $last_name) {
+                            $activity_data = array(
+                                'customer_id' => $customer_id,
+                                'name'        => trim($first_name . ' ' . $last_name)
+                            );
+
+                            if (method_exists($this->model_account_activity, 'addActivity')) {
+                                $this->model_account_activity->addActivity('login', $activity_data);
+                            }
+                        }
                     }
                 }
 
-                if ($this->config->get('config_tax_customer') == 'shipping') {
-                    $address_id = $this->customer->getAddressId();
-                    if ($address_id) {
-                        $this->session->data['shipping_address'] = $this->model_account_address->getAddress($address_id);
+                // Redirect after successful login
+                if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect'])) {
+                    $redirect_url = str_replace('&amp;', '&', $this->request->post['redirect']);
+                    $config_url = $this->config->get('config_url');
+                    $config_ssl = $this->config->get('config_ssl');
+                    
+                    if (($config_url && strpos($redirect_url, $config_url) !== false) || 
+                        ($config_ssl && strpos($redirect_url, $config_ssl) !== false)) {
+                        unset($this->session->data['redirect']);
+                        $this->response->redirect($redirect_url);
+                        return;
                     }
                 }
-
-                // Add to activity log
-                $this->load->model('account/activity');
-
-                $customer_id = $this->customer->getId();
-                if ($customer_id) {
-                    $activity_data = array(
-                        'customer_id' => $customer_id,
-                        'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName()
-                    );
-
-                    $this->model_account_activity->addActivity('login', $activity_data);
-                }
-
-                if (isset($this->request->post['redirect']) && (strpos($this->request->post['redirect'], $this->config->get('config_url')) !== false || strpos($this->request->post['redirect'], $this->config->get('config_ssl')) !== false)) {
-                    unset($this->session->data['redirect']);
-                    $this->response->redirect(str_replace('&amp;', '&', $this->request->post['redirect']));
-                } else {
-                    $this->response->redirect($this->url->link('account/account', '', 'SSL'));
-                }
+                
+                // Default redirect
+                $this->response->redirect($this->url->link('account/account', '', 'SSL'));
+                return;
+                
             } catch (Exception $e) {
                 // Log error for debugging
-                error_log('Login Error: ' . $e->getMessage());
+                error_log('Login Error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+                $this->error['warning'] = $this->language->get('error_login');
+            } catch (Error $e) {
+                // Catch PHP 7+ errors
+                error_log('Login Fatal Error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
                 $this->error['warning'] = $this->language->get('error_login');
             }
         }
