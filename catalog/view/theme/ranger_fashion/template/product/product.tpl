@@ -203,14 +203,10 @@
                                 <span class="ppd-new-price-current"><?php echo $price; ?></span>
                                 <?php } else { ?>
                                 <div class="ppd-price-row">
-                                    <div class="ppd-price-left">
-                                        <span class="ppd-new-price-current"><?php echo $special; ?></span>
-                                        <span class="ppd-new-price-old"><?php echo $price; ?></span>
-                                    </div>
+                                    <span class="ppd-new-price-current"><?php echo $special; ?></span>
+                                    <span class="ppd-new-price-old"><?php echo $price; ?></span>
                                     <div class="ppd-price-separator"></div>
-                                    <div class="ppd-price-right">
-                                        <span class="ppd-new-save-text">Save <span class="ppd-save-amount"><?php echo $discountAmountFormatted; ?></span></span>
-                                    </div>
+                                    <span class="ppd-new-save-text">Save <span class="ppd-save-amount"><?php echo $discountAmountFormatted; ?></span></span>
                                     <?php if ($discountPercent > 0) { ?>
                                     <div class="ppd-new-discount-badge">
                                         <?php echo $discountPercent; ?>% OFF
@@ -1674,75 +1670,80 @@
     flex: 1;
 }
 
-/* Price Row - Horizontal Layout Matching Image */
+/* Price Row - Horizontal Layout Matching Image Exactly */
 .ppd-price-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
-.ppd-price-left {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-}
-
+/* Current Price - Large Pink (Vibrant Pink) */
 .ppd-new-price-current {
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 700;
     color: #e91e63;
-    line-height: 1.2;
+    line-height: 1.1;
     margin: 0;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
 }
 
+/* Original Price - Small Light Gray with Strikethrough */
 .ppd-new-price-old {
     font-size: 18px;
     color: #999;
     text-decoration: line-through;
     font-weight: 400;
     margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
+    opacity: 0.8;
 }
 
-/* Separator - Vertical Gray Line */
+/* Separator - Thin Vertical Gray Line */
 .ppd-price-separator {
     width: 1px;
-    height: 30px;
+    height: 32px;
     background: #ddd;
     flex-shrink: 0;
+    margin: 0 4px;
 }
 
-.ppd-price-right {
-    display: flex;
-    align-items: center;
-}
-
+/* Save Text - Medium Green */
 .ppd-new-save-text {
     font-size: 16px;
     color: #4caf50;
     font-weight: 600;
     margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
 }
 
 .ppd-save-amount {
     font-weight: 700;
     color: #4caf50;
+    margin-left: 2px;
 }
 
-/* Discount Badge - Purple Rounded Tag Matching Image */
+/* Discount Badge - Purple Rounded Tag with Glow Effect (Matching Image) */
 .ppd-new-discount-badge {
     background: #9c27b0;
     color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 6px 8px 8px 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+    letter-spacing: 1px;
+    box-shadow: 0 2px 10px rgba(156, 39, 176, 0.35), 0 0 15px rgba(156, 39, 176, 0.2);
     margin-left: auto;
     flex-shrink: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
+    filter: drop-shadow(0 2px 4px rgba(156, 39, 176, 0.3));
 }
 
 /* Product Description */
@@ -1982,10 +1983,11 @@
     
     .ppd-price-row {
         gap: 8px;
+        flex-wrap: wrap;
     }
     
     .ppd-new-price-current {
-        font-size: 28px;
+        font-size: 32px;
     }
     
     .ppd-new-price-old {
@@ -1993,7 +1995,7 @@
     }
     
     .ppd-price-separator {
-        height: 24px;
+        height: 28px;
     }
     
     .ppd-new-save-text {
@@ -2002,7 +2004,8 @@
     
     .ppd-new-discount-badge {
         font-size: 14px;
-        padding: 6px 12px;
+        padding: 8px 16px;
+        letter-spacing: 0.5px;
     }
     
     .ppd-new-discount-badge {
