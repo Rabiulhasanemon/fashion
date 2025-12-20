@@ -1,31 +1,56 @@
 <?php
 class ModelAccountCustomer extends Model {
 	public function addCustomer($data) {
-		$this->event->trigger('pre.customer.add', $data);
+		try {
+			$this->event->trigger('pre.customer.add', $data);
 
-		if (isset($data['customer_group_id']) && is_array($this->config->get('config_customer_group_display')) && in_array($data['customer_group_id'], $this->config->get('config_customer_group_display'))) {
-			$customer_group_id = $data['customer_group_id'];
-		} else {
-			$customer_group_id = $this->config->get('config_customer_group_id');
-		}
+			if (isset($data['customer_group_id']) && is_array($this->config->get('config_customer_group_display')) && in_array($data['customer_group_id'], $this->config->get('config_customer_group_display'))) {
+				$customer_group_id = $data['customer_group_id'];
+			} else {
+				$customer_group_id = $this->config->get('config_customer_group_id');
+			}
 
-		$this->load->model('account/customer_group');
+			$this->load->model('account/customer_group');
 
-		$customer_group_info = $this->model_account_customer_group->getCustomerGroup($customer_group_id);
+			$customer_group_info = $this->model_account_customer_group->getCustomerGroup($customer_group_id);
+			
+			if (!$customer_group_info) {
+				error_log('addCustomer Error: Customer group not found for ID: ' . $customer_group_id);
+				return false;
+			}
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");
+			// Ensure required fields are present
+			if (empty($data['firstname']) || empty($data['email']) || empty($data['telephone']) || empty($data['password'])) {
+				error_log('addCustomer Error: Missing required fields');
+				return false;
+			}
 
-		$customer_id = $this->db->getLastId();
+			$ip = isset($this->request->server['REMOTE_ADDR']) ? $this->request->server['REMOTE_ADDR'] : '0.0.0.0';
+			$salt = substr(md5(uniqid(rand(), true)), 0, 9);
+			$password_hash = sha1($salt . sha1($salt . sha1($data['password'])));
 
-		$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', company = '" . $this->db->escape(isset($data['company']) ? $data['company'] : "") . "', address_1 = '" . $this->db->escape(isset($data['address_1']) ? $data['address_1'] : "") . "', address_2 = '" . $this->db->escape(isset($data['address_2']) ? $data['address_2'] : "") . "', city = '" . $this->db->escape(isset($data['city']) ? $data['city'] : "") . "', postcode = '" . (isset($data['postcode']) ? $this->db->escape($data['postcode']) : "") . "', country_id = '" . (int)(isset($data['country_id']) ? $data['country_id'] : $this->config->get('config_country_id')) . "', zone_id = '" . (int)(isset($data['zone_id']) ? $data['zone_id'] : 0) . "', region_id = '" . (int)(isset($data['region_id']) ? $data['region_id'] : 0) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['address']) ? serialize($data['custom_field']['address']) : '') . "'");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");
 
-		$address_id = $this->db->getLastId();
+			$customer_id = $this->db->getLastId();
+			
+			if (!$customer_id || $customer_id <= 0) {
+				error_log('addCustomer Error: Failed to get customer ID after insert');
+				return false;
+			}
 
-		$this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', company = '" . $this->db->escape(isset($data['company']) ? $data['company'] : "") . "', address_1 = '" . $this->db->escape(isset($data['address_1']) ? $data['address_1'] : "") . "', address_2 = '" . $this->db->escape(isset($data['address_2']) ? $data['address_2'] : "") . "', city = '" . $this->db->escape(isset($data['city']) ? $data['city'] : "") . "', postcode = '" . (isset($data['postcode']) ? $this->db->escape($data['postcode']) : "") . "', country_id = '" . (int)(isset($data['country_id']) ? $data['country_id'] : $this->config->get('config_country_id')) . "', zone_id = '" . (int)(isset($data['zone_id']) ? $data['zone_id'] : 0) . "', region_id = '" . (int)(isset($data['region_id']) ? $data['region_id'] : 0) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['address']) ? serialize($data['custom_field']['address']) : '') . "'");
 
-		$this->load->language('mail/customer');
+			$address_id = $this->db->getLastId();
+			
+			if ($address_id && $address_id > 0) {
+				$this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+			} else {
+				error_log('addCustomer Warning: Failed to create address, but customer created. Customer ID: ' . $customer_id);
+			}
 
-		$subject = sprintf($this->language->get('text_subject'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
+			$this->load->language('mail/customer');
+
+			$subject = sprintf($this->language->get('text_subject'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
 
 		$message = sprintf($this->language->get('text_welcome'), html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8')) . "\n\n";
 

@@ -50,7 +50,12 @@ class ControllerAccountRegister extends Controller {
 						$customer_data['country_id'] = $this->config->get('config_country_id') ? $this->config->get('config_country_id') : 0;
 					}
 					
+					// Log registration attempt for debugging
+					error_log('Registration Attempt - Email: ' . $customer_data['email'] . ' | Firstname: ' . (isset($customer_data['firstname']) ? $customer_data['firstname'] : 'N/A'));
+					
 					$customer_id = $this->model_account_customer->addCustomer($customer_data);
+					
+					error_log('Registration Result - Customer ID: ' . ($customer_id ? $customer_id : 'FALSE/0'));
 					
 					if ($customer_id && $customer_id > 0) {
 						// Clear any previous login attempts for unregistered accounts.
@@ -116,21 +121,45 @@ class ControllerAccountRegister extends Controller {
 							return;
 						}
 					} else {
+						error_log('Registration Failed - Customer ID returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
 						$this->error['warning'] = $this->language->get('error_register');
 						if (!$this->error['warning']) {
-							$this->error['warning'] = 'Unable to create account. Please try again.';
+							$this->error['warning'] = 'Unable to create account. Please check all required fields and try again.';
 						}
 					}
 				}
 			} catch (Exception $e) {
-				// Log error for debugging
-				error_log('Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
-				$this->error['warning'] = 'An error occurred during registration. Please try again.';
+				// Log error for debugging with full details
+				$error_details = 'Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString();
+				error_log($error_details);
+				
+				// Show more specific error message if possible
+				$error_message = $e->getMessage();
+				if (strpos($error_message, 'Duplicate entry') !== false) {
+					if (strpos($error_message, 'email') !== false) {
+						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
+					} elseif (strpos($error_message, 'telephone') !== false) {
+						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
+					} else {
+						$this->error['warning'] = 'This information is already registered. Please use different details.';
+					}
+				} elseif (strpos($error_message, 'SQL') !== false || strpos($error_message, 'database') !== false) {
+					$this->error['warning'] = 'Database error occurred. Please contact support.';
+				} else {
+					$this->error['warning'] = 'An error occurred during registration: ' . htmlspecialchars($error_message);
+				}
 				// Don't redirect on error - let the form display the error
 			} catch (Error $e) {
 				// Catch PHP 7+ fatal errors
-				error_log('Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
-				$this->error['warning'] = 'An error occurred during registration. Please try again.';
+				$error_details = 'Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString();
+				error_log($error_details);
+				
+				$error_message = $e->getMessage();
+				if (strpos($error_message, 'Duplicate entry') !== false) {
+					$this->error['warning'] = 'This information is already registered. Please use different details.';
+				} else {
+					$this->error['warning'] = 'An error occurred during registration. Please try again.';
+				}
 				// Don't redirect on error - let the form display the error
 			}
 		}
