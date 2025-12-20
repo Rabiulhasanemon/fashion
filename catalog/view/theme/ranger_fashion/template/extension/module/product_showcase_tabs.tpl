@@ -476,7 +476,7 @@
 }
 
 .pst-slider-item .psh-new-product-card {
-    min-height: auto;
+    min-height: 420px;
     width: 100%;
 }
 
@@ -685,6 +685,7 @@
     border: 1px solid rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     height: 100%;
+    min-height: 420px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -700,27 +701,31 @@
 .psh-new-image-wrapper {
     position: relative;
     width: 100%;
-    padding-top: 75%;
+    padding-top: 100%;
     overflow: hidden;
     background: #ffffff;
     margin: 0;
     border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .psh-new-product-img {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
     width: 100%;
     height: 100%;
     object-fit: cover;
     padding: 0;
     margin: 0;
+    transform: translate(-50%, -50%);
     transition: transform 0.3s ease;
 }
 
 .psh-new-product-card:hover .psh-new-product-img {
-    transform: scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
 /* Discount Badge - Top Right - Matching Uploaded Image Style (Red Banner with Lightning Bolt) */
@@ -906,6 +911,14 @@
 
 /* Responsive Design for New Style */
 @media (max-width: 768px) {
+    .psh-new-product-card {
+        min-height: 380px;
+    }
+    
+    .psh-new-image-wrapper {
+        padding-top: 90%;
+    }
+    
     .psh-new-product-details {
         padding: 10px;
     }
@@ -950,6 +963,14 @@
 }
 
 @media (max-width: 480px) {
+    .psh-new-product-card {
+        min-height: 350px;
+    }
+    
+    .psh-new-image-wrapper {
+        padding-top: 85%;
+    }
+    
     .psh-new-product-name {
         font-size: 14px;
         min-height: 42px;
