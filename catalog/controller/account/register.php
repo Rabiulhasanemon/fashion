@@ -135,18 +135,43 @@ class ControllerAccountRegister extends Controller {
 				
 				// Show more specific error message if possible
 				$error_message = $e->getMessage();
-				if (strpos($error_message, 'Duplicate entry') !== false) {
-					if (strpos($error_message, 'email') !== false) {
+				$error_lower = strtolower($error_message);
+				
+				// Check for duplicate entry errors - be very specific
+				if (strpos($error_lower, 'duplicate entry') !== false) {
+					// Check for email duplicate
+					if (strpos($error_lower, 'email') !== false || strpos($error_lower, 'uk_email') !== false || strpos($error_lower, 'idx_email') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
-					} elseif (strpos($error_message, 'telephone') !== false) {
+					} 
+					// Check for telephone duplicate
+					elseif (strpos($error_lower, 'telephone') !== false || strpos($error_lower, 'phone') !== false || strpos($error_lower, 'uk_telephone') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
-					} else {
-						$this->error['warning'] = 'This information is already registered. Please use different details.';
 					}
-				} elseif (strpos($error_message, 'SQL') !== false || strpos($error_message, 'database') !== false) {
-					$this->error['warning'] = 'Database error occurred. Please contact support.';
-				} else {
-					$this->error['warning'] = 'An error occurred during registration: ' . htmlspecialchars($error_message);
+					// Check for primary key duplicate (this shouldn't happen normally)
+					elseif (strpos($error_lower, 'primary') !== false || strpos($error_lower, 'customer_id') !== false) {
+						error_log('Registration: Primary key duplicate error - this is unusual');
+						$this->error['warning'] = 'A system error occurred. Please try again or contact support.';
+					}
+					// Generic duplicate
+					else {
+						// Log the full error for debugging
+						error_log('Registration: Unknown duplicate error - ' . $error_message);
+						$this->error['warning'] = 'This information may already be registered. Please check your email and phone number, or try again.';
+					}
+				} 
+				// Check for SQL/database errors
+				elseif (strpos($error_lower, 'sql') !== false || strpos($error_lower, 'database') !== false || strpos($error_lower, 'mysqli') !== false) {
+					error_log('Registration: Database error - ' . $error_message);
+					$this->error['warning'] = 'A database error occurred. Please try again or contact support.';
+				} 
+				// Other errors - show the actual error message if it's safe
+				else {
+					// Only show error if it's not too technical
+					if (strlen($error_message) < 200 && !preg_match('/stack trace|fatal error|parse error/i', $error_message)) {
+						$this->error['warning'] = 'Registration error: ' . htmlspecialchars($error_message);
+					} else {
+						$this->error['warning'] = 'An error occurred during registration. Please try again or contact support.';
+					}
 				}
 				// Don't redirect on error - let the form display the error
 			} catch (Error $e) {
@@ -154,9 +179,15 @@ class ControllerAccountRegister extends Controller {
 				$error_details = 'Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString();
 				error_log($error_details);
 				
-				$error_message = $e->getMessage();
-				if (strpos($error_message, 'Duplicate entry') !== false) {
-					$this->error['warning'] = 'This information is already registered. Please use different details.';
+				$error_message = strtolower($e->getMessage());
+				if (strpos($error_message, 'duplicate entry') !== false) {
+					if (strpos($error_message, 'email') !== false) {
+						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
+					} elseif (strpos($error_message, 'telephone') !== false || strpos($error_message, 'phone') !== false) {
+						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
+					} else {
+						$this->error['warning'] = 'A system error occurred. Please try again or contact support.';
+					}
 				} else {
 					$this->error['warning'] = 'An error occurred during registration. Please try again.';
 				}
