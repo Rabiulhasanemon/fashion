@@ -25,6 +25,27 @@ class ControllerBrand extends Controller {
 			'href' => $this->url->link('brand')
 		);
 
+		// Get total counts for animation
+		$total_brands = 0;
+		$total_products = 0;
+		
+		// Count total brands
+		$all_manufacturers = $this->model_catalog_manufacturer->getManufacturers();
+		if ($all_manufacturers) {
+			$total_brands = count($all_manufacturers);
+		}
+		
+		// Count total products
+		try {
+			$total_products = $this->model_catalog_product->getTotalProducts(array());
+			$total_products = $total_products ? (int)$total_products : 0;
+		} catch (Exception $e) {
+			$total_products = 0;
+		}
+		
+		$data['total_brands'] = $total_brands;
+		$data['total_products'] = $total_products;
+
 		$data['categories'] = array();
 		$results = $this->model_catalog_manufacturer->getManufacturers();
 

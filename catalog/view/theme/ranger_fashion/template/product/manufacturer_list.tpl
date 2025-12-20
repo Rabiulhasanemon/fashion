@@ -20,6 +20,28 @@
 <div id="mfr-list-wrapper" class="mfr-list-container">
     <div class="mfr-list-header">
         <h1 class="mfr-list-title"><?php echo isset($heading_title) ? $heading_title : 'All Brands'; ?></h1>
+        
+        <!-- Animated Counters Section -->
+        <div class="mfr-stats-container">
+            <div class="mfr-stat-card">
+                <div class="mfr-stat-icon">
+                    <i class="fa fa-tags"></i>
+                </div>
+                <div class="mfr-stat-content">
+                    <div class="mfr-stat-number" data-count="<?php echo isset($total_brands) ? (int)$total_brands : 0; ?>">0</div>
+                    <div class="mfr-stat-label">Total Brands</div>
+                </div>
+            </div>
+            <div class="mfr-stat-card">
+                <div class="mfr-stat-icon">
+                    <i class="fa fa-shopping-bag"></i>
+                </div>
+                <div class="mfr-stat-content">
+                    <div class="mfr-stat-number" data-count="<?php echo isset($total_products) ? (int)$total_products : 0; ?>">0</div>
+                    <div class="mfr-stat-label">Total Products</div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="mfr-list-content">
@@ -396,6 +418,159 @@
         font-size: 11px;
     }
 }
+
+/* Animated Stats Section */
+.mfr-stats-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.mfr-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    flex: 1;
+    min-width: 200px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mfr-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.mfr-stat-card:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+}
+
+.mfr-stat-card:nth-child(2):hover {
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+}
+
+.mfr-stat-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.mfr-stat-content {
+    flex: 1;
+}
+
+.mfr-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 5px;
+    font-family: 'Arial', sans-serif;
+}
+
+.mfr-stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Stats */
+@media (max-width: 768px) {
+    .mfr-stats-container {
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .mfr-stat-card {
+        padding: 15px 20px;
+        min-width: 150px;
+    }
+    
+    .mfr-stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .mfr-stat-number {
+        font-size: 28px;
+    }
+    
+    .mfr-stat-label {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mfr-stats-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .mfr-stat-card {
+        width: 100%;
+        min-width: auto;
+    }
+}
 </style>
+
+<script>
+// Animated Counter Function
+(function() {
+    function animateCounter(element, target, duration) {
+        const start = 0;
+        const increment = target / (duration / 16); // 60fps
+        let current = start;
+        
+        const timer = setInterval(function() {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target.toLocaleString();
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current).toLocaleString();
+            }
+        }, 16);
+    }
+    
+    // Initialize counters when page loads
+    function initCounters() {
+        const counters = document.querySelectorAll('.mfr-stat-number');
+        
+        counters.forEach(function(counter) {
+            const target = parseInt(counter.getAttribute('data-count')) || 0;
+            if (target > 0) {
+                // Start animation after a small delay
+                setTimeout(function() {
+                    animateCounter(counter, target, 2000); // 2 second animation
+                }, 100);
+            } else {
+                counter.textContent = '0';
+            }
+        });
+    }
+    
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCounters);
+    } else {
+        initCounters();
+    }
+})();
+</script>
 
 <?php echo $footer; ?>
