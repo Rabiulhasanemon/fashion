@@ -334,13 +334,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-md-12">
-                    <ul class="nav-tab-bars mb-3">
-                        <li class="nav-tab active" onclick="openTab(event, 'description')">Description</li>
+                    <ul class="ppd-new-tab-bars mb-3">
+                        <li class="ppd-new-tab ppd-new-tab-active" onclick="openTabNew(event, 'description')">Description</li>
                         <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
-                        <li class="nav-tab" onclick="openTab(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Specifications'; ?></li>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Specification'; ?></li>
                         <?php } ?>
-                        <li class="nav-tab" onclick="openTab(event, 'product-video')">Product Video</li>
-                        <li class="nav-tab" onclick="openTab(event, 'write-review')"><?php echo $tab_review; ?></li>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-video')">Product Video</li>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'write-review')"><?php echo $tab_review; ?></li>
                     </ul>
 
                     <div class="single-tab-details product-description" id="description" style="display: block;">
@@ -654,7 +654,7 @@
    ================================================= */
 .product-name-premium {
     font-size: 42px;
-    font-weight: 700;
+    font-weight: 400;
     line-height: 1.2;
     color: #1a1a1a;
     margin: 0 0 24px 0;
@@ -717,6 +717,7 @@
     .product-name-premium {
         font-size: 38px;
         margin-bottom: 22px;
+        font-weight: 400;
     }
     
     .product-short-description-premium {
@@ -735,6 +736,7 @@
         font-size: 34px;
         margin-bottom: 20px;
         letter-spacing: -0.3px;
+        font-weight: 400;
     }
     
     .product-name-premium::after {
@@ -760,6 +762,7 @@
         font-size: 28px;
         margin-bottom: 18px;
         letter-spacing: -0.2px;
+        font-weight: 400;
     }
     
     .product-name-premium::after {
@@ -785,6 +788,7 @@
         font-size: 24px;
         margin-bottom: 16px;
         line-height: 1.3;
+        font-weight: 400;
     }
     
     .product-name-premium::after {
@@ -1454,55 +1458,50 @@
     }
 }
 
-/* Product Tabs Navigation - Matching Image Style */
-.nav-tab-bars {
+/* Product Tabs Navigation - New Style Matching Image (Red Active, White Inactive) */
+.ppd-new-tab-bars {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
     padding: 0;
     margin: 0 0 30px 0;
-    border-bottom: 2px solid #e9ecef;
     gap: 0;
+    border: none;
 }
 
-.nav-tab {
-    padding: 14px 24px;
+.ppd-new-tab {
+    padding: 12px 28px;
     margin: 0;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 500;
-    color: #666;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
     transition: all 0.3s ease;
     position: relative;
     text-transform: none;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    margin-right: 8px;
 }
 
-.nav-tab:hover {
-    color: #10503D;
-    background: rgba(16, 80, 61, 0.05);
+.ppd-new-tab:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
 }
 
-.nav-tab.active {
-    color: #A68A6A;
-    font-weight: 600;
-    border-bottom-color: #A68A6A;
-    background: transparent;
+.ppd-new-tab.ppd-new-tab-active {
+    color: #ffffff;
+    font-weight: 700;
+    background: #dc3545;
+    border-color: #dc3545;
 }
 
-.nav-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #A68A6A;
-    border-radius: 2px 2px 0 0;
+.ppd-new-tab.ppd-new-tab-active:hover {
+    background: #c82333;
+    border-color: #c82333;
 }
 
 /* Tab Content */
@@ -1640,7 +1639,29 @@
     font-weight: 400;
 }
 
-/* Responsive Design for Tabs */
+/* Responsive Design for New Tabs */
+@media (max-width: 768px) {
+    .ppd-new-tab-bars {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+    
+    .ppd-new-tab {
+        padding: 10px 20px;
+        font-size: 14px;
+        flex: 1;
+        min-width: auto;
+        text-align: center;
+        margin-right: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .single-tab-details {
+        padding: 20px 0;
+    }
+}
+
+/* Responsive Design for Old Tabs (backward compatibility) */
 @media (max-width: 768px) {
     .nav-tab-bars {
         flex-wrap: wrap;
@@ -1653,10 +1674,6 @@
         flex: 1;
         min-width: auto;
         text-align: center;
-    }
-    
-    .single-tab-details {
-        padding: 20px 0;
     }
 }
 
@@ -2296,6 +2313,21 @@ fbq && fbq('track', 'ViewContent', {
 </script>
 
 <script>
+    // New tab function for new style tabs
+    function openTabNew(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("single-tab-details");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("ppd-new-tab");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("ppd-new-tab-active");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("ppd-new-tab-active");
+    }
+
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("single-tab-details");
@@ -2310,11 +2342,22 @@ fbq && fbq('track', 'ViewContent', {
         evt.currentTarget.className += " active";
     }
 
-    // Set default active tab (Description)
+    // Set default active tab (Description) - for new tabs
+    var defaultTabNew = document.querySelector('.ppd-new-tab.ppd-new-tab-active');
+    if (defaultTabNew) {
+        var tabNameNew = defaultTabNew.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (document.getElementById(tabNameNew)) {
+            document.getElementById(tabNameNew).style.display = "block";
+        }
+    }
+
+    // Set default active tab (Description) - for old tabs (backward compatibility)
     var defaultTab = document.querySelector('.nav-tab.active');
     if (defaultTab) {
         var tabName = defaultTab.getAttribute('onclick').match(/'([^']+)'/)[1];
-        document.getElementById(tabName).style.display = "block";
+        if (document.getElementById(tabName)) {
+            document.getElementById(tabName).style.display = "block";
+        }
     }
 
 
