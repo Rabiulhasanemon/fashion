@@ -665,20 +665,18 @@ class ControllerAccountRegister extends Controller {
             $this->error['pin'] = $this->language->get('error_pin');
         }
 
-		// Check for duplicate email - only if email format is valid
+		// Check for duplicate email - only if email format is valid (non-blocking)
 		if (isset($this->request->post['email']) && !empty($this->request->post['email']) && !isset($this->error['email'])) {
 			try {
 				$email_total = $this->model_account_customer->getTotalCustomersByEmail($this->request->post['email']);
 				if ($email_total && $email_total > 0) {
-					$this->error['warning'] = $this->language->get('error_exists');
-					if (!$this->error['warning']) {
-						$this->error['warning'] = 'This email address is already registered.';
-					}
-					$this->error['email'] = $this->language->get('error_exists');
+					// Don't set error - just log it, registration will handle it
+					error_log('Registration: Email already exists: ' . $this->request->post['email']);
+					// Don't block - registration will auto-login if customer exists
 				}
 			} catch (Exception $e) {
 				error_log('Email duplicate check error: ' . $e->getMessage());
-				// Don't block registration if check fails, but log it
+				// Don't block registration if check fails
 			}
 		}
 
@@ -687,20 +685,18 @@ class ControllerAccountRegister extends Controller {
             $this->error['telephone'] = $this->language->get('error_telephone');
         }
 
-        // Check for duplicate telephone - only if format is valid
+        // Check for duplicate telephone - only if format is valid (non-blocking)
         if (isset($this->request->post['telephone']) && !empty($this->request->post['telephone']) && !isset($this->error['telephone'])) {
             try {
                 $telephone_total = $this->model_account_customer->getTotalCustomersByTelephone($this->request->post['telephone']);
                 if ($telephone_total && $telephone_total > 0) {
-                    $this->error['warning'] = $this->language->get('error_exists_telephone');
-                    if (!$this->error['warning']) {
-                        $this->error['warning'] = 'This phone number is already registered.';
-                    }
-                    $this->error['telephone'] = $this->language->get('error_exists_telephone');
+                    // Don't set error - just log it, registration will handle it
+                    error_log('Registration: Telephone already exists: ' . $this->request->post['telephone']);
+                    // Don't block - registration will auto-login if customer exists
                 }
             } catch (Exception $e) {
                 error_log('Telephone duplicate check error: ' . $e->getMessage());
-                // Don't block registration if check fails, but log it
+                // Don't block registration if check fails
             }
         }
 
