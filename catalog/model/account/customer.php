@@ -101,6 +101,28 @@ class ModelAccountCustomer extends Model {
 				}
 			}
 			
+			// Final verification - ensure customer actually exists in database
+			if ($customer_id && $customer_id > 0) {
+				$verify_query = $this->db->query("SELECT customer_id, email, firstname FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
+				if ($verify_query && $verify_query->num_rows > 0) {
+					error_log('addCustomer: Customer verified in database. ID: ' . $customer_id . ' | Email: ' . $verify_query->row['email'] . ' | Name: ' . $verify_query->row['firstname']);
+				} else {
+					error_log('addCustomer ERROR: Customer ID ' . $customer_id . ' does not exist in database after insert!');
+					// Try to find by email as last resort
+					$email_find = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+					if ($email_find && $email_find->num_rows > 0) {
+						$customer_id = $email_find->row['customer_id'];
+						error_log('addCustomer: Found customer by email. ID: ' . $customer_id);
+					} else {
+						error_log('addCustomer CRITICAL: Customer was not inserted into database!');
+						return false;
+					}
+				}
+			} else {
+				error_log('addCustomer ERROR: Invalid customer ID: ' . $customer_id);
+				return false;
+			}
+			
 			error_log('addCustomer: Customer created successfully. ID: ' . $customer_id);
 
 			// Build and execute address insert query
