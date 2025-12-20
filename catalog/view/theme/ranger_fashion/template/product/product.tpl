@@ -1727,23 +1727,33 @@
     margin-left: 2px;
 }
 
-/* Discount Badge - Purple Rounded Tag with Glow Effect (Matching Image) */
+/* Discount Badge - Purple Rounded Tag with Glow Effect (Matching Image Exactly) */
 .ppd-new-discount-badge {
     background: #9c27b0;
     color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 10px rgba(156, 39, 176, 0.35), 0 0 15px rgba(156, 39, 176, 0.2);
+    letter-spacing: 1.2px;
     margin-left: auto;
     flex-shrink: 0;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     position: relative;
-    filter: drop-shadow(0 2px 4px rgba(156, 39, 176, 0.3));
+    /* Soft blurred edge with multiple glow layers around entire badge */
+    box-shadow: 
+        0 0 20px rgba(156, 39, 176, 0.5),
+        0 0 40px rgba(156, 39, 176, 0.3),
+        0 0 60px rgba(156, 39, 176, 0.15),
+        0 2px 8px rgba(156, 39, 176, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    /* Light-colored glow/outline around white text - creates light halo effect */
+    text-shadow: 
+        0 0 8px rgba(255, 255, 255, 0.7),
+        0 0 12px rgba(255, 255, 255, 0.5),
+        0 0 16px rgba(255, 255, 255, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Product Description */
@@ -2004,8 +2014,20 @@
     
     .ppd-new-discount-badge {
         font-size: 14px;
-        padding: 8px 16px;
-        letter-spacing: 0.5px;
+        padding: 10px 18px;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        box-shadow: 
+            0 0 15px rgba(156, 39, 176, 0.4),
+            0 0 30px rgba(156, 39, 176, 0.25),
+            0 0 45px rgba(156, 39, 176, 0.12),
+            0 2px 6px rgba(156, 39, 176, 0.3),
+            inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        text-shadow: 
+            0 0 6px rgba(255, 255, 255, 0.6),
+            0 0 10px rgba(255, 255, 255, 0.4),
+            0 0 14px rgba(255, 255, 255, 0.25),
+            0 1px 2px rgba(0, 0, 0, 0.25);
     }
     
     .ppd-new-discount-badge {
