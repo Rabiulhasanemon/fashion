@@ -33,11 +33,33 @@ class ModelAccountCustomer extends Model {
 			$customer_sql = "INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()";
 			
 			error_log('addCustomer: Attempting customer insert for email: ' . $data['email']);
+			
+			// Check for duplicates BEFORE attempting insert
+			$email_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+			if ($email_check && $email_check->num_rows > 0) {
+				error_log('addCustomer Error: Email already exists: ' . $data['email']);
+				throw new Exception('Duplicate entry: Email address is already registered');
+			}
+			
+			$telephone_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE telephone = '" . $this->db->escape($data['telephone']) . "' LIMIT 1");
+			if ($telephone_check && $telephone_check->num_rows > 0) {
+				error_log('addCustomer Error: Telephone already exists: ' . $data['telephone']);
+				throw new Exception('Duplicate entry: Phone number is already registered');
+			}
+			
 			$customer_query = $this->db->query($customer_sql);
 			
-			if (!$customer_query) {
-				error_log('addCustomer Error: Customer INSERT query failed');
-				throw new Exception('Failed to insert customer record');
+			if ($customer_query === false) {
+				error_log('addCustomer Error: Customer INSERT query returned false');
+				// Check if customer was actually inserted (race condition)
+				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+				if ($check_query && $check_query->num_rows > 0) {
+					$customer_id = $check_query->row['customer_id'];
+					error_log('addCustomer: Found existing customer with same email (race condition). ID: ' . $customer_id);
+					throw new Exception('Duplicate entry: Email address is already registered');
+				} else {
+					throw new Exception('Failed to insert customer record - database error');
+				}
 			}
 
 			$customer_id = $this->db->getLastId();
@@ -46,7 +68,7 @@ class ModelAccountCustomer extends Model {
 				error_log('addCustomer Error: Failed to get customer ID after insert. Last ID: ' . $customer_id);
 				// Check if customer was actually inserted by email
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
-				if ($check_query->num_rows > 0) {
+				if ($check_query && $check_query->num_rows > 0) {
 					$customer_id = $check_query->row['customer_id'];
 					error_log('addCustomer: Found existing customer with same email. ID: ' . $customer_id);
 				} else {
