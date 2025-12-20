@@ -3,10 +3,18 @@ class ControllerModuleFeaturedCategory extends Controller
 {
 	public function index($setting)
 	{
+		// Check if we're on the home page
+		if (isset($this->request->get['route'])) {
+			$route = (string)$this->request->get['route'];
+		} else {
+			$route = 'common/home';
+		}
+		$is_home_page = ($route === 'common/home');
 
 		$data['name'] = $setting['name'];
 		$data['class'] = $setting['class'];
-		$data['see_all_url'] = $this->url->link('product/category');
+		$data['see_all_url'] = $this->url->link('product/category', 'view_all_categories=1');
+		$data['show_see_all'] = $is_home_page;
 
 		$this->load->model('catalog/category');
 		$this->load->model('tool/image');
@@ -15,6 +23,11 @@ class ControllerModuleFeaturedCategory extends Controller
 
 		if (!$setting['limit']) {
 			$setting['limit'] = 5;
+		}
+
+		// Limit to 16 items on home page
+		if ($is_home_page && (int)$setting['limit'] > 16) {
+			$setting['limit'] = 16;
 		}
 
 		if (!empty($setting['category'])) {

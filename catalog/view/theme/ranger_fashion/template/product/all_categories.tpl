@@ -1,14 +1,17 @@
+<?php echo $header; ?>
+<div class="container">
+    <ul class="breadcrumb">
+        <?php foreach ($breadcrumbs as $breadcrumb) { ?>
+        <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+        <?php } ?>
+    </ul>
+</div>
+
 <?php if (isset($categories) && !empty($categories)) { ?>
-<section class="shop-cat-module-section" id="shop-cat-module-<?php echo isset($module_id) ? $module_id : time(); ?>">
+<section class="shop-cat-module-section" id="shop-cat-module-all-categories">
     <div class="container product-slider">
         <div class="shop-cat-header">
-            <h2 class="shop-cat-title"><?php echo isset($name) ? htmlspecialchars($name) : 'Shop By Category'; ?></h2>
-            <?php if (isset($show_see_all) && $show_see_all && isset($see_all_url)) { ?>
-            <a href="<?php echo $see_all_url; ?>" class="shop-cat-see-all">
-                <span class="shop-cat-see-all-text">See All</span>
-                <span class="shop-cat-see-all-arrow">→</span>
-            </a>
-            <?php } ?>
+            <h2 class="shop-cat-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'Shop by Featured Categories'; ?></h2>
         </div>
         <div class="shop-cat-card-grid">
             <?php foreach ($categories as $index => $category) { ?>
@@ -68,39 +71,6 @@
     height: 3px;
     background: #ff8c00;
     border-radius: 2px;
-}
-
-/* See All Button */
-.shop-cat-see-all {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #dc2626;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding: 8px 0;
-}
-
-.shop-cat-see-all:hover {
-    color: #b91c1c;
-    gap: 12px;
-}
-
-.shop-cat-see-all-text {
-    display: inline-block;
-}
-
-.shop-cat-see-all-arrow {
-    display: inline-block;
-    font-size: 20px;
-    line-height: 1;
-    transition: transform 0.3s ease;
-}
-
-.shop-cat-see-all:hover .shop-cat-see-all-arrow {
-    transform: translateX(4px);
 }
 
 /* Category Grid Layout */
@@ -280,15 +250,6 @@
         height: 2.5px;
     }
     
-    .shop-cat-see-all {
-        font-size: 14px;
-        padding: 6px 0;
-    }
-    
-    .shop-cat-see-all-arrow {
-        font-size: 18px;
-    }
-    
     .shop-cat-image-wrapper {
         height: 120px;
         padding: 4px;
@@ -340,3 +301,6 @@
 </style>
 
 <?php } ?>
+
+<?php echo $footer; ?>
+

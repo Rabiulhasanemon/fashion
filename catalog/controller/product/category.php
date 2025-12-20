@@ -7,6 +7,71 @@ class ControllerProductCategory extends Controller {
 		$this->load->model('catalog/product');
 		$this->load->model('tool/image');
 
+		// Check if showing all categories in featured style
+		$is_view_all_categories = !empty($this->request->get['view_all_categories']);
+		
+		if ($is_view_all_categories) {
+			// Show all categories in featured category style
+			$data = array();
+			
+			$data['breadcrumbs'] = array();
+			$data['breadcrumbs'][] = array(
+				'text' => $this->language->get('text_home'),
+				'href' => $this->url->link('common/home')
+			);
+			$data['breadcrumbs'][] = array(
+				'text' => 'All Categories',
+				'href' => $this->url->link('product/category', 'view_all_categories=1')
+			);
+			
+			$this->document->setTitle('All Categories');
+			$data['heading_title'] = 'Shop by Featured Categories';
+			
+			// Get all top-level categories
+			$results = $this->model_catalog_category->getCategories(0);
+			
+			$data['categories'] = array();
+			$default_width = $this->config->get('config_image_category_width') ? $this->config->get('config_image_category_width') : 200;
+			$default_height = $this->config->get('config_image_category_height') ? $this->config->get('config_image_category_height') : 200;
+			
+			foreach ($results as $category) {
+				if ($category['image']) {
+					$image = $this->model_tool_image->resize($category['image'], $default_width, $default_height);
+				} else {
+					$image = $this->model_tool_image->resize('default/category.png', $default_width, $default_height);
+				}
+				
+				$data['categories'][] = array(
+					'category_id' => $category['category_id'],
+					'icon' => $image,
+					'name' => $category['name'],
+					'href' => $this->url->link('product/category', 'category_id=' . $category['category_id'])
+				);
+			}
+			
+			$data['column_left'] = $this->load->controller('common/column_left');
+			$data['column_right'] = $this->load->controller('common/column_right');
+			$data['content_top'] = $this->load->controller('common/content_top');
+			$data['content_bottom'] = $this->load->controller('common/content_bottom');
+			$data['footer'] = $this->load->controller('common/footer');
+			$data['header'] = $this->load->controller('common/header');
+			
+			// Use the featured category template
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/all_categories.tpl')) {
+				$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/product/all_categories.tpl', $data));
+			} else {
+				// Fallback: use featured category template
+				$data['name'] = 'Shop by Featured Categories';
+				$data['show_see_all'] = false;
+				if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/featured_category.tpl')) {
+					$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/module/featured_category.tpl', $data));
+				} else {
+					$this->response->setOutput($this->load->view('default/template/module/featured_category.tpl', $data));
+				}
+			}
+			return;
+		}
+
 		if (isset($this->request->get['filter'])) {
 			$filter = $this->request->get['filter'];
 		} else {

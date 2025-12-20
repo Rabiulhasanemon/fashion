@@ -744,13 +744,14 @@
 }
 
 .psh-new-badge-red {
-    background: #f44336;
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    background: #dc2626;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 }
 
 .psh-new-badge i {
-    font-size: 11px;
-    margin-right: 2px;
+    font-size: 12px;
+    margin-right: 3px;
+    display: inline-block;
 }
 
 /* Delivery Time - Below Image, Left-Aligned */
@@ -1088,11 +1089,12 @@
             html += '<div class="psh-new-product-card">';
             html += '<div class="psh-new-image-wrapper">';
             
-            // Discount badge - Top Left (Blue/Red banner)
+            // Discount badge - Top Left (Red banner with lightning bolt - matching image style)
             if (discountPercent > 0) {
-                var badgeClass = discountPercent >= 30 ? 'psh-new-badge-red' : 'psh-new-badge-blue';
-                var badgeIcon = discountPercent >= 30 ? '<i class="fa fa-bolt"></i> ' : '';
-                html += '<div class="psh-new-badge ' + badgeClass + '">' + badgeIcon + discountPercent + '% OFF</div>';
+                html += '<div class="psh-new-badge psh-new-badge-red">';
+                html += '<i class="fa fa-bolt"></i> ';
+                html += discountPercent + '% OFF';
+                html += '</div>';
             }
             
             html += '<img alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" class="psh-new-product-img" />';
@@ -1103,7 +1105,7 @@
             // Delivery time indicator - Below image, left-aligned
             html += '<div class="psh-new-delivery">';
             html += '<i class="fa fa-rocket"></i>';
-            html += '<span>12-24 Hours</span>';
+            html += '<span>24-48 Hours</span>';
             html += '</div>';
             
             // Product name
