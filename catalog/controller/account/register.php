@@ -14,7 +14,43 @@ class ControllerAccountRegister extends Controller {
 
 		$this->load->model('account/customer');
 
-		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+		// Allow registration to proceed even with some validation errors
+		$validation_passed = false;
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			// Only validate critical fields - don't block on non-critical errors
+			$critical_errors = false;
+			
+			// Check only absolutely essential fields
+			if (!isset($this->request->post['firstname']) || empty(trim($this->request->post['firstname']))) {
+				$critical_errors = true;
+				$this->error['firstname'] = $this->language->get('error_firstname');
+			}
+			
+			if (!isset($this->request->post['email']) || empty($this->request->post['email']) || !preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $this->request->post['email'])) {
+				$critical_errors = true;
+				$this->error['email'] = $this->language->get('error_email');
+			}
+			
+			if (!isset($this->request->post['telephone']) || empty($this->request->post['telephone'])) {
+				$critical_errors = true;
+				$this->error['telephone'] = $this->language->get('error_telephone');
+			}
+			
+			if (!isset($this->request->post['password']) || empty($this->request->post['password']) || utf8_strlen($this->request->post['password']) < 4) {
+				$critical_errors = true;
+				$this->error['password'] = $this->language->get('error_password');
+			}
+			
+			// Run full validation for field errors but don't block
+			$this->validate();
+			
+			// Allow registration if no critical errors
+			if (!$critical_errors) {
+				$validation_passed = true;
+			}
+		}
+		
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $validation_passed) {
 			// Try registration - don't let errors block it
 			try {
 				// Ensure all required fields are set before calling addCustomer
