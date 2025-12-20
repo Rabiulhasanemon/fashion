@@ -718,13 +718,13 @@
     transform: scale(1.05);
 }
 
-/* Discount Badge - Top Left - Matching Uploaded Image Style */
+/* Discount Badge - Top Right - Matching Uploaded Image Style (Red Banner with Lightning Bolt) */
 .psh-new-badge {
     position: absolute;
     top: 8px;
-    left: 8px;
+    right: 8px;
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 12px;
     font-weight: 700;
     color: #ffffff;
@@ -733,9 +733,10 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
 .psh-new-badge-blue {
@@ -744,14 +745,23 @@
 }
 
 .psh-new-badge-red {
-    background: #dc2626;
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    background: #e53e3e;
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .psh-new-badge i {
-    font-size: 12px;
-    margin-right: 3px;
+    font-size: 13px;
+    margin-right: 2px;
     display: inline-block;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.psh-new-badge-red i {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Delivery Time - Below Image, Left-Aligned */
@@ -1089,7 +1099,7 @@
             html += '<div class="psh-new-product-card">';
             html += '<div class="psh-new-image-wrapper">';
             
-            // Discount badge - Top Left (Red banner with lightning bolt - matching image style)
+            // Discount badge - Top Right (Red banner with lightning bolt - matching image style)
             if (discountPercent > 0) {
                 html += '<div class="psh-new-badge psh-new-badge-red">';
                 html += '<i class="fa fa-bolt"></i> ';
