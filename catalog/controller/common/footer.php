@@ -97,7 +97,7 @@ class ControllerCommonFooter extends Controller {
 		$data["is_mobile"] = isset($this->mobile_detect) && method_exists($this->mobile_detect, 'isMobile') ? $this->mobile_detect->isMobile() : false;
 		$data['contact'] = $this->url->link('information/contact');
 		$data['offer'] = $this->url->link('information/offer');
-		$data['manufacturer'] = $this->url->link('product/brand');
+		$data['manufacturer'] = $this->url->link('brand');
 		$data['affiliate'] = $this->url->link('affiliate/account', '', 'SSL');
 		$data['account'] = $this->url->link('account/account', '', 'SSL');
 		$data['order'] = $this->url->link('account/order', '', 'SSL');

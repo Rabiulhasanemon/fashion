@@ -105,7 +105,7 @@ console.groupEnd();
 <div id="brc-section-wrapper" class="brc-main-wrapper">
   <div class="brc-header-section">
     <h2 class="brc-section-title"><?php echo isset($heading_title) ? htmlspecialchars($heading_title) : 'All Brands'; ?></h2>
-    <a href="<?php echo isset($manufacturer_list_url) ? $manufacturer_list_url : 'index.php?route=product/brand'; ?>" class="brc-see-all-btn">See All</a>
+    <a href="<?php echo isset($manufacturer_list_url) ? $manufacturer_list_url : 'index.php?route=brand'; ?>" class="brc-see-all-btn">See All</a>
   </div>
   <div id="brc-carousel-<?php echo isset($module_id) ? $module_id : time(); ?>" class="brc-owl-carousel owl-carousel">
     <?php if (isset($manufacturers) && !empty($manufacturers)) { ?>

@@ -57,7 +57,12 @@ class ControllerCommonSeoUrl extends Controller
             } elseif (isset($this->request->get['category_id'])) {
                 $this->request->get['route'] = 'product/category';
             } elseif (isset($this->request->get['manufacturer_id'])) {
-                $this->request->get['route'] = 'product/manufacturer/info';
+                // Check if it's a brand route first
+                if (isset($this->request->get['route']) && strpos($this->request->get['route'], 'brand') !== false) {
+                    $this->request->get['route'] = 'brand/info';
+                } else {
+                    $this->request->get['route'] = 'product/manufacturer/info';
+                }
             } elseif (isset($this->request->get['information_id'])) {
                 $this->request->get['route'] = 'information/information';
             } elseif (isset($this->request->get['article_id'])) {
@@ -120,11 +125,20 @@ class ControllerCommonSeoUrl extends Controller
         if ($route == 'common/home') {
             return "/";
         }
+        // Handle brand route
+        if ($route == 'brand') {
+            return "/brand";
+        }
         foreach ($data as $key => $value) {
-            if (($route == 'product/product' && $key == 'product_id') || ($route == 'product/category' && ($key == 'category_id' || $key == 'manufacturer_id')) || ($route == 'product/manufacturer/info' && $key == 'manufacturer_id') || ($route == 'information/information' && $key == 'information_id')) {
+            if (($route == 'product/product' && $key == 'product_id') || ($route == 'product/category' && ($key == 'category_id' || $key == 'manufacturer_id')) || (($route == 'product/manufacturer/info' || $route == 'brand/info') && $key == 'manufacturer_id') || ($route == 'information/information' && $key == 'information_id')) {
                 $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE `query` = '" . $this->db->escape($key . '=' . (int)$value) . "'");
                 if ($query->num_rows && $query->row['keyword']) {
-                    $url .= '/' . $query->row['keyword'];
+                    // For brand/info route, prepend /brand
+                    if ($route == 'brand/info') {
+                        $url .= '/brand/' . $query->row['keyword'];
+                    } else {
+                        $url .= '/' . $query->row['keyword'];
+                    }
                     unset($data[$key]);
                 }
             } elseif ($key == 'path') { // TODO: Deprecated

@@ -79,7 +79,7 @@ class ControllerCommonHeader extends Controller {
 		$data['contact'] = $this->url->link('information/contact');
 		$data['telephone'] = $this->config->get('config_telephone');
         $data['email'] = $this->config->get("config_email");
-        $data['manufacturer'] = $this->url->link('product/brand');
+        $data['manufacturer'] = $this->url->link('brand');
         $data['pc_builder'] = $this->url->link('tool/pc_builder');
         $data['compare'] = $this->url->link('product/compare');
         $data['compare_count'] = $compare_count;
