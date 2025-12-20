@@ -165,7 +165,7 @@ class ControllerAccountRegister extends Controller {
 		}
 
 		if (isset($this->error['region'])) {
-			$data['error_region'] = $this->error['error_region'];
+			$data['error_region'] = $this->error['region'];
 		} else {
 			$data['error_region'] = '';
 		}
@@ -403,7 +403,7 @@ class ControllerAccountRegister extends Controller {
     }
 
 	public function validate() {
-		if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
+		if (!isset($this->request->post['firstname']) || (utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
 			$this->error['firstname'] = $this->language->get('error_firstname');
 		}
 
@@ -411,7 +411,7 @@ class ControllerAccountRegister extends Controller {
 			$this->error['lastname'] = $this->language->get('error_lastname');
 		}
 
-		if ((utf8_strlen($this->request->post['email']) > 96) || !preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $this->request->post['email'])) {
+		if (!isset($this->request->post['email']) || (utf8_strlen($this->request->post['email']) > 96) || !preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $this->request->post['email'])) {
 			$this->error['email'] = $this->language->get('error_email');
 		}
 
@@ -419,19 +419,19 @@ class ControllerAccountRegister extends Controller {
             $this->error['pin'] = $this->language->get('error_pin');
         }
 
-		if ($this->model_account_customer->getTotalCustomersByEmail($this->request->post['email'])) {
+		if (isset($this->request->post['email']) && $this->model_account_customer->getTotalCustomersByEmail($this->request->post['email'])) {
 			$this->error['warning'] = $this->language->get('error_exists');
 		}
 
-        if ((utf8_strlen($this->request->post['telephone']) < 11) || !preg_match('/^(016|017|018|015|019|011|013)[0-9]{8}$/i', $this->request->post['telephone'])) {
+        if (!isset($this->request->post['telephone']) || (utf8_strlen($this->request->post['telephone']) < 11) || !preg_match('/^(016|017|018|015|019|011|013)[0-9]{8}$/i', $this->request->post['telephone'])) {
             $this->error['telephone'] = $this->language->get('error_telephone');
         }
 
-        if ($this->model_account_customer->getTotalCustomersByTelephone($this->request->post['telephone'])) {
+        if (isset($this->request->post['telephone']) && $this->model_account_customer->getTotalCustomersByTelephone($this->request->post['telephone'])) {
             $this->error['warning'] = $this->language->get('error_exists_telephone');
         }
 
-		if ($this->config->get('config_address_registration') && (utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+		if ($this->config->get('config_address_registration') && (!isset($this->request->post['address_1']) || (utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128))) {
 			$this->error['address_1'] = $this->language->get('error_address_1');
 		}
 
@@ -443,7 +443,7 @@ class ControllerAccountRegister extends Controller {
             $this->load->model('localisation/country');
             $country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
 
-            if ($country_info && $country_info['postcode_required'] && (isset($this->request->post['postcode']) || utf8_strlen(trim($this->request->post['postcode'])) < 2 || utf8_strlen(trim($this->request->post['postcode'])) > 10)) {
+            if ($country_info && $country_info['postcode_required'] && (!isset($this->request->post['postcode']) || utf8_strlen(trim($this->request->post['postcode'])) < 2 || utf8_strlen(trim($this->request->post['postcode'])) > 10)) {
                 $this->error['postcode'] = $this->language->get('error_postcode');
             }
         }
@@ -470,7 +470,7 @@ class ControllerAccountRegister extends Controller {
 			}
 		}
 
-		if ((utf8_strlen($this->request->post['password']) < 4) || (utf8_strlen($this->request->post['password']) > 20)) {
+		if (!isset($this->request->post['password']) || (utf8_strlen($this->request->post['password']) < 4) || (utf8_strlen($this->request->post['password']) > 20)) {
 			$this->error['password'] = $this->language->get('error_password');
 		}
 
