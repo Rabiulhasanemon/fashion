@@ -96,6 +96,9 @@ class ControllerCommonSeoUrl extends Controller
                 // Check if URL contains "brand" to determine route
                 if (isset($parts) && in_array('brand', $parts)) {
                     $this->request->get['route'] = 'brand/info';
+                } elseif (isset($parts) && count($parts) == 2 && $parts[0] == 'brand' && $parts[1] == 'info') {
+                    // Explicitly check for brand/info in path
+                    $this->request->get['route'] = 'brand/info';
                 } else {
                     $this->request->get['route'] = 'product/manufacturer/info';
                 }
