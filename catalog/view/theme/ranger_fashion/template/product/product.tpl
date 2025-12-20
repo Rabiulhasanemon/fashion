@@ -180,34 +180,45 @@
                             <?php } ?>
                         </div>
                         
-                        <!-- Pricing Section with Discount Badge -->
+                        <!-- Pricing Section with Discount Badge - Matching Image Style -->
                         <div class="ppd-new-pricing-section">
                             <div class="ppd-new-price-container">
                                 <?php 
                                 $discountPercent = 0;
                                 $discountAmount = 0;
+                                $discountAmountFormatted = '';
                                 if (!$disablePurchase && $special) {
-                                    $p = floatval(str_replace(['৳', ','], '', $price));
-                                    $s = floatval(str_replace(['৳', ','], '', $special));
+                                    // Extract numeric values from formatted prices
+                                    $p = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $price));
+                                    $s = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $special));
                                     $discountAmount = $p - $s;
                                     if ($p > 0) {
                                         $discountPercent = round(($discountAmount / $p) * 100);
                                     }
+                                    // Format discount amount to match price format (2 decimal places)
+                                    $discountAmountFormatted = '৳' . number_format($discountAmount, 2, '.', '');
                                 }
                                 ?>
                                 <?php if ($disablePurchase || !$special) { ?>
                                 <span class="ppd-new-price-current"><?php echo $price; ?></span>
                                 <?php } else { ?>
-                                <span class="ppd-new-price-current"><?php echo $special; ?></span>
-                                <span class="ppd-new-price-old"><?php echo $price; ?></span>
-                                <span class="ppd-new-save-text">Save <?php echo $discountAmount; ?> TK.</span>
+                                <div class="ppd-price-row">
+                                    <div class="ppd-price-left">
+                                        <span class="ppd-new-price-current"><?php echo $special; ?></span>
+                                        <span class="ppd-new-price-old"><?php echo $price; ?></span>
+                                    </div>
+                                    <div class="ppd-price-separator"></div>
+                                    <div class="ppd-price-right">
+                                        <span class="ppd-new-save-text">Save <span class="ppd-save-amount"><?php echo $discountAmountFormatted; ?></span></span>
+                                    </div>
+                                    <?php if ($discountPercent > 0) { ?>
+                                    <div class="ppd-new-discount-badge">
+                                        <?php echo $discountPercent; ?>% OFF
+                                    </div>
+                                    <?php } ?>
+                                </div>
                                 <?php } ?>
                             </div>
-                            <?php if ($special && !$disablePurchase && $discountPercent > 0) { ?>
-                            <div class="ppd-new-discount-badge">
-                                <?php echo $discountPercent; ?>% OFF
-                            </div>
-                            <?php } ?>
                         </div>
                         
                         <!-- Product Description -->
@@ -1663,11 +1674,26 @@
     flex: 1;
 }
 
+/* Price Row - Horizontal Layout Matching Image */
+.ppd-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ppd-price-left {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
 .ppd-new-price-current {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: #e91e63;
     line-height: 1.2;
+    margin: 0;
 }
 
 .ppd-new-price-old {
@@ -1675,24 +1701,48 @@
     color: #999;
     text-decoration: line-through;
     font-weight: 400;
+    margin: 0;
+}
+
+/* Separator - Vertical Gray Line */
+.ppd-price-separator {
+    width: 1px;
+    height: 30px;
+    background: #ddd;
+    flex-shrink: 0;
+}
+
+.ppd-price-right {
+    display: flex;
+    align-items: center;
 }
 
 .ppd-new-save-text {
-    font-size: 14px;
+    font-size: 16px;
     color: #4caf50;
     font-weight: 600;
+    margin: 0;
 }
 
-/* Discount Badge */
+.ppd-save-amount {
+    font-weight: 700;
+    color: #4caf50;
+}
+
+/* Discount Badge - Purple Rounded Tag Matching Image */
 .ppd-new-discount-badge {
     background: #9c27b0;
     color: #ffffff;
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 6px 8px 8px 6px;
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* Product Description */
@@ -1930,12 +1980,29 @@
         font-size: 24px;
     }
     
+    .ppd-price-row {
+        gap: 8px;
+    }
+    
     .ppd-new-price-current {
-        font-size: 24px;
+        font-size: 28px;
     }
     
     .ppd-new-price-old {
         font-size: 16px;
+    }
+    
+    .ppd-price-separator {
+        height: 24px;
+    }
+    
+    .ppd-new-save-text {
+        font-size: 14px;
+    }
+    
+    .ppd-new-discount-badge {
+        font-size: 14px;
+        padding: 6px 12px;
     }
     
     .ppd-new-discount-badge {
