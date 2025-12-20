@@ -130,9 +130,13 @@ class ControllerExtensionModuleProductShowcaseTabs extends Controller {
 						}
 
 						// Calculate discount percentage
-						$discount_percentage = false;
+						$discount_percentage = 0;
 						if ((float)$product_info['special'] && (float)$product_info['price'] > 0) {
 							$discount_percentage = round((((float)$product_info['price'] - (float)$product_info['special']) / (float)$product_info['price']) * 100);
+							// Ensure discount is at least 1% if there's a special price
+							if ($discount_percentage < 1 && (float)$product_info['price'] > (float)$product_info['special']) {
+								$discount_percentage = 1;
+							}
 						}
 
 						// Get category name
