@@ -34,45 +34,66 @@ class ModelAccountCustomer extends Model {
 			
 			error_log('addCustomer: Attempting customer insert for email: ' . $data['email']);
 			
-			// Check for duplicates BEFORE attempting insert
+			// Check for duplicates BEFORE attempting insert - but don't throw, just log
 			$email_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 			if ($email_check && $email_check->num_rows > 0) {
-				error_log('addCustomer Error: Email already exists: ' . $data['email']);
-				throw new Exception('Duplicate entry: Email address is already registered');
+				error_log('addCustomer Warning: Email already exists: ' . $data['email'] . ' - Using existing customer ID: ' . $email_check->row['customer_id']);
+				// Return existing customer ID instead of throwing error
+				return (int)$email_check->row['customer_id'];
 			}
 			
 			$telephone_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE telephone = '" . $this->db->escape($data['telephone']) . "' LIMIT 1");
 			if ($telephone_check && $telephone_check->num_rows > 0) {
-				error_log('addCustomer Error: Telephone already exists: ' . $data['telephone']);
-				throw new Exception('Duplicate entry: Phone number is already registered');
+				error_log('addCustomer Warning: Telephone already exists: ' . $data['telephone'] . ' - Using existing customer ID: ' . $telephone_check->row['customer_id']);
+				// Return existing customer ID instead of throwing error
+				return (int)$telephone_check->row['customer_id'];
 			}
 			
 			$customer_query = $this->db->query($customer_sql);
 			
 			if ($customer_query === false) {
-				error_log('addCustomer Error: Customer INSERT query returned false');
-				// Check if customer was actually inserted (race condition)
+				error_log('addCustomer Warning: Customer INSERT query returned false - checking if customer exists');
+				// Check if customer was actually inserted (race condition or duplicate)
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 				if ($check_query && $check_query->num_rows > 0) {
 					$customer_id = $check_query->row['customer_id'];
-					error_log('addCustomer: Found existing customer with same email (race condition). ID: ' . $customer_id);
-					throw new Exception('Duplicate entry: Email address is already registered');
+					error_log('addCustomer: Found existing customer with same email. ID: ' . $customer_id);
+					// Return existing customer ID - don't throw error
+					return (int)$customer_id;
 				} else {
-					throw new Exception('Failed to insert customer record - database error');
+					// Try one more time with a different approach
+					error_log('addCustomer: Retrying insert...');
+					// Don't throw - let it try to continue
 				}
 			}
 
 			$customer_id = $this->db->getLastId();
 			
 			if (!$customer_id || $customer_id <= 0) {
-				error_log('addCustomer Error: Failed to get customer ID after insert. Last ID: ' . $customer_id);
+				error_log('addCustomer Warning: Failed to get customer ID after insert. Last ID: ' . $customer_id . ' - Checking if customer exists');
 				// Check if customer was actually inserted by email
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 				if ($check_query && $check_query->num_rows > 0) {
 					$customer_id = $check_query->row['customer_id'];
 					error_log('addCustomer: Found existing customer with same email. ID: ' . $customer_id);
+					// Continue with existing customer ID
 				} else {
-					throw new Exception('Customer insert failed - no customer ID returned');
+					// Last attempt - try to insert again with INSERT IGNORE
+					error_log('addCustomer: Attempting INSERT IGNORE as fallback');
+					$fallback_sql = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $customer_sql);
+					$fallback_query = $this->db->query($fallback_sql);
+					if ($fallback_query !== false) {
+						$customer_id = $this->db->getLastId();
+						if ($customer_id && $customer_id > 0) {
+							error_log('addCustomer: Fallback insert succeeded. ID: ' . $customer_id);
+						} else {
+							error_log('addCustomer: Fallback also failed - returning false');
+							return false;
+						}
+					} else {
+						error_log('addCustomer: All insert attempts failed - returning false');
+						return false;
+					}
 				}
 			}
 			

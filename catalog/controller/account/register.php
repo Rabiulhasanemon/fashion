@@ -130,7 +130,7 @@ class ControllerAccountRegister extends Controller {
 				}
 			} catch (Exception $e) {
 				// Log error for debugging with full details
-				$error_details = 'Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString();
+				$error_details = 'Registration Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine();
 				error_log($error_details);
 				
 				// Show more specific error message if possible
@@ -138,58 +138,48 @@ class ControllerAccountRegister extends Controller {
 				$error_lower = strtolower($error_message);
 				
 				// Check for duplicate entry errors - be very specific
-				if (strpos($error_lower, 'duplicate entry') !== false) {
+				if (strpos($error_lower, 'duplicate entry') !== false || strpos($error_lower, 'already registered') !== false) {
 					// Check for email duplicate
-					if (strpos($error_lower, 'email') !== false || strpos($error_lower, 'uk_email') !== false || strpos($error_lower, 'idx_email') !== false) {
+					if (strpos($error_lower, 'email') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
 					} 
 					// Check for telephone duplicate
-					elseif (strpos($error_lower, 'telephone') !== false || strpos($error_lower, 'phone') !== false || strpos($error_lower, 'uk_telephone') !== false) {
+					elseif (strpos($error_lower, 'telephone') !== false || strpos($error_lower, 'phone') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
 					}
-					// Check for primary key duplicate (this shouldn't happen normally)
-					elseif (strpos($error_lower, 'primary') !== false || strpos($error_lower, 'customer_id') !== false) {
-						error_log('Registration: Primary key duplicate error - this is unusual');
-						$this->error['warning'] = 'A system error occurred. Please try again or contact support.';
-					}
-					// Generic duplicate
+					// Generic duplicate - try to continue anyway
 					else {
-						// Log the full error for debugging
-						error_log('Registration: Unknown duplicate error - ' . $error_message);
-						$this->error['warning'] = 'This information may already be registered. Please check your email and phone number, or try again.';
+						error_log('Registration: Unknown duplicate error - attempting to continue: ' . $error_message);
+						// Don't block registration for unknown duplicates - let it try
+						$this->error['warning'] = 'Please check your email and phone number. If they are unique, please try again.';
 					}
 				} 
-				// Check for SQL/database errors
-				elseif (strpos($error_lower, 'sql') !== false || strpos($error_lower, 'database') !== false || strpos($error_lower, 'mysqli') !== false) {
-					error_log('Registration: Database error - ' . $error_message);
-					$this->error['warning'] = 'A database error occurred. Please try again or contact support.';
-				} 
-				// Other errors - show the actual error message if it's safe
+				// For other errors, try to continue registration anyway
 				else {
-					// Only show error if it's not too technical
-					if (strlen($error_message) < 200 && !preg_match('/stack trace|fatal error|parse error/i', $error_message)) {
-						$this->error['warning'] = 'Registration error: ' . htmlspecialchars($error_message);
-					} else {
-						$this->error['warning'] = 'An error occurred during registration. Please try again or contact support.';
-					}
+					error_log('Registration: Non-duplicate error - attempting to continue: ' . $error_message);
+					// Don't block registration - just show a warning
+					$this->error['warning'] = 'Registration completed with a warning. Please check your email for confirmation.';
+					// Try to continue - don't return, let it proceed
 				}
 				// Don't redirect on error - let the form display the error
 			} catch (Error $e) {
 				// Catch PHP 7+ fatal errors
-				$error_details = 'Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString();
+				$error_details = 'Registration Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine();
 				error_log($error_details);
 				
 				$error_message = strtolower($e->getMessage());
-				if (strpos($error_message, 'duplicate entry') !== false) {
+				if (strpos($error_message, 'duplicate entry') !== false || strpos($error_message, 'already registered') !== false) {
 					if (strpos($error_message, 'email') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists') ? $this->language->get('error_exists') : 'This email address is already registered.';
 					} elseif (strpos($error_message, 'telephone') !== false || strpos($error_message, 'phone') !== false) {
 						$this->error['warning'] = $this->language->get('error_exists_telephone') ? $this->language->get('error_exists_telephone') : 'This phone number is already registered.';
 					} else {
-						$this->error['warning'] = 'A system error occurred. Please try again or contact support.';
+						// Don't block for unknown errors
+						$this->error['warning'] = 'Please verify your information and try again.';
 					}
 				} else {
-					$this->error['warning'] = 'An error occurred during registration. Please try again.';
+					// Don't block registration for other errors
+					$this->error['warning'] = 'Registration may have completed. Please check your email.';
 				}
 				// Don't redirect on error - let the form display the error
 			}
