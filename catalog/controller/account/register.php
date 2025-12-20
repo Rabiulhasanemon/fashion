@@ -574,16 +574,43 @@ class ControllerAccountRegister extends Controller {
             $this->error['pin'] = $this->language->get('error_pin');
         }
 
-		if (isset($this->request->post['email']) && $this->model_account_customer->getTotalCustomersByEmail($this->request->post['email'])) {
-			$this->error['warning'] = $this->language->get('error_exists');
+		// Check for duplicate email - only if email format is valid
+		if (isset($this->request->post['email']) && !empty($this->request->post['email']) && !isset($this->error['email'])) {
+			try {
+				$email_total = $this->model_account_customer->getTotalCustomersByEmail($this->request->post['email']);
+				if ($email_total && $email_total > 0) {
+					$this->error['warning'] = $this->language->get('error_exists');
+					if (!$this->error['warning']) {
+						$this->error['warning'] = 'This email address is already registered.';
+					}
+					$this->error['email'] = $this->language->get('error_exists');
+				}
+			} catch (Exception $e) {
+				error_log('Email duplicate check error: ' . $e->getMessage());
+				// Don't block registration if check fails, but log it
+			}
 		}
 
+        // Validate telephone format
         if (!isset($this->request->post['telephone']) || (utf8_strlen($this->request->post['telephone']) < 11) || !preg_match('/^(016|017|018|015|019|011|013)[0-9]{8}$/i', $this->request->post['telephone'])) {
             $this->error['telephone'] = $this->language->get('error_telephone');
         }
 
-        if (isset($this->request->post['telephone']) && $this->model_account_customer->getTotalCustomersByTelephone($this->request->post['telephone'])) {
-            $this->error['warning'] = $this->language->get('error_exists_telephone');
+        // Check for duplicate telephone - only if format is valid
+        if (isset($this->request->post['telephone']) && !empty($this->request->post['telephone']) && !isset($this->error['telephone'])) {
+            try {
+                $telephone_total = $this->model_account_customer->getTotalCustomersByTelephone($this->request->post['telephone']);
+                if ($telephone_total && $telephone_total > 0) {
+                    $this->error['warning'] = $this->language->get('error_exists_telephone');
+                    if (!$this->error['warning']) {
+                        $this->error['warning'] = 'This phone number is already registered.';
+                    }
+                    $this->error['telephone'] = $this->language->get('error_exists_telephone');
+                }
+            } catch (Exception $e) {
+                error_log('Telephone duplicate check error: ' . $e->getMessage());
+                // Don't block registration if check fails, but log it
+            }
         }
 
 		if ($this->config->get('config_address_registration') && (!isset($this->request->post['address_1']) || (utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128))) {
