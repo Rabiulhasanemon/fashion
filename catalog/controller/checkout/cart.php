@@ -116,16 +116,29 @@ class ControllerCheckoutCart extends Controller {
                     );
                 }
 
+				// Get product info for special price
+				$this->load->model('catalog/product');
+				$product_info = $this->model_catalog_product->getProduct($product['product_id']);
+				
 				// Display prices
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 					$price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')));
+					
+					// Get special price if available
+					$special = false;
+					if (isset($product_info['special']) && (float)$product_info['special']) {
+						$special = $this->currency->format($this->tax->calculate($product_info['special'], $product['tax_class_id'], $this->config->get('config_tax')));
+					}
 				} else {
 					$price = false;
+					$special = false;
 				}
 
 				// Display prices
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$total = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')) * $product['quantity']);
+					// Use special price for total if available
+					$price_for_total = isset($product_info['special']) && (float)$product_info['special'] ? $product_info['special'] : $product['price'];
+					$total = $this->currency->format($this->tax->calculate($price_for_total, $product['tax_class_id'], $this->config->get('config_tax')) * $product['quantity']);
 				} else {
 					$total = false;
 				}
@@ -140,6 +153,7 @@ class ControllerCheckoutCart extends Controller {
 					'stock'     => $product['stock'] ? true : !(!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning')),
 					'reward'    => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
 					'price'     => $price,
+					'special'   => $special,
 					'total'     => $total,
 					'href'      => $this->url->link('product/product', 'product_id=' . $product['product_id'])
 				);

@@ -77,7 +77,38 @@
                     <span class="input-group-btn">
                     <button type="submit" data-toggle="tooltip" title="<?php echo $button_update; ?>" class="btn btn-primary"><i class="material-icons">autorenew</i></button>
                     <button type="button" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger" onclick="cart.remove('<?php echo $product['key']; ?>', true);"><i class="material-icons">cancel</i></button></span></div></td>
-                <td class="text-right rs-none"><?php echo $product['price']; ?></td>
+                <td class="text-right rs-none">
+                    <?php 
+                    // Calculate discount for cart display
+                    $cart_discount_percent = 0;
+                    $cart_discount_amount = 0;
+                    $cart_discount_amount_formatted = '';
+                    if (isset($product['special']) && $product['special']) {
+                        $p = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $product['price']));
+                        $s = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $product['special']));
+                        $cart_discount_amount = $p - $s;
+                        if ($p > 0) {
+                            $cart_discount_percent = round(($cart_discount_amount / $p) * 100);
+                        }
+                        $cart_discount_amount_formatted = '৳' . number_format($cart_discount_amount, 2, '.', '');
+                    }
+                    ?>
+                    <?php if (isset($product['special']) && $product['special']) { ?>
+                    <div class="cart-discount-price-row">
+                        <span class="cart-discount-price-current"><?php echo $product['special']; ?></span>
+                        <span class="cart-discount-price-old"><?php echo $product['price']; ?></span>
+                        <div class="cart-discount-separator"></div>
+                        <span class="cart-discount-save-text">Save <span class="cart-discount-save-amount"><?php echo $cart_discount_amount_formatted; ?></span></span>
+                        <?php if ($cart_discount_percent > 0) { ?>
+                        <div class="cart-discount-badge">
+                            <?php echo $cart_discount_percent; ?>% OFF
+                        </div>
+                        <?php } ?>
+                    </div>
+                    <?php } else { ?>
+                    <span class="cart-discount-price-current"><?php echo $product['price']; ?></span>
+                    <?php } ?>
+                </td>
                 <td class="text-right"><?php echo $product['total']; ?></td>
               </tr>
               <?php } ?>
@@ -132,3 +163,136 @@
       <?php echo $content_bottom; ?></div>
     <?php echo $column_right; ?></div>
 <?php echo $footer; ?>
+
+<style>
+/* Cart Discount Price Style - New Classes to Avoid Conflicts */
+/* Price Row - Horizontal Layout Matching Image Exactly */
+.cart-discount-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+/* Current Price - Large Pink */
+.cart-discount-price-current {
+    font-size: 36px;
+    font-weight: 700;
+    color: #e91e63;
+    line-height: 1.1;
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+}
+
+/* Original Price - Small Light Gray with Strikethrough */
+.cart-discount-price-old {
+    font-size: 18px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
+    opacity: 0.8;
+}
+
+/* Separator - Thin Vertical Gray Line */
+.cart-discount-separator {
+    width: 1px;
+    height: 32px;
+    background: #ddd;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+/* Save Text - Medium Green */
+.cart-discount-save-text {
+    font-size: 16px;
+    color: #4caf50;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.cart-discount-save-amount {
+    font-weight: 700;
+    color: #4caf50;
+    margin-left: 2px;
+}
+
+/* Discount Badge - Purple Rounded Tag with Glow Effect (Matching Image Exactly) */
+.cart-discount-badge {
+    background: #9c27b0;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-left: auto;
+    flex-shrink: 0;
+    position: relative;
+    /* Soft blurred edge with multiple glow layers around entire badge */
+    box-shadow: 
+        0 0 20px rgba(156, 39, 176, 0.5),
+        0 0 40px rgba(156, 39, 176, 0.3),
+        0 0 60px rgba(156, 39, 176, 0.15),
+        0 2px 8px rgba(156, 39, 176, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    /* Light-colored glow/outline around white text - creates light halo effect */
+    text-shadow: 
+        0 0 8px rgba(255, 255, 255, 0.7),
+        0 0 12px rgba(255, 255, 255, 0.5),
+        0 0 16px rgba(255, 255, 255, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design for Cart Discount */
+@media (max-width: 768px) {
+    .cart-discount-price-row {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    
+    .cart-discount-price-current {
+        font-size: 28px;
+    }
+    
+    .cart-discount-price-old {
+        font-size: 16px;
+    }
+    
+    .cart-discount-separator {
+        height: 24px;
+    }
+    
+    .cart-discount-save-text {
+        font-size: 14px;
+    }
+    
+    .cart-discount-badge {
+        font-size: 14px;
+        padding: 10px 18px;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        box-shadow: 
+            0 0 15px rgba(156, 39, 176, 0.4),
+            0 0 30px rgba(156, 39, 176, 0.25),
+            0 0 45px rgba(156, 39, 176, 0.12),
+            0 2px 6px rgba(156, 39, 176, 0.3),
+            inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        text-shadow: 
+            0 0 6px rgba(255, 255, 255, 0.6),
+            0 0 10px rgba(255, 255, 255, 0.4),
+            0 0 14px rgba(255, 255, 255, 0.25),
+            0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+}
+</style>
