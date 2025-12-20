@@ -1454,6 +1454,72 @@
     }
 }
 
+/* Product Tabs Navigation - Matching Image Style */
+.nav-tab-bars {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    border-bottom: 2px solid #e9ecef;
+    gap: 0;
+}
+
+.nav-tab {
+    padding: 14px 24px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    text-transform: none;
+    letter-spacing: 0.3px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.nav-tab:hover {
+    color: #10503D;
+    background: rgba(16, 80, 61, 0.05);
+}
+
+.nav-tab.active {
+    color: #A68A6A;
+    font-weight: 600;
+    border-bottom-color: #A68A6A;
+    background: transparent;
+}
+
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #A68A6A;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Tab Content */
+.single-tab-details {
+    padding: 30px 0;
+    min-height: 200px;
+}
+
+.single-tab-details.product-description {
+    line-height: 1.8;
+    color: #333;
+}
+
+.single-tab-details.product-description p {
+    margin-bottom: 16px;
+}
+
 /* Modern Attributes Styles */
 .modern-attributes-wrapper {
     display: flex;
@@ -1464,33 +1530,34 @@
 .attribute-group-card {
     background: #ffffff;
     border: 1px solid #e9ecef;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .attribute-group-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: #A68A6A;
 }
 
 .attribute-group-header {
-    background: linear-gradient(135deg, #10503D 0%, #1a6b52 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #8B7355 100%);
     padding: 18px 24px;
-    border-bottom: 2px solid #0d3f2f;
+    border-bottom: 2px solid #7A6348;
 }
 
 .attribute-group-title {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     color: #ffffff;
     display: flex;
     align-items: center;
     gap: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: 0.3px;
 }
 
 .attribute-group-title i {
@@ -1510,11 +1577,12 @@
 .attribute-item {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
-    gap: 16px;
-    padding: 16px 24px;
-    border-bottom: 1px solid #f0f0f0;
+    gap: 20px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #e9ecef;
     transition: background-color 0.2s ease;
     align-items: center;
+    background: #ffffff;
 }
 
 .attribute-item:last-child {
@@ -1526,7 +1594,7 @@
 }
 
 .attribute-item:nth-child(even) {
-    background-color: #fafbfc;
+    background-color: #f8f9fa;
 }
 
 .attribute-item:nth-child(even):hover {
@@ -1540,11 +1608,11 @@
 
 .attribute-label {
     font-weight: 600;
-    font-size: 14px;
-    color: #2c3e50;
+    font-size: 15px;
+    color: #10503D;
     line-height: 1.5;
     position: relative;
-    padding-left: 12px;
+    padding-left: 16px;
 }
 
 .attribute-label::before {
@@ -1553,9 +1621,9 @@
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
-    height: 4px;
-    background: #A68A6A;
+    width: 5px;
+    height: 5px;
+    background: #10503D;
     border-radius: 50%;
 }
 
@@ -1566,9 +1634,30 @@
 
 .attribute-text {
     font-size: 14px;
-    color: #555;
+    color: #333;
     line-height: 1.6;
     word-break: break-word;
+    font-weight: 400;
+}
+
+/* Responsive Design for Tabs */
+@media (max-width: 768px) {
+    .nav-tab-bars {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+    
+    .nav-tab {
+        padding: 12px 16px;
+        font-size: 14px;
+        flex: 1;
+        min-width: auto;
+        text-align: center;
+    }
+    
+    .single-tab-details {
+        padding: 20px 0;
+    }
 }
 
 /* Responsive Design for Attributes */
