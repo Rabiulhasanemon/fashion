@@ -14,7 +14,12 @@ class ControllerCommonSeoUrl extends Controller
 
             if (!isset($this->request->get['route'])) {
                 if(count($parts) > 1) {
-                    $this->request->get['route'] = implode("/", $parts);
+                    // Check if it's brand/info route
+                    if (count($parts) == 2 && $parts[0] == 'brand' && $parts[1] == 'info') {
+                        $this->request->get['route'] = 'brand/info';
+                    } else {
+                        $this->request->get['route'] = implode("/", $parts);
+                    }
                 } elseif (count($parts) == 1 && $parts[0] == 'brand') {
                     // Handle brand route
                     $this->request->get['route'] = 'brand';
@@ -32,6 +37,12 @@ class ControllerCommonSeoUrl extends Controller
         // Handle brand route directly
         if (count($parts) == 1 && $parts[0] == 'brand') {
             $this->request->get['route'] = 'brand';
+            return;
+        }
+        
+        // Handle brand/info route
+        if (count($parts) == 2 && $parts[0] == 'brand' && $parts[1] == 'info') {
+            $this->request->get['route'] = 'brand/info';
             return;
         }
         
@@ -65,6 +76,11 @@ class ControllerCommonSeoUrl extends Controller
                 // If part is "brand" and it's the first part, set route to brand
                 if ($part == 'brand' && !isset($this->request->get['route'])) {
                     $this->request->get['route'] = 'brand';
+                    continue;
+                }
+                // If we have brand/info in parts, set route to brand/info
+                if (in_array('brand', $parts) && in_array('info', $parts) && !isset($this->request->get['route'])) {
+                    $this->request->get['route'] = 'brand/info';
                     continue;
                 }
                 return;
