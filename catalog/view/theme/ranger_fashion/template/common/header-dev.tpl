@@ -110,6 +110,10 @@
 
             <!-- Icons -->
             <div class="header-icons-container">
+                <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>" class="header-icon-item offer-deals-btn">
+                    <span class="icon"><i class="fas fa-tag"></i></span>
+                    <span class="icon-text">Offer Deals</span>
+                </a>
                 <a href="<?php echo isset($order) ? $order : '#'; ?>" class="header-icon-item">
                     <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
                     <span class="icon-text">Track Order</span>
@@ -312,6 +316,87 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     justify-content: end;
 }
+
+/* Offer Deals Button Styling */
+.header-icon-item.offer-deals-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-radius: 6px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.header-icon-item.offer-deals-btn:hover {
+    background: linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.header-icon-item.offer-deals-btn .icon {
+    color: #ffffff;
+}
+
+.header-icon-item.offer-deals-btn .icon-text {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .header-icon-item.offer-deals-btn {
+        padding: 6px 12px;
+    }
+    
+    .header-icon-item.offer-deals-btn .icon-text {
+        font-size: 11px;
+    }
+}
+
+/* Offer Deals Link Item Styling (Older Header) */
+.link-item.offer-deals-link-item {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-radius: 6px;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.link-item.offer-deals-link-item:hover {
+    background: linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.link-item.offer-deals-link-item a {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+}
+
+.link-item.offer-deals-link-item .icon {
+    color: #ffffff;
+}
+
+.link-item.offer-deals-link-item .link-text {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .link-item.offer-deals-link-item {
+        margin-right: 5px;
+    }
+    
+    .link-item.offer-deals-link-item a {
+        padding: 6px 10px;
+    }
+    
+    .link-item.offer-deals-link-item .link-text {
+        font-size: 11px;
+    }
+}
 </style>
 <header>
       <div class=" header-t">
@@ -347,6 +432,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php echo $navigation ?>
                 </div>
             </div>
+                    <div class="link-item offer-deals-link-item">
+                        <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>">
+                            <div class="icon">
+                                <span class="material-icons">local_offer</span>
+                            </div>
+                            <span class="link-text">Deals</span>
+                        </a>
+                    </div>
                     <div class="link-item">
                         <?php if ($logged) { ?>
                         <a href="<?php echo $account; ?>">
