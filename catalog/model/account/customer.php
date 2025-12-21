@@ -37,7 +37,9 @@ class ModelAccountCustomer extends Model {
 			}
 			
 			// Build and execute customer insert query
-			$customer_sql = "INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()";
+			// Always auto-approve customers on registration to allow immediate login
+			$approved = 1; // Force auto-approval for all new registrations
+			$customer_sql = "INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)$approved . "', date_added = NOW()";
 			
 			error_log('addCustomer: Attempting customer insert for email: ' . $data['email']);
 			error_log('addCustomer: SQL Query: ' . substr($customer_sql, 0, 200) . '...');
@@ -45,8 +47,9 @@ class ModelAccountCustomer extends Model {
 			// Execute regular INSERT (not IGNORE) to ensure data is inserted
 			$customer_query = $this->db->query($customer_sql);
 			
+			// Check for database errors
 			if ($customer_query === false) {
-				error_log('addCustomer ERROR: INSERT query failed');
+				error_log('addCustomer ERROR: INSERT query failed. Check database connection and table structure.');
 				// Check if customer was inserted anyway (race condition)
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 				if ($check_query && $check_query->num_rows > 0) {
