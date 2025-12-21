@@ -347,9 +347,11 @@
             }
         }
     ?>
-    <div class="bundle-section">
-        <span class="bundle-title">Frequently bought together</span>
-        <div class="bundle-container">
+    <div class="bundle-section-wrapper">
+        <div class="container">
+            <div class="bundle-section">
+                <span class="bundle-title">Frequently bought together</span>
+                <div class="bundle-container">
             <!-- Main Product (Current Product) -->
             <div class="bundle-product main-item" data-price="<?php echo $main_product_price; ?>" data-product-id="<?php echo $product_id; ?>">
                 <input type="checkbox" class="product-checkbox" checked disabled>
@@ -385,8 +387,8 @@
             ?>
             <div class="bundle-operator">+</div>
             <div class="bundle-product selected" data-price="<?php echo $fbt_price_value; ?>" data-product-id="<?php echo $fbt_product['product_id']; ?>">
-                <input type="checkbox" class="product-checkbox bundle-checkbox-dynamic" checked>
-                <div class="checkbox-indicator"></div>
+                <input type="checkbox" class="product-checkbox bundle-checkbox-dynamic" id="bundle-checkbox-<?php echo $fbt_product['product_id']; ?>" checked>
+                <label for="bundle-checkbox-<?php echo $fbt_product['product_id']; ?>" class="checkbox-indicator"></label>
                 <div class="bundle-product-wrapper">
                     <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" class="product-image" onerror="this.src='image/placeholder.png';">
                     <div class="bundle-product-info">
@@ -415,13 +417,18 @@
                 <button class="add-bundle-btn" id="addBundleToCart">
                     Add <span id="bundle-item-count">1</span> item<span id="bundle-item-plural">s</span> to cart
                 </button>
+                </div>
             </div>
         </div>
     </div>
     
     <style>
+    .bundle-section-wrapper {
+        margin: 20px 0;
+        width: 100%;
+    }
     .bundle-section {
-        margin: 20px auto;
+        margin: 0 auto;
         padding: 24px;
         background: #fff;
         border-radius: 8px;
@@ -486,7 +493,8 @@
         height: 100%;
         opacity: 0;
         cursor: pointer;
-        z-index: 1;
+        z-index: 3;
+        margin: 0;
     }
     .checkbox-indicator {
         position: absolute;
@@ -500,6 +508,7 @@
         transition: all 0.2s ease;
         z-index: 2;
         pointer-events: none;
+        cursor: pointer;
     }
     .bundle-product.selected .checkbox-indicator {
         background: #FF6A00;
@@ -733,8 +742,27 @@
         
         bundleCheckboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
+                var product = this.closest('.bundle-product');
+                if (this.checked) {
+                    product.classList.add('selected');
+                } else {
+                    if (!product.classList.contains('main-item')) {
+                        product.classList.remove('selected');
+                    }
+                }
                 updateBundleTotal();
             });
+            
+            // Also handle click on product card
+            var product = checkbox.closest('.bundle-product');
+            if (product && !product.classList.contains('main-item')) {
+                product.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'A' && e.target.tagName !== 'INPUT') {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
         });
         
         if (addBundleBtn) {
@@ -934,39 +962,7 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <?php if (isset($products) && is_array($products) && count($products) > 0) { ?>
-                    <div class="rpmini24_widget">
-                        <div class="rpmini24_head">
-                            <div>
-                                <p class="rpmini24_kicker">You may also like</p>
-                                <h4 class="rpmini24_title">Related Products</h4>
-                            </div>
-                            <?php if (!empty($view_all_products_link)) { ?>
-                            <a class="rpmini24_viewall" href="<?php echo $view_all_products_link; ?>">View All</a>
-                            <?php } ?>
-                        </div>
-                        <div class="rpmini24_list">
-                            <?php foreach ($products as $product) { ?>
-                            <a href="<?php echo $product['href']; ?>" class="rpmini24_card">
-                                <div class="rpmini24_media">
-                                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" onerror="this.src='image/placeholder.png';" />
-                                </div>
-                                <div class="rpmini24_info">
-                                    <h5><?php echo $product['name']; ?></h5>
-                                    <div class="rpmini24_price">
-                                        <?php if ($product['special']) { ?>
-                                        <span class="rpmini24_price-new"><?php echo $product['special']; ?></span>
-                                        <span class="rpmini24_price-old"><?php echo $product['price']; ?></span>
-                                        <?php } else { ?>
-                                        <span class="rpmini24_price-new"><?php echo $product['price']; ?></span>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </a>
-                            <?php } ?>
-                        </div>
-                    </div>
-                    <?php } ?>
+                    <!-- Sidebar content can go here -->
                 </div>
             </div>
         </div>

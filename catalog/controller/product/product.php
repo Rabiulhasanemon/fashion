@@ -40,8 +40,8 @@ class ControllerProductProduct extends Controller
 
                 foreach ($parts as $path_id) {
                     $category_info = $this->model_catalog_category->getCategory($path_id);
-                    $data['category_name'] = $category_info['name'];
-                    if ($category_info) {
+                    if ($category_info && isset($category_info['name'])) {
+                        $data['category_name'] = $category_info['name'];
                         $data['breadcrumbs'][] = array(
                             'text' => $category_info['name'],
                             'href' => $this->url->link('product/category', 'category_id=' . $path_id)
