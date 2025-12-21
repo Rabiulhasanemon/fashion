@@ -5,6 +5,11 @@ class ControllerCheckoutSuccess extends Controller {
 		error_log('=== CHECKOUT SUCCESS PAGE CALLED ===');
 		error_log('Order ID in session: ' . (isset($this->session->data['order_id']) ? $this->session->data['order_id'] : 'NOT SET'));
 		
+		// Ensure no output before we start
+		if (ob_get_level()) {
+			ob_clean();
+		}
+		
 		$this->load->language('checkout/success');
         $data = array();
         
@@ -143,6 +148,11 @@ class ControllerCheckoutSuccess extends Controller {
 		error_log('About to render success template...');
 
 		try {
+			// Ensure order_id is available for template even if not in session
+			if (!isset($data['order_id']) && isset($order_id) && $order_id > 0) {
+				$data['order_id'] = $order_id;
+			}
+			
 			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl')) {
 				error_log('Rendering template: ' . DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl');
 				$output = $this->load->view($this->config->get('config_template') . '/template/checkout/success.tpl', $data);
@@ -161,13 +171,22 @@ class ControllerCheckoutSuccess extends Controller {
 		} catch (Exception $e) {
 			error_log('ERROR rendering success page: ' . $e->getMessage());
 			error_log('Error trace: ' . $e->getTraceAsString());
-			// Show a simple success message even if template fails
-			echo '<h1>Order Successful!</h1>';
-			echo '<p>Your order has been placed successfully.</p>';
-			if (isset($order_id) && $order_id > 0) {
-				echo '<p>Order ID: ' . htmlspecialchars($order_id) . '</p>';
+			
+			// Clear any output buffers
+			while (ob_get_level()) {
+				ob_end_clean();
 			}
-			echo '<p><a href="' . $this->url->link('common/home') . '">Continue Shopping</a></p>';
+			
+			// Show a simple success message even if template fails
+			$fallback_html = '<!DOCTYPE html><html><head><title>Order Successful</title></head><body>';
+			$fallback_html .= '<h1>Order Successful!</h1>';
+			$fallback_html .= '<p>Your order has been placed successfully.</p>';
+			if (isset($order_id) && $order_id > 0) {
+				$fallback_html .= '<p><strong>Order ID: ' . htmlspecialchars($order_id) . '</strong></p>';
+			}
+			$fallback_html .= '<p><a href="' . $this->url->link('common/home') . '">Continue Shopping</a></p>';
+			$fallback_html .= '</body></html>';
+			$this->response->setOutput($fallback_html);
 		}
 	}
 }
