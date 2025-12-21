@@ -142,13 +142,32 @@ class ControllerCheckoutSuccess extends Controller {
 		error_log('Success page data prepared. Order: ' . (isset($data['order']) && !empty($data['order']) ? 'YES' : 'NO'));
 		error_log('About to render success template...');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl')) {
-			error_log('Rendering template: ' . DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl');
-			$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/checkout/success.tpl', $data));
-		} else {
-			error_log('Rendering default template: default/template/checkout/success.tpl');
-			$this->response->setOutput($this->load->view('default/template/checkout/success.tpl', $data));
+		try {
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl')) {
+				error_log('Rendering template: ' . DIR_TEMPLATE . $this->config->get('config_template') . '/template/checkout/success.tpl');
+				$output = $this->load->view($this->config->get('config_template') . '/template/checkout/success.tpl', $data);
+				$this->response->setOutput($output);
+			} else {
+				error_log('Rendering default template: default/template/checkout/success.tpl');
+				$output = $this->load->view('default/template/checkout/success.tpl', $data);
+				$this->response->setOutput($output);
+			}
+			error_log('=== SUCCESS PAGE RENDERED ===');
+			
+			// Now safe to unset order_id after page is rendered
+			if (isset($this->session->data['order_id'])) {
+				unset($this->session->data['order_id']);
+			}
+		} catch (Exception $e) {
+			error_log('ERROR rendering success page: ' . $e->getMessage());
+			error_log('Error trace: ' . $e->getTraceAsString());
+			// Show a simple success message even if template fails
+			echo '<h1>Order Successful!</h1>';
+			echo '<p>Your order has been placed successfully.</p>';
+			if (isset($order_id) && $order_id > 0) {
+				echo '<p>Order ID: ' . htmlspecialchars($order_id) . '</p>';
+			}
+			echo '<p><a href="' . $this->url->link('common/home') . '">Continue Shopping</a></p>';
 		}
-		error_log('=== SUCCESS PAGE RENDERED ===');
 	}
 }
