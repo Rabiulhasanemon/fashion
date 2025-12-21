@@ -61,10 +61,31 @@ try {
 		// Check table structure
 		$structure = $db->query("DESCRIBE " . DB_PREFIX . "customer");
 		echo "Table columns: ";
+		$has_auto_increment = false;
 		foreach ($structure->rows as $col) {
-			echo $col['Field'] . " (" . $col['Type'] . "), ";
+			echo $col['Field'] . " (" . $col['Type'];
+			if (isset($col['Extra']) && strpos($col['Extra'], 'auto_increment') !== false) {
+				echo " AUTO_INCREMENT";
+				$has_auto_increment = true;
+			}
+			echo "), ";
 		}
 		echo "<br>";
+		
+		// Check for customer_id = 0
+		$zero_check = $db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE customer_id = 0 LIMIT 1");
+		if ($zero_check->num_rows > 0) {
+			echo "⚠ <strong>WARNING: Record with customer_id = 0 exists! This will cause insert failures.</strong><br>";
+		}
+		
+		// Check AUTO_INCREMENT value
+		$ai_check = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "customer'");
+		if ($ai_check->num_rows > 0 && isset($ai_check->row['Auto_increment'])) {
+			echo "AUTO_INCREMENT value: " . $ai_check->row['Auto_increment'] . "<br>";
+			if ($ai_check->row['Auto_increment'] <= 0) {
+				echo "⚠ <strong>WARNING: AUTO_INCREMENT is 0 or negative!</strong><br>";
+			}
+		}
 	} else {
 		echo "✗ Customer table does NOT exist!<br>";
 	}
@@ -80,8 +101,9 @@ echo "Default customer group ID: " . ($customer_group_id ? $customer_group_id : 
 if ($customer_group_id) {
 	$group_check = $db->query("SELECT * FROM " . DB_PREFIX . "customer_group WHERE customer_group_id = '" . (int)$customer_group_id . "'");
 	if ($group_check->num_rows > 0) {
-		echo "✓ Customer group exists: " . $group_check->row['name'] . "<br>";
-		echo "  Approval required: " . ($group_check->row['approval'] ? 'YES' : 'NO') . "<br>";
+		$group_name = isset($group_check->row['name']) ? $group_check->row['name'] : 'N/A';
+		echo "✓ Customer group exists: " . $group_name . "<br>";
+		echo "  Approval required: " . (isset($group_check->row['approval']) && $group_check->row['approval'] ? 'YES' : 'NO') . "<br>";
 	} else {
 		echo "✗ Customer group NOT found!<br>";
 	}
@@ -140,13 +162,19 @@ try {
 	$insert_result = $db->query($test_sql);
 	
 	if ($insert_result !== false) {
-		$customer_id = $db->getLastId();
-		echo "✓ Direct INSERT: <strong>SUCCESS</strong><br>";
-		echo "  Customer ID: " . ($customer_id ? $customer_id : 'NO ID RETURNED') . "<br>";
+		// Query database directly to get the inserted ID (more reliable than getLastId)
+		$verify = $db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $db->escape($test_data['email']) . "' ORDER BY customer_id DESC LIMIT 1");
 		
-		// Verify the insert
-		$verify = $db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");
-		if ($verify->num_rows > 0) {
+		if ($verify && $verify->num_rows > 0) {
+			$customer_id = (int)$verify->row['customer_id'];
+			$getLastId_value = $db->getLastId();
+			echo "✓ Direct INSERT: <strong>SUCCESS</strong><br>";
+			echo "  Customer ID (from query): " . $customer_id . "<br>";
+			echo "  getLastId() returned: " . ($getLastId_value ? $getLastId_value : '0/FALSE') . "<br>";
+			
+			// Verify the insert
+			$verify_full = $db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");
+			if ($verify_full->num_rows > 0) {
 			echo "✓ Verification: Customer found in database<br>";
 			echo "  Email: " . $verify->row['email'] . "<br>";
 			echo "  Firstname: " . $verify->row['firstname'] . "<br>";
@@ -159,10 +187,25 @@ try {
 		} else {
 			echo "✗ Verification: Customer NOT found in database!<br>";
 		}
-	} else {
-		echo "✗ Direct INSERT: <strong>FAILED</strong><br>";
-		echo "  Error: " . (method_exists($db, 'getError') ? $db->getError() : 'Unknown error') . "<br>";
-	}
+		} else {
+			echo "✗ Direct INSERT: <strong>FAILED</strong><br>";
+			// Try to get MySQL error
+			$error_check = $db->query("SELECT 1");
+			if ($error_check === false) {
+				echo "  Database error detected<br>";
+			}
+			// Check if customer was inserted anyway (race condition or error handling)
+			$check_inserted = $db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $db->escape($test_data['email']) . "' LIMIT 1");
+			if ($check_inserted && $check_inserted->num_rows > 0) {
+				echo "  ⚠ Customer was inserted despite error! ID: " . $check_inserted->row['customer_id'] . "<br>";
+				$customer_id = (int)$check_inserted->row['customer_id'];
+				// Clean up
+				$db->query("DELETE FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");
+				echo "  ✓ Test customer deleted<br>";
+			} else {
+				echo "  Customer was NOT inserted<br>";
+			}
+		}
 } catch (Exception $e) {
 	echo "✗ Insert error: " . $e->getMessage() . "<br>";
 	echo "  File: " . $e->getFile() . "<br>";

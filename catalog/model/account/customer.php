@@ -43,6 +43,21 @@ class ModelAccountCustomer extends Model {
 				return (int)$existing_customer['customer_id'];
 			}
 			
+			// Check if there's a record with customer_id = 0 (this can break AUTO_INCREMENT)
+			$zero_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE customer_id = 0 LIMIT 1");
+			if ($zero_check && $zero_check->num_rows > 0) {
+				error_log('addCustomer WARNING: Record with customer_id = 0 exists! This may cause insert failures.');
+				// Try to fix by updating the record to a valid ID
+				$max_id_query = $this->db->query("SELECT MAX(customer_id) as max_id FROM " . DB_PREFIX . "customer");
+				$new_id = 1;
+				if ($max_id_query && $max_id_query->num_rows > 0 && isset($max_id_query->row['max_id'])) {
+					$new_id = (int)$max_id_query->row['max_id'] + 1;
+				}
+				// Update the record with customer_id = 0 to a new ID
+				$this->db->query("UPDATE " . DB_PREFIX . "customer SET customer_id = '" . (int)$new_id . "' WHERE customer_id = 0 LIMIT 1");
+				error_log('addCustomer: Updated customer_id = 0 to customer_id = ' . $new_id);
+			}
+			
 			// Build and execute customer insert query
 			// Always auto-approve customers on registration to allow immediate login
 			$approved = 1; // Force auto-approval for all new registrations
@@ -79,19 +94,26 @@ class ModelAccountCustomer extends Model {
 				}
 			} else {
 				error_log('addCustomer: Query executed successfully');
-				// Get customer ID
-				$customer_id = $this->db->getLastId();
-				error_log('addCustomer: getLastId returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+				// CRITICAL: Always query the database directly to get the inserted ID
+				// Don't rely solely on getLastId() as it may return 0 if AUTO_INCREMENT has issues
+				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' ORDER BY customer_id DESC LIMIT 1");
 				
-				// Verify customer was inserted
-				if (!$customer_id || $customer_id <= 0) {
-					error_log('addCustomer: getLastId failed, checking database for customer');
-					$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
-					if ($check_query && $check_query->num_rows > 0) {
-						$customer_id = (int)$check_query->row['customer_id'];
-						error_log('addCustomer: Found customer in database. ID: ' . $customer_id);
-					} else {
-						error_log('addCustomer ERROR: Customer not found in database after insert');
+				if ($check_query && $check_query->num_rows > 0) {
+					$customer_id = (int)$check_query->row['customer_id'];
+					error_log('addCustomer: Found customer in database. ID: ' . $customer_id);
+					
+					// Verify getLastId() for debugging
+					$getLastId_value = $this->db->getLastId();
+					if ($getLastId_value != $customer_id) {
+						error_log('addCustomer WARNING: getLastId() returned ' . $getLastId_value . ' but actual ID is ' . $customer_id);
+					}
+				} else {
+					// Fallback to getLastId() if query fails
+					$customer_id = $this->db->getLastId();
+					error_log('addCustomer: getLastId returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+					
+					if (!$customer_id || $customer_id <= 0) {
+						error_log('addCustomer ERROR: Customer not found in database after insert and getLastId returned 0');
 						return false;
 					}
 				}
