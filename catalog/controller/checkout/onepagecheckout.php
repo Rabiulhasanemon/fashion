@@ -335,67 +335,55 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 // Add order history
                 $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('config_order_status_id'), '', 0, 0);
                 
-                // Don't clear cart yet - checkout/confirm page needs it
-                // Cart will be cleared after successful payment
+                // Clear cart after successful order creation
+                $this->cart->clear();
                 
-                // Set payment address and shipping address in session for confirm page
-                if (!isset($this->session->data['payment_address'])) {
-                    $this->session->data['payment_address'] = array(
-                        'firstname' => $order_data['payment_firstname'],
-                        'lastname' => $order_data['payment_lastname'],
-                        'company' => $order_data['payment_company'],
-                        'address_1' => $order_data['payment_address_1'],
-                        'address_2' => $order_data['payment_address_2'],
-                        'city' => $order_data['payment_city'],
-                        'postcode' => $order_data['payment_postcode'],
-                        'zone' => $order_data['payment_zone'],
-                        'zone_id' => $order_data['payment_zone_id'],
-                        'region' => $order_data['payment_region'],
-                        'region_id' => $order_data['payment_region_id'],
-                        'country' => $order_data['payment_country'],
-                        'country_id' => $order_data['payment_country_id']
-                    );
-                }
-                
-                if ($this->cart->hasShipping() && !isset($this->session->data['shipping_address'])) {
-                    $this->session->data['shipping_address'] = array(
-                        'firstname' => $order_data['shipping_firstname'],
-                        'lastname' => $order_data['shipping_lastname'],
-                        'company' => $order_data['shipping_company'],
-                        'address_1' => $order_data['shipping_address_1'],
-                        'address_2' => $order_data['shipping_address_2'],
-                        'city' => $order_data['shipping_city'],
-                        'postcode' => $order_data['shipping_postcode'],
-                        'zone' => $order_data['shipping_zone'],
-                        'zone_id' => $order_data['shipping_zone_id'],
-                        'region' => $order_data['shipping_region'],
-                        'region_id' => $order_data['shipping_region_id'],
-                        'country' => $order_data['shipping_country'],
-                        'country_id' => $order_data['shipping_country_id']
-                    );
-                }
-                
-                // Ensure payment method is in session
+                // Set payment method in session for payment processing
                 if (!isset($this->session->data['payment_method']) && isset($payment_method)) {
                     $this->session->data['payment_method'] = $payment_method;
                 }
                 
-                // Redirect to checkout confirm page (shows order summary and payment button)
-                $confirm_url = $this->url->link('checkout/confirm', '', 'SSL');
-                if ($confirm_url) {
-                    $this->response->redirect($confirm_url);
-                    return;
-                } else {
-                    // Fallback - redirect to success if confirm page doesn't work
+                // Get payment code for redirect
+                $payment_code = '';
+                if (isset($payment_method) && is_array($payment_method) && isset($payment_method['code']) && !empty($payment_method['code'])) {
+                    $payment_code = $payment_method['code'];
+                } elseif (isset($this->session->data['payment_method']['code']) && !empty($this->session->data['payment_method']['code'])) {
+                    $payment_code = $this->session->data['payment_method']['code'];
+                } elseif (isset($order_data['payment_code']) && !empty($order_data['payment_code'])) {
+                    $payment_code = $order_data['payment_code'];
+                }
+                
+                // For COD (Cash on Delivery), go directly to success page
+                if (strtolower($payment_code) == 'cod') {
                     $success_url = $this->url->link("checkout/success", '', 'SSL');
                     if ($success_url) {
                         $this->response->redirect($success_url);
                         return;
-                    } else {
-                        // Last resort - use header redirect
-                        header('Location: index.php?route=checkout/success');
-                        exit;
                     }
+                }
+                
+                // For other payment methods, try to redirect to payment confirm
+                if (!empty($payment_code)) {
+                    try {
+                        $payment_confirm_url = $this->url->link('payment/' . $payment_code . '/confirm', '', 'SSL');
+                        if ($payment_confirm_url) {
+                            $this->response->redirect($payment_confirm_url);
+                            return;
+                        }
+                    } catch (Exception $e) {
+                        error_log('Payment confirm redirect error: ' . $e->getMessage());
+                    }
+                }
+                
+                // Fallback - redirect to success page
+                $success_url = $this->url->link("checkout/success", '', 'SSL');
+                if ($success_url) {
+                    $this->response->redirect($success_url);
+                    return;
+                } else {
+                    // Last resort - use header redirect
+                    header('Location: index.php?route=checkout/success');
+                    exit;
                 }
                 
             } catch (Exception $e) {
