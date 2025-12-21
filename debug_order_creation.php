@@ -8,19 +8,23 @@ ob_start();
 
 echo "<h1>Order Creation Debug</h1>";
 
-// Load OpenCart
+// Load OpenCart - following the same pattern as index.php
 $root = dirname(__FILE__);
 if (!defined('DIR_APPLICATION')) {
+    // Version
+    define('VERSION', '2.4.0');
     require_once($root . '/config.php');
     require_once(DIR_SYSTEM . 'startup.php');
     
     // Registry
     $registry = new Registry();
     
+    // Loader
+    $loader = new Loader($registry);
+    $registry->set('load', $loader);
+    
     // Config
     $config = new Config();
-    $config->load('default');
-    $config->load('admin');
     $registry->set('config', $config);
     
     // Database
@@ -28,14 +32,7 @@ if (!defined('DIR_APPLICATION')) {
     $registry->set('db', $db);
     
     // Store
-    $store_id = 0;
-    $query = $db->query("SELECT * FROM " . DB_PREFIX . "store WHERE REPLACE(`url`, 'http://', '') = '" . $db->escape($_SERVER['HTTP_HOST']) . "' OR REPLACE(`url`, 'https://', '') = '" . $db->escape($_SERVER['HTTP_HOST']) . "'");
-    
-    if ($query->num_rows) {
-        $config->set('config_store_id', $query->row['store_id']);
-    } else {
-        $config->set('config_store_id', 0);
-    }
+    $config->set('config_store_id', 0);
     
     // Settings
     $query = $db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' OR store_id = '" . (int)$config->get('config_store_id') . "' ORDER BY store_id ASC");
@@ -48,9 +45,8 @@ if (!defined('DIR_APPLICATION')) {
         }
     }
     
-    // Loader
-    $loader = new Loader($registry);
-    $registry->set('load', $loader);
+    $config->set('config_url', HTTP_SERVER);
+    $config->set('config_ssl', HTTPS_SERVER);
     
     // Request
     $request = new Request();
@@ -66,8 +62,7 @@ if (!defined('DIR_APPLICATION')) {
     $registry->set('session', $session);
     
     // Language
-    $language = new Language($config->get('config_admin_language'));
-    $language->load('default');
+    $language = new Language($config->get('config_language'));
     $registry->set('language', $language);
     
     // Document
@@ -76,30 +71,18 @@ if (!defined('DIR_APPLICATION')) {
     // Currency
     $registry->set('currency', new Currency($registry));
     
-    // User
-    $registry->set('user', new Cart\User($registry));
+    // Tax
+    $registry->set('tax', new Tax($registry));
     
-    // OpenBay Pro
-    $registry->set('openbay', new OpenBay($registry));
+    // Cart
+    $registry->set('cart', new Cart($registry));
+    
+    // Customer
+    $registry->set('customer', new Customer($registry));
     
     // Event
     $event = new Event($registry);
     $registry->set('event', $event);
-    
-    // Event Register
-    if ($config->has('action_event')) {
-        foreach ($config->get('action_event') as $key => $value) {
-            $event->register($key, new Action($value));
-        }
-    }
-    
-    // Front Controller
-    $controller = new Front($registry);
-    
-    // Router
-    if (isset($request->get['route'])) {
-        $action = new Action($request->get['route']);
-    }
     
     // Load order model
     $loader->model('checkout/order');
@@ -133,6 +116,9 @@ if (!defined('DIR_APPLICATION')) {
         $zero_check = $db->query("SELECT order_id FROM " . DB_PREFIX . "order WHERE order_id = 0 LIMIT 1");
         if ($zero_check && $zero_check->num_rows > 0) {
             echo "⚠ WARNING: Record with order_id = 0 exists! This will cause insert failures.<br>";
+            echo "Found order_id = 0 record. This needs to be fixed!<br>";
+        } else {
+            echo "✓ No order_id = 0 records found<br>";
         }
     } else {
         echo "✗ Order table does not exist!<br>";
@@ -215,9 +201,9 @@ if (!defined('DIR_APPLICATION')) {
         'marketing_id' => 0,
         'tracking' => '',
         'language_id' => $config->get('config_language_id'),
-        'currency_id' => 1,
-        'currency_code' => 'BDT',
-        'currency_value' => 1.0000,
+        'currency_id' => $currency->getId(),
+        'currency_code' => $currency->getCode(),
+        'currency_value' => $currency->getValue($currency->getCode()),
         'ip' => '127.0.0.1',
         'forwarded_ip' => '',
         'user_agent' => 'Test',
@@ -297,10 +283,10 @@ if (!defined('DIR_APPLICATION')) {
     $log_file = DIR_LOGS . 'error.log';
     if (file_exists($log_file)) {
         $log_lines = file($log_file);
-        $recent_logs = array_slice($log_lines, -20);
-        echo "<pre>";
+        $recent_logs = array_slice($log_lines, -30);
+        echo "<pre style='max-height: 400px; overflow-y: scroll;'>";
         foreach ($recent_logs as $line) {
-            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false) {
+            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false || stripos($line, 'ERROR') !== false) {
                 echo htmlspecialchars($line);
             }
         }
@@ -316,4 +302,3 @@ if (!defined('DIR_APPLICATION')) {
 } else {
     echo "OpenCart already loaded. Please access this script directly.";
 }
-
