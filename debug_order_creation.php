@@ -327,22 +327,34 @@ if (!defined('DIR_APPLICATION')) {
     }
     } // End of skip_order_test check
     
-    echo "<h2>Test 6: Check Error Logs (Last 50 lines with order/addOrder/ERROR)</h2>";
+    echo "<h2>Test 6: Check Error Logs</h2>";
     $log_file = DIR_LOGS . 'error.log';
     if (file_exists($log_file)) {
         $log_lines = file($log_file);
-        $recent_logs = array_slice($log_lines, -50);
-        echo "<pre style='max-height: 400px; overflow-y: scroll; background: #f5f5f5; padding: 10px; border: 1px solid #ddd;'>";
+        $recent_logs = array_slice($log_lines, -100); // Get last 100 lines
+        
+        // Show ALL recent logs first (last 20 lines)
+        echo "<h3>Most Recent Error Logs (Last 20 lines - ALL):</h3>";
+        echo "<pre style='max-height: 300px; overflow-y: scroll; background: #f5f5f5; padding: 10px; border: 1px solid #ddd; font-size: 12px;'>";
+        $all_recent = array_slice($log_lines, -20);
+        foreach ($all_recent as $line) {
+            echo htmlspecialchars($line);
+        }
+        echo "</pre>";
+        
+        // Then show filtered logs
+        echo "<h3>Filtered: Order/AddOrder Related (Last 100 lines):</h3>";
+        echo "<pre style='max-height: 300px; overflow-y: scroll; background: #fff3cd; padding: 10px; border: 1px solid #ffc107; font-size: 12px;'>";
         $found_errors = false;
         foreach ($recent_logs as $line) {
-            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false || stripos($line, 'ERROR') !== false || stripos($line, 'WARNING') !== false || stripos($line, 'EXCEPTION') !== false) {
+            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false || stripos($line, 'ERROR') !== false || stripos($line, 'WARNING') !== false || stripos($line, 'EXCEPTION') !== false || stripos($line, 'INSERT') !== false || stripos($line, 'MySQL') !== false) {
                 echo htmlspecialchars($line);
                 $found_errors = true;
             }
         }
         if (!$found_errors) {
-            echo "No recent order-related errors found in logs.<br>";
-            echo "This might mean the error is happening silently or not being logged.<br>";
+            echo "No order-related errors found in recent logs.<br>";
+            echo "Check the 'Most Recent Error Logs' section above for any errors.<br>";
         }
         echo "</pre>";
     } else {
