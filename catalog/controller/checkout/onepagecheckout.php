@@ -27,7 +27,19 @@ class ControllerCheckoutOnepagecheckout extends Controller
             $this->response->redirect($this->url->link("checkout/cart"));
         }
 
+        // Debug logging
+        error_log('=== ONEPAGECHECKOUT DEBUG ===');
+        error_log('Request Method: ' . (isset($this->request->server['REQUEST_METHOD']) ? $this->request->server['REQUEST_METHOD'] : 'NOT SET'));
+        if (isset($this->request->server['REQUEST_METHOD']) && $this->request->server['REQUEST_METHOD'] == 'POST') {
+            error_log('POST request detected');
+            error_log('POST Data Keys: ' . implode(', ', array_keys($this->request->post)));
+            error_log('Validating form...');
+            $validation_result = $this->validate_form();
+            error_log('Validation result: ' . ($validation_result ? 'PASSED' : 'FAILED'));
+        }
+        
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate_form()) {
+            error_log('Form validation passed, proceeding with order creation...');
             $order_data = array();
 
             $order_data['totals'] = array();
@@ -320,79 +332,147 @@ class ControllerCheckoutOnepagecheckout extends Controller
 
             $this->load->model('checkout/order');
 
+            // Debug logging
+            error_log('=== ONEPAGECHECKOUT ORDER CREATION START ===');
+            error_log('Order Data Keys: ' . implode(', ', array_keys($order_data)));
+            error_log('Payment Method: ' . print_r($payment_method, true));
+
             try {
+                error_log('Calling addOrder...');
                 $order_id = $this->model_checkout_order->addOrder($order_data);
+                error_log('addOrder returned: ' . ($order_id ? $order_id : 'FALSE/0'));
                 
                 if (!$order_id || $order_id <= 0) {
-                    error_log('Onepagecheckout Error: addOrder returned invalid order ID: ' . $order_id);
+                    error_log('ERROR: addOrder returned invalid order ID: ' . $order_id);
                     $this->session->data['error'] = 'Failed to create order. Please try again.';
                     $this->response->redirect($this->url->link('checkout/onepagecheckout', '', 'SSL'));
                     return;
                 }
                 
                 $this->session->data['order_id'] = $order_id;
+                error_log('Order ID saved to session: ' . $order_id);
                 
                 // Add order history
+                error_log('Adding order history...');
                 $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('config_order_status_id'), '', 0, 0);
+                error_log('Order history added');
                 
                 // Clear cart after successful order creation
+                error_log('Clearing cart...');
                 $this->cart->clear();
+                error_log('Cart cleared');
                 
                 // Set payment method in session for payment processing
                 if (!isset($this->session->data['payment_method']) && isset($payment_method)) {
                     $this->session->data['payment_method'] = $payment_method;
+                    error_log('Payment method set in session: ' . print_r($payment_method, true));
                 }
                 
                 // Get payment code for redirect
                 $payment_code = '';
                 if (isset($payment_method) && is_array($payment_method) && isset($payment_method['code']) && !empty($payment_method['code'])) {
                     $payment_code = $payment_method['code'];
+                    error_log('Payment code from payment_method variable: ' . $payment_code);
                 } elseif (isset($this->session->data['payment_method']['code']) && !empty($this->session->data['payment_method']['code'])) {
                     $payment_code = $this->session->data['payment_method']['code'];
+                    error_log('Payment code from session: ' . $payment_code);
                 } elseif (isset($order_data['payment_code']) && !empty($order_data['payment_code'])) {
                     $payment_code = $order_data['payment_code'];
+                    error_log('Payment code from order_data: ' . $payment_code);
+                } else {
+                    error_log('WARNING: No payment code found!');
+                }
+                
+                // Clean all output buffers before redirect
+                while (ob_get_level()) {
+                    ob_end_clean();
                 }
                 
                 // For COD (Cash on Delivery), go directly to success page
                 if (strtolower($payment_code) == 'cod') {
+                    error_log('Payment method is COD, redirecting to success page...');
                     $success_url = $this->url->link("checkout/success", '', 'SSL');
+                    error_log('Success URL: ' . $success_url);
+                    
+                    // Use direct header redirect for reliability
                     if ($success_url) {
-                        $this->response->redirect($success_url);
-                        return;
+                        error_log('Using response->redirect to: ' . $success_url);
+                        try {
+                            $this->response->redirect($success_url);
+                            exit; // Ensure script stops
+                        } catch (Exception $e) {
+                            error_log('response->redirect failed: ' . $e->getMessage());
+                            error_log('Using header redirect fallback');
+                            header('Location: ' . $success_url);
+                            exit;
+                        }
+                    } else {
+                        error_log('ERROR: Success URL is empty, using header redirect');
+                        header('Location: index.php?route=checkout/success');
+                        exit;
                     }
                 }
                 
                 // For other payment methods, try to redirect to payment confirm
                 if (!empty($payment_code)) {
+                    error_log('Payment code found: ' . $payment_code . ', redirecting to payment confirm...');
                     try {
                         $payment_confirm_url = $this->url->link('payment/' . $payment_code . '/confirm', '', 'SSL');
+                        error_log('Payment confirm URL: ' . $payment_confirm_url);
                         if ($payment_confirm_url) {
-                            $this->response->redirect($payment_confirm_url);
-                            return;
+                            error_log('Using response->redirect to: ' . $payment_confirm_url);
+                            try {
+                                $this->response->redirect($payment_confirm_url);
+                                exit; // Ensure script stops
+                            } catch (Exception $e) {
+                                error_log('response->redirect failed: ' . $e->getMessage());
+                                error_log('Using header redirect fallback');
+                                header('Location: ' . $payment_confirm_url);
+                                exit;
+                            }
+                        } else {
+                            error_log('WARNING: Payment confirm URL is empty');
                         }
                     } catch (Exception $e) {
                         error_log('Payment confirm redirect error: ' . $e->getMessage());
+                        error_log('Error trace: ' . $e->getTraceAsString());
                     }
                 }
                 
                 // Fallback - redirect to success page
+                error_log('Using fallback - redirecting to success page...');
                 $success_url = $this->url->link("checkout/success", '', 'SSL');
+                error_log('Fallback success URL: ' . $success_url);
                 if ($success_url) {
-                    $this->response->redirect($success_url);
-                    return;
+                    error_log('Using response->redirect to: ' . $success_url);
+                    try {
+                        $this->response->redirect($success_url);
+                        exit; // Ensure script stops
+                    } catch (Exception $e) {
+                        error_log('response->redirect failed: ' . $e->getMessage());
+                        error_log('Using header redirect fallback');
+                        header('Location: ' . $success_url);
+                        exit;
+                    }
                 } else {
+                    error_log('ERROR: All redirect methods failed, using header redirect as last resort');
                     // Last resort - use header redirect
                     header('Location: index.php?route=checkout/success');
                     exit;
                 }
                 
             } catch (Exception $e) {
-                error_log('Onepagecheckout Error: ' . $e->getMessage());
-                error_log('Onepagecheckout Error Trace: ' . $e->getTraceAsString());
+                error_log('=== ONEPAGECHECKOUT EXCEPTION ===');
+                error_log('Error Message: ' . $e->getMessage());
+                error_log('Error File: ' . $e->getFile());
+                error_log('Error Line: ' . $e->getLine());
+                error_log('Error Trace: ' . $e->getTraceAsString());
                 $this->session->data['error'] = 'An error occurred while processing your order. Please try again.';
                 $this->response->redirect($this->url->link('checkout/onepagecheckout', '', 'SSL'));
                 return;
             }
+            
+            error_log('=== ONEPAGECHECKOUT ORDER CREATION END ===');
         }
 
         $this->getForm();
