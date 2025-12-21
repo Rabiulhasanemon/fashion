@@ -59,7 +59,12 @@ if (file_exists($log_file)) {
             stripos($line, 'ORDER CREATION') !== false ||
             stripos($line, 'Validation result') !== false ||
             stripos($line, 'Required field') !== false ||
-            stripos($line, 'INSERT') !== false) {
+            stripos($line, 'INSERT') !== false ||
+            stripos($line, 'CHECKOUT SUCCESS') !== false ||
+            stripos($line, 'Redirecting to') !== false ||
+            stripos($line, 'Success URL') !== false ||
+            stripos($line, 'Payment method') !== false ||
+            stripos($line, 'Order ID saved') !== false) {
             $checkout_logs[] = $line;
         }
         // Also get any logs from today
