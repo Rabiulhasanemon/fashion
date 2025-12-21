@@ -1004,8 +1004,17 @@ class ControllerCheckoutOnepagecheckout extends Controller
 
     public function validate_form()
     {
-        if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 42)) {
-
+        // Reset errors
+        $this->error = array();
+        
+        // Check if POST data exists
+        if (!isset($this->request->post) || empty($this->request->post)) {
+            error_log('WARNING: No POST data received in validate_form()');
+            $this->error['warning'] = 'No form data received. Please try again.';
+            return false;
+        }
+        
+        if (!isset($this->request->post['firstname']) || (utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 42)) {
             $this->error['firstname'] = $this->language->get('error_firstname');
         }
 
@@ -1019,11 +1028,11 @@ class ControllerCheckoutOnepagecheckout extends Controller
             $this->error['email'] = $this->language->get('error_email');
         }
 
-        if ((utf8_strlen($this->request->post['telephone']) < 11) || !preg_match('/^(016|017|018|015|019|014|013)[0-9]{8}$/i', $this->request->post['telephone'])) {
+        if (!isset($this->request->post['telephone']) || (utf8_strlen($this->request->post['telephone']) < 11) || !preg_match('/^(016|017|018|015|019|014|013)[0-9]{8}$/i', $this->request->post['telephone'])) {
             $this->error['telephone'] = $this->language->get('error_telephone');
         }
 
-        if ((utf8_strlen(trim($this->request->post['address_1'])) < 1) || (utf8_strlen(trim($this->request->post['address_1'])) > 250)) {
+        if (!isset($this->request->post['address_1']) || (utf8_strlen(trim($this->request->post['address_1'])) < 1) || (utf8_strlen(trim($this->request->post['address_1'])) > 250)) {
             $this->error['address_1'] = $this->language->get('error_address_1');
         }
 
