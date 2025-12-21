@@ -100,13 +100,13 @@
         <?php foreach ($order['total'] as $total) { ?>
         <tr>
           <td class="text-right" colspan="3">
-            <?php if($total['code'] == "coupon") { ?>
+            <?php if(isset($total['code']) && $total['code'] == "coupon") { ?>
             <b>Discount</b>
             <?php } else { ?>
-            <b><?php echo $total['title']; ?></b>
+            <b><?php echo isset($total['title']) ? $total['title'] : ''; ?></b>
             <?php }  ?>
           </td>
-          <td class="text-right"><?php echo $total['text']; ?></td>
+          <td class="text-right"><?php echo isset($total['text']) ? $total['text'] : ''; ?></td>
         </tr>
         <?php } ?>
       </tbody>

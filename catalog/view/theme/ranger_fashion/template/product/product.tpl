@@ -89,10 +89,9 @@
                                 $main_img_src = $images[0]['thumb'];
                                 $main_img_popup = !empty($images[0]['popup']) ? $images[0]['popup'] : $images[0]['thumb'];
                             } else {
-                                // Placeholder fallback
-                                $this->load->model('tool/image');
-                                $main_img_src = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
-                                $main_img_popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_popup_width'), $this->config->get('config_image_popup_height'));
+                                // Placeholder fallback - use default placeholder or empty
+                                $main_img_src = isset($placeholder) ? $placeholder : '';
+                                $main_img_popup = isset($placeholder) ? $placeholder : '';
                             }
                             ?>
                             <div class="lux-media-grid__thumbs">
@@ -358,7 +357,7 @@
                 <div class="bundle-product-wrapper">
                     <img src="<?php echo $thumb; ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" class="product-image" onerror="this.src='image/placeholder.png';">
                     <div class="bundle-product-info">
-                        <a href="<?php echo $action; ?>" class="product-name"><?php echo htmlspecialchars($heading_title); ?></a>
+                        <a href="<?php echo isset($action) ? $action : '#'; ?>" class="product-name"><?php echo htmlspecialchars($heading_title); ?></a>
                         <div class="product-price">
                             <?php if ($special) { ?>
                             <span class="price-old"><?php echo $price; ?></span>

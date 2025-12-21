@@ -173,7 +173,7 @@ class ControllerProductProduct extends Controller
                 $data['stock'] = $this->language->get('text_instock');
             }
 
-            $data['stock_meta'] = str_replace(" ", "", $data['stock']);
+            $data['stock_meta'] = isset($data['stock']) ? str_replace(" ", "", (string)$data['stock']) : '';
 
             $this->load->model('tool/image');
             

@@ -255,9 +255,9 @@
                   <?php $product_row = 0; ?>
                   <?php foreach ($order_products as $order_product) { ?>
                   <tr>
-                    <td class="text-left"><?php echo $order_product['name']; ?><br />
-                      <input type="hidden" name="product[<?php echo $product_row; ?>][product_id]" value="<?php echo $order_product['product_id']; ?>" />
-                      <input type="hidden" name="product[<?php echo $product_row; ?>][order_product_id]" value="<?php echo $order_product['order_product_id']; ?>" />
+                    <td class="text-left"><?php echo isset($order_product['name']) ? $order_product['name'] : ''; ?><br />
+                      <input type="hidden" name="product[<?php echo $product_row; ?>][product_id]" value="<?php echo isset($order_product['product_id']) ? $order_product['product_id'] : ''; ?>" />
+                      <input type="hidden" name="product[<?php echo $product_row; ?>][order_product_id]" value="<?php echo isset($order_product['order_product_id']) ? $order_product['order_product_id'] : ''; ?>" />
                       <?php if($emi) { ?>
                       <input type="hidden" name="product[<?php echo $product_row; ?>][emi]" value="<?php echo $emi; ?>" />
                       <?php } ?>

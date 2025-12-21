@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- Cart Items -->
-                <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">
+                <form action="<?php echo isset($action) ? $action : ''; ?>" method="post" enctype="multipart/form-data">
                     <div class="ctp-new-cart-wrapper">
                         <!-- Desktop Table View -->
                         <div class="ctp-new-table-wrapper">
@@ -272,7 +272,7 @@
                         <h3 class="ctp-new-summary-title">Order Summary</h3>
                         <div class="ctp-new-summary-table">
                             <?php foreach ($totals as $total) { ?>
-                            <div class="ctp-new-summary-row <?php echo ($total['title'] == $text_total) ? 'ctp-new-summary-total' : ''; ?>">
+                            <div class="ctp-new-summary-row <?php echo (isset($text_total) && $total['title'] == $text_total) ? 'ctp-new-summary-total' : ''; ?>">
                                 <span class="ctp-new-summary-label"><?php echo $total['title']; ?>:</span>
                                 <span class="ctp-new-summary-value"><?php echo $total['text']; ?></span>
                             </div>

@@ -14,7 +14,7 @@
     <?php } ?>
 </div>
 <div class="container account-page forgotten-page">
-    <div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
+    <div id="content" class="<?php echo isset($class) ? $class : ''; ?>"><?php echo $content_top; ?>
       <div class="panel">
           <h1><?php echo $heading_title; ?></h1>
           <p class="mb-2"><?php echo $text_email; ?></p>

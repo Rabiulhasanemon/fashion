@@ -59,6 +59,7 @@ class ModelToolBackup extends Model {
 					$values = '';
 
 					foreach (array_values($result) as $value) {
+						$value = $value !== null ? (string)$value : '';
 						$value = str_replace(array("\x00", "\x0a", "\x0d", "\x1a"), array('\0', '\n', '\r', '\Z'), $value);
 						$value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $value);
 						$value = str_replace('\\', '\\\\',	$value);
