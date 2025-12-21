@@ -43,8 +43,9 @@ class ControllerCheckoutOnepagecheckout extends Controller
         }
         
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate_form()) {
+            error_log('=== ONEPAGECHECKOUT ORDER CREATION START ===');
             error_log('Form validation PASSED - proceeding with order creation');
-            error_log('Form validation passed, proceeding with order creation...');
+            error_log('POST data received: ' . print_r($this->request->post, true));
             
             // CRITICAL: Clear all output buffers before processing
             while (ob_get_level()) {
@@ -140,7 +141,15 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 $order_data['custom_field'] = '';
             }
 
-            $order_data['email'] = $this->request->post['email'];
+            // Email is optional for guest checkout, but required for order
+            if (isset($this->request->post['email']) && !empty($this->request->post['email'])) {
+                $order_data['email'] = $this->request->post['email'];
+            } elseif ($this->customer->isLogged()) {
+                $order_data['email'] = $this->customer->getEmail();
+            } else {
+                // Generate a temporary email for guest orders
+                $order_data['email'] = 'guest_' . time() . '@' . $this->config->get('config_name');
+            }
             $order_data['telephone'] = $this->request->post['telephone'];
 
 
@@ -618,8 +627,16 @@ class ControllerCheckoutOnepagecheckout extends Controller
 
         if (isset($this->error['warning'])) {
             $data['error_warning'] = $this->error['warning'];
+        } elseif (isset($this->session->data['error'])) {
+            $data['error_warning'] = $this->session->data['error'];
+            unset($this->session->data['error']);
         } else {
             $data['error_warning'] = '';
+        }
+        
+        // Log validation errors for debugging
+        if (!empty($this->error)) {
+            error_log('Displaying validation errors on checkout form: ' . print_r($this->error, true));
         }
 
         if (isset($this->error['firstname'])) {
@@ -1056,7 +1073,13 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 $this->error['warning'] = sprintf($this->language->get('error_agree'), $information_info['title']);
             }
         }
-        return !$this->error;
+        
+        $is_valid = !$this->error;
+        error_log('validate_form() result: ' . ($is_valid ? 'VALID' : 'INVALID'));
+        if (!$is_valid) {
+            error_log('Validation errors: ' . print_r($this->error, true));
+        }
+        return $is_valid;
     }
 
 }
