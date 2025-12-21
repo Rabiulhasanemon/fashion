@@ -498,7 +498,8 @@ class ControllerCatalogProduct extends Controller {
 							'product_image', 'product_option', 'product_option_value',
 							'product_filter', 'product_attribute', 'product_discount',
 							'product_special', 'product_reward', 'product_related',
-							'product_compatible', 'product_to_layout', 'product_to_download'
+							'product_compatible', 'product_to_layout', 'product_to_download',
+							'product_frequently_bought_together'
 						);
 						
 						$cleaned_count = 0;
@@ -1132,7 +1133,8 @@ class ControllerCatalogProduct extends Controller {
 						'product_attribute', 'product_discount', 'product_filter', 
 						'product_image', 'product_option', 'product_option_value',
 						'product_related', 'product_reward', 'product_special', 'product_to_category',
-						'product_to_download', 'product_to_layout', 'product_variation', 'product_compatible'
+						'product_to_download', 'product_to_layout', 'product_variation', 'product_compatible',
+						'product_frequently_bought_together'
 					);
 					foreach ($tables_to_clean as $table) {
 						$check_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . $table . "'");
@@ -2555,6 +2557,28 @@ class ControllerCatalogProduct extends Controller {
 				$data['product_relateds'][] = array(
 					'product_id' => $related_info['product_id'],
 					'name'       => $related_info['name']
+				);
+			}
+		}
+
+		// Frequently Bought Together products
+		if (isset($this->request->post['product_frequently_bought_together'])) {
+			$fbt_products = $this->request->post['product_frequently_bought_together'];
+		} elseif (isset($this->request->get['product_id'])) {
+			$fbt_products = $this->model_catalog_product->getProductFrequentlyBoughtTogether($this->request->get['product_id']);
+		} else {
+			$fbt_products = array();
+		}
+
+		$data['product_frequently_bought_togethers'] = array();
+
+		foreach ($fbt_products as $fbt_product_id) {
+			$fbt_info = $this->model_catalog_product->getProduct($fbt_product_id);
+
+			if ($fbt_info) {
+				$data['product_frequently_bought_togethers'][] = array(
+					'product_id' => $fbt_info['product_id'],
+					'name'       => $fbt_info['name']
 				);
 			}
 		}

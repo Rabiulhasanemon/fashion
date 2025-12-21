@@ -29,6 +29,7 @@
             <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $tab_general; ?></a></li>
             <li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>
             <li><a href="#tab-links" data-toggle="tab"><?php echo $tab_links; ?></a></li>
+            <li><a href="#tab-fbt" data-toggle="tab">Frequently Bought Together</a></li>
             <li><a href="#tab-attribute" data-toggle="tab"><?php echo $tab_attribute; ?></a></li>
             <li><a href="#tab-filter" data-toggle="tab"><?php echo $tab_filter; ?></a></li>
             <li><a href="#tab-option" data-toggle="tab"><?php echo $tab_option; ?></a></li>
@@ -488,6 +489,24 @@
                 </div>
               </div>
             </div>
+            <div class="tab-pane" id="tab-fbt">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-fbt"><span data-toggle="tooltip" title="Select products that are frequently bought together with this product. Maximum 3 products recommended.">Frequently Bought Together</span></label>
+                <div class="col-sm-10">
+                  <input type="text" name="fbt" value="" placeholder="Type product name to search..." id="input-fbt" class="form-control" />
+                  <div class="alert alert-info" style="margin-top: 10px;">
+                    <i class="fa fa-info-circle"></i> Select up to 3 products that customers frequently buy together with this product. These will appear in the "Frequently bought together" section on the product page.
+                  </div>
+                  <div id="product-fbt" class="well well-sm" style="height: 200px; overflow: auto; margin-top: 10px;">
+                    <?php foreach ($product_frequently_bought_togethers as $product_fbt) { ?>
+                    <div id="product-fbt<?php echo $product_fbt['product_id']; ?>"><i class="fa fa-minus-circle"></i> <?php echo $product_fbt['name']; ?>
+                      <input type="hidden" name="product_frequently_bought_together[]" value="<?php echo $product_fbt['product_id']; ?>" />
+                    </div>
+                    <?php } ?>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="tab-pane" id="tab-filter">
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-profile"><?php echo $entry_filter_profile; ?></label>
@@ -930,11 +949,51 @@ $('input[name=\'related\']').autocomplete({
 		
 		$('#product-related' + item['value']).remove();
 		
-		$('#product-related').append('<div id="product-related' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_related[]" value="' + item['value'] + '" /></div>');	
-	}	
+		$('#product-related').append('<div id="product-related' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_related[]" value="' + item['value'] + '" /></div>');
+	}
 });
 
 $('#product-related').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+});
+
+// Frequently Bought Together autocomplete
+$('input[name=\'fbt\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',			
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['product_id']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'fbt\']').val('');
+		
+		// Check if already added
+		if ($('#product-fbt' + item['value']).length > 0) {
+			alert('This product is already added.');
+			return;
+		}
+		
+		// Check limit (max 3)
+		var currentCount = $('#product-fbt > div').length;
+		if (currentCount >= 3) {
+			alert('Maximum 3 products allowed for Frequently Bought Together.');
+			return;
+		}
+		
+		$('#product-fbt').append('<div id="product-fbt' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_frequently_bought_together[]" value="' + item['value'] + '" /></div>');
+	}
+});
+
+$('#product-fbt').delegate('.fa-minus-circle', 'click', function() {
 	$(this).parent().remove();
 });
 

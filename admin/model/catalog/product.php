@@ -314,6 +314,18 @@ class ModelCatalogProduct extends Model {
 		return $product_related_data;
 	}
 
+	public function getProductFrequentlyBoughtTogether($product_id) {
+		$product_fbt_data = array();
+
+		$query = $this->db->query("SELECT fbt_product_id, sort_order FROM " . DB_PREFIX . "product_frequently_bought_together WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
+
+		foreach ($query->rows as $result) {
+			$product_fbt_data[] = $result['fbt_product_id'];
+		}
+
+		return $product_fbt_data;
+	}
+
 	public function getProductCompatible($product_id) {
 		$product_compatible_data = array();
 
@@ -1541,6 +1553,27 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LINKS-RELATED] No product_related data found or not an array' . PHP_EOL, FILE_APPEND);
 		}
 		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [LINKS-RELATED] Total inserted: ' . $related_count . ' related product(s)' . PHP_EOL, FILE_APPEND);
+
+		// Insert Frequently Bought Together products
+		$fbt_count = 0;
+		if (isset($data['product_frequently_bought_together']) && is_array($data['product_frequently_bought_together'])) {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FBT] Processing ' . count($data['product_frequently_bought_together']) . ' FBT product(s)' . PHP_EOL, FILE_APPEND);
+			$this->db->query("DELETE FROM " . DB_PREFIX . "product_frequently_bought_together WHERE product_id = '" . (int)$product_id . "'");
+			$sort_order = 0;
+			foreach ($data['product_frequently_bought_together'] as $fbt_product_id) {
+				$fbt_product_id = (int)$fbt_product_id;
+				if ($fbt_product_id > 0 && $fbt_product_id != $product_id) {
+					$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "product_frequently_bought_together SET product_id = '" . (int)$product_id . "', fbt_product_id = '" . $fbt_product_id . "', sort_order = '" . (int)$sort_order . "', date_added = NOW()");
+					if ($insert_result) {
+						$fbt_count++;
+					}
+					$sort_order++;
+				}
+			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FBT] No product_frequently_bought_together data found or not an array' . PHP_EOL, FILE_APPEND);
+		}
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [FBT] Total inserted: ' . $fbt_count . ' FBT product(s)' . PHP_EOL, FILE_APPEND);
 
 		// Insert product compatible (Links tab)
 		$compatible_count = 0;
