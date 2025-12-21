@@ -330,6 +330,606 @@
             </div>
         </div>
     </section>
+    
+    <!-- Frequently Bought Together Section - Compact Premium Design -->
+    <?php 
+    if (isset($frequently_bought_together) && is_array($frequently_bought_together) && count($frequently_bought_together) > 0) { 
+        // Get main product price value
+        $main_product_price = isset($main_product_price_value) ? (float)$main_product_price_value : 0;
+        if ($main_product_price <= 0) {
+            // Fallback calculation
+            if (isset($special) && $special) {
+                $price_clean = preg_replace('/[^\d.]/', '', $special);
+                $main_product_price = (float)$price_clean;
+            } elseif (isset($price) && $price) {
+                $price_clean = preg_replace('/[^\d.]/', '', $price);
+                $main_product_price = (float)$price_clean;
+            }
+        }
+        
+        // Calculate main product price formatted
+        $main_price_formatted = $special ? $special : $price;
+    ?>
+    <section class="rp-fbt-compact-section">
+        <div class="container">
+            <h2 class="rp-fbt-compact-title">Frequently bought together</h2>
+            <div class="rp-fbt-compact-wrapper">
+                <div class="rp-fbt-compact-products">
+                    <!-- Main Product -->
+                    <div class="rp-fbt-compact-item">
+                        <div class="rp-fbt-compact-card rp-fbt-compact-selected">
+                            <div class="rp-fbt-compact-image-box">
+                                <img src="<?php echo $thumb; ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" class="rp-fbt-compact-img" onerror="this.src='image/placeholder.png';">
+                            </div>
+                            <div class="rp-fbt-compact-details">
+                                <h4 class="rp-fbt-compact-name">
+                                    <a href="<?php echo $action; ?>" class="rp-fbt-compact-link"><?php echo htmlspecialchars($heading_title); ?></a>
+                                </h4>
+                                <div class="rp-fbt-compact-price">
+                                    <?php if ($special) { ?>
+                                    <span class="rp-fbt-compact-price-old"><?php echo $price; ?></span>
+                                    <span class="rp-fbt-compact-price-new"><?php echo $special; ?></span>
+                                    <?php } else { ?>
+                                    <span class="rp-fbt-compact-price-new"><?php echo $price; ?></span>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <div class="rp-fbt-compact-checkbox">
+                                <input type="checkbox" 
+                                       class="rp-fbt-compact-check" 
+                                       id="rp-fbt-compact-main-<?php echo $product_id; ?>"
+                                       data-product-id="<?php echo $product_id; ?>" 
+                                       data-price="<?php echo $main_product_price; ?>"
+                                       checked 
+                                       disabled>
+                                <label for="rp-fbt-compact-main-<?php echo $product_id; ?>" class="rp-fbt-compact-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <?php foreach ($frequently_bought_together as $index => $fbt_product) { 
+                        // Calculate price
+                        $fbt_price_value = isset($fbt_product['price_value']) ? (float)$fbt_product['price_value'] : 0;
+                        if ($fbt_price_value <= 0) {
+                            if ($fbt_product['special']) {
+                                $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['special']);
+                                $fbt_price_value = (float)$price_clean;
+                            } else {
+                                $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['price']);
+                                $fbt_price_value = (float)$price_clean;
+                            }
+                        }
+                    ?>
+                    <!-- Plus Sign -->
+                    <div class="rp-fbt-compact-plus">
+                        <i class="fa fa-plus"></i>
+                    </div>
+                    
+                    <!-- FBT Product -->
+                    <div class="rp-fbt-compact-item">
+                        <div class="rp-fbt-compact-card rp-fbt-compact-selected">
+                            <div class="rp-fbt-compact-image-box">
+                                <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" class="rp-fbt-compact-img" onerror="this.src='image/placeholder.png';">
+                            </div>
+                            <div class="rp-fbt-compact-details">
+                                <h4 class="rp-fbt-compact-name">
+                                    <a href="<?php echo $fbt_product['href']; ?>" class="rp-fbt-compact-link"><?php echo htmlspecialchars($fbt_product['name']); ?></a>
+                                </h4>
+                                <div class="rp-fbt-compact-price">
+                                    <?php if ($fbt_product['special']) { ?>
+                                    <span class="rp-fbt-compact-price-old"><?php echo $fbt_product['price']; ?></span>
+                                    <span class="rp-fbt-compact-price-new"><?php echo $fbt_product['special']; ?></span>
+                                    <?php } else { ?>
+                                    <span class="rp-fbt-compact-price-new"><?php echo $fbt_product['price']; ?></span>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <div class="rp-fbt-compact-checkbox">
+                                <input type="checkbox" 
+                                       class="rp-fbt-compact-check rp-fbt-compact-check-dynamic" 
+                                       id="rp-fbt-compact-<?php echo $fbt_product['product_id']; ?>"
+                                       data-product-id="<?php echo $fbt_product['product_id']; ?>" 
+                                       data-price="<?php echo $fbt_price_value; ?>"
+                                       <?php echo !isset($fbt_product['disablePurchase']) || !$fbt_product['disablePurchase'] ? 'checked' : 'disabled'; ?>>
+                                <label for="rp-fbt-compact-<?php echo $fbt_product['product_id']; ?>" class="rp-fbt-compact-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    
+                    <!-- Equals Sign -->
+                    <div class="rp-fbt-compact-equals">
+                        <i class="fa fa-equals"></i>
+                    </div>
+                </div>
+                
+                <!-- Total Box -->
+                <div class="rp-fbt-compact-total">
+                    <div class="rp-fbt-compact-total-box">
+                        <div class="rp-fbt-compact-total-label">Total Price:</div>
+                        <div class="rp-fbt-compact-total-amount" id="rp-fbt-compact-total">৳0.00</div>
+                        <div class="rp-fbt-compact-save">
+                            <span class="rp-fbt-compact-save-text">You Save:</span>
+                            <span class="rp-fbt-compact-save-amount" id="rp-fbt-compact-save">৳0.00</span>
+                        </div>
+                        <button type="button" class="rp-fbt-compact-btn" id="rp-fbt-compact-add-btn">
+                            Add <span id="rp-fbt-compact-count">1</span> item<span id="rp-fbt-compact-plural">s</span> to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+    /* Compact Premium FBT Design - Unique Classes */
+    .rp-fbt-compact-section {
+        padding: 30px 0;
+        background-color: #ffffff;
+        margin: 20px 0;
+        clear: both;
+    }
+    
+    .rp-fbt-compact-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #333;
+        text-align: left;
+    }
+    
+    .rp-fbt-compact-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .rp-fbt-compact-products {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        flex-wrap: wrap;
+    }
+    
+    .rp-fbt-compact-item {
+        position: relative;
+    }
+    
+    .rp-fbt-compact-card {
+        position: relative;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 10px;
+        background: #ffffff;
+        width: 160px;
+        min-width: 150px;
+        height: 120px;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .rp-fbt-compact-card.rp-fbt-compact-selected {
+        border-color: #FF6A00;
+        box-shadow: 0 2px 6px rgba(255, 106, 0, 0.15);
+    }
+    
+    .rp-fbt-compact-card:not(.rp-fbt-compact-selected) {
+        opacity: 0.6;
+        border-color: #ddd;
+    }
+    
+    .rp-fbt-compact-image-box {
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        margin: 0 auto 6px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #f5f5f5;
+    }
+    
+    .rp-fbt-compact-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .rp-fbt-compact-details {
+        flex: 1;
+        text-align: center;
+        min-width: 0;
+    }
+    
+    .rp-fbt-compact-name {
+        font-size: 11px;
+        font-weight: 500;
+        margin: 0 0 4px 0;
+        color: #333;
+        line-height: 1.3;
+        height: 28px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .rp-fbt-compact-link {
+        color: #333;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .rp-fbt-compact-link:hover {
+        color: #FF6A00;
+        text-decoration: none;
+    }
+    
+    .rp-fbt-compact-price {
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .rp-fbt-compact-price-old {
+        display: block;
+        font-size: 10px;
+        color: #999;
+        text-decoration: line-through;
+        margin-bottom: 2px;
+    }
+    
+    .rp-fbt-compact-price-new {
+        display: block;
+        color: #FF6A00;
+        font-weight: 700;
+    }
+    
+    .rp-fbt-compact-checkbox {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+    }
+    
+    .rp-fbt-compact-check {
+        display: none;
+    }
+    
+    .rp-fbt-compact-check-label {
+        display: block;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #FF6A00;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    
+    .rp-fbt-compact-check:checked + .rp-fbt-compact-check-label {
+        background: #FF6A00;
+        border-color: #FF6A00;
+    }
+    
+    .rp-fbt-compact-check:checked + .rp-fbt-compact-check-label::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1;
+    }
+    
+    .rp-fbt-compact-check:disabled + .rp-fbt-compact-check-label {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .rp-fbt-compact-plus,
+    .rp-fbt-compact-equals {
+        font-size: 18px;
+        color: #999;
+        font-weight: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+    }
+    
+    .rp-fbt-compact-plus i,
+    .rp-fbt-compact-equals i {
+        font-size: 14px;
+    }
+    
+    .rp-fbt-compact-total {
+        flex-shrink: 0;
+    }
+    
+    .rp-fbt-compact-total-box {
+        background: #FF6A00;
+        border-radius: 8px;
+        padding: 18px 20px;
+        min-width: 220px;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(255, 106, 0, 0.2);
+    }
+    
+    .rp-fbt-compact-total-label {
+        font-size: 12px;
+        margin-bottom: 6px;
+        opacity: 0.95;
+    }
+    
+    .rp-fbt-compact-total-amount {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        line-height: 1.2;
+    }
+    
+    .rp-fbt-compact-save {
+        font-size: 12px;
+        margin-bottom: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .rp-fbt-compact-save-text {
+        display: block;
+        opacity: 0.9;
+        margin-bottom: 3px;
+    }
+    
+    .rp-fbt-compact-save-amount {
+        font-size: 14px;
+        font-weight: 600;
+        display: block;
+    }
+    
+    .rp-fbt-compact-btn {
+        width: 100%;
+        padding: 10px 15px;
+        background: #fff;
+        color: #FF6A00;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    
+    .rp-fbt-compact-btn:hover {
+        background: #fff5f0;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    
+    .rp-fbt-compact-btn:active {
+        transform: translateY(0);
+    }
+    
+    .rp-fbt-compact-btn:disabled {
+        background: #ccc;
+        color: #666;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .rp-fbt-compact-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .rp-fbt-compact-products {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .rp-fbt-compact-item {
+            width: 100%;
+        }
+        
+        .rp-fbt-compact-card {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            min-height: 100px;
+        }
+        
+        .rp-fbt-compact-plus,
+        .rp-fbt-compact-equals {
+            transform: rotate(90deg);
+            margin: 8px 0;
+        }
+        
+        .rp-fbt-compact-total-box {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .rp-fbt-compact-section {
+            padding: 20px 0;
+        }
+        
+        .rp-fbt-compact-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .rp-fbt-compact-card {
+            padding: 8px;
+            height: 110px;
+        }
+        
+        .rp-fbt-compact-image-box {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .rp-fbt-compact-total-amount {
+            font-size: 20px;
+        }
+    }
+    </style>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        var rpFbtCompactSection = document.querySelector('.rp-fbt-compact-section');
+        if (!rpFbtCompactSection) return;
+        
+        var rpFbtCompactChecks = rpFbtCompactSection.querySelectorAll('.rp-fbt-compact-check-dynamic');
+        var rpFbtCompactMainCheck = rpFbtCompactSection.querySelector('.rp-fbt-compact-check[data-product-id="<?php echo $product_id; ?>"]');
+        var rpFbtCompactTotal = document.getElementById('rp-fbt-compact-total');
+        var rpFbtCompactSave = document.getElementById('rp-fbt-compact-save');
+        var rpFbtCompactCount = document.getElementById('rp-fbt-compact-count');
+        var rpFbtCompactPlural = document.getElementById('rp-fbt-compact-plural');
+        var rpFbtCompactBtn = document.getElementById('rp-fbt-compact-add-btn');
+        var rpFbtCompactCards = rpFbtCompactSection.querySelectorAll('.rp-fbt-compact-card');
+        
+        var mainProductPrice = 0;
+        if (rpFbtCompactMainCheck) {
+            mainProductPrice = parseFloat(rpFbtCompactMainCheck.dataset.price) || 0;
+        }
+        
+        function rpFbtCompactUpdate() {
+            var total = mainProductPrice;
+            var selectedCount = 1;
+            var selectedProductIds = [<?php echo $product_id; ?>];
+            
+            rpFbtCompactChecks.forEach(function(checkbox) {
+                if (checkbox.checked && !checkbox.disabled) {
+                    var price = parseFloat(checkbox.dataset.price) || 0;
+                    total += price;
+                    selectedCount++;
+                    selectedProductIds.push(parseInt(checkbox.dataset.productId));
+                }
+            });
+            
+            if (rpFbtCompactTotal) {
+                rpFbtCompactTotal.textContent = '৳' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            
+            if (rpFbtCompactCount) {
+                rpFbtCompactCount.textContent = selectedCount;
+            }
+            
+            if (rpFbtCompactPlural) {
+                rpFbtCompactPlural.textContent = selectedCount > 1 ? 's' : '';
+            }
+            
+            if (rpFbtCompactBtn) {
+                if (selectedCount > 1) {
+                    rpFbtCompactBtn.disabled = false;
+                } else {
+                    rpFbtCompactBtn.disabled = true;
+                }
+            }
+            
+            rpFbtCompactCards.forEach(function(card, index) {
+                if (index === 0) {
+                    card.classList.add('rp-fbt-compact-selected');
+                } else {
+                    var checkbox = card.querySelector('.rp-fbt-compact-check-dynamic');
+                    if (checkbox && checkbox.checked) {
+                        card.classList.add('rp-fbt-compact-selected');
+                    } else {
+                        card.classList.remove('rp-fbt-compact-selected');
+                    }
+                }
+            });
+            
+            if (rpFbtCompactBtn) {
+                rpFbtCompactBtn.dataset.productIds = JSON.stringify(selectedProductIds);
+            }
+        }
+        
+        rpFbtCompactChecks.forEach(function(checkbox) {
+            checkbox.addEventListener('change', rpFbtCompactUpdate);
+        });
+        
+        if (rpFbtCompactBtn) {
+            rpFbtCompactBtn.addEventListener('click', function() {
+                if (this.disabled) return;
+                
+                var productIds = [];
+                try {
+                    productIds = JSON.parse(this.dataset.productIds || '[]');
+                } catch(e) {
+                    productIds.push(<?php echo $product_id; ?>);
+                    rpFbtCompactChecks.forEach(function(checkbox) {
+                        if (checkbox.checked && !checkbox.disabled) {
+                            productIds.push(parseInt(checkbox.dataset.productId));
+                        }
+                    });
+                }
+                
+                if (productIds.length === 0) {
+                    alert('Please select at least one product.');
+                    return;
+                }
+                
+                this.disabled = true;
+                var originalText = this.textContent;
+                this.textContent = 'Adding...';
+                
+                var addCount = 0;
+                var totalProducts = productIds.length;
+                
+                productIds.forEach(function(productId, index) {
+                    setTimeout(function() {
+                        if (typeof cart !== 'undefined' && typeof cart.add === 'function') {
+                            cart.add(productId, 1);
+                            addCount++;
+                            
+                            if (addCount === totalProducts) {
+                                if (rpFbtCompactBtn) {
+                                    rpFbtCompactBtn.textContent = originalText;
+                                    rpFbtCompactBtn.disabled = false;
+                                }
+                                
+                                if (typeof alert !== 'undefined') {
+                                    alert('Successfully added ' + totalProducts + ' item' + (totalProducts > 1 ? 's' : '') + ' to cart!');
+                                }
+                                
+                                if (typeof $ !== 'undefined' && $.get) {
+                                    $.get('index.php?route=common/cart/info', function(data) {
+                                        $('#cart-total').html(data);
+                                    });
+                                }
+                            }
+                        } else {
+                            if (rpFbtCompactBtn) {
+                                rpFbtCompactBtn.textContent = originalText;
+                                rpFbtCompactBtn.disabled = false;
+                            }
+                            alert('Unable to add products to cart. Please try again.');
+                        }
+                    }, index * 150);
+                });
+            });
+        }
+        
+        rpFbtCompactUpdate();
+    })();
+    </script>
+    <?php } ?>
+    
     <section class="product-info-details">
         <div class="container">
             <div class="row">
@@ -494,626 +1094,6 @@
             </div>
         </div>
     </section>
-    
-    <!-- Frequently Bought Together Section - Using unique rp-fbt classes to avoid conflicts -->
-    <?php 
-    if (isset($frequently_bought_together) && is_array($frequently_bought_together) && count($frequently_bought_together) > 0) { 
-        // Get main product price value
-        $main_product_price = isset($main_product_price_value) ? (float)$main_product_price_value : 0;
-        if ($main_product_price <= 0) {
-            // Fallback calculation
-            if (isset($special) && $special) {
-                $price_clean = preg_replace('/[^\d.]/', '', $special);
-                $main_product_price = (float)$price_clean;
-            } elseif (isset($price) && $price) {
-                $price_clean = preg_replace('/[^\d.]/', '', $price);
-                $main_product_price = (float)$price_clean;
-            }
-        }
-        
-        // Calculate main product price formatted
-        $main_price_formatted = $special ? $special : $price;
-    ?>
-    <section class="rp-fbt-section-wrapper">
-        <div class="container">
-            <h2 class="rp-fbt-section-title">Frequently bought together</h2>
-            <div class="rp-fbt-main-wrapper">
-                <div class="rp-fbt-products-list">
-                    <!-- Main Product (Always Selected) -->
-                    <div class="rp-fbt-item rp-fbt-main-product">
-                        <div class="rp-fbt-card rp-fbt-card-selected">
-                            <div class="rp-fbt-image-wrapper">
-                                <img src="<?php echo $thumb; ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" class="rp-fbt-image" onerror="this.src='image/placeholder.png';">
-                            </div>
-                            <div class="rp-fbt-info-wrapper">
-                                <h4 class="rp-fbt-product-title">
-                                    <a href="<?php echo $action; ?>" class="rp-fbt-product-link"><?php echo htmlspecialchars($heading_title); ?></a>
-                                </h4>
-                                <div class="rp-fbt-price-wrapper">
-                                    <?php if ($special) { ?>
-                                    <span class="rp-fbt-price-old"><?php echo $price; ?></span>
-                                    <span class="rp-fbt-price-current"><?php echo $special; ?></span>
-                                    <?php } else { ?>
-                                    <span class="rp-fbt-price-current"><?php echo $price; ?></span>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                            <div class="rp-fbt-checkbox-wrapper rp-fbt-checkbox-main">
-                                <input type="checkbox" 
-                                       class="rp-fbt-checkbox-input" 
-                                       id="rp-fbt-main-<?php echo $product_id; ?>"
-                                       data-product-id="<?php echo $product_id; ?>" 
-                                       data-price="<?php echo $main_product_price; ?>"
-                                       data-price-formatted="<?php echo htmlspecialchars($main_price_formatted); ?>"
-                                       checked 
-                                       disabled>
-                                <label for="rp-fbt-main-<?php echo $product_id; ?>" class="rp-fbt-checkbox-label"></label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <?php foreach ($frequently_bought_together as $index => $fbt_product) { 
-                        // Calculate price
-                        $fbt_price_value = isset($fbt_product['price_value']) ? (float)$fbt_product['price_value'] : 0;
-                        if ($fbt_price_value <= 0) {
-                            if ($fbt_product['special']) {
-                                $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['special']);
-                                $fbt_price_value = (float)$price_clean;
-                                $fbt_price_formatted = $fbt_product['special'];
-                            } else {
-                                $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['price']);
-                                $fbt_price_value = (float)$price_clean;
-                                $fbt_price_formatted = $fbt_product['price'];
-                            }
-                        } else {
-                            $fbt_price_formatted = $fbt_product['special'] ? $fbt_product['special'] : $fbt_product['price'];
-                        }
-                    ?>
-                    <!-- Plus Sign -->
-                    <div class="rp-fbt-operator rp-fbt-plus-sign">
-                        <i class="fa fa-plus"></i>
-                    </div>
-                    
-                    <!-- FBT Product -->
-                    <div class="rp-fbt-item">
-                        <div class="rp-fbt-card rp-fbt-card-selected">
-                            <div class="rp-fbt-image-wrapper">
-                                <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" class="rp-fbt-image" onerror="this.src='image/placeholder.png';">
-                            </div>
-                            <div class="rp-fbt-info-wrapper">
-                                <h4 class="rp-fbt-product-title">
-                                    <a href="<?php echo $fbt_product['href']; ?>" class="rp-fbt-product-link"><?php echo htmlspecialchars($fbt_product['name']); ?></a>
-                                </h4>
-                                <div class="rp-fbt-price-wrapper">
-                                    <?php if ($fbt_product['special']) { ?>
-                                    <span class="rp-fbt-price-old"><?php echo $fbt_product['price']; ?></span>
-                                    <span class="rp-fbt-price-current"><?php echo $fbt_product['special']; ?></span>
-                                    <?php } else { ?>
-                                    <span class="rp-fbt-price-current"><?php echo $fbt_product['price']; ?></span>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                            <div class="rp-fbt-checkbox-wrapper">
-                                <input type="checkbox" 
-                                       class="rp-fbt-checkbox-input rp-fbt-checkbox-dynamic" 
-                                       id="rp-fbt-<?php echo $fbt_product['product_id']; ?>"
-                                       data-product-id="<?php echo $fbt_product['product_id']; ?>" 
-                                       data-price="<?php echo $fbt_price_value; ?>"
-                                       data-price-formatted="<?php echo htmlspecialchars($fbt_price_formatted); ?>"
-                                       <?php echo !isset($fbt_product['disablePurchase']) || !$fbt_product['disablePurchase'] ? 'checked' : 'disabled'; ?>>
-                                <label for="rp-fbt-<?php echo $fbt_product['product_id']; ?>" class="rp-fbt-checkbox-label"></label>
-                            </div>
-                        </div>
-                    </div>
-                    <?php } ?>
-                    
-                    <!-- Equals Sign -->
-                    <div class="rp-fbt-operator rp-fbt-equals-sign">
-                        <i class="fa fa-equals"></i>
-                    </div>
-                </div>
-                
-                <!-- Total Box -->
-                <div class="rp-fbt-total-container">
-                    <div class="rp-fbt-total-box">
-                        <div class="rp-fbt-total-label">Total Price:</div>
-                        <div class="rp-fbt-total-amount" id="rp-fbt-total-amount">৳0.00</div>
-                        <div class="rp-fbt-savings-info">
-                            <span class="rp-fbt-savings-text">You Save:</span>
-                            <span class="rp-fbt-savings-amount" id="rp-fbt-savings-amount">৳0.00</span>
-                        </div>
-                        <button type="button" class="rp-fbt-add-cart-btn" id="rp-fbt-add-cart-btn">
-                            <span class="rp-fbt-btn-text">Add <span id="rp-fbt-item-count">1</span> item<span id="rp-fbt-item-plural">s</span> to cart</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <style>
-    /* Frequently Bought Together - Unique Styles (rp-fbt-*) */
-    .rp-fbt-section-wrapper {
-        padding: 50px 0;
-        background-color: #f8f9fa;
-        margin: 30px 0;
-        clear: both;
-    }
-    
-    .rp-fbt-section-title {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 35px;
-        color: #333;
-        text-align: center;
-    }
-    
-    .rp-fbt-main-wrapper {
-        display: flex;
-        align-items: flex-start;
-        gap: 30px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .rp-fbt-products-list {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        flex-wrap: wrap;
-        flex: 1;
-        min-width: 0;
-        justify-content: center;
-    }
-    
-    .rp-fbt-item {
-        position: relative;
-    }
-    
-    .rp-fbt-card {
-        position: relative;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 15px;
-        background: #ffffff;
-        width: 220px;
-        min-width: 200px;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    
-    .rp-fbt-card-selected {
-        border-color: #FF6A00;
-        box-shadow: 0 4px 12px rgba(255, 106, 0, 0.15);
-    }
-    
-    .rp-fbt-card:not(.rp-fbt-card-selected) {
-        opacity: 0.6;
-        border-color: #ddd;
-    }
-    
-    .rp-fbt-image-wrapper {
-        width: 80px;
-        height: 80px;
-        flex-shrink: 0;
-        margin: 0 auto 12px;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #f5f5f5;
-    }
-    
-    .rp-fbt-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-    
-    .rp-fbt-info-wrapper {
-        text-align: center;
-        margin-bottom: 12px;
-    }
-    
-    .rp-fbt-product-title {
-        font-size: 14px;
-        font-weight: 500;
-        margin: 0 0 10px 0;
-        color: #333;
-        line-height: 1.4;
-        min-height: 40px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    
-    .rp-fbt-product-link {
-        color: #333;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    
-    .rp-fbt-product-link:hover {
-        color: #FF6A00;
-        text-decoration: none;
-    }
-    
-    .rp-fbt-price-wrapper {
-        font-size: 16px;
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .rp-fbt-price-old {
-        display: block;
-        font-size: 13px;
-        color: #999;
-        text-decoration: line-through;
-        margin-bottom: 4px;
-    }
-    
-    .rp-fbt-price-current {
-        display: block;
-        color: #FF6A00;
-        font-weight: 700;
-    }
-    
-    .rp-fbt-checkbox-wrapper {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-    }
-    
-    .rp-fbt-checkbox-input {
-        display: none;
-    }
-    
-    .rp-fbt-checkbox-label {
-        display: block;
-        width: 28px;
-        height: 28px;
-        border: 2px solid #FF6A00;
-        border-radius: 6px;
-        background: #fff;
-        cursor: pointer;
-        position: relative;
-        transition: all 0.2s ease;
-    }
-    
-    .rp-fbt-checkbox-input:checked + .rp-fbt-checkbox-label {
-        background: #FF6A00;
-        border-color: #FF6A00;
-    }
-    
-    .rp-fbt-checkbox-input:checked + .rp-fbt-checkbox-label::after {
-        content: '✓';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #fff;
-        font-size: 18px;
-        font-weight: bold;
-        line-height: 1;
-    }
-    
-    .rp-fbt-checkbox-input:disabled + .rp-fbt-checkbox-label {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
-    .rp-fbt-operator {
-        font-size: 28px;
-        color: #999;
-        font-weight: 300;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-    }
-    
-    .rp-fbt-operator i {
-        font-size: 20px;
-    }
-    
-    .rp-fbt-total-container {
-        flex-shrink: 0;
-    }
-    
-    .rp-fbt-total-box {
-        background: linear-gradient(135deg, #FF6A00 0%, #FF8533 100%);
-        border-radius: 12px;
-        padding: 25px;
-        min-width: 280px;
-        color: #fff;
-        box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
-    }
-    
-    .rp-fbt-total-label {
-        font-size: 14px;
-        margin-bottom: 8px;
-        opacity: 0.95;
-    }
-    
-    .rp-fbt-total-amount {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 15px;
-        line-height: 1.2;
-    }
-    
-    .rp-fbt-savings-info {
-        font-size: 14px;
-        margin-bottom: 20px;
-        padding-top: 15px;
-        border-top: 1px solid rgba(255,255,255,0.3);
-    }
-    
-    .rp-fbt-savings-text {
-        display: block;
-        opacity: 0.9;
-        margin-bottom: 4px;
-    }
-    
-    .rp-fbt-savings-amount {
-        font-size: 18px;
-        font-weight: 600;
-        display: block;
-    }
-    
-    .rp-fbt-add-cart-btn {
-        width: 100%;
-        padding: 14px 20px;
-        background: #fff;
-        color: #FF6A00;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .rp-fbt-add-cart-btn:hover {
-        background: #fff5f0;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .rp-fbt-add-cart-btn:active {
-        transform: translateY(0);
-    }
-    
-    .rp-fbt-add-cart-btn:disabled {
-        background: #ccc;
-        color: #666;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 991px) {
-        .rp-fbt-main-wrapper {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .rp-fbt-products-list {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .rp-fbt-item {
-            width: 100%;
-        }
-        
-        .rp-fbt-card {
-            width: 100%;
-            max-width: 100%;
-        }
-        
-        .rp-fbt-operator {
-            transform: rotate(90deg);
-            margin: 10px 0;
-        }
-        
-        .rp-fbt-total-box {
-            width: 100%;
-            max-width: 100%;
-        }
-    }
-    
-    @media (max-width: 767px) {
-        .rp-fbt-section-wrapper {
-            padding: 30px 0;
-        }
-        
-        .rp-fbt-section-title {
-            font-size: 22px;
-            margin-bottom: 25px;
-        }
-        
-        .rp-fbt-card {
-            padding: 12px;
-        }
-        
-        .rp-fbt-image-wrapper {
-            width: 70px;
-            height: 70px;
-        }
-        
-        .rp-fbt-total-amount {
-            font-size: 26px;
-        }
-    }
-    </style>
-    
-    <script>
-    (function() {
-        'use strict';
-        
-        // Get all elements
-        var rpFbtSection = document.querySelector('.rp-fbt-section-wrapper');
-        if (!rpFbtSection) return;
-        
-        var rpFbtCheckboxes = rpFbtSection.querySelectorAll('.rp-fbt-checkbox-dynamic');
-        var rpFbtMainCheckbox = rpFbtSection.querySelector('.rp-fbt-checkbox-main .rp-fbt-checkbox-input');
-        var rpFbtTotalAmount = document.getElementById('rp-fbt-total-amount');
-        var rpFbtSavingsAmount = document.getElementById('rp-fbt-savings-amount');
-        var rpFbtItemCount = document.getElementById('rp-fbt-item-count');
-        var rpFbtItemPlural = document.getElementById('rp-fbt-item-plural');
-        var rpFbtAddCartBtn = document.getElementById('rp-fbt-add-cart-btn');
-        var rpFbtCards = rpFbtSection.querySelectorAll('.rp-fbt-card');
-        
-        // Get main product price
-        var mainProductPrice = 0;
-        if (rpFbtMainCheckbox) {
-            mainProductPrice = parseFloat(rpFbtMainCheckbox.dataset.price) || 0;
-        }
-        
-        // Update total price and UI
-        function rpFbtUpdateTotal() {
-            var total = mainProductPrice;
-            var selectedCount = 1; // Main product is always selected
-            var selectedProductIds = [<?php echo $product_id; ?>];
-            
-            // Calculate total from selected checkboxes
-            rpFbtCheckboxes.forEach(function(checkbox) {
-                if (checkbox.checked && !checkbox.disabled) {
-                    var price = parseFloat(checkbox.dataset.price) || 0;
-                    total += price;
-                    selectedCount++;
-                    selectedProductIds.push(parseInt(checkbox.dataset.productId));
-                }
-            });
-            
-            // Update total amount display
-            if (rpFbtTotalAmount) {
-                rpFbtTotalAmount.textContent = '৳' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
-            
-            // Update item count
-            if (rpFbtItemCount) {
-                rpFbtItemCount.textContent = selectedCount;
-            }
-            
-            // Update plural
-            if (rpFbtItemPlural) {
-                rpFbtItemPlural.textContent = selectedCount > 1 ? 's' : '';
-            }
-            
-            // Update button state
-            if (rpFbtAddCartBtn) {
-                if (selectedCount > 1) {
-                    rpFbtAddCartBtn.disabled = false;
-                } else {
-                    rpFbtAddCartBtn.disabled = true;
-                }
-            }
-            
-            // Update card visual states
-            rpFbtCards.forEach(function(card, index) {
-                if (index === 0) {
-                    // Main product - always selected
-                    card.classList.add('rp-fbt-card-selected');
-                } else {
-                    var checkbox = card.querySelector('.rp-fbt-checkbox-dynamic');
-                    if (checkbox && checkbox.checked) {
-                        card.classList.add('rp-fbt-card-selected');
-                    } else {
-                        card.classList.remove('rp-fbt-card-selected');
-                    }
-                }
-            });
-            
-            // Store selected IDs for cart
-            rpFbtAddCartBtn.dataset.productIds = JSON.stringify(selectedProductIds);
-        }
-        
-        // Add event listeners to checkboxes
-        rpFbtCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                rpFbtUpdateTotal();
-            });
-        });
-        
-        // Add to cart functionality
-        if (rpFbtAddCartBtn) {
-            rpFbtAddCartBtn.addEventListener('click', function() {
-                if (this.disabled) return;
-                
-                var productIds = [];
-                try {
-                    productIds = JSON.parse(this.dataset.productIds || '[]');
-                } catch(e) {
-                    // Fallback: collect manually
-                    productIds.push(<?php echo $product_id; ?>);
-                    rpFbtCheckboxes.forEach(function(checkbox) {
-                        if (checkbox.checked && !checkbox.disabled) {
-                            productIds.push(parseInt(checkbox.dataset.productId));
-                        }
-                    });
-                }
-                
-                if (productIds.length === 0) {
-                    alert('Please select at least one product.');
-                    return;
-                }
-                
-                // Disable button during add
-                this.disabled = true;
-                var originalText = this.querySelector('.rp-fbt-btn-text').textContent;
-                this.querySelector('.rp-fbt-btn-text').textContent = 'Adding...';
-                
-                // Add products to cart
-                var addCount = 0;
-                var totalProducts = productIds.length;
-                
-                productIds.forEach(function(productId, index) {
-                    setTimeout(function() {
-                        if (typeof cart !== 'undefined' && typeof cart.add === 'function') {
-                            cart.add(productId, 1);
-                            addCount++;
-                            
-                            if (addCount === totalProducts) {
-                                // All products added
-                                if (rpFbtAddCartBtn) {
-                                    rpFbtAddCartBtn.querySelector('.rp-fbt-btn-text').textContent = originalText;
-                                    rpFbtAddCartBtn.disabled = false;
-                                }
-                                
-                                // Show success (you can customize this)
-                                if (typeof alert !== 'undefined') {
-                                    alert('Successfully added ' + totalProducts + ' item' + (totalProducts > 1 ? 's' : '') + ' to cart!');
-                                }
-                                
-                                // Optionally update cart count in header
-                                if (typeof $ !== 'undefined' && $.get) {
-                                    $.get('index.php?route=common/cart/info', function(data) {
-                                        $('#cart-total').html(data);
-                                    });
-                                }
-                            }
-                        } else {
-                            // Cart function not available
-                            if (rpFbtAddCartBtn) {
-                                rpFbtAddCartBtn.querySelector('.rp-fbt-btn-text').textContent = originalText;
-                                rpFbtAddCartBtn.disabled = false;
-                            }
-                            alert('Unable to add products to cart. Please try again.');
-                        }
-                    }, index * 150); // Stagger requests
-                });
-            });
-        }
-        
-        // Initial calculation
-        rpFbtUpdateTotal();
-    })();
-    </script>
-    <?php } ?>
     
     <!-- Related Products Section -->
     <?php 
