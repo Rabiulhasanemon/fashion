@@ -46,7 +46,7 @@ class ModelAccountCustomer extends Model {
 			// Check if there's a record with customer_id = 0 (this can break AUTO_INCREMENT)
 			$zero_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE customer_id = 0 LIMIT 1");
 			if ($zero_check && $zero_check->num_rows > 0) {
-				error_log('addCustomer WARNING: Record with customer_id = 0 exists! This may cause insert failures.');
+				error_log('addCustomer WARNING: Record with customer_id = 0 exists! This may cause insert failures. Attempting to fix...');
 				// Try to fix by updating the record to a valid ID
 				$max_id_query = $this->db->query("SELECT MAX(customer_id) as max_id FROM " . DB_PREFIX . "customer");
 				$new_id = 1;
@@ -54,8 +54,28 @@ class ModelAccountCustomer extends Model {
 					$new_id = (int)$max_id_query->row['max_id'] + 1;
 				}
 				// Update the record with customer_id = 0 to a new ID
-				$this->db->query("UPDATE " . DB_PREFIX . "customer SET customer_id = '" . (int)$new_id . "' WHERE customer_id = 0 LIMIT 1");
-				error_log('addCustomer: Updated customer_id = 0 to customer_id = ' . $new_id);
+				$update_result = $this->db->query("UPDATE " . DB_PREFIX . "customer SET customer_id = '" . (int)$new_id . "' WHERE customer_id = 0 LIMIT 1");
+				if ($update_result !== false) {
+					error_log('addCustomer: Successfully updated customer_id = 0 to customer_id = ' . $new_id);
+				} else {
+					error_log('addCustomer ERROR: Failed to update customer_id = 0. Registration may fail!');
+				}
+				
+				// Also check and fix AUTO_INCREMENT if needed
+				$status_check = $this->db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "customer'");
+				if ($status_check && $status_check->num_rows > 0) {
+					$auto_inc = isset($status_check->row['Auto_increment']) ? $status_check->row['Auto_increment'] : null;
+					if (!$auto_inc || $auto_inc <= 0) {
+						error_log('addCustomer: AUTO_INCREMENT is not set correctly. Attempting to fix...');
+						$fix_ai_sql = "ALTER TABLE " . DB_PREFIX . "customer MODIFY customer_id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = " . ($new_id + 1);
+						$fix_result = $this->db->query($fix_ai_sql);
+						if ($fix_result !== false) {
+							error_log('addCustomer: Successfully fixed AUTO_INCREMENT');
+						} else {
+							error_log('addCustomer WARNING: Could not fix AUTO_INCREMENT automatically');
+						}
+					}
+				}
 			}
 			
 			// Build and execute customer insert query
