@@ -1,4 +1,11 @@
 <?php echo $header; ?><?php echo $column_left; ?>
+<style>
+/* Hide Frequently Bought Together tab */
+li a[href="#tab-fbt"],
+#tab-fbt {
+    display: none !important;
+}
+</style>
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
