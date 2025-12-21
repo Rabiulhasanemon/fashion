@@ -20,6 +20,8 @@ class Url {
 			$url = $this->ssl;
 		}
 
+		// Ensure URL ends with a slash before appending index.php
+		$url = rtrim($url, '/') . '/';
 		$url .= 'index.php?route=' . $route;
 
 		if ($args) {

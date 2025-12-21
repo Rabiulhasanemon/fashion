@@ -16,9 +16,9 @@ class SiteUrl {
 	public function link($route, $args = '', $secure = true) {
 	    $url_info = array();
 		if (!$secure) {
-            $url_info['host_path'] = $this->domain;
+            $url_info['host_path'] = rtrim($this->domain, '/');
 		} else {
-            $url_info['host_path'] = $this->ssl;
+            $url_info['host_path'] = rtrim($this->ssl, '/');
 		}
 		$url_info['route'] = $route;
 

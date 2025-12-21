@@ -392,20 +392,15 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 if (strtolower($payment_code) == 'cod') {
                     error_log('Payment method is COD, redirecting to success page...');
                     $success_url = $this->url->link("checkout/success", '', 'SSL');
-                    error_log('Success URL: ' . $success_url);
+                    // Fix URL if missing slash
+                    $success_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $success_url);
+                    error_log('Success URL (fixed): ' . $success_url);
                     
                     // Use direct header redirect for reliability
                     if ($success_url) {
-                        error_log('Using response->redirect to: ' . $success_url);
-                        try {
-                            $this->response->redirect($success_url);
-                            exit; // Ensure script stops
-                        } catch (Exception $e) {
-                            error_log('response->redirect failed: ' . $e->getMessage());
-                            error_log('Using header redirect fallback');
-                            header('Location: ' . $success_url);
-                            exit;
-                        }
+                        error_log('Redirecting to: ' . $success_url);
+                        header('Location: ' . $success_url);
+                        exit;
                     } else {
                         error_log('ERROR: Success URL is empty, using header redirect');
                         header('Location: index.php?route=checkout/success');
@@ -418,18 +413,13 @@ class ControllerCheckoutOnepagecheckout extends Controller
                     error_log('Payment code found: ' . $payment_code . ', redirecting to payment confirm...');
                     try {
                         $payment_confirm_url = $this->url->link('payment/' . $payment_code . '/confirm', '', 'SSL');
-                        error_log('Payment confirm URL: ' . $payment_confirm_url);
+                        // Fix URL if missing slash
+                        $payment_confirm_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $payment_confirm_url);
+                        error_log('Payment confirm URL (fixed): ' . $payment_confirm_url);
                         if ($payment_confirm_url) {
-                            error_log('Using response->redirect to: ' . $payment_confirm_url);
-                            try {
-                                $this->response->redirect($payment_confirm_url);
-                                exit; // Ensure script stops
-                            } catch (Exception $e) {
-                                error_log('response->redirect failed: ' . $e->getMessage());
-                                error_log('Using header redirect fallback');
-                                header('Location: ' . $payment_confirm_url);
-                                exit;
-                            }
+                            error_log('Redirecting to: ' . $payment_confirm_url);
+                            header('Location: ' . $payment_confirm_url);
+                            exit;
                         } else {
                             error_log('WARNING: Payment confirm URL is empty');
                         }
@@ -442,18 +432,13 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 // Fallback - redirect to success page
                 error_log('Using fallback - redirecting to success page...');
                 $success_url = $this->url->link("checkout/success", '', 'SSL');
-                error_log('Fallback success URL: ' . $success_url);
+                // Fix URL if missing slash
+                $success_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $success_url);
+                error_log('Fallback success URL (fixed): ' . $success_url);
                 if ($success_url) {
-                    error_log('Using response->redirect to: ' . $success_url);
-                    try {
-                        $this->response->redirect($success_url);
-                        exit; // Ensure script stops
-                    } catch (Exception $e) {
-                        error_log('response->redirect failed: ' . $e->getMessage());
-                        error_log('Using header redirect fallback');
-                        header('Location: ' . $success_url);
-                        exit;
-                    }
+                    error_log('Redirecting to: ' . $success_url);
+                    header('Location: ' . $success_url);
+                    exit;
                 } else {
                     error_log('ERROR: All redirect methods failed, using header redirect as last resort');
                     // Last resort - use header redirect
