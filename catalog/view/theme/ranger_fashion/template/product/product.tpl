@@ -424,7 +424,7 @@
     <style>
     .bundle-section {
         margin: 20px 0;
-        padding: 24px;
+        padding: 16px;
         background: #fff;
         border-radius: 8px;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.11);
@@ -434,21 +434,21 @@
         font-weight: 600;
         color: #222831;
         border-bottom: 1px solid #ddd;
-        padding-bottom: 12px;
-        margin-bottom: 12px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
         display: block;
     }
     .bundle-container {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 8px;
         flex-wrap: wrap;
     }
     .bundle-product {
         flex: 1;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
-        padding: 8px;
+        padding: 6px;
         transition: all 0.2s ease;
         position: relative;
         user-select: none;
@@ -520,7 +520,7 @@
     .bundle-product-wrapper {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
     .bundle-product .product-image {
         width: 70px;
@@ -537,7 +537,7 @@
     .bundle-product .product-name {
         font-size: 12px;
         color: #374151;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         line-height: 120%;
         height: 32px;
         overflow: hidden;
@@ -571,15 +571,16 @@
         font-weight: 700;
     }
     .bundle-operator {
-        font-size: 20px;
+        font-size: 18px;
         color: #9ca3af;
         flex-shrink: 0;
+        margin: 0 2px;
     }
     .bundle-total {
         background: #FF6A00;
         color: #fff;
         border-radius: 8px;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
         flex-shrink: 0;
         min-width: 200px;
@@ -594,7 +595,7 @@
         font-size: 12px;
         color: #fff;
         opacity: 0.9;
-        margin-top: 4px;
+        margin-top: 2px;
     }
     .add-bundle-btn {
         background: #fff;
@@ -607,7 +608,7 @@
         cursor: pointer;
         width: 100%;
         transition: all 0.3s ease;
-        margin-top: 4px;
+        margin-top: 2px;
     }
     .add-bundle-btn:hover {
         background: #041f1e;
@@ -623,10 +624,12 @@
     }
     @media (max-width: 768px) {
         .bundle-section {
-            padding: 16px;
+            padding: 12px;
         }
         .bundle-title {
             font-size: 14px;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
         }
         .bundle-operator {
             display: none;
@@ -634,7 +637,7 @@
         .bundle-container {
             grid-template-columns: repeat(2, 1fr);
             display: grid;
-            gap: 8px;
+            gap: 6px;
         }
         .bundle-product-wrapper {
             flex-wrap: wrap;
