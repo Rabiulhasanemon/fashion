@@ -122,6 +122,10 @@ try {
         echo "</pre>";
         
         // Offer to create table
+        echo "<p><strong>Quick Solution:</strong> Click the button below to create the table automatically, or visit <a href='create_fbt_table.php' target='_blank'>create_fbt_table.php</a></p>";
+        echo "<p><a href='create_fbt_table.php' style='background: #4CAF50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px; font-weight: bold;'>🚀 Create Table Now (Recommended)</a></p>";
+        
+        // Also offer inline creation
         if (isset($_GET['create_table']) && $_GET['create_table'] == '1') {
             echo "<h3>Creating Table...</h3>";
             $create_sql = "CREATE TABLE IF NOT EXISTS `" . $table_name . "` (
@@ -140,10 +144,10 @@ try {
             if ($create_result) {
                 echo "<p class='success'>✓ Table created successfully! <a href='?'>Refresh page</a></p>";
             } else {
-                echo "<p class='error'>❌ Error creating table. Please create it manually using the SQL above.</p>";
+                echo "<p class='error'>❌ Error creating table. Please use <a href='create_fbt_table.php'>create_fbt_table.php</a> instead.</p>";
             }
         } else {
-            echo "<p><a href='?create_table=1' style='background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Create Table Now</a></p>";
+            echo "<p><a href='?create_table=1' style='background: #2196F3; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-left: 10px;'>Or Create Inline</a></p>";
         }
     }
     
