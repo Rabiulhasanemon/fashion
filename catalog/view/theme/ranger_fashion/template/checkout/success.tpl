@@ -15,7 +15,7 @@
 </section>
 
 <section class="order-success mt-2">
-  <div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
+  <div id="content" class="<?php echo isset($class) ? $class : ''; ?>"><?php echo $content_top; ?>
     <div class="container order-success-info">
       <div class="row">
         <div class="col-lg-12">
@@ -34,6 +34,7 @@
                     <a href="account/order" class="view-order">View Order</a>
                   </div>
                   <?php } ?>
+                  <?php if (isset($order) && isset($order['totals']) && !empty($order['totals'])) { ?>
                   <div class="order-summary">
                     <table>
                       <tr>
@@ -42,13 +43,14 @@
                       </tr>
                       <?php foreach ($order['totals'] as $total) { ?>
                       <tr>
-                        <td><?php echo $total['title']; ?></td>
-                        <td><?php echo $total['text']; ?></td>
+                        <td><?php echo isset($total['title']) ? $total['title'] : ''; ?></td>
+                        <td><?php echo isset($total['text']) ? $total['text'] : ''; ?></td>
                       </tr>
                       <?php } ?>
 
                     </table>
                   </div>
+                  <?php } ?>
                   <a href="/"><button type="submit" class="btn mt-3">Continue Shopping</button></a>
                 </div>
               </div>
