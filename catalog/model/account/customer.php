@@ -20,8 +20,15 @@ class ModelAccountCustomer extends Model {
 			}
 
 			// Ensure required fields are present
-			if (empty($data['firstname']) || empty($data['email']) || empty($data['telephone']) || empty($data['password'])) {
-				error_log('addCustomer Error: Missing required fields');
+			$missing = array();
+			if (empty($data['firstname'])) $missing[] = 'firstname';
+			if (empty($data['email'])) $missing[] = 'email';
+			if (empty($data['telephone'])) $missing[] = 'telephone';
+			if (empty($data['password'])) $missing[] = 'password';
+			
+			if (!empty($missing)) {
+				error_log('addCustomer Error: Missing required fields: ' . implode(', ', $missing));
+				error_log('addCustomer Data received: ' . print_r($data, true));
 				return false;
 			}
 
@@ -45,11 +52,22 @@ class ModelAccountCustomer extends Model {
 			error_log('addCustomer: SQL Query: ' . substr($customer_sql, 0, 200) . '...');
 			
 			// Execute regular INSERT (not IGNORE) to ensure data is inserted
+			error_log('addCustomer: Executing INSERT query...');
 			$customer_query = $this->db->query($customer_sql);
 			
 			// Check for database errors
 			if ($customer_query === false) {
-				error_log('addCustomer ERROR: INSERT query failed. Check database connection and table structure.');
+				$db_error = '';
+				if (method_exists($this->db, 'getError')) {
+					$db_error = $this->db->getError();
+				} elseif (isset($this->db->error)) {
+					$db_error = $this->db->error;
+				} elseif (isset($this->db->link->error)) {
+					$db_error = $this->db->link->error;
+				}
+				error_log('addCustomer ERROR: INSERT query failed.');
+				error_log('addCustomer ERROR: Database error: ' . $db_error);
+				error_log('addCustomer ERROR: SQL Query: ' . substr($customer_sql, 0, 500));
 				// Check if customer was inserted anyway (race condition)
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 				if ($check_query && $check_query->num_rows > 0) {

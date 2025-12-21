@@ -16,13 +16,72 @@ class ControllerAccountRegister extends Controller {
 
 		// Allow registration to proceed - only check if POST request
 		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			// Log all POST data for debugging
+			error_log('=== REGISTRATION DEBUG START ===');
+			error_log('POST Data received: ' . print_r($this->request->post, true));
+			
+			// Handle field name mapping for different form templates
+			// Some forms use 'full_name' and 'phone' instead of 'firstname' and 'telephone'
+			if (isset($this->request->post['full_name']) && !isset($this->request->post['firstname'])) {
+				$this->request->post['firstname'] = $this->request->post['full_name'];
+				error_log('Mapped full_name to firstname: ' . $this->request->post['firstname']);
+			}
+			if (isset($this->request->post['phone']) && !isset($this->request->post['telephone'])) {
+				$this->request->post['telephone'] = $this->request->post['phone'];
+				error_log('Mapped phone to telephone: ' . $this->request->post['telephone']);
+			}
+			
+			// Split full_name into firstname and lastname if needed
+			if (isset($this->request->post['firstname']) && !isset($this->request->post['lastname'])) {
+				$name_parts = explode(' ', trim($this->request->post['firstname']), 2);
+				$this->request->post['firstname'] = $name_parts[0];
+				if (isset($name_parts[1])) {
+					$this->request->post['lastname'] = $name_parts[1];
+				}
+				error_log('Split name - firstname: ' . $this->request->post['firstname'] . ', lastname: ' . (isset($this->request->post['lastname']) ? $this->request->post['lastname'] : ''));
+			}
+			
 			// Run validation to collect errors but don't block registration
 			$this->validate();
 			
 			// Check if we have minimum required data to proceed
 			$has_minimum_data = true;
-			if (empty($this->request->post['firstname']) || empty($this->request->post['email']) || empty($this->request->post['telephone']) || empty($this->request->post['password'])) {
-				$has_minimum_data = false;
+			$missing_fields = array();
+			if (empty($this->request->post['firstname'])) {
+				$missing_fields[] = 'firstname';
+			}
+			if (empty($this->request->post['email'])) {
+				$missing_fields[] = 'email';
+			}
+			if (empty($this->request->post['telephone'])) {
+				$missing_fields[] = 'telephone';
+			}
+			if (empty($this->request->post['password'])) {
+				$missing_fields[] = 'password';
+			}
+			
+			// Auto-generate password if missing (for forms that don't require password)
+			if (empty($this->request->post['password'])) {
+				// Generate a random password
+				$this->request->post['password'] = substr(md5(uniqid(rand(), true)), 0, 12);
+				error_log('Password was missing, auto-generated: ' . $this->request->post['password']);
+			}
+			
+			if (!empty($missing_fields)) {
+				// Remove password from missing fields check since we auto-generate it
+				$missing_fields = array_filter($missing_fields, function($field) {
+					return $field !== 'password';
+				});
+				
+				if (!empty($missing_fields)) {
+					$has_minimum_data = false;
+					error_log('Missing required fields: ' . implode(', ', $missing_fields));
+				} else {
+					error_log('All required fields present (password auto-generated)');
+					$has_minimum_data = true;
+				}
+			} else {
+				error_log('All required fields present');
 			}
 			
 			// Proceed with registration if we have minimum data, even if validation has errors
@@ -66,11 +125,19 @@ class ControllerAccountRegister extends Controller {
 					}
 					
 					// Log registration attempt for debugging
-					error_log('Registration Attempt - Email: ' . $customer_data['email'] . ' | Firstname: ' . (isset($customer_data['firstname']) ? $customer_data['firstname'] : 'N/A'));
+					error_log('=== REGISTRATION ATTEMPT ===');
+					error_log('Email: ' . (isset($customer_data['email']) ? $customer_data['email'] : 'N/A'));
+					error_log('Firstname: ' . (isset($customer_data['firstname']) ? $customer_data['firstname'] : 'N/A'));
+					error_log('Lastname: ' . (isset($customer_data['lastname']) ? $customer_data['lastname'] : 'N/A'));
+					error_log('Telephone: ' . (isset($customer_data['telephone']) ? $customer_data['telephone'] : 'N/A'));
+					error_log('Password: ' . (isset($customer_data['password']) ? 'SET' : 'NOT SET'));
+					error_log('Customer Data Array: ' . print_r($customer_data, true));
 					
 					$customer_id = $this->model_account_customer->addCustomer($customer_data);
 					
-					error_log('Registration Result - Customer ID: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+					error_log('=== REGISTRATION RESULT ===');
+					error_log('Customer ID returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+					error_log('Customer ID type: ' . gettype($customer_id));
 					
 					// If addCustomer returned false, try to get existing customer
 					if (!$customer_id || $customer_id <= 0) {
