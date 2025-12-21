@@ -383,66 +383,90 @@ class ControllerCheckoutOnepagecheckout extends Controller
                     error_log('WARNING: No payment code found!');
                 }
                 
-                // Clean all output buffers before redirect
+                // Clean all output buffers before redirect - CRITICAL
                 while (ob_get_level()) {
                     ob_end_clean();
                 }
                 
+                // Disable error display to prevent any output
+                @ini_set('display_errors', 0);
+                
+                // Build success URL first
+                $success_url = $this->url->link("checkout/success", '', 'SSL');
+                // Fix URL if missing slash
+                $success_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $success_url);
+                
                 // For COD (Cash on Delivery), go directly to success page
                 if (strtolower($payment_code) == 'cod') {
                     error_log('Payment method is COD, redirecting to success page...');
-                    $success_url = $this->url->link("checkout/success", '', 'SSL');
-                    // Fix URL if missing slash
-                    $success_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $success_url);
-                    error_log('Success URL (fixed): ' . $success_url);
+                    error_log('Success URL: ' . $success_url);
                     
-                    // Use direct header redirect for reliability
-                    if ($success_url) {
-                        error_log('Redirecting to: ' . $success_url);
-                        header('Location: ' . $success_url);
+                    // Ensure no output before redirect
+                    if (ob_get_level()) {
+                        ob_end_clean();
+                    }
+                    
+                    // Redirect immediately
+                    if ($success_url && !empty($success_url)) {
+                        error_log('Redirecting to success page: ' . $success_url);
+                        header('Location: ' . $success_url, true, 302);
                         exit;
                     } else {
-                        error_log('ERROR: Success URL is empty, using header redirect');
-                        header('Location: index.php?route=checkout/success');
+                        error_log('ERROR: Success URL is empty, using relative redirect');
+                        header('Location: index.php?route=checkout/success', true, 302);
                         exit;
                     }
                 }
                 
-                // For other payment methods, try to redirect to payment confirm
-                if (!empty($payment_code)) {
-                    error_log('Payment code found: ' . $payment_code . ', redirecting to payment confirm...');
+                // For other payment methods, try to redirect to payment confirm first
+                if (!empty($payment_code) && strtolower($payment_code) != 'cod') {
+                    error_log('Payment code found: ' . $payment_code . ', checking if payment confirm exists...');
                     try {
                         $payment_confirm_url = $this->url->link('payment/' . $payment_code . '/confirm', '', 'SSL');
                         // Fix URL if missing slash
                         $payment_confirm_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $payment_confirm_url);
-                        error_log('Payment confirm URL (fixed): ' . $payment_confirm_url);
-                        if ($payment_confirm_url) {
-                            error_log('Redirecting to: ' . $payment_confirm_url);
-                            header('Location: ' . $payment_confirm_url);
-                            exit;
-                        } else {
-                            error_log('WARNING: Payment confirm URL is empty');
+                        error_log('Payment confirm URL: ' . $payment_confirm_url);
+                        
+                        // Check if payment confirm controller exists
+                        $payment_confirm_file = DIR_APPLICATION . 'controller/payment/' . $payment_code . '.php';
+                        if (file_exists($payment_confirm_file)) {
+                            // Check if confirm method exists
+                            require_once($payment_confirm_file);
+                            $payment_class = 'ControllerPayment' . str_replace('_', '', ucwords($payment_code, '_'));
+                            if (class_exists($payment_class)) {
+                                $payment_obj = new $payment_class($this->registry);
+                                if (method_exists($payment_obj, 'confirm')) {
+                                    error_log('Payment confirm method exists, redirecting...');
+                                    if (ob_get_level()) {
+                                        ob_end_clean();
+                                    }
+                                    header('Location: ' . $payment_confirm_url, true, 302);
+                                    exit;
+                                }
+                            }
                         }
+                        error_log('Payment confirm not available, will use success page fallback');
                     } catch (Exception $e) {
-                        error_log('Payment confirm redirect error: ' . $e->getMessage());
-                        error_log('Error trace: ' . $e->getTraceAsString());
+                        error_log('Payment confirm check error: ' . $e->getMessage());
                     }
                 }
                 
-                // Fallback - redirect to success page
-                error_log('Using fallback - redirecting to success page...');
-                $success_url = $this->url->link("checkout/success", '', 'SSL');
-                // Fix URL if missing slash
-                $success_url = str_replace('://ruplexa1.master.com.bdindex.php', '://ruplexa1.master.com.bd/index.php', $success_url);
-                error_log('Fallback success URL (fixed): ' . $success_url);
-                if ($success_url) {
-                    error_log('Redirecting to: ' . $success_url);
-                    header('Location: ' . $success_url);
+                // Fallback - redirect to success page for all cases
+                error_log('Using success page redirect (fallback or default)...');
+                error_log('Success URL: ' . $success_url);
+                
+                // Ensure no output before redirect
+                if (ob_get_level()) {
+                    ob_end_clean();
+                }
+                
+                if ($success_url && !empty($success_url)) {
+                    error_log('Redirecting to success page: ' . $success_url);
+                    header('Location: ' . $success_url, true, 302);
                     exit;
                 } else {
-                    error_log('ERROR: All redirect methods failed, using header redirect as last resort');
-                    // Last resort - use header redirect
-                    header('Location: index.php?route=checkout/success');
+                    error_log('ERROR: Success URL is empty, using relative redirect');
+                    header('Location: index.php?route=checkout/success', true, 302);
                     exit;
                 }
                 

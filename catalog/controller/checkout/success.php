@@ -88,10 +88,8 @@ class ControllerCheckoutSuccess extends Controller {
             $data['order_products'] = array();
         }
         
-        // Unset order_id after we've loaded all data
-        if (isset($this->session->data['order_id'])) {
-            unset($this->session->data['order_id']);
-        }
+        // DON'T unset order_id yet - keep it until page is fully rendered
+        // This ensures the order data is available even if there are redirects
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
