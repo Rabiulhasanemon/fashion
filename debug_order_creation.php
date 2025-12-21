@@ -262,12 +262,22 @@ if (!defined('DIR_APPLICATION')) {
     }
     
     if (($zero_check && $zero_check->num_rows > 0) || (!$auto_inc || $auto_inc <= 0)) {
-        echo "<div style='background: #fff3cd; padding: 10px; border: 1px solid #ffc107; margin: 10px 0;'>";
-        echo "⚠ <strong>CRITICAL:</strong> Order table has issues that must be fixed first!<br>";
-        echo "Please run: <a href='fix_order_table.php' style='font-weight: bold;'>fix_order_table.php</a><br>";
-        echo "This will fix:<br>";
-        echo "- Record with order_id = 0<br>";
-        echo "- Missing AUTO_INCREMENT on order_id column<br>";
+        echo "<div style='background: #ffebee; padding: 15px; border: 2px solid #f44336; margin: 20px 0; border-radius: 5px;'>";
+        echo "<h3 style='color: #d32f2f; margin-top: 0;'>⚠ CRITICAL: Order Table Issues Detected!</h3>";
+        echo "<p style='font-size: 16px;'><strong>You MUST fix these issues before orders can be created:</strong></p>";
+        echo "<ul style='font-size: 14px;'>";
+        if ($zero_check && $zero_check->num_rows > 0) {
+            echo "<li>❌ Record with order_id = 0 exists (blocks new orders)</li>";
+        }
+        if (!$auto_inc || $auto_inc <= 0) {
+            echo "<li>❌ AUTO_INCREMENT is NOT SET on order_id column</li>";
+        }
+        echo "</ul>";
+        echo "<p style='font-size: 16px; margin-top: 15px;'><strong>👉 Click here to fix automatically:</strong></p>";
+        echo "<p style='text-align: center; margin: 20px 0;'>";
+        echo "<a href='fix_order_table.php' style='display: inline-block; background: #4CAF50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px; font-weight: bold;'>🔧 FIX ORDER TABLE NOW</a>";
+        echo "</p>";
+        echo "<p style='font-size: 14px; color: #666;'>Or manually visit: <code>https://ruplexa1.master.com.bd/fix_order_table.php</code></p>";
         echo "</div>";
     }
     
