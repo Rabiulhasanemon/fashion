@@ -252,8 +252,29 @@ if (!defined('DIR_APPLICATION')) {
     }
     
     echo "<h2>Test 5: Try to Create Test Order</h2>";
+    
+    // First, check if we need to run the fix script
+    $zero_check = $db->query("SELECT order_id FROM " . DB_PREFIX . "order WHERE order_id = 0 LIMIT 1");
+    $status_check = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "order'");
+    $auto_inc = null;
+    if ($status_check && $status_check->num_rows > 0) {
+        $auto_inc = isset($status_check->row['Auto_increment']) ? $status_check->row['Auto_increment'] : null;
+    }
+    
+    if (($zero_check && $zero_check->num_rows > 0) || (!$auto_inc || $auto_inc <= 0)) {
+        echo "<div style='background: #fff3cd; padding: 10px; border: 1px solid #ffc107; margin: 10px 0;'>";
+        echo "⚠ <strong>CRITICAL:</strong> Order table has issues that must be fixed first!<br>";
+        echo "Please run: <a href='fix_order_table.php' style='font-weight: bold;'>fix_order_table.php</a><br>";
+        echo "This will fix:<br>";
+        echo "- Record with order_id = 0<br>";
+        echo "- Missing AUTO_INCREMENT on order_id column<br>";
+        echo "</div>";
+    }
+    
     try {
+        echo "Attempting to create test order...<br>";
         $test_order_id = $model_order->addOrder($test_order_data);
+        
         if ($test_order_id && $test_order_id > 0) {
             echo "✓ Test order created successfully! Order ID: " . $test_order_id . "<br>";
             
@@ -272,23 +293,43 @@ if (!defined('DIR_APPLICATION')) {
             }
         } else {
             echo "✗ Order creation failed! Returned: " . ($test_order_id ? $test_order_id : 'FALSE/0') . "<br>";
-            echo "Check error logs for details.<br>";
+            
+            // Check for MySQL errors
+            if (method_exists($db->link, 'error') && $db->link->error) {
+                echo "MySQL Error: " . htmlspecialchars($db->link->error) . "<br>";
+            }
+            
+            // Check last error
+            if (method_exists($db, 'getError')) {
+                $db_error = $db->getError();
+                if ($db_error) {
+                    echo "Database Error: " . htmlspecialchars($db_error) . "<br>";
+                }
+            }
+            
+            echo "Check error logs below for detailed addOrder() errors.<br>";
         }
     } catch (Exception $e) {
         echo "✗ Exception during order creation: " . htmlspecialchars($e->getMessage()) . "<br>";
         echo "Stack trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
     }
     
-    echo "<h2>Test 6: Check Error Logs</h2>";
+    echo "<h2>Test 6: Check Error Logs (Last 50 lines with order/addOrder/ERROR)</h2>";
     $log_file = DIR_LOGS . 'error.log';
     if (file_exists($log_file)) {
         $log_lines = file($log_file);
-        $recent_logs = array_slice($log_lines, -30);
-        echo "<pre style='max-height: 400px; overflow-y: scroll;'>";
+        $recent_logs = array_slice($log_lines, -50);
+        echo "<pre style='max-height: 400px; overflow-y: scroll; background: #f5f5f5; padding: 10px; border: 1px solid #ddd;'>";
+        $found_errors = false;
         foreach ($recent_logs as $line) {
-            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false || stripos($line, 'ERROR') !== false) {
+            if (stripos($line, 'order') !== false || stripos($line, 'addOrder') !== false || stripos($line, 'onepagecheckout') !== false || stripos($line, 'ERROR') !== false || stripos($line, 'WARNING') !== false || stripos($line, 'EXCEPTION') !== false) {
                 echo htmlspecialchars($line);
+                $found_errors = true;
             }
+        }
+        if (!$found_errors) {
+            echo "No recent order-related errors found in logs.<br>";
+            echo "This might mean the error is happening silently or not being logged.<br>";
         }
         echo "</pre>";
     } else {
