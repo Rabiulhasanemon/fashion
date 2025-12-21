@@ -16,7 +16,7 @@ echo "<h1>Customer Registration Debug Tool</h1>";
 
 try {
     // Load OpenCart
-    require_once(__DIR__ . '/catalog/config.php');
+    require_once(__DIR__ . '/config.php');
     echo "<p class='info'>✓ config.php loaded</p>";
     
     require_once(DIR_SYSTEM . 'startup.php');
