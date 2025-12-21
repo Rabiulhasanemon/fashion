@@ -1113,17 +1113,24 @@
             var discountPercent = 0;
             
             // First, try to use the discount from the server
-            if (product.discount !== undefined && product.discount !== false && product.discount !== null) {
+            if (product.discount !== undefined && product.discount !== false && product.discount !== null && product.discount !== '') {
                 discountPercent = parseInt(product.discount) || 0;
             }
             
             // If no discount from server, calculate from price and special
-            if (discountPercent === 0 && product.price && product.special) {
-                // Remove currency symbols and parse numbers
-                var priceNum = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-                var specialNum = parseFloat(String(product.special).replace(/[^\d.]/g, '')) || 0;
+            if (discountPercent <= 0 && product.price && product.special) {
+                // Remove currency symbols and parse numbers - handle various formats
+                var priceStr = String(product.price).replace(/[^\d.]/g, '');
+                var specialStr = String(product.special).replace(/[^\d.]/g, '');
+                var priceNum = parseFloat(priceStr) || 0;
+                var specialNum = parseFloat(specialStr) || 0;
+                
                 if (priceNum > 0 && specialNum > 0 && priceNum > specialNum) {
                     discountPercent = Math.round(((priceNum - specialNum) / priceNum) * 100);
+                    // Ensure at least 1% if there's a difference
+                    if (discountPercent < 1 && priceNum > specialNum) {
+                        discountPercent = 1;
+                    }
                 }
             }
             
@@ -1135,26 +1142,45 @@
             html += '<div class="psh-new-image-wrapper">';
             
             // Discount badge - Top Right (Red banner with lightning bolt - matching image style)
-            // Show badge if there's a discount OR if there's a special price (indicating a sale)
-            if (discountPercent > 0 || (product.special && product.price && product.special !== product.price)) {
-                // If discount is 0 but special exists, try to calculate one more time
-                if (discountPercent === 0 && product.special && product.price) {
-                    var priceStr = String(product.price).replace(/[^\d.]/g, '');
-                    var specialStr = String(product.special).replace(/[^\d.]/g, '');
-                    var priceVal = parseFloat(priceStr);
-                    var specialVal = parseFloat(specialStr);
+            // Show badge if there's a special price (indicating a sale) or if discount > 0
+            var shouldShowBadge = false;
+            var finalDiscount = discountPercent;
+            
+            // Check if product has special price
+            if (product.special && product.price) {
+                // If discount is still 0 but special exists, calculate one more time with different method
+                if (finalDiscount <= 0) {
+                    // Try removing all non-numeric characters except decimal point
+                    var priceClean = String(product.price).replace(/[^\d.]/g, '');
+                    var specialClean = String(product.special).replace(/[^\d.]/g, '');
+                    var priceVal = parseFloat(priceClean);
+                    var specialVal = parseFloat(specialClean);
+                    
                     if (priceVal > 0 && specialVal > 0 && priceVal > specialVal) {
-                        discountPercent = Math.round(((priceVal - specialVal) / priceVal) * 100);
+                        finalDiscount = Math.round(((priceVal - specialVal) / priceVal) * 100);
+                        if (finalDiscount < 1) {
+                            finalDiscount = 1;
+                        }
                     }
                 }
                 
-                // Only show if we have a valid discount percentage
-                if (discountPercent > 0) {
-                    html += '<div class="psh-new-badge psh-new-badge-red">';
-                    html += '<i class="fa fa-bolt"></i> ';
-                    html += discountPercent + '% OFF';
-                    html += '</div>';
+                // If we still don't have a discount but special exists and is different, show at least 1%
+                if (finalDiscount <= 0 && product.special !== product.price) {
+                    finalDiscount = 1;
                 }
+                
+                shouldShowBadge = (finalDiscount > 0);
+            } else if (finalDiscount > 0) {
+                // Show badge if discount is provided directly
+                shouldShowBadge = true;
+            }
+            
+            // Display the badge
+            if (shouldShowBadge && finalDiscount > 0) {
+                html += '<div class="psh-new-badge psh-new-badge-red">';
+                html += '<i class="fa fa-bolt"></i> ';
+                html += finalDiscount + '% OFF';
+                html += '</div>';
             }
             
             html += '<img alt="' + (product.name || 'Product') + '" src="' + product.thumb + '" class="psh-new-product-img" />';
