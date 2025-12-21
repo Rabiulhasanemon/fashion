@@ -8,33 +8,175 @@
         </ul>
     </div>
 </section>
-<div class="container account-page my-account">
+
+<?php if ($success) { ?>
+<div class="container">
+    <div class="alert alert-success premium-alert">
+        <i class="fas fa-check-circle"></i> <?php echo $success; ?>
+    </div>
+</div>
+<?php } ?>
+
+<div class="container account-page my-account premium-account">
     <?php echo $column_left; ?>
     <div id="content" class="content left-wrapper">
-        <div class="my-info">
-            <h2><?php echo $text_my_account; ?></h2>
-            <ul class="list-unstyled">
-                <li><a href="<?php echo $edit; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/account-info.png"/></span><?php echo $text_edit; ?></a></li>
-                <li><a href="<?php echo $password; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/password.png"/></span><?php echo $text_password; ?></a></li>
-                <li><a href="<?php echo $address; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/address.png"/></span><?php echo $text_address; ?></a></li>
-                <li><a href="<?php echo $wishlist; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/wishlist.png"/></span><?php echo $text_wishlist; ?></a></li>
-            </ul>
-            <h2><?php echo $text_my_orders; ?></h2>
-            <ul class="list-unstyled">
-                <li><a href="<?php echo $order; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/order-history.png"/></span><?php echo $text_order; ?></a></li>
-                <li><a href="<?php echo $download; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/downloads.png"/></span><?php echo $text_download; ?></a></li>
-                <?php if ($reward) { ?>
-                <li><a href="<?php echo $reward; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/reward-point.png"/></span><?php echo $text_reward; ?></a></li>
-                <?php } ?>
-                <li><a href="<?php echo $return; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/return.png"/></span><?php echo $text_return; ?></a></li>
-                <li><a href="<?php echo $transaction; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/transaction.png"/></span><?php echo $text_transaction; ?></a></li>
-            </ul>
-            <h2><?php echo $text_my_newsletter; ?></h2>
-            <ul class="list-unstyled">
-                <li><a href="<?php echo $newsletter; ?>"><span><img class="c-icon" src="catalog/view/theme/ribana/icons/account/subscribe.png"/></span><?php echo $text_newsletter; ?></a></li>
-            </ul>
-            <?php echo $content_bottom; ?>
+        <div class="premium-account-wrapper">
+            <!-- My Account Section -->
+            <div class="premium-account-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        <?php echo $text_my_account; ?>
+                    </h2>
+                </div>
+                <div class="premium-cards-grid">
+                    <a href="<?php echo $edit; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_edit; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="<?php echo $password; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_password; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="<?php echo $address; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_address; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="<?php echo $wishlist; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_wishlist; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- My Orders Section -->
+            <div class="premium-account-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        <?php echo $text_my_orders; ?>
+                    </h2>
+                </div>
+                <div class="premium-cards-grid">
+                    <a href="<?php echo $order; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_order; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="<?php echo $download; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_download; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <?php if ($reward) { ?>
+                    <a href="<?php echo $reward; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_reward; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    <?php } ?>
+                    
+                    <a href="<?php echo $return; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_return; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="<?php echo $transaction; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_transaction; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Newsletter Section -->
+            <div class="premium-account-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-envelope"></i>
+                        <?php echo $text_my_newsletter; ?>
+                    </h2>
+                </div>
+                <div class="premium-cards-grid">
+                    <a href="<?php echo $newsletter; ?>" class="premium-card">
+                        <div class="card-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title"><?php echo $text_newsletter; ?></h3>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
+        <?php echo $content_bottom; ?>
     </div>
 </div>
 <?php echo $footer; ?>
