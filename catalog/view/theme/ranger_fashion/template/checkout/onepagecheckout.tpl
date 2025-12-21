@@ -261,8 +261,12 @@
         $("#input-region").chosen()
 
         var confirmButton = $('#button-confirm');
-        $("#checkout-form").on("submit", function () {
-            confirmButton.button("loading")
+        $("#checkout-form").on("submit", function (e) {
+            // Don't prevent default - allow form to submit normally
+            error_log('Form submit event triggered');
+            confirmButton.button("loading");
+            // Allow form to submit - don't prevent default
+            return true;
         });
 
         function reload(data) {
