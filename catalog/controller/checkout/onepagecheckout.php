@@ -413,20 +413,15 @@ class ControllerCheckoutOnepagecheckout extends Controller
                     error_log('Payment method is COD, redirecting to success page...');
                     error_log('Success URL: ' . $success_url);
                     
-                    // Ensure no output before redirect
-                    if (ob_get_level()) {
-                        ob_end_clean();
-                    }
-                    
-                    // Redirect immediately
+                    // Use Response class redirect method (handles output buffering automatically)
                     if ($success_url && !empty($success_url)) {
                         error_log('Redirecting to success page: ' . $success_url);
-                        header('Location: ' . $success_url, true, 302);
-                        exit;
+                        $this->response->redirect($success_url);
+                        return;
                     } else {
                         error_log('ERROR: Success URL is empty, using relative redirect');
-                        header('Location: index.php?route=checkout/success', true, 302);
-                        exit;
+                        $this->response->redirect($this->url->link('checkout/success', '', 'SSL'));
+                        return;
                     }
                 }
                 
@@ -449,11 +444,8 @@ class ControllerCheckoutOnepagecheckout extends Controller
                                 $payment_obj = new $payment_class($this->registry);
                                 if (method_exists($payment_obj, 'confirm')) {
                                     error_log('Payment confirm method exists, redirecting...');
-                                    if (ob_get_level()) {
-                                        ob_end_clean();
-                                    }
-                                    header('Location: ' . $payment_confirm_url, true, 302);
-                                    exit;
+                                    $this->response->redirect($payment_confirm_url);
+                                    return;
                                 }
                             }
                         }
@@ -467,19 +459,15 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 error_log('Using success page redirect (fallback or default)...');
                 error_log('Success URL: ' . $success_url);
                 
-                // Ensure no output before redirect
-                if (ob_get_level()) {
-                    ob_end_clean();
-                }
-                
+                // Use Response class redirect method (handles output buffering automatically)
                 if ($success_url && !empty($success_url)) {
                     error_log('Redirecting to success page: ' . $success_url);
-                    header('Location: ' . $success_url, true, 302);
-                    exit;
+                    $this->response->redirect($success_url);
+                    return;
                 } else {
                     error_log('ERROR: Success URL is empty, using relative redirect');
-                    header('Location: index.php?route=checkout/success', true, 302);
-                    exit;
+                    $this->response->redirect($this->url->link('checkout/success', '', 'SSL'));
+                    return;
                 }
                 
             } catch (Exception $e) {

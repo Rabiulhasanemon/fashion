@@ -324,11 +324,13 @@ class ModelCheckoutOrder extends Model {
             $order_total_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_total` WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order ASC");
 
             $order_totals = array();
-            foreach ($order_total_query->rows as $total) {
-                $order_totals[] = array(
-                    'title' => $total['title'],
-                    'text'  => $this->currency->format($total['value'], $order_query->row['currency_code'], $order_query->row['currency_value']),
-                );
+            if ($order_total_query && $order_total_query->num_rows > 0) {
+                foreach ($order_total_query->rows as $total) {
+                    $order_totals[] = array(
+                        'title' => isset($total['title']) ? $total['title'] : '',
+                        'text'  => $this->currency->format(isset($total['value']) ? $total['value'] : 0, $order_query->row['currency_code'], $order_query->row['currency_value']),
+                    );
+                }
             }
 
 			return array(
