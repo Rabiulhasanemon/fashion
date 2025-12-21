@@ -3,7 +3,20 @@ class ModelCheckoutOrder extends Model {
 	public function addOrder($data) {
 		$this->event->trigger('pre.order.add', $data);
 
-		$this->db->query("INSERT INTO `" . DB_PREFIX . "order` SET invoice_prefix = '"
+		// Debug logging
+		error_log('=== addOrder() called ===');
+		error_log('Order data keys: ' . implode(', ', array_keys($data)));
+		
+		// Validate required fields
+		$required_fields = array('invoice_prefix', 'store_id', 'firstname', 'lastname', 'email', 'telephone', 'payment_firstname', 'payment_lastname', 'payment_address_1', 'payment_city', 'payment_country_id', 'payment_zone_id', 'payment_method', 'payment_code', 'total', 'order_status_id');
+		foreach ($required_fields as $field) {
+			if (!isset($data[$field])) {
+				error_log('ERROR: Required field missing: ' . $field);
+			}
+		}
+
+		try {
+			$insert_query = "INSERT INTO `" . DB_PREFIX . "order` SET invoice_prefix = '"
 			. $this->db->escape($data['invoice_prefix']) . "', store_id = '" . (int)$data['store_id']
 			. "', store_name = '" . $this->db->escape($data['store_name']) . "', store_url = '"
 			. $this->db->escape($data['store_url']) . "', customer_id = '" . (int)$data['customer_id']
@@ -56,9 +69,34 @@ class ModelCheckoutOrder extends Model {
 			. "', forwarded_ip = '" .  $this->db->escape($data['forwarded_ip'])
 			. "', user_agent = '" . $this->db->escape($data['user_agent'])
 			. "', accept_language = '" . $this->db->escape($data['accept_language'])
-			. "', date_added = NOW(), date_modified = NOW()");
+			. "', date_added = NOW(), date_modified = NOW()";
+			
+			error_log('Executing INSERT query...');
+			$result = $this->db->query($insert_query);
+			
+			if ($result === false) {
+				error_log('ERROR: INSERT query failed!');
+				error_log('MySQL Error: ' . (method_exists($this->db, 'getError') ? $this->db->getError() : 'Unknown'));
+				if (method_exists($this->db->link, 'error')) {
+					error_log('MySQL Error: ' . $this->db->link->error);
+				}
+				return false;
+			}
 
-		$order_id = $this->db->getLastId();
+			$order_id = $this->db->getLastId();
+			error_log('Order ID from getLastId(): ' . $order_id);
+			
+			if (!$order_id || $order_id <= 0) {
+				error_log('ERROR: Invalid order_id returned: ' . $order_id);
+				// Check if there's a record with order_id = 0
+				$zero_check = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE order_id = 0 LIMIT 1");
+				if ($zero_check && $zero_check->num_rows > 0) {
+					error_log('WARNING: Record with order_id = 0 exists! This may cause AUTO_INCREMENT issues.');
+				}
+				return false;
+			}
+			
+			error_log('Order created successfully with ID: ' . $order_id);
 
 		// Products
 		if (isset($data['products'])) {
@@ -90,15 +128,35 @@ class ModelCheckoutOrder extends Model {
 		}
 
 		// Totals
-		if (isset($data['totals'])) {
+		if (isset($data['totals']) && is_array($data['totals'])) {
+			error_log('Adding ' . count($data['totals']) . ' totals to order...');
 			foreach ($data['totals'] as $total) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($total['code']) . "', title = '" . $this->db->escape($total['title']) . "', `value` = '" . (float)$total['value'] . "', sort_order = '" . (int)$total['sort_order'] . "'");
+				$total_insert = "INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($total['code']) . "', title = '" . $this->db->escape($total['title']) . "', `value` = '" . (float)$total['value'] . "', sort_order = '" . (int)$total['sort_order'] . "'";
+				$total_result = $this->db->query($total_insert);
+				if ($total_result === false) {
+					error_log('ERROR: Failed to insert total: ' . $total['code']);
+				}
 			}
+			error_log('Totals added successfully');
+		} else {
+			error_log('WARNING: No totals in order data!');
 		}
 
 		$this->event->trigger('post.order.add', $order_id);
+		
+		error_log('=== addOrder() completed successfully. Order ID: ' . $order_id . ' ===');
 
 		return $order_id;
+		} catch (Exception $e) {
+			error_log('EXCEPTION in addOrder(): ' . $e->getMessage());
+			error_log('Stack trace: ' . $e->getTraceAsString());
+			return false;
+		}
+		} catch (Exception $e) {
+			error_log('EXCEPTION in addOrder(): ' . $e->getMessage());
+			error_log('Stack trace: ' . $e->getTraceAsString());
+			return false;
+		}
 	}
 
 	public function editOrder($order_id, $data) {
