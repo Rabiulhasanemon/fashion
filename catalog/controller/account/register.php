@@ -174,7 +174,7 @@ class ControllerAccountRegister extends Controller {
 							// Default redirect - use simple URL format
 							try {
 								// Try account page first
-								$account_url = $this->url->link('account/account', '', true);
+								$account_url = $this->url->link('account/account', '', 'SSL');
 								if ($account_url && !empty($account_url)) {
 									$this->response->redirect($account_url);
 									return;
