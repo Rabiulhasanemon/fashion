@@ -2562,25 +2562,32 @@ class ControllerCatalogProduct extends Controller {
 		}
 
 		// Frequently Bought Together products
-		if (isset($this->request->post['product_frequently_bought_together'])) {
-			$fbt_products = $this->request->post['product_frequently_bought_together'];
-		} elseif (isset($this->request->get['product_id'])) {
-			$fbt_products = $this->model_catalog_product->getProductFrequentlyBoughtTogether($this->request->get['product_id']);
-		} else {
-			$fbt_products = array();
-		}
-
 		$data['product_frequently_bought_togethers'] = array();
-
-		foreach ($fbt_products as $fbt_product_id) {
-			$fbt_info = $this->model_catalog_product->getProduct($fbt_product_id);
-
-			if ($fbt_info) {
-				$data['product_frequently_bought_togethers'][] = array(
-					'product_id' => $fbt_info['product_id'],
-					'name'       => $fbt_info['name']
-				);
+		
+		try {
+			if (isset($this->request->post['product_frequently_bought_together'])) {
+				$fbt_products = $this->request->post['product_frequently_bought_together'];
+			} elseif (isset($this->request->get['product_id'])) {
+				$fbt_products = $this->model_catalog_product->getProductFrequentlyBoughtTogether($this->request->get['product_id']);
+			} else {
+				$fbt_products = array();
 			}
+
+			if (is_array($fbt_products)) {
+				foreach ($fbt_products as $fbt_product_id) {
+					$fbt_info = $this->model_catalog_product->getProduct($fbt_product_id);
+
+					if ($fbt_info) {
+						$data['product_frequently_bought_togethers'][] = array(
+							'product_id' => $fbt_info['product_id'],
+							'name'       => $fbt_info['name']
+						);
+					}
+				}
+			}
+		} catch (Exception $e) {
+			// If FBT table doesn't exist or any error occurs, just use empty array
+			$data['product_frequently_bought_togethers'] = array();
 		}
 
         if (isset($this->request->post['product_compatible'])) {
