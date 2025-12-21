@@ -56,7 +56,11 @@ final class MySQLi {
 	}
 
 	public function escape($value) {
-		return $this->link->real_escape_string($value);
+		// Handle null values to prevent deprecation warnings in PHP 8.1+
+		if ($value === null) {
+			return '';
+		}
+		return $this->link->real_escape_string((string)$value);
 	}
 
 	public function countAffected() {
