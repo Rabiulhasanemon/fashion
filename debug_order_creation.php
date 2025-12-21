@@ -293,20 +293,8 @@ if (!defined('DIR_APPLICATION')) {
             }
         } else {
             echo "✗ Order creation failed! Returned: " . ($test_order_id ? $test_order_id : 'FALSE/0') . "<br>";
-            
-            // Check for MySQL errors
-            if (method_exists($db->link, 'error') && $db->link->error) {
-                echo "MySQL Error: " . htmlspecialchars($db->link->error) . "<br>";
-            }
-            
-            // Check last error
-            if (method_exists($db, 'getError')) {
-                $db_error = $db->getError();
-                if ($db_error) {
-                    echo "Database Error: " . htmlspecialchars($db_error) . "<br>";
-                }
-            }
-            
+            echo "<strong>This is expected if the order table has issues (order_id = 0 or missing AUTO_INCREMENT).</strong><br>";
+            echo "Please run the fix script first: <a href='fix_order_table.php' style='font-weight: bold; color: red;'>fix_order_table.php</a><br>";
             echo "Check error logs below for detailed addOrder() errors.<br>";
         }
     } catch (Exception $e) {
