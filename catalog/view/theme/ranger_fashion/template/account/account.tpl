@@ -79,6 +79,7 @@
                 </a>
                 <?php } ?>
                 
+                <?php /* Hidden per request
                 <a href="<?php echo $return; ?>" class="account-modern-card">
                     <div class="account-modern-icon">
                         <i class="fas fa-undo-alt"></i>
@@ -92,10 +93,11 @@
                     </div>
                     <div class="account-modern-text"><?php echo $text_transaction; ?></div>
                 </a>
+                */ ?>
             </div>
         </div>
 
-        <!-- Newsletter Section -->
+        <?php /* Hidden per request - Newsletter Section
         <div class="account-modern-section">
             <h2 class="account-modern-heading"><?php echo $text_my_newsletter; ?></h2>
             <div class="account-modern-grid account-modern-grid-row">
@@ -107,6 +109,7 @@
                 </a>
             </div>
         </div>
+        */ ?>
         
         <?php echo $content_bottom; ?>
     </div>
