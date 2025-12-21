@@ -396,6 +396,12 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 
                 // Disable error display to prevent any output
                 @ini_set('display_errors', 0);
+                @error_reporting(0);
+                
+                // Ensure headers haven't been sent
+                if (headers_sent($file, $line)) {
+                    error_log('WARNING: Headers already sent in ' . $file . ' on line ' . $line);
+                }
                 
                 // Build success URL first
                 $success_url = $this->url->link("checkout/success", '', 'SSL');
