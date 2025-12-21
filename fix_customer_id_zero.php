@@ -49,6 +49,19 @@ try {
         if (isset($_GET['fix']) && $_GET['fix'] == '1') {
             echo "<h3>Fixing Customer ID Zero...</h3>";
             
+            // First, update all related tables that reference customer_id = 0
+            $related_tables = array('address', 'customer_activity', 'customer_history', 'customer_ip', 'customer_login', 'customer_reward', 'customer_transaction', 'customer_wishlist');
+            
+            foreach ($related_tables as $table) {
+                $check_table = $db->query("SHOW TABLES LIKE '" . $prefix . $table . "'");
+                if ($check_table && $check_table->num_rows > 0) {
+                    $update_related = $db->query("UPDATE " . $prefix . $table . " SET customer_id = '" . (int)$new_id . "' WHERE customer_id = '0'");
+                    if ($update_related) {
+                        echo "<p class='info'>✓ Updated " . $table . " table</p>";
+                    }
+                }
+            }
+            
             // Update customer_id from 0 to new_id
             $update_sql = "UPDATE " . $prefix . "customer SET customer_id = '" . (int)$new_id . "' WHERE customer_id = '0' LIMIT 1";
             $update_result = $db->query($update_sql);
@@ -64,6 +77,7 @@ try {
                 if ($fix_auto_result) {
                     echo "<p class='success'>✓✓✓ AUTO_INCREMENT set to " . $auto_increment . "</p>";
                     echo "<p class='success' style='font-size: 18px; margin-top: 20px;'>🎉 Customer ID Zero issue fixed! Registration should work now.</p>";
+                    echo "<p><a href='debug_registration.php' style='background: #2196F3; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;'>Test Registration Now</a></p>";
                 } else {
                     echo "<p class='error'>❌ Failed to fix AUTO_INCREMENT</p>";
                 }
@@ -76,9 +90,15 @@ try {
                     echo "<p class='error'>❌ Warning: Customer with ID 0 still exists</p>";
                 }
             } else {
-                echo "<p class='error'>❌ Failed to update customer ID</p>";
+                echo "<p class='error'>❌ Failed to update customer ID. Error: " . $db->error . "</p>";
             }
         } else {
+            echo "<p><strong>This will:</strong></p>";
+            echo "<ul>";
+            echo "<li>Update customer with ID 0 to a new ID (" . $new_id . ")</li>";
+            echo "<li>Update all related tables (address, activity, etc.)</li>";
+            echo "<li>Fix AUTO_INCREMENT to prevent future issues</li>";
+            echo "</ul>";
             echo "<p><a href='?fix=1' style='background: #4CAF50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px; font-weight: bold;'>🔧 Fix Customer ID Zero Now</a></p>";
         }
     } else {
