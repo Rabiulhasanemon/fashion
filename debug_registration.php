@@ -102,11 +102,33 @@ try {
         } else {
             echo "<p class='success'>✓ Email is available</p>";
             
+            // Check for customer_id = 0 issue
+            $zero_check = $db->query("SELECT customer_id FROM " . $prefix . "customer WHERE customer_id = '0' LIMIT 1");
+            if ($zero_check && $zero_check->num_rows > 0) {
+                echo "<p class='error'>⚠ Warning: Customer with ID 0 exists! This will cause registration failures.</p>";
+                echo "<p class='info'>Attempting to fix AUTO_INCREMENT...</p>";
+                
+                // Get max customer_id
+                $max_check = $db->query("SELECT MAX(customer_id) as max_id FROM " . $prefix . "customer");
+                $max_id = $max_check && $max_check->num_rows > 0 ? (int)$max_check->row['max_id'] : 0;
+                $new_auto_increment = $max_id + 1;
+                
+                // Fix AUTO_INCREMENT
+                $fix_sql = "ALTER TABLE " . $prefix . "customer AUTO_INCREMENT = " . $new_auto_increment;
+                $fix_result = $db->query($fix_sql);
+                if ($fix_result) {
+                    echo "<p class='success'>✓ AUTO_INCREMENT fixed to " . $new_auto_increment . "</p>";
+                } else {
+                    echo "<p class='error'>❌ Failed to fix AUTO_INCREMENT</p>";
+                }
+            }
+            
             // Try to insert directly
             $salt = substr(md5(uniqid(rand(), true)), 0, 9);
             $password_hash = sha1($salt . sha1($salt . sha1($test_data['password'])));
             $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
             
+            // Don't specify customer_id - let AUTO_INCREMENT handle it
             $insert_sql = "INSERT INTO " . $prefix . "customer SET 
                 customer_group_id = '1',
                 store_id = '0',
