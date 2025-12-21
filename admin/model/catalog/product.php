@@ -2348,27 +2348,50 @@ class ModelCatalogProduct extends Model {
 		// Check if table exists first to avoid fatal errors
 		$table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_frequently_bought_together'");
 		
+		$log_file = DIR_LOGS . 'product_insert_debug.log';
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Starting FBT update for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Table exists: ' . ($table_check && $table_check->num_rows > 0 ? 'YES' : 'NO') . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] FBT data in POST: ' . (isset($data['product_frequently_bought_together']) ? 'YES (' . (is_array($data['product_frequently_bought_together']) ? count($data['product_frequently_bought_together']) : 'NOT ARRAY') . ')' : 'NO') . PHP_EOL, FILE_APPEND);
+		
 		if ($table_check && $table_check->num_rows > 0) {
 			try {
 				$this->db->query("DELETE FROM " . DB_PREFIX . "product_frequently_bought_together WHERE product_id = '" . (int)$product_id . "'");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Deleted existing FBT records' . PHP_EOL, FILE_APPEND);
 			} catch (Exception $e) {
-				// Table might not exist, continue silently
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Error deleting: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 			}
 			
-			if (isset($data['product_frequently_bought_together']) && is_array($data['product_frequently_bought_together'])) {
+			if (isset($data['product_frequently_bought_together']) && is_array($data['product_frequently_bought_together']) && count($data['product_frequently_bought_together']) > 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Processing ' . count($data['product_frequently_bought_together']) . ' FBT product(s)' . PHP_EOL, FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] FBT product IDs: ' . implode(', ', $data['product_frequently_bought_together']) . PHP_EOL, FILE_APPEND);
 				$sort_order = 0;
+				$inserted_count = 0;
 				foreach ($data['product_frequently_bought_together'] as $fbt_product_id) {
 					$fbt_product_id = (int)$fbt_product_id;
 					if ($fbt_product_id > 0 && $fbt_product_id != $product_id) {
 						try {
-							$this->db->query("INSERT INTO " . DB_PREFIX . "product_frequently_bought_together SET product_id = '" . (int)$product_id . "', fbt_product_id = '" . $fbt_product_id . "', sort_order = '" . (int)$sort_order . "', date_added = NOW()");
+							$insert_sql = "INSERT INTO " . DB_PREFIX . "product_frequently_bought_together SET product_id = '" . (int)$product_id . "', fbt_product_id = '" . $fbt_product_id . "', sort_order = '" . (int)$sort_order . "', date_added = NOW()";
+							$insert_result = $this->db->query($insert_sql);
+							if ($insert_result) {
+								$inserted_count++;
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Successfully inserted FBT product ID: ' . $fbt_product_id . ' (sort_order: ' . $sort_order . ')' . PHP_EOL, FILE_APPEND);
+							} else {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Failed to insert FBT product ID: ' . $fbt_product_id . ' (query returned false)' . PHP_EOL, FILE_APPEND);
+							}
 						} catch (Exception $e) {
-							// Continue on error
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Exception inserting FBT product ID ' . $fbt_product_id . ': ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 						}
 						$sort_order++;
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Skipped invalid FBT product ID: ' . $fbt_product_id . PHP_EOL, FILE_APPEND);
 					}
 				}
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Total inserted: ' . $inserted_count . ' out of ' . count($data['product_frequently_bought_together']) . PHP_EOL, FILE_APPEND);
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] No FBT data or empty array' . PHP_EOL, FILE_APPEND);
 			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT] Table does not exist - please run create_fbt_table.sql' . PHP_EOL, FILE_APPEND);
 		}
 
 		$this->persistProductAttributes($product_id, isset($data['product_attribute']) ? $data['product_attribute'] : array(), 'edit');

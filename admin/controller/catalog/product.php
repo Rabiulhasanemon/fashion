@@ -377,6 +377,13 @@ class ControllerCatalogProduct extends Controller {
 				}
 			}
 			
+			// Special logging for FBT
+			if (isset($this->request->post['product_frequently_bought_together'])) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT-CONTROLLER] FBT data found in POST: ' . print_r($this->request->post['product_frequently_bought_together'], true) . PHP_EOL, FILE_APPEND);
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-FBT-CONTROLLER] FBT data NOT found in POST' . PHP_EOL, FILE_APPEND);
+			}
+			
 			// Ensure product_filter is always an array (even if empty)
 			if (!isset($this->request->post['product_filter']) || !is_array($this->request->post['product_filter'])) {
 				$this->request->post['product_filter'] = array();
