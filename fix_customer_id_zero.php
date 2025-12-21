@@ -55,9 +55,25 @@ try {
             foreach ($related_tables as $table) {
                 $check_table = $db->query("SHOW TABLES LIKE '" . $prefix . $table . "'");
                 if ($check_table && $check_table->num_rows > 0) {
-                    $update_related = $db->query("UPDATE " . $prefix . $table . " SET customer_id = '" . (int)$new_id . "' WHERE customer_id = '0'");
-                    if ($update_related) {
-                        echo "<p class='info'>✓ Updated " . $table . " table</p>";
+                    // Check if table has customer_id column
+                    $check_column = $db->query("SHOW COLUMNS FROM " . $prefix . $table . " LIKE 'customer_id'");
+                    if ($check_column && $check_column->num_rows > 0) {
+                        // Check if there are any rows with customer_id = 0
+                        $check_zero = $db->query("SELECT COUNT(*) as count FROM " . $prefix . $table . " WHERE customer_id = '0'");
+                        $zero_count = $check_zero && $check_zero->num_rows > 0 ? (int)$check_zero->row['count'] : 0;
+                        
+                        if ($zero_count > 0) {
+                            $update_related = $db->query("UPDATE " . $prefix . $table . " SET customer_id = '" . (int)$new_id . "' WHERE customer_id = '0'");
+                            if ($update_related) {
+                                echo "<p class='info'>✓ Updated " . $table . " table (" . $zero_count . " row(s))</p>";
+                            } else {
+                                echo "<p class='error'>❌ Failed to update " . $table . " table</p>";
+                            }
+                        } else {
+                            echo "<p class='info'>- " . $table . " table: No rows with customer_id = 0</p>";
+                        }
+                    } else {
+                        echo "<p class='info'>- " . $table . " table: No customer_id column (skipping)</p>";
                     }
                 }
             }
