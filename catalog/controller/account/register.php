@@ -100,55 +100,109 @@ class ControllerAccountRegister extends Controller {
 					if ($customer_id && $customer_id > 0) {
 						// Clear any previous login attempts for unregistered accounts.
 						if (method_exists($this->model_account_customer, 'deleteLoginAttempts')) {
-							$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
+							try {
+								$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
+							} catch (Exception $e) {
+								error_log('Delete login attempts error: ' . $e->getMessage());
+							}
 						}
 						
-						// Login the customer
-						if ($this->customer->login($this->request->post['email'], null, true)) {
+						// Login the customer - use password from POST if available
+						$login_password = isset($this->request->post['password']) ? $this->request->post['password'] : null;
+						$login_success = false;
+						
+						try {
+							$login_success = $this->customer->login($this->request->post['email'], $login_password, true);
+						} catch (Exception $login_error) {
+							error_log('Customer login error: ' . $login_error->getMessage() . ' | File: ' . $login_error->getFile() . ' | Line: ' . $login_error->getLine());
+							// Try without password (auto-login after registration)
+							try {
+								$login_success = $this->customer->login($this->request->post['email'], null, true);
+							} catch (Exception $e2) {
+								error_log('Customer auto-login error: ' . $e2->getMessage());
+							}
+						}
+						
+						if ($login_success || $this->customer->isLogged()) {
 							unset($this->session->data['guest']);
 
 							// Add to activity log
-							if ($this->customer->isLogged()) {
-								$this->load->model('account/activity');
+							try {
+								if ($this->customer->isLogged()) {
+									$this->load->model('account/activity');
 
-								$firstname = isset($this->request->post['firstname']) ? $this->request->post['firstname'] : '';
-								$lastname = isset($this->request->post['lastname']) ? $this->request->post['lastname'] : '';
-								$full_name = trim($firstname . ' ' . $lastname);
-								
-								if ($full_name && method_exists($this->model_account_activity, 'addActivity')) {
-									$activity_data = array(
-										'customer_id' => $customer_id,
-										'name'        => $full_name
-									);
+									$firstname = isset($this->request->post['firstname']) ? $this->request->post['firstname'] : '';
+									$lastname = isset($this->request->post['lastname']) ? $this->request->post['lastname'] : '';
+									$full_name = trim($firstname . ' ' . $lastname);
+									
+									if ($full_name && method_exists($this->model_account_activity, 'addActivity')) {
+										$activity_data = array(
+											'customer_id' => $customer_id,
+											'name'        => $full_name
+										);
 
-									$this->model_account_activity->addActivity('register', $activity_data);
+										$this->model_account_activity->addActivity('register', $activity_data);
+									}
 								}
+							} catch (Exception $activity_error) {
+								error_log('Activity log error: ' . $activity_error->getMessage());
+								// Don't fail registration if activity log fails
 							}
 							
 							// Redirect after successful registration
 							try {
+								// Set success message
+								$success_msg = $this->language->get('text_success');
+								if (!$success_msg) {
+									$success_msg = 'Congratulations! Your account has been successfully created.';
+								}
+								$this->session->data['success'] = $success_msg;
+								
+								// Check for redirect parameter
 								if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
 									$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
-									if ($redirect_url && filter_var($redirect_url, FILTER_VALIDATE_URL)) {
+									if ($redirect_url && (filter_var($redirect_url, FILTER_VALIDATE_URL) || strpos($redirect_url, '/') === 0)) {
 										$this->response->redirect($redirect_url);
 										return;
 									}
 								}
+								
 								// Default redirect to account page
-								$account_url = $this->url->link('account/account', '', 'SSL');
-								if ($account_url) {
-									$this->response->redirect($account_url);
-									return;
-								} else {
-									// Fallback to home if account URL fails
+								try {
+									$account_url = $this->url->link('account/account', '', 'SSL');
+									if ($account_url && !empty($account_url)) {
+										$this->response->redirect($account_url);
+										return;
+									}
+								} catch (Exception $url_error) {
+									error_log('Account URL generation error: ' . $url_error->getMessage());
+								}
+								
+								// Fallback to home if account URL fails
+								try {
+									$home_url = $this->url->link('common/home');
+									if ($home_url) {
+										$this->response->redirect($home_url);
+										return;
+									}
+								} catch (Exception $home_error) {
+									error_log('Home URL generation error: ' . $home_error->getMessage());
+								}
+								
+								// Last resort - use header redirect
+								header('Location: /');
+								exit;
+								
+							} catch (Exception $redirect_error) {
+								error_log('Register Redirect Error: ' . $redirect_error->getMessage() . ' | Trace: ' . $redirect_error->getTraceAsString());
+								// Fallback: redirect to home
+								try {
 									$this->response->redirect($this->url->link('common/home'));
 									return;
+								} catch (Exception $e) {
+									header('Location: /');
+									exit;
 								}
-							} catch (Exception $redirect_error) {
-								error_log('Register Redirect Error: ' . $redirect_error->getMessage());
-								// Fallback: redirect to home
-								$this->response->redirect($this->url->link('common/home'));
-								return;
 							}
 						} else {
 							// Login failed, redirect to login page with success message
@@ -157,8 +211,18 @@ class ControllerAccountRegister extends Controller {
 								$success_msg = 'Your account has been created successfully. Please login.';
 							}
 							$this->session->data['success'] = $success_msg;
-							$this->response->redirect($this->url->link('account/login', '', 'SSL'));
-							return;
+							
+							try {
+								$login_url = $this->url->link('account/login', '', 'SSL');
+								if ($login_url) {
+									$this->response->redirect($login_url);
+									return;
+								}
+							} catch (Exception $e) {
+								error_log('Login URL generation error: ' . $e->getMessage());
+								header('Location: /index.php?route=account/login');
+								exit;
+							}
 						}
 					} else {
 						error_log('Registration: addCustomer returned false, attempting fallback');
