@@ -5,6 +5,11 @@ class ControllerCheckoutOnepagecheckout extends Controller
     public $error = array();
 
     public function index() {
+        // Ensure no output is sent before redirect
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        
         $this->load->language('checkout/checkout');
 
         if(!$this->customer->isLogged() && !$this->config->get('config_checkout_guest')) {
@@ -315,14 +320,60 @@ class ControllerCheckoutOnepagecheckout extends Controller
 
             $this->load->model('checkout/order');
 
-            $this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);
-            $this->load->model('checkout/order');
-
-            $this->model_checkout_order->addOrderHistory( $this->session->data['order_id'], $this->config->get('config_order_status_id'), '', 0, 0);
-            if(isset($payment_method['code'])) {
-                $this->response->redirect($this->url->link('payment/' . $payment_method['code'] . "/confirm"));
-            } else {
-                $this->response->redirect($this->url->link("checkout/success"));
+            try {
+                $order_id = $this->model_checkout_order->addOrder($order_data);
+                
+                if (!$order_id || $order_id <= 0) {
+                    error_log('Onepagecheckout Error: addOrder returned invalid order ID: ' . $order_id);
+                    $this->session->data['error'] = 'Failed to create order. Please try again.';
+                    $this->response->redirect($this->url->link('checkout/onepagecheckout', '', 'SSL'));
+                    return;
+                }
+                
+                $this->session->data['order_id'] = $order_id;
+                
+                // Add order history
+                $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('config_order_status_id'), '', 0, 0);
+                
+                // Clear cart after successful order
+                $this->cart->clear();
+                
+                // Redirect to payment or success page
+                // Check if payment_method is set and has code
+                $payment_code = '';
+                if (isset($payment_method) && is_array($payment_method) && isset($payment_method['code']) && !empty($payment_method['code'])) {
+                    $payment_code = $payment_method['code'];
+                } elseif (isset($this->session->data['payment_method']['code']) && !empty($this->session->data['payment_method']['code'])) {
+                    $payment_code = $this->session->data['payment_method']['code'];
+                } elseif (isset($order_data['payment_code']) && !empty($order_data['payment_code'])) {
+                    $payment_code = $order_data['payment_code'];
+                }
+                
+                if (!empty($payment_code)) {
+                    $redirect_url = $this->url->link('payment/' . $payment_code . "/confirm", '', 'SSL');
+                    if ($redirect_url) {
+                        $this->response->redirect($redirect_url);
+                        return;
+                    }
+                }
+                
+                // Fallback to success page
+                $success_url = $this->url->link("checkout/success", '', 'SSL');
+                if ($success_url) {
+                    $this->response->redirect($success_url);
+                    return;
+                } else {
+                    // Last resort - use header redirect
+                    header('Location: index.php?route=checkout/success');
+                    exit;
+                }
+                
+            } catch (Exception $e) {
+                error_log('Onepagecheckout Error: ' . $e->getMessage());
+                error_log('Onepagecheckout Error Trace: ' . $e->getTraceAsString());
+                $this->session->data['error'] = 'An error occurred while processing your order. Please try again.';
+                $this->response->redirect($this->url->link('checkout/onepagecheckout', '', 'SSL'));
+                return;
             }
         }
 
