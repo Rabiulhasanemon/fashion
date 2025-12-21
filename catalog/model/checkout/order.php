@@ -9,10 +9,16 @@ class ModelCheckoutOrder extends Model {
 		
 		// Validate required fields
 		$required_fields = array('invoice_prefix', 'store_id', 'firstname', 'lastname', 'email', 'telephone', 'payment_firstname', 'payment_lastname', 'payment_address_1', 'payment_city', 'payment_country_id', 'payment_zone_id', 'payment_method', 'payment_code', 'total', 'order_status_id');
+		$missing_fields = array();
 		foreach ($required_fields as $field) {
-			if (!isset($data[$field])) {
-				error_log('ERROR: Required field missing: ' . $field);
+			if (!isset($data[$field]) || (is_string($data[$field]) && trim($data[$field]) === '')) {
+				$missing_fields[] = $field;
+				error_log('ERROR: Required field missing or empty: ' . $field);
 			}
+		}
+		if (!empty($missing_fields)) {
+			error_log('ERROR: Missing required fields: ' . implode(', ', $missing_fields));
+			error_log('This will cause order creation to fail!');
 		}
 
 		try {

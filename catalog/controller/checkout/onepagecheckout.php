@@ -33,12 +33,17 @@ class ControllerCheckoutOnepagecheckout extends Controller
         if (isset($this->request->server['REQUEST_METHOD']) && $this->request->server['REQUEST_METHOD'] == 'POST') {
             error_log('POST request detected');
             error_log('POST Data Keys: ' . implode(', ', array_keys($this->request->post)));
+            error_log('POST Data: ' . print_r($this->request->post, true));
             error_log('Validating form...');
             $validation_result = $this->validate_form();
             error_log('Validation result: ' . ($validation_result ? 'PASSED' : 'FAILED'));
+            if (!$validation_result) {
+                error_log('Validation errors: ' . print_r($this->error, true));
+            }
         }
         
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate_form()) {
+            error_log('Form validation PASSED - proceeding with order creation');
             error_log('Form validation passed, proceeding with order creation...');
             
             // CRITICAL: Clear all output buffers before processing
