@@ -495,6 +495,234 @@
         </div>
     </section>
     
+    <!-- Frequently Bought Together Section -->
+    <?php 
+    if (isset($frequently_bought_together) && is_array($frequently_bought_together) && count($frequently_bought_together) > 0) { 
+        // Get main product price value
+        $main_product_price = isset($main_product_price_value) ? (float)$main_product_price_value : 0;
+        if ($main_product_price <= 0) {
+            // Fallback calculation
+            if (isset($special) && $special) {
+                $main_product_price = (float)str_replace(array('৳', ',', ' ', 'TK', 'tk'), '', $special);
+            } elseif (isset($price) && $price) {
+                $main_product_price = (float)str_replace(array('৳', ',', ' ', 'TK', 'tk'), '', $price);
+            }
+        }
+    ?>
+    <section class="frequently-bought-together-section" style="padding: 40px 0; background-color: #ffffff;">
+        <div class="container">
+            <h2 class="fbt-section-title" style="font-size: 24px; font-weight: 600; margin-bottom: 30px; color: #333;">Frequently bought together</h2>
+            <div class="fbt-wrapper" style="display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
+                <div class="fbt-products-container" style="display: flex; align-items: center; gap: 15px; flex: 1; flex-wrap: wrap;">
+                    <?php 
+                    $total_price = $main_product_price;
+                    $selected_count = 1; // Main product is always selected
+                    foreach ($frequently_bought_together as $index => $fbt_product) { 
+                        $product_price = isset($fbt_product['price_value']) ? $fbt_product['price_value'] : 0;
+                        if ($fbt_product['special']) {
+                            $price_str = $fbt_product['special'];
+                            $price_clean = (float)str_replace(array('৳', ',', ' '), '', $fbt_product['special']);
+                        } else {
+                            $price_str = $fbt_product['price'];
+                            $price_clean = (float)str_replace(array('৳', ',', ' '), '', $fbt_product['price']);
+                        }
+                        $total_price += $price_clean;
+                    ?>
+                        <?php if ($index > 0) { ?>
+                        <span class="fbt-plus" style="font-size: 24px; color: #999; font-weight: 300;">+</span>
+                        <?php } ?>
+                        <div class="fbt-product-card" style="position: relative; border: 2px solid #FF6A00; border-radius: 8px; padding: 15px; background: #fff; width: 200px; min-width: 180px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="fbt-product-image" style="width: 60px; height: 60px; flex-shrink: 0;">
+                                    <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                </div>
+                                <div class="fbt-product-info" style="flex: 1; min-width: 0;">
+                                    <h4 class="fbt-product-name" style="font-size: 14px; font-weight: 500; margin: 0 0 8px 0; color: #333; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                        <a href="<?php echo $fbt_product['href']; ?>" style="color: #333; text-decoration: none;"><?php echo htmlspecialchars($fbt_product['name']); ?></a>
+                                    </h4>
+                                    <div class="fbt-product-price" style="font-size: 16px; font-weight: 600; color: #333;">
+                                        <?php echo $price_str; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="checkbox" 
+                                   class="fbt-checkbox" 
+                                   data-product-id="<?php echo $fbt_product['product_id']; ?>" 
+                                   data-price="<?php echo $price_clean; ?>"
+                                   data-price-formatted="<?php echo htmlspecialchars($price_str); ?>"
+                                   checked
+                                   style="position: absolute; bottom: 10px; right: 10px; width: 24px; height: 24px; cursor: pointer; accent-color: #FF6A00;">
+                        </div>
+                    <?php 
+                        $selected_count++;
+                    } 
+                    ?>
+                    <span class="fbt-equals" style="font-size: 24px; color: #999; font-weight: 300; margin: 0 10px;">=</span>
+                </div>
+                
+                <div class="fbt-total-box" style="background: #FF6A00; border-radius: 8px; padding: 20px; min-width: 250px; color: #fff;">
+                    <div class="fbt-total-price" style="margin-bottom: 15px;">
+                        <div style="font-size: 14px; margin-bottom: 5px; opacity: 0.9;">Total Price</div>
+                        <div class="fbt-total-amount" style="font-size: 28px; font-weight: 700;">
+                            ৳<?php echo number_format($total_price, 2, '.', ''); ?>
+                        </div>
+                    </div>
+                    <div class="fbt-savings" style="margin-bottom: 15px; font-size: 14px;">
+                        Save ৳ <span class="fbt-savings-amount">0</span>
+                    </div>
+                    <button type="button" class="fbt-add-to-cart-btn" style="width: 100%; padding: 12px; background: #fff; color: #FF6A00; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Add <?php echo $selected_count; ?> items to cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+    .fbt-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 24px;
+        height: 24px;
+        border: 2px solid #FF6A00;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+    }
+    
+    .fbt-checkbox:checked {
+        background: #FF6A00;
+        border-color: #FF6A00;
+    }
+    
+    .fbt-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .fbt-product-card:has(.fbt-checkbox:not(:checked)) {
+        border-color: #ddd;
+        opacity: 0.7;
+    }
+    
+    .fbt-add-to-cart-btn:hover {
+        background: #fff5f0 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 106, 0, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .fbt-wrapper {
+            flex-direction: column !important;
+        }
+        
+        .fbt-products-container {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        
+        .fbt-product-card {
+            width: 100% !important;
+        }
+        
+        .fbt-plus, .fbt-equals {
+            display: none !important;
+        }
+        
+        .fbt-total-box {
+            width: 100% !important;
+        }
+    }
+    </style>
+    
+    <script>
+    (function() {
+        var fbtCheckboxes = document.querySelectorAll('.fbt-checkbox');
+        var fbtTotalAmount = document.querySelector('.fbt-total-amount');
+        var fbtSavingsAmount = document.querySelector('.fbt-savings-amount');
+        var fbtAddToCartBtn = document.querySelector('.fbt-add-to-cart-btn');
+        var mainProductPrice = <?php echo $main_product_price; ?>;
+        
+        function updateFBTTotal() {
+            var total = mainProductPrice;
+            var selectedCount = 1; // Main product
+            
+            fbtCheckboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    total += parseFloat(checkbox.dataset.price) || 0;
+                    selectedCount++;
+                }
+            });
+            
+            if (fbtTotalAmount) {
+                fbtTotalAmount.textContent = '৳' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            
+            if (fbtAddToCartBtn) {
+                fbtAddToCartBtn.textContent = 'Add ' + selectedCount + ' items to cart';
+            }
+            
+            // Calculate savings (currently 0, can be enhanced later)
+            if (fbtSavingsAmount) {
+                fbtSavingsAmount.textContent = '0';
+            }
+        }
+        
+        fbtCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', updateFBTTotal);
+        });
+        
+        if (fbtAddToCartBtn) {
+            fbtAddToCartBtn.addEventListener('click', function() {
+                var productIds = [];
+                
+                // Add main product
+                productIds.push(<?php echo $product_id; ?>);
+                
+                // Add selected frequently bought together products
+                fbtCheckboxes.forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        productIds.push(parseInt(checkbox.dataset.productId));
+                    }
+                });
+                
+                // Add all selected products to cart
+                var addCount = 0;
+                productIds.forEach(function(productId, index) {
+                    setTimeout(function() {
+                        if (typeof cart !== 'undefined' && typeof cart.add === 'function') {
+                            cart.add(productId, 1);
+                            addCount++;
+                            
+                            if (addCount === productIds.length) {
+                                // All products added, show success message
+                                if (typeof alert !== 'undefined') {
+                                    alert('All selected products have been added to cart!');
+                                }
+                                // Optionally redirect to cart
+                                // window.location.href = '<?php echo $this->url->link("checkout/cart"); ?>';
+                            }
+                        }
+                    }, index * 200); // Stagger requests
+                });
+            });
+        }
+        
+        // Initial calculation
+        updateFBTTotal();
+    })();
+    </script>
+    <?php } ?>
+    
     <!-- Related Products Section -->
     <?php 
     if (isset($products) && is_array($products) && count($products) > 0) { ?>

@@ -434,6 +434,64 @@ class ControllerProductProduct extends Controller
                 );
             }
 
+            // Frequently Bought Together Products - Use related products, limit to 3
+            $data['frequently_bought_together'] = array();
+            // Calculate main product price value for FBT
+            $main_product_price_value = 0;
+            if (isset($product_info['special']) && (float)$product_info['special'] > 0) {
+                $main_product_price_value = (float)$product_info['special'];
+            } else {
+                $main_product_price_value = (float)$product_info['price'];
+            }
+            $data['main_product_price_value'] = $main_product_price_value;
+            
+            $fbt_results = $this->model_catalog_product->getProductRelated($this->request->get['product_id'], (float)$product_info['price']);
+            $fbt_count = 0;
+            $max_fbt = 3; // Limit to 3 products as shown in image
+            
+            foreach ($fbt_results as $result) {
+                if ($fbt_count >= $max_fbt) break;
+                
+                if ($result['image']) {
+                    $image = $this->model_tool_image->resize($result['image'], 150, 150);
+                } else {
+                    $image = $this->model_tool_image->resize('placeholder.png', 150, 150);
+                }
+
+                $disablePurchase = false;
+                if (isset($result['quantity']) && $result['quantity'] <= 0 && isset($result['stock_status']) && $result['stock_status'] != "In Stock") {
+                    $disablePurchase = true;
+                }
+
+                if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+                    $price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+                    $price_value = (float)$result['price'];
+                } else {
+                    $price = false;
+                    $price_value = 0;
+                }
+
+                if (isset($result['special']) && (float)$result['special']) {
+                    $special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+                    $price_value = (float)$result['special'];
+                } else {
+                    $special = false;
+                }
+
+                $data['frequently_bought_together'][] = array(
+                    'product_id'  => $result['product_id'],
+                    'thumb'       => $image,
+                    'name'        => isset($result['name']) ? $result['name'] : '',
+                    'price'       => $price,
+                    'price_value' => $price_value,
+                    'special'     => $special,
+                    'disablePurchase' => $disablePurchase,
+                    'minimum'     => isset($result['minimum']) && $result['minimum'] > 0 ? $result['minimum'] : 1,
+                    'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
+                );
+                $fbt_count++;
+            }
+
             $data['compatible_products'] = array();
 
             $compatible_results = $this->model_catalog_product->getProductCompatible($this->request->get['product_id'], (float)$product_info['price']);
