@@ -346,7 +346,10 @@ class ControllerCheckoutOnepagecheckout extends Controller
             // Debug logging
             error_log('=== ONEPAGECHECKOUT ORDER CREATION START ===');
             error_log('Order Data Keys: ' . implode(', ', array_keys($order_data)));
+            error_log('Order Data (full): ' . print_r($order_data, true));
             error_log('Payment Method: ' . print_r($payment_method, true));
+            error_log('Cart has products: ' . ($this->cart->hasProducts() ? 'YES' : 'NO'));
+            error_log('Cart products count: ' . count($this->cart->getProducts()));
 
             try {
                 error_log('Calling addOrder...');
