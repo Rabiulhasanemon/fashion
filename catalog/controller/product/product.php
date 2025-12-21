@@ -446,10 +446,17 @@ class ControllerProductProduct extends Controller
             $data['main_product_price_value'] = $main_product_price_value;
             
             // Get FBT products from database
-            $fbt_query = $this->db->query("SELECT fbt_product_id FROM " . DB_PREFIX . "product_frequently_bought_together WHERE product_id = '" . (int)$this->request->get['product_id'] . "' ORDER BY sort_order ASC LIMIT 3");
             $fbt_product_ids = array();
-            foreach ($fbt_query->rows as $row) {
-                $fbt_product_ids[] = (int)$row['fbt_product_id'];
+            // Check if table exists first
+            $table_check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_frequently_bought_together'");
+            
+            if ($table_check && $table_check->num_rows > 0) {
+                $fbt_query = $this->db->query("SELECT fbt_product_id FROM " . DB_PREFIX . "product_frequently_bought_together WHERE product_id = '" . (int)$this->request->get['product_id'] . "' ORDER BY sort_order ASC LIMIT 3");
+                if ($fbt_query) {
+                    foreach ($fbt_query->rows as $row) {
+                        $fbt_product_ids[] = (int)$row['fbt_product_id'];
+                    }
+                }
             }
             
             // If no FBT products in database, fallback to related products
