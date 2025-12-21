@@ -261,25 +261,39 @@ if (!defined('DIR_APPLICATION')) {
         $auto_inc = isset($status_check->row['Auto_increment']) ? $status_check->row['Auto_increment'] : null;
     }
     
-    if (($zero_check && $zero_check->num_rows > 0) || (!$auto_inc || $auto_inc <= 0)) {
-        echo "<div style='background: #ffebee; padding: 15px; border: 2px solid #f44336; margin: 20px 0; border-radius: 5px;'>";
-        echo "<h3 style='color: #d32f2f; margin-top: 0;'>⚠ CRITICAL: Order Table Issues Detected!</h3>";
-        echo "<p style='font-size: 16px;'><strong>You MUST fix these issues before orders can be created:</strong></p>";
-        echo "<ul style='font-size: 14px;'>";
+    $needs_fix = ($zero_check && $zero_check->num_rows > 0) || (!$auto_inc || $auto_inc <= 0);
+    
+    if ($needs_fix) {
+        echo "<div style='background: #ffebee; padding: 20px; border: 3px solid #f44336; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);'>";
+        echo "<h2 style='color: #d32f2f; margin-top: 0; text-align: center;'>🚨 CRITICAL: ORDER TABLE ISSUES DETECTED 🚨</h2>";
+        echo "<p style='font-size: 18px; text-align: center; margin-bottom: 20px;'><strong>Orders CANNOT be created until these issues are fixed!</strong></p>";
+        echo "<div style='background: white; padding: 15px; border-radius: 5px; margin: 15px 0;'>";
+        echo "<p style='font-size: 16px; margin: 10px 0;'><strong>Issues found:</strong></p>";
+        echo "<ul style='font-size: 15px; line-height: 1.8;'>";
         if ($zero_check && $zero_check->num_rows > 0) {
-            echo "<li>❌ Record with order_id = 0 exists (blocks new orders)</li>";
+            echo "<li>❌ <strong>Record with order_id = 0 exists</strong> - This blocks all new order inserts</li>";
         }
         if (!$auto_inc || $auto_inc <= 0) {
-            echo "<li>❌ AUTO_INCREMENT is NOT SET on order_id column</li>";
+            echo "<li>❌ <strong>AUTO_INCREMENT is NOT SET</strong> - MySQL cannot generate new order IDs</li>";
         }
         echo "</ul>";
-        echo "<p style='font-size: 16px; margin-top: 15px;'><strong>👉 Click here to fix automatically:</strong></p>";
-        echo "<p style='text-align: center; margin: 20px 0;'>";
-        echo "<a href='fix_order_table.php' style='display: inline-block; background: #4CAF50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px; font-weight: bold;'>🔧 FIX ORDER TABLE NOW</a>";
-        echo "</p>";
-        echo "<p style='font-size: 14px; color: #666;'>Or manually visit: <code>https://ruplexa1.master.com.bd/fix_order_table.php</code></p>";
         echo "</div>";
+        echo "<div style='text-align: center; margin: 25px 0;'>";
+        echo "<p style='font-size: 18px; margin-bottom: 15px;'><strong>👉 FIX IT NOW:</strong></p>";
+        echo "<a href='fix_order_table.php' style='display: inline-block; background: #4CAF50; color: white; padding: 20px 40px; text-decoration: none; border-radius: 8px; font-size: 20px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: all 0.3s;' onmouseover='this.style.background=\"#45a049\"' onmouseout='this.style.background=\"#4CAF50\"'>🔧 CLICK TO FIX ORDER TABLE</a>";
+        echo "</div>";
+        echo "<p style='font-size: 14px; color: #666; text-align: center; margin-top: 15px;'>Direct URL: <code style='background: #f5f5f5; padding: 5px 10px; border-radius: 3px;'>https://ruplexa1.master.com.bd/fix_order_table.php</code></p>";
+        echo "<p style='font-size: 13px; color: #999; text-align: center; margin-top: 10px;'>After running the fix script, refresh this page to test again.</p>";
+        echo "</div>";
+        
+        // Don't attempt to create order if issues exist
+        echo "<p style='color: #f44336; font-weight: bold; text-align: center; padding: 15px; background: #ffebee; border-radius: 5px;'>⚠️ Skipping order creation test - Please fix the issues above first!</p>";
+        $skip_order_test = true;
+    } else {
+        $skip_order_test = false;
     }
+    
+    if (!isset($skip_order_test) || !$skip_order_test) {
     
     try {
         echo "Attempting to create test order...<br>";
@@ -311,6 +325,7 @@ if (!defined('DIR_APPLICATION')) {
         echo "✗ Exception during order creation: " . htmlspecialchars($e->getMessage()) . "<br>";
         echo "Stack trace: <pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
     }
+    } // End of skip_order_test check
     
     echo "<h2>Test 6: Check Error Logs (Last 50 lines with order/addOrder/ERROR)</h2>";
     $log_file = DIR_LOGS . 'error.log';
