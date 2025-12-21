@@ -323,8 +323,9 @@ class ModelCheckoutOrder extends Model {
             // Order Totals
             $order_total_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_total` WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order ASC");
 
+            $order_totals = array();
             foreach ($order_total_query->rows as $total) {
-                $data['totals'][] = array(
+                $order_totals[] = array(
                     'title' => $total['title'],
                     'text'  => $this->currency->format($total['value'], $order_query->row['currency_code'], $order_query->row['currency_value']),
                 );
@@ -384,7 +385,7 @@ class ModelCheckoutOrder extends Model {
 				'shipping_code'           => $order_query->row['shipping_code'],
 				'comment'                 => $order_query->row['comment'],
 				'total'                   => $order_query->row['total'],
-                'totals'                  => $data['totals'],
+                'totals'                  => isset($order_totals) ? $order_totals : array(),
 				'order_status_id'         => $order_query->row['order_status_id'],
 				'order_status'            => $order_query->row['order_status'],
 				'affiliate_id'            => $order_query->row['affiliate_id'],
