@@ -75,22 +75,47 @@ class ModelCheckoutOrder extends Model {
 			. "', forwarded_ip = '" .  $this->db->escape($data['forwarded_ip'])
 			. "', user_agent = '" . $this->db->escape($data['user_agent'])
 			. "', accept_language = '" . $this->db->escape($data['accept_language'])
+			. "', order_status_id = '" . (int)$data['order_status_id']
 			. "', date_added = NOW(), date_modified = NOW()";
 			
 			error_log('Executing INSERT query...');
+			error_log('INSERT Query (first 500 chars): ' . substr($insert_query, 0, 500));
 			$result = $this->db->query($insert_query);
 			
+			// Check if query returned false
 			if ($result === false) {
-				error_log('ERROR: INSERT query failed!');
-				error_log('MySQL Error: ' . (method_exists($this->db, 'getError') ? $this->db->getError() : 'Unknown'));
-				if (method_exists($this->db->link, 'error')) {
-					error_log('MySQL Error: ' . $this->db->link->error);
+				error_log('ERROR: INSERT query returned FALSE!');
+				// Try to get MySQL error if available
+				if (property_exists($this->db, 'link') && is_object($this->db->link)) {
+					if (property_exists($this->db->link, 'error')) {
+						error_log('MySQL Error: ' . $this->db->link->error);
+						error_log('MySQL Error Number: ' . $this->db->link->errno);
+					}
 				}
 				return false;
+			}
+			
+			// Check affected rows
+			$affected_rows = $this->db->countAffected();
+			error_log('Query affected rows: ' . $affected_rows);
+			
+			if ($affected_rows <= 0) {
+				error_log('WARNING: INSERT query executed but affected 0 rows!');
+				error_log('This might indicate the record was not actually inserted.');
 			}
 
 			$order_id = $this->db->getLastId();
 			error_log('Order ID from getLastId(): ' . $order_id);
+			
+			// Additional check: verify the order was actually inserted
+			if ($order_id > 0) {
+				$verify_query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE order_id = '" . (int)$order_id . "' LIMIT 1");
+				if ($verify_query && $verify_query->num_rows > 0) {
+					error_log('VERIFIED: Order ' . $order_id . ' exists in database');
+				} else {
+					error_log('WARNING: Order ID ' . $order_id . ' returned but not found in database!');
+				}
+			}
 			
 			if (!$order_id || $order_id <= 0) {
 				error_log('ERROR: Invalid order_id returned: ' . $order_id);

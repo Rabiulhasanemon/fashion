@@ -350,12 +350,18 @@ class ControllerCheckoutOnepagecheckout extends Controller
                 $order_data['accept_language'] = '';
             }
 
+            // Set order status ID (required for addOrder)
+            $order_data['order_status_id'] = $this->config->get('config_order_status_id');
+            if (!$order_data['order_status_id']) {
+                $order_data['order_status_id'] = 1; // Default to pending status
+            }
+            
             $this->load->model('checkout/order');
 
             // Debug logging
             error_log('=== ONEPAGECHECKOUT ORDER CREATION START ===');
             error_log('Order Data Keys: ' . implode(', ', array_keys($order_data)));
-            error_log('Order Data (full): ' . print_r($order_data, true));
+            error_log('Order Status ID: ' . $order_data['order_status_id']);
             error_log('Payment Method: ' . print_r($payment_method, true));
             error_log('Cart has products: ' . ($this->cart->hasProducts() ? 'YES' : 'NO'));
             error_log('Cart products count: ' . count($this->cart->getProducts()));
