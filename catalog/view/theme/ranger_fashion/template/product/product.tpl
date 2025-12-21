@@ -347,11 +347,10 @@
             }
         }
     ?>
-    <div class="bundle-section-wrapper">
-        <div class="container">
-            <div class="bundle-section">
-                <span class="bundle-title">Frequently bought together</span>
-                <div class="bundle-container">
+    <div class="container">
+        <div class="bundle-section">
+            <span class="bundle-title">Frequently bought together</span>
+            <div class="bundle-container">
             <!-- Main Product (Current Product) -->
             <div class="bundle-product main-item" data-price="<?php echo $main_product_price; ?>" data-product-id="<?php echo $product_id; ?>">
                 <input type="checkbox" class="product-checkbox" checked disabled>
@@ -387,8 +386,8 @@
             ?>
             <div class="bundle-operator">+</div>
             <div class="bundle-product selected" data-price="<?php echo $fbt_price_value; ?>" data-product-id="<?php echo $fbt_product['product_id']; ?>">
-                <input type="checkbox" class="product-checkbox bundle-checkbox-dynamic" id="bundle-checkbox-<?php echo $fbt_product['product_id']; ?>" checked>
-                <label for="bundle-checkbox-<?php echo $fbt_product['product_id']; ?>" class="checkbox-indicator"></label>
+                <input type="checkbox" class="product-checkbox bundle-checkbox-dynamic" checked>
+                <div class="checkbox-indicator"></div>
                 <div class="bundle-product-wrapper">
                     <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" class="product-image" onerror="this.src='image/placeholder.png';">
                     <div class="bundle-product-info">
@@ -417,18 +416,14 @@
                 <button class="add-bundle-btn" id="addBundleToCart">
                     Add <span id="bundle-item-count">1</span> item<span id="bundle-item-plural">s</span> to cart
                 </button>
-                </div>
             </div>
         </div>
     </div>
+    </div>
     
     <style>
-    .bundle-section-wrapper {
-        margin: 20px 0;
-        width: 100%;
-    }
     .bundle-section {
-        margin: 0 auto;
+        margin: 20px 0;
         padding: 24px;
         background: #fff;
         border-radius: 8px;
@@ -454,7 +449,6 @@
         border: 1px solid #e5e7eb;
         border-radius: 6px;
         padding: 8px;
-        cursor: pointer;
         transition: all 0.2s ease;
         position: relative;
         user-select: none;
@@ -493,7 +487,7 @@
         height: 100%;
         opacity: 0;
         cursor: pointer;
-        z-index: 3;
+        z-index: 10;
         margin: 0;
     }
     .checkbox-indicator {
@@ -506,9 +500,8 @@
         border-radius: 3px;
         background: white;
         transition: all 0.2s ease;
-        z-index: 2;
+        z-index: 5;
         pointer-events: none;
-        cursor: pointer;
     }
     .bundle-product.selected .checkbox-indicator {
         background: #FF6A00;
@@ -741,26 +734,21 @@
         }
         
         bundleCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var product = this.closest('.bundle-product');
-                if (this.checked) {
-                    product.classList.add('selected');
-                } else {
-                    if (!product.classList.contains('main-item')) {
-                        product.classList.remove('selected');
-                    }
-                }
+            checkbox.addEventListener('change', function(e) {
+                e.stopPropagation();
                 updateBundleTotal();
             });
             
-            // Also handle click on product card
-            var product = checkbox.closest('.bundle-product');
-            if (product && !product.classList.contains('main-item')) {
-                product.addEventListener('click', function(e) {
-                    if (e.target.tagName !== 'A' && e.target.tagName !== 'INPUT') {
-                        checkbox.checked = !checkbox.checked;
-                        checkbox.dispatchEvent(new Event('change'));
+            // Also handle click on the product card to toggle checkbox
+            var productCard = checkbox.closest('.bundle-product');
+            if (productCard && !productCard.classList.contains('main-item')) {
+                productCard.addEventListener('click', function(e) {
+                    // Don't toggle if clicking on the checkbox itself or the link
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'A' || e.target.closest('a')) {
+                        return;
                     }
+                    checkbox.checked = !checkbox.checked;
+                    updateBundleTotal();
                 });
             }
         });
@@ -962,84 +950,44 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <!-- Sidebar content can go here -->
+                    <?php if (isset($products) && is_array($products) && count($products) > 0) { ?>
+                    <div class="rpmini24_widget">
+                        <div class="rpmini24_head">
+                            <div>
+                                <p class="rpmini24_kicker">You may also like</p>
+                                <h4 class="rpmini24_title">Related Products</h4>
+                            </div>
+                            <?php if (!empty($view_all_products_link)) { ?>
+                            <a class="rpmini24_viewall" href="<?php echo $view_all_products_link; ?>">View All</a>
+                            <?php } ?>
+                        </div>
+                        <div class="rpmini24_list">
+                            <?php foreach ($products as $product) { ?>
+                            <a href="<?php echo $product['href']; ?>" class="rpmini24_card">
+                                <div class="rpmini24_media">
+                                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" onerror="this.src='image/placeholder.png';" />
+                                </div>
+                                <div class="rpmini24_info">
+                                    <h5><?php echo $product['name']; ?></h5>
+                                    <div class="rpmini24_price">
+                                        <?php if ($product['special']) { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['special']; ?></span>
+                                        <span class="rpmini24_price-old"><?php echo $product['price']; ?></span>
+                                        <?php } else { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['price']; ?></span>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </a>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Related Products Section -->
-    <?php 
-    if (isset($products) && is_array($products) && count($products) > 0) { ?>
-    <section class="newproduct-section popular-category-sec related-products-showcase" style="padding: 50px 0; background-color: #f8f9fa;">
-        <div class="container">
-            <div class="section-title">
-                <h2 class="h3">Related Products</h2>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="popular-category-slider owl-carousel related-products-slider">
-                        <?php foreach ($products as $product) { ?>
-                        <div class="slider-item">
-                            <div class="product-card">
-                                <div class="product-thumb">
-                                    <?php if ($product['special']) { ?>
-                                    <?php
-                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
-                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
-                                    $discount = 0;
-                                    if ($price > 0) {
-                                        $discountAmount = $price - $special;
-                                        $discount = round(($discountAmount / $price) * 100, 0);
-                                    }
-                                    if ($discount > 0) {
-                                    ?>
-                                    <div class="product-badge product-badge2 bg-info">-<?php echo $discount; ?>%</div>
-                                    <?php } ?>
-                                    <?php } ?>
-                                    
-                                    <?php if ($product['featured_image']) { ?>
-                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['featured_image']; ?>" />
-                                    <?php } else { ?>
-                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['thumb']; ?>" />
-                                    <?php } ?>
-                                    
-                                    <div class="product-button-group">
-                                        <a class="product-button wishlist_store" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
-                                        <a class="product-button product_compare" onclick="compare.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>
-                                        <?php if (!$product['disablePurchase']) { ?>
-                                        <a class="product-button add_to_single_cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                                <div class="product-card-body">
-                                    <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h3>
-                                    
-                                    <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
-                                    <div class="rating-stars">
-                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                        <i class="fas fa-star<?php echo $i <= $product['rating'] ? ' filled' : ''; ?>"></i>
-                                        <?php } ?>
-                                    </div>
-                                    <?php } ?>
-                                    
-                                    <h4 class="product-price">
-                                        <?php if ($product['special']) { ?>
-                                        <del><?php echo $product['price']; ?></del> <?php echo $product['special']; ?>
-                                        <?php } else { ?>
-                                        <?php echo $product['price']; ?>
-                                        <?php } ?>
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                        <?php } ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php } ?>
 
     <!-- Compatible Products Section -->
     <?php 
