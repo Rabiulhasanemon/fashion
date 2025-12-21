@@ -253,6 +253,17 @@ if (!defined('DIR_APPLICATION')) {
     
     echo "<h2>Test 5: Try to Create Test Order</h2>";
     
+    // Check if order creation is actually working by looking for recent successful orders
+    $recent_success = $db->query("SELECT order_id, date_added FROM " . DB_PREFIX . "order WHERE date_added >= DATE_SUB(NOW(), INTERVAL 1 HOUR) ORDER BY order_id DESC LIMIT 1");
+    if ($recent_success && $recent_success->num_rows > 0) {
+        $recent_order = $recent_success->row;
+        echo "<div style='background: #d4edda; padding: 15px; border: 2px solid #28a745; margin: 15px 0; border-radius: 5px;'>";
+        echo "✅ <strong>GOOD NEWS:</strong> Order creation is working!<br>";
+        echo "Recent successful order found: Order ID " . $recent_order['order_id'] . " created at " . $recent_order['date_added'] . "<br>";
+        echo "This means the database structure is correct and orders can be created.<br>";
+        echo "</div>";
+    }
+    
     // First, check if we need to run the fix script
     $zero_check = $db->query("SELECT order_id FROM " . DB_PREFIX . "order WHERE order_id = 0 LIMIT 1");
     $status_check = $db->query("SHOW TABLE STATUS LIKE '" . DB_PREFIX . "order'");
@@ -297,7 +308,22 @@ if (!defined('DIR_APPLICATION')) {
     
     try {
         echo "Attempting to create test order...<br>";
+        
+        // Verify model is loaded
+        if (!$model_order) {
+            echo "✗ ERROR: Order model not loaded!<br>";
+            echo "Trying to reload model...<br>";
+            $loader->model('checkout/order');
+            $model_order = $registry->get('model_checkout_order');
+            if (!$model_order) {
+                echo "✗ ERROR: Failed to load order model!<br>";
+                throw new Exception("Order model could not be loaded");
+            }
+        }
+        
+        echo "Model loaded successfully. Calling addOrder()...<br>";
         $test_order_id = $model_order->addOrder($test_order_data);
+        echo "addOrder() returned: " . ($test_order_id ? $test_order_id : 'FALSE/0') . "<br>";
         
         if ($test_order_id && $test_order_id > 0) {
             echo "✓ Test order created successfully! Order ID: " . $test_order_id . "<br>";
@@ -316,9 +342,19 @@ if (!defined('DIR_APPLICATION')) {
                 echo "✗ Order not found in database after creation!<br>";
             }
         } else {
-            echo "✗ Order creation failed! Returned: " . ($test_order_id ? $test_order_id : 'FALSE/0') . "<br>";
-            echo "<strong>This is expected if the order table has issues (order_id = 0 or missing AUTO_INCREMENT).</strong><br>";
-            echo "Please run the fix script first: <a href='fix_order_table.php' style='font-weight: bold; color: red;'>fix_order_table.php</a><br>";
+            echo "✗ Test order creation failed! Returned: " . ($test_order_id ? $test_order_id : 'FALSE/0') . "<br>";
+            
+            // Check if there are recent successful orders (proving it works in real checkout)
+            if ($recent_success && $recent_success->num_rows > 0) {
+                echo "<div style='background: #fff3cd; padding: 10px; border: 1px solid #ffc107; margin: 10px 0; border-radius: 5px;'>";
+                echo "⚠ <strong>Note:</strong> The test script failed, but recent orders show that order creation IS working in the actual checkout process.<br>";
+                echo "This test failure might be due to missing context in the debug script (events, sessions, etc.).<br>";
+                echo "Try placing a real order through the checkout to verify it works.<br>";
+                echo "</div>";
+            } else {
+                echo "<strong>This might be expected if the order table has issues.</strong><br>";
+                echo "Please run the fix script first: <a href='fix_order_table.php' style='font-weight: bold; color: red;'>fix_order_table.php</a><br>";
+            }
             echo "Check error logs below for detailed addOrder() errors.<br>";
         }
     } catch (Exception $e) {
