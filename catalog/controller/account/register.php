@@ -150,59 +150,57 @@ class ControllerAccountRegister extends Controller {
 							}
 							
 							// Redirect after successful registration
-							try {
-								// Set success message
-								$success_msg = $this->language->get('text_success');
-								if (!$success_msg) {
-									$success_msg = 'Congratulations! Your account has been successfully created.';
-								}
-								$this->session->data['success'] = $success_msg;
-								
-								// Check for redirect parameter
-								if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
-									$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
-									if ($redirect_url && (filter_var($redirect_url, FILTER_VALIDATE_URL) || strpos($redirect_url, '/') === 0)) {
+							// Set success message first
+							$success_msg = $this->language->get('text_success');
+							if (!$success_msg) {
+								$success_msg = 'Congratulations! Your account has been successfully created.';
+							}
+							$this->session->data['success'] = $success_msg;
+							
+							// Use simple redirect to avoid 500 errors
+							// Check for redirect parameter
+							if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect']) && $this->customer->isLogged()) {
+								$redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
+								if ($redirect_url && (filter_var($redirect_url, FILTER_VALIDATE_URL) || strpos($redirect_url, '/') === 0 || strpos($redirect_url, 'index.php') === 0)) {
+									try {
 										$this->response->redirect($redirect_url);
 										return;
+									} catch (Exception $e) {
+										error_log('Redirect URL error: ' . $e->getMessage());
 									}
 								}
-								
-								// Default redirect to account page
-								try {
-									$account_url = $this->url->link('account/account', '', 'SSL');
-									if ($account_url && !empty($account_url)) {
-										$this->response->redirect($account_url);
-										return;
-									}
-								} catch (Exception $url_error) {
-									error_log('Account URL generation error: ' . $url_error->getMessage());
+							}
+							
+							// Default redirect - use simple URL format
+							try {
+								// Try account page first
+								$account_url = $this->url->link('account/account', '', true);
+								if ($account_url && !empty($account_url)) {
+									$this->response->redirect($account_url);
+									return;
 								}
-								
-								// Fallback to home if account URL fails
-								try {
-									$home_url = $this->url->link('common/home');
-									if ($home_url) {
-										$this->response->redirect($home_url);
-										return;
-									}
-								} catch (Exception $home_error) {
-									error_log('Home URL generation error: ' . $home_error->getMessage());
+							} catch (Exception $url_error) {
+								error_log('Account URL error: ' . $url_error->getMessage());
+							}
+							
+							// Fallback to simple redirect
+							try {
+								// Use index.php format as fallback
+								$simple_url = 'index.php?route=account/account';
+								if (defined('HTTPS_SERVER') && HTTPS_SERVER) {
+									$simple_url = HTTPS_SERVER . '/' . $simple_url;
+								} elseif (defined('HTTP_SERVER') && HTTP_SERVER) {
+									$simple_url = HTTP_SERVER . '/' . $simple_url;
+								} else {
+									$simple_url = '/' . $simple_url;
 								}
-								
-								// Last resort - use header redirect
+								header('Location: ' . $simple_url);
+								exit;
+							} catch (Exception $e) {
+								error_log('Final redirect error: ' . $e->getMessage());
+								// Absolute last resort
 								header('Location: /');
 								exit;
-								
-							} catch (Exception $redirect_error) {
-								error_log('Register Redirect Error: ' . $redirect_error->getMessage() . ' | Trace: ' . $redirect_error->getTraceAsString());
-								// Fallback: redirect to home
-								try {
-									$this->response->redirect($this->url->link('common/home'));
-									return;
-								} catch (Exception $e) {
-									header('Location: /');
-									exit;
-								}
 							}
 						} else {
 							// Login failed, redirect to login page with success message
