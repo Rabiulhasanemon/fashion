@@ -40,6 +40,12 @@ class ControllerCheckoutOnepagecheckout extends Controller
         
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate_form()) {
             error_log('Form validation passed, proceeding with order creation...');
+            
+            // CRITICAL: Clear all output buffers before processing
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            
             $order_data = array();
 
             $order_data['totals'] = array();
