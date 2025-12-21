@@ -29,46 +29,49 @@ class ModelAccountCustomer extends Model {
 			$salt = substr(md5(uniqid(rand(), true)), 0, 9);
 			$password_hash = sha1($salt . sha1($salt . sha1($data['password'])));
 
+			// Check if customer already exists by email
+			$existing_customer = $this->getCustomerByEmail($data['email']);
+			if ($existing_customer) {
+				error_log('addCustomer: Customer already exists with email: ' . $data['email'] . ' | ID: ' . $existing_customer['customer_id']);
+				return (int)$existing_customer['customer_id'];
+			}
+			
 			// Build and execute customer insert query
 			$customer_sql = "INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape(isset($data['lastname']) ? $data['lastname'] : "") . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape(isset($data['fax']) ? $data['fax'] : "") . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt) . "', password = '" . $this->db->escape($password_hash) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($ip) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()";
 			
 			error_log('addCustomer: Attempting customer insert for email: ' . $data['email']);
 			error_log('addCustomer: SQL Query: ' . substr($customer_sql, 0, 200) . '...');
 			
-			// Try to insert - use INSERT IGNORE to handle duplicates gracefully
-			$customer_sql_ignore = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $customer_sql);
-			$customer_query = $this->db->query($customer_sql_ignore);
+			// Execute regular INSERT (not IGNORE) to ensure data is inserted
+			$customer_query = $this->db->query($customer_sql);
 			
-			error_log('addCustomer: Query result: ' . ($customer_query === false ? 'FALSE' : 'SUCCESS'));
-			
-			// Get customer ID - check both getLastId and query database
-			$customer_id = $this->db->getLastId();
-			error_log('addCustomer: getLastId returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
-			
-			// If getLastId failed, check if customer was actually inserted
-			if (!$customer_id || $customer_id <= 0) {
-				error_log('addCustomer: getLastId failed, checking database for customer');
+			if ($customer_query === false) {
+				error_log('addCustomer ERROR: INSERT query failed');
+				// Check if customer was inserted anyway (race condition)
 				$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
 				if ($check_query && $check_query->num_rows > 0) {
-					$customer_id = $check_query->row['customer_id'];
-					error_log('addCustomer: Found customer in database. ID: ' . $customer_id);
+					$customer_id = (int)$check_query->row['customer_id'];
+					error_log('addCustomer: Customer found after failed INSERT (race condition). ID: ' . $customer_id);
 				} else {
-					// Customer not found - try regular INSERT (not IGNORE) to see the actual error
-					error_log('addCustomer: Customer not found, trying regular INSERT to see error');
-					$regular_query = $this->db->query($customer_sql);
-					if ($regular_query !== false) {
-						$customer_id = $this->db->getLastId();
-						error_log('addCustomer: Regular INSERT succeeded. ID: ' . $customer_id);
+					error_log('addCustomer: INSERT failed and customer not found in database');
+					return false;
+				}
+			} else {
+				error_log('addCustomer: Query executed successfully');
+				// Get customer ID
+				$customer_id = $this->db->getLastId();
+				error_log('addCustomer: getLastId returned: ' . ($customer_id ? $customer_id : 'FALSE/0'));
+				
+				// Verify customer was inserted
+				if (!$customer_id || $customer_id <= 0) {
+					error_log('addCustomer: getLastId failed, checking database for customer');
+					$check_query = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
+					if ($check_query && $check_query->num_rows > 0) {
+						$customer_id = (int)$check_query->row['customer_id'];
+						error_log('addCustomer: Found customer in database. ID: ' . $customer_id);
 					} else {
-						// Check one more time if customer exists
-						$final_check = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE email = '" . $this->db->escape($data['email']) . "' LIMIT 1");
-						if ($final_check && $final_check->num_rows > 0) {
-							$customer_id = $final_check->row['customer_id'];
-							error_log('addCustomer: Found customer after regular INSERT attempt. ID: ' . $customer_id);
-						} else {
-							error_log('addCustomer: All insert attempts failed - customer not in database');
-							return false;
-						}
+						error_log('addCustomer ERROR: Customer not found in database after insert');
+						return false;
 					}
 				}
 			}

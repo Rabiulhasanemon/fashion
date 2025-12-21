@@ -733,8 +733,8 @@
     position: absolute;
     top: 8px;
     right: 8px;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 6px 14px;
+    border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
     color: #ffffff;
@@ -755,23 +755,23 @@
 }
 
 .psh-new-badge-red {
-    background: #e53e3e;
-    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #dc2626;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);
+    border: none;
 }
 
 .psh-new-badge i {
-    font-size: 13px;
-    margin-right: 2px;
+    font-size: 14px;
+    margin-right: 3px;
     display: inline-block;
-    color: #ffffff;
+    color: #fbbf24;
     font-weight: 700;
 }
 
 .psh-new-badge-red i {
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: #fbbf24;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Delivery Time - Below Image, Left-Aligned */
