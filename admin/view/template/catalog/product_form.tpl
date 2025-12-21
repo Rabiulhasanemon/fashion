@@ -990,11 +990,27 @@ $('input[name=\'fbt\']').autocomplete({
 		}
 		
 		$('#product-fbt').append('<div id="product-fbt' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_frequently_bought_together[]" value="' + item['value'] + '" /></div>');
+		
+		// Debug: Log to console
+		console.log('FBT Product added:', item['value'], item['label']);
+		console.log('Total FBT products:', $('#product-fbt input[type="hidden"]').length);
 	}
 });
 
 $('#product-fbt').delegate('.fa-minus-circle', 'click', function() {
 	$(this).parent().remove();
+	console.log('FBT Product removed. Remaining:', $('#product-fbt input[type="hidden"]').length);
+});
+
+// Debug: Log FBT data before form submit
+$('#form-product').on('submit', function() {
+	var fbtInputs = $('#product-fbt input[type="hidden"][name="product_frequently_bought_together[]"]');
+	var fbtValues = [];
+	fbtInputs.each(function() {
+		fbtValues.push($(this).val());
+	});
+	console.log('Form submitting with FBT products:', fbtValues);
+	console.log('FBT count:', fbtValues.length);
 });
 
 // Compatible
