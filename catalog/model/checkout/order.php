@@ -98,60 +98,68 @@ class ModelCheckoutOrder extends Model {
 			
 			error_log('Order created successfully with ID: ' . $order_id);
 
-		// Products
-		if (isset($data['products'])) {
-			foreach ($data['products'] as $product) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "order_product SET order_id = '" . (int)$order_id . "', product_id = '" . (int)$product['product_id'] . "', name = '" . $this->db->escape($product['name']) . "', model = '" . $this->db->escape($product['model']) . "', quantity = '" . (int)$product['quantity'] . "', price = '" . (float)$product['price'] . "', total = '" . (float)$product['total'] . "', tax = '" . (float)$product['tax'] . "', reward = '" . (int)$product['reward'] . "'");
+			// Products
+			if (isset($data['products']) && is_array($data['products'])) {
+				error_log('Adding ' . count($data['products']) . ' products to order...');
+				foreach ($data['products'] as $product) {
+					$product_insert = "INSERT INTO " . DB_PREFIX . "order_product SET order_id = '" . (int)$order_id . "', product_id = '" . (int)$product['product_id'] . "', name = '" . $this->db->escape($product['name']) . "', model = '" . $this->db->escape($product['model']) . "', quantity = '" . (int)$product['quantity'] . "', price = '" . (float)$product['price'] . "', total = '" . (float)$product['total'] . "', tax = '" . (float)$product['tax'] . "', reward = '" . (int)$product['reward'] . "'";
+					
+					$product_result = $this->db->query($product_insert);
+					if ($product_result === false) {
+						error_log('ERROR: Failed to insert product: ' . $product['name']);
+						continue;
+					}
 
-				$order_product_id = $this->db->getLastId();
+					$order_product_id = $this->db->getLastId();
 
-                foreach ($product['option'] as $option) {
-                    $this->db->query("INSERT INTO " . DB_PREFIX . "order_option SET order_id = '" . (int)$order_id . "', order_product_id = '" . (int)$order_product_id . "', product_option_id = '" . (int)$option['product_option_id'] . "', option_value_id = '" . (int)$option['option_value_id'] . "', name = '" . $this->db->escape($option['name']) . "', `value` = '" . $this->db->escape($option['value']) . "', `type` = '" . $this->db->escape($option['type']) . "'");
-                }
+					if (isset($product['option']) && is_array($product['option'])) {
+						foreach ($product['option'] as $option) {
+							$option_insert = "INSERT INTO " . DB_PREFIX . "order_option SET order_id = '" . (int)$order_id . "', order_product_id = '" . (int)$order_product_id . "', product_option_id = '" . (int)$option['product_option_id'] . "', option_value_id = '" . (int)$option['option_value_id'] . "', name = '" . $this->db->escape($option['name']) . "', `value` = '" . $this->db->escape($option['value']) . "', `type` = '" . $this->db->escape($option['type']) . "'";
+							$this->db->query($option_insert);
+						}
+					}
+				}
+				error_log('Products added successfully');
+			} else {
+				error_log('WARNING: No products in order data!');
 			}
-		}
 
-		// Gift Voucher
-		$this->load->model('checkout/voucher');
+			// Gift Voucher
+			$this->load->model('checkout/voucher');
 
-		// Vouchers
-		if (isset($data['vouchers'])) {
-			foreach ($data['vouchers'] as $voucher) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "order_voucher SET order_id = '" . (int)$order_id . "', description = '" . $this->db->escape($voucher['description']) . "', code = '" . $this->db->escape($voucher['code']) . "', from_name = '" . $this->db->escape($voucher['from_name']) . "', from_email = '" . $this->db->escape($voucher['from_email']) . "', to_name = '" . $this->db->escape($voucher['to_name']) . "', to_email = '" . $this->db->escape($voucher['to_email']) . "', voucher_theme_id = '" . (int)$voucher['voucher_theme_id'] . "', message = '" . $this->db->escape($voucher['message']) . "', amount = '" . (float)$voucher['amount'] . "'");
+			// Vouchers
+			if (isset($data['vouchers'])) {
+				foreach ($data['vouchers'] as $voucher) {
+					$this->db->query("INSERT INTO " . DB_PREFIX . "order_voucher SET order_id = '" . (int)$order_id . "', description = '" . $this->db->escape($voucher['description']) . "', code = '" . $this->db->escape($voucher['code']) . "', from_name = '" . $this->db->escape($voucher['from_name']) . "', from_email = '" . $this->db->escape($voucher['from_email']) . "', to_name = '" . $this->db->escape($voucher['to_name']) . "', to_email = '" . $this->db->escape($voucher['to_email']) . "', voucher_theme_id = '" . (int)$voucher['voucher_theme_id'] . "', message = '" . $this->db->escape($voucher['message']) . "', amount = '" . (float)$voucher['amount'] . "'");
 
-				$order_voucher_id = $this->db->getLastId();
+					$order_voucher_id = $this->db->getLastId();
 
-				$voucher_id = $this->model_checkout_voucher->addVoucher($order_id, $voucher);
+					$voucher_id = $this->model_checkout_voucher->addVoucher($order_id, $voucher);
 
-				$this->db->query("UPDATE " . DB_PREFIX . "order_voucher SET voucher_id = '" . (int)$voucher_id . "' WHERE order_voucher_id = '" . (int)$order_voucher_id . "'");
-			}
-		}
-
-		// Totals
-		if (isset($data['totals']) && is_array($data['totals'])) {
-			error_log('Adding ' . count($data['totals']) . ' totals to order...');
-			foreach ($data['totals'] as $total) {
-				$total_insert = "INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($total['code']) . "', title = '" . $this->db->escape($total['title']) . "', `value` = '" . (float)$total['value'] . "', sort_order = '" . (int)$total['sort_order'] . "'";
-				$total_result = $this->db->query($total_insert);
-				if ($total_result === false) {
-					error_log('ERROR: Failed to insert total: ' . $total['code']);
+					$this->db->query("UPDATE " . DB_PREFIX . "order_voucher SET voucher_id = '" . (int)$voucher_id . "' WHERE order_voucher_id = '" . (int)$order_voucher_id . "'");
 				}
 			}
-			error_log('Totals added successfully');
-		} else {
-			error_log('WARNING: No totals in order data!');
-		}
 
-		$this->event->trigger('post.order.add', $order_id);
-		
-		error_log('=== addOrder() completed successfully. Order ID: ' . $order_id . ' ===');
+			// Totals
+			if (isset($data['totals']) && is_array($data['totals'])) {
+				error_log('Adding ' . count($data['totals']) . ' totals to order...');
+				foreach ($data['totals'] as $total) {
+					$total_insert = "INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($total['code']) . "', title = '" . $this->db->escape($total['title']) . "', `value` = '" . (float)$total['value'] . "', sort_order = '" . (int)$total['sort_order'] . "'";
+					$total_result = $this->db->query($total_insert);
+					if ($total_result === false) {
+						error_log('ERROR: Failed to insert total: ' . $total['code']);
+					}
+				}
+				error_log('Totals added successfully');
+			} else {
+				error_log('WARNING: No totals in order data!');
+			}
 
-		return $order_id;
-		} catch (Exception $e) {
-			error_log('EXCEPTION in addOrder(): ' . $e->getMessage());
-			error_log('Stack trace: ' . $e->getTraceAsString());
-			return false;
-		}
+			$this->event->trigger('post.order.add', $order_id);
+			
+			error_log('=== addOrder() completed successfully. Order ID: ' . $order_id . ' ===');
+
+			return $order_id;
 		} catch (Exception $e) {
 			error_log('EXCEPTION in addOrder(): ' . $e->getMessage());
 			error_log('Stack trace: ' . $e->getTraceAsString());
