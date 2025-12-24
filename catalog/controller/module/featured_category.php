@@ -25,8 +25,8 @@ class ControllerModuleFeaturedCategory extends Controller
 			$setting['limit'] = 5;
 		}
 
-		// Limit to 16 items on home page
-		if ($is_home_page && (int)$setting['limit'] > 16) {
+		// Show 16 items on home page (desktop/laptop view)
+		if ($is_home_page) {
 			$setting['limit'] = 16;
 		}
 
