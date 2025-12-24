@@ -135,6 +135,20 @@
 
 /* Mobile Devices (max-width: 767px) */
 @media only screen and (max-width: 767.98px) {
+  /* Hide Flash Sale Button on Mobile */
+  .h-flash-btn,
+  .header-bottom .h-flash-btn,
+  .inner-wrap .h-flash-btn {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
   /* Force all module containers to full width on mobile with consistent alignment */
   .special-products-section .container,
   .latest-products-section .container,
@@ -448,6 +462,20 @@
 }
 
 @media only screen and (max-width: 991.98px) {
+  /* Hide Flash Sale Button on Tablet and Mobile */
+  .h-flash-btn,
+  .header-bottom .h-flash-btn,
+  .inner-wrap .h-flash-btn {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
   #nav-toggler {
     width: 22px;
     height: 15px;
