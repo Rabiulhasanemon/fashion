@@ -135,6 +135,19 @@
 
 /* Mobile Devices (max-width: 767px) */
 @media only screen and (max-width: 767.98px) {
+  /* Hide header-bottom-wrapper on mobile */
+  .header-bottom-wrapper {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
   /* Hide Flash Sale Button on Mobile */
   .h-flash-btn,
   .header-bottom .h-flash-btn,
@@ -462,6 +475,19 @@
 }
 
 @media only screen and (max-width: 991.98px) {
+  /* Hide header-bottom-wrapper on tablet and mobile */
+  .header-bottom-wrapper {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
   /* Hide Flash Sale Button on Tablet and Mobile */
   .h-flash-btn,
   .header-bottom .h-flash-btn,
@@ -764,9 +790,17 @@
     width: 100%;
   }
 
+  /* Hide header-bottom-wrapper on mobile */
   .header-bottom-wrapper {
-    padding: 0;
-    border: 0;
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
   }
 
   .header-links .link-item > a {
@@ -806,6 +840,19 @@
 @media only screen and (min-width: 992px) {
 }
 @media only screen and (max-width: 767.98px) {
+  /* Hide header-bottom-wrapper on mobile */
+  .header-bottom-wrapper {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
   :root {
     --fontSize: 14px;
     --sectionPadding: 50px 0;
