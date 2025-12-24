@@ -338,7 +338,14 @@
 /* Mobile Optimizations */
 @media (max-width: 767px) {
     .shop-cat-module-section {
-        padding: 30px 0;
+        padding: 20px 0 !important;
+    }
+    
+    .shop-cat-module-section .container {
+        max-width: 100% !important;
+        padding: 0 10px !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
     
     .shop-cat-header {

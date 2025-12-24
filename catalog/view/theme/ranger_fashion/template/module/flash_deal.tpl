@@ -606,7 +606,14 @@
 
 @media (max-width: 768px) {
     .fld-main-container {
-        padding: 15px 0;
+        padding: 20px 0 !important;
+    }
+    
+    .fld-main-container .container {
+        max-width: 100% !important;
+        padding: 0 10px !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
     
     .fld-title-text {
@@ -896,26 +903,50 @@ jQuery(document).ready(function($) {
         });
     }
     
-    // Countdown timers
+    // Countdown timers - Fixed
     $('.fld-timer-container').each(function() {
         var $timer = $(this);
-        var endDate = $timer.data('end');
-        if (!endDate) return;
+        var endDate = $timer.attr('data-end');
+        if (!endDate) {
+            console.warn('Flash Deal timer: No end date found');
+            return;
+        }
         
-        var targetDate = new Date(endDate);
-        if (isNaN(targetDate.getTime())) return;
+        // Parse the date string - handle multiple formats
+        var targetDate;
+        if (endDate.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
+            // Format: YYYY-MM-DD HH:MM:SS
+            targetDate = new Date(endDate);
+        } else if (endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // Format: YYYY-MM-DD - set to end of day
+            targetDate = new Date(endDate + ' 23:59:59');
+        } else {
+            // Try to parse as-is
+            targetDate = new Date(endDate);
+        }
+        
+        if (isNaN(targetDate.getTime())) {
+            console.warn('Flash Deal timer: Invalid date format:', endDate);
+            return;
+        }
         
         var $items = $timer.find('.fld-timer-item');
+        if ($items.length !== 4) {
+            console.warn('Flash Deal timer: Timer items not found');
+            return;
+        }
         
         function updateTimer() {
             var now = new Date().getTime();
             var distance = targetDate.getTime() - now;
             
             if (distance < 0) {
+                // Timer expired
                 $items.eq(0).find('.fld-timer-num').text('00');
                 $items.eq(1).find('.fld-timer-num').text('00');
                 $items.eq(2).find('.fld-timer-num').text('00');
                 $items.eq(3).find('.fld-timer-num').text('00');
+                $timer.closest('.fld-card-box').addClass('fld-expired');
                 return;
             }
             
@@ -930,7 +961,10 @@ jQuery(document).ready(function($) {
             $items.eq(3).find('.fld-timer-num').text(String(seconds).padStart(2, '0'));
         }
         
+        // Update immediately
         updateTimer();
+        
+        // Update every second
         setInterval(updateTimer, 1000);
     });
 });

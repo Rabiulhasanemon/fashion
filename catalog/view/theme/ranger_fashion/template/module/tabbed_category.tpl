@@ -134,11 +134,13 @@ if (empty($tabs)) {
     box-sizing: border-box;
 }
 
-/* Mobile: Full width */
+/* Mobile: Full width with consistent alignment */
 @media (max-width: 767px) {
     .deal-of-day-section .container {
-    max-width: 100% !important;
-        padding: 0 15px !important;
+        max-width: 100% !important;
+        padding: 0 10px !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
 }
 

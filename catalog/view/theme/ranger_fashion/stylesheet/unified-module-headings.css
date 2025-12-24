@@ -598,7 +598,7 @@ h3.name,
 
 /* Mobile Responsive - Full Width Containers */
 @media (max-width: 767px) {
-  /* Force all module containers to 100% width on mobile */
+  /* Force all module containers to 100% width on mobile with consistent alignment */
   .special-products-section .container,
   .latest-products-section .container,
   .featured-products-section .container,
@@ -606,10 +606,15 @@ h3.name,
   .premium-flash-section .container,
   .pst-module-section .container,
   .deal-of-day-section .container,
-  .banner-module-section .container {
+  .banner-module-section .container,
+  .fld-main-container .container,
+  .shop-cat-module-section .container,
+  .tabbed-category-slider-wrapper .container,
+  .popular-category-slider .container {
     max-width: 100% !important;
     padding: 0 10px !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
   }
 
   /* Module sections */
