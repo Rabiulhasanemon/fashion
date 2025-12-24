@@ -29,9 +29,10 @@ class ControllerInformationOffer extends Controller {
 
         $data['heading_title'] = sprintf($this->language->get('heading_title'), $this->config->get('config_name'));
 
-		$data['offers'] = array();
+        $data['offers'] = array();
         $results =  $this->model_catalog_offer->getOffers();
         foreach ($results as $result) {
+            $date_end_timestamp = strtotime($result['date_end']);
             $data['offers'][] = array(
                 'offer_id' => $result['offer_id'],
                 'title' => $result['title'],
@@ -39,8 +40,10 @@ class ControllerInformationOffer extends Controller {
                 'short_description' => $result['short_description'],
                 'description' => html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8'),
                 'links' => $result['links'],
-                'date_start' =>date('d M Y', strtotime( $result['date_start'])),
-                'date_end' => date('d M Y', strtotime( $result['date_end'])),
+                'date_start' => date('d M Y', strtotime($result['date_start'])),
+                'date_end' => date('d M Y', strtotime($result['date_end'])),
+                'date_start_timestamp' => strtotime($result['date_start']),
+                'date_end_timestamp' => $date_end_timestamp,
                 'image' => $this->config->get('config_ssl') . '/image/' . $result['image'],
                 'href' => $this->url->link("information/offer/info", 'offer_id=' . $result['offer_id'])
             );
