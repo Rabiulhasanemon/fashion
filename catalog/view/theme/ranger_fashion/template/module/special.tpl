@@ -29,7 +29,7 @@
   left: 0 !important;
   width: 60px !important;
   height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+  background: linear-gradient(90deg, #10503D, #A68A6A) !important;
   border-radius: 2px !important;
 }
 @media (max-width: 992px) {
@@ -52,21 +52,21 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #ffffff;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
     border-radius: 25px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
     white-space: nowrap;
 }
 
 .ruplexa-module-see-all-btn:hover {
-    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #10503D 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
     color: #ffffff;
     text-decoration: none;
 }
@@ -268,7 +268,7 @@
 }
 
 .action-btn:hover {
-    background: #ff6b9d;
+    background: #10503D;
     color: #fff;
     transform: scale(1.1);
 }
@@ -295,7 +295,7 @@
 }
 
 .special-card__title a:hover {
-    color: #ff6b9d;
+    color: #10503D;
 }
 
 .special-price {
@@ -306,7 +306,7 @@
 }
 
 .price-new {
-    color: #ff6b9d;
+    color: #10503D;
     margin-right: 5px;
 }
 

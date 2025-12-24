@@ -42,7 +42,7 @@
     color: #1a1a1a;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #ff6b9d;
+    border-bottom: 2px solid #10503D;
 }
 .ruplexa-info-content p {
     font-size: 16px;
@@ -60,7 +60,7 @@
     line-height: 1.8;
 }
 .ruplexa-info-content a {
-    color: #ff6b9d;
+    color: #10503D;
     text-decoration: none;
     transition: color 0.3s ease;
 }

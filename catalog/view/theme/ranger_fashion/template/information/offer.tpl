@@ -166,7 +166,7 @@
     color: #2C3E50;
     margin-bottom: 12px;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -197,14 +197,14 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 107, 157, 0.1);
+    border: 1px solid rgba(16, 80, 61, 0.1);
     overflow: hidden;
 }
 
 .ruplexa-offer-card-compact:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(255, 107, 157, 0.2);
-    border-color: rgba(255, 107, 157, 0.3);
+    box-shadow: 0 8px 24px rgba(16, 80, 61, 0.2);
+    border-color: rgba(16, 80, 61, 0.3);
 }
 
 .ruplexa-offer-card-image-compact {
@@ -232,7 +232,7 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #ffffff;
     padding: 6px 12px;
     border-radius: 15px;
@@ -240,7 +240,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 3px 10px rgba(16, 80, 61, 0.4);
     z-index: 2;
 }
 
@@ -256,13 +256,13 @@
     align-items: center;
     gap: 5px;
     font-size: 11px;
-    color: #FF6B9D;
+    color: #10503D;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 10px;
     padding: 3px 10px;
-    background: rgba(255, 107, 157, 0.1);
+    background: rgba(16, 80, 61, 0.1);
     border-radius: 10px;
     width: fit-content;
 }
@@ -286,7 +286,7 @@
 }
 
 .ruplexa-offer-title-compact a:hover {
-    color: #FF6B9D;
+    color: #10503D;
     text-decoration: none;
 }
 
@@ -318,22 +318,22 @@
 }
 
 .ruplexa-offer-dates-compact i {
-    color: #FF6B9D;
+    color: #10503D;
     font-size: 12px;
 }
 
 /* Compact Premium Timer */
 .ruplexa-offer-timer-compact-wrapper {
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(255, 142, 155, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(16, 80, 61, 0.08) 0%, rgba(166, 138, 106, 0.08) 100%);
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid rgba(255, 107, 157, 0.15);
+    border: 1px solid rgba(16, 80, 61, 0.15);
 }
 
 .ruplexa-offer-timer-label-compact {
     font-size: 10px;
-    color: #FF6B9D;
+    color: #10503D;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 700;
@@ -357,13 +357,13 @@
     padding: 6px 8px;
     min-width: 42px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 107, 157, 0.2);
+    border: 1px solid rgba(16, 80, 61, 0.2);
 }
 
 .ruplexa-timer-num-compact {
     font-size: 18px;
     font-weight: 700;
-    color: #FF6B9D;
+    color: #10503D;
     line-height: 1.2;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 22px;
@@ -382,7 +382,7 @@
 }
 
 .ruplexa-timer-colon-compact {
-    color: #FF6B9D;
+    color: #10503D;
     font-size: 16px;
     font-weight: 700;
     margin: 0 2px;
@@ -406,14 +406,14 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #ffffff;
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     border-radius: 20px;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 3px 10px rgba(16, 80, 61, 0.3);
     width: 100%;
     justify-content: center;
     text-transform: uppercase;
@@ -421,9 +421,9 @@
 }
 
 .ruplexa-offer-btn-compact:hover {
-    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #10503D 100%);
     transform: translateY(-2px);
-    box-shadow: 0 5px 16px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 5px 16px rgba(16, 80, 61, 0.4);
     color: #ffffff;
     text-decoration: none;
     gap: 10px;
@@ -574,7 +574,7 @@
                 
                 if (timeLeft <= 0) {
                     // Timer expired
-                    timerDisplay.innerHTML = '<div style="text-align: center; color: #FF6B9D; font-weight: 700; font-size: 12px; padding: 8px;">Expired</div>';
+                    timerDisplay.innerHTML = '<div style="text-align: center; color: #10503D; font-weight: 700; font-size: 12px; padding: 8px;">Expired</div>';
                     if (offerCard) {
                         offerCard.style.opacity = '0.7';
                     }

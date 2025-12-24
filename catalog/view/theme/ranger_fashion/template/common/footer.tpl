@@ -219,7 +219,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #FF6B9D 0%, #FF8E9B 50%, #FF6B9D 100%);
+    background: linear-gradient(90deg, #10503D 0%, #A68A6A 50%, #10503D 100%);
 }
 
 .footer-top {
@@ -261,7 +261,7 @@
 }
 
 .footer-contact li i {
-    color: #FF6B9D;
+    color: #A68A6A;
     font-size: 16px;
     margin-top: 2px;
     min-width: 20px;
@@ -274,7 +274,7 @@
 }
 
 .footer-contact li a:hover {
-    color: #FF6B9D;
+    color: #A68A6A;
 }
 
 /* Ruplexa Social Media Icons - Premium Design */
@@ -389,7 +389,7 @@
     left: 0;
     width: 50px;
     height: 2px;
-    background: linear-gradient(90deg, #FF6B9D, #FF8E9B);
+    background: linear-gradient(90deg, #10503D, #A68A6A);
 }
 
 .footer-widget-list {
@@ -411,7 +411,7 @@
 }
 
 .footer-widget-list li a:hover {
-    color: #FF6B9D;
+    color: #A68A6A;
     padding-left: 8px;
 }
 
@@ -445,7 +445,7 @@
 
 .footer-newsletter .form-control:focus {
     outline: none;
-    border-color: #FF6B9D;
+    border-color: #A68A6A;
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -453,7 +453,7 @@
     width: 50px;
     height: 50px;
     border: none;
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     border-radius: 50%;
     color: #ffffff;
     cursor: pointer;
@@ -466,7 +466,7 @@
 
 .footer-newsletter button:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.4);
 }
 
 /* Footer Bottom */
@@ -491,7 +491,7 @@
 }
 
 .f-copyight-text a {
-    color: #FF6B9D;
+    color: #A68A6A;
     text-decoration: none;
 }
 

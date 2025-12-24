@@ -433,7 +433,7 @@ if (empty($tabs)) {
     font-weight: 600;
     line-height: 1.2;
     z-index: 9;
-    background: #ff6b9d !important;
+    background: #10503D !important;
 }
 
 .product-card .product-button-group {
@@ -519,7 +519,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-category > a:hover {
-    color: #ff6b9d;
+    color: #10503D;
 }
 
 .product-card .product-title {
@@ -543,7 +543,7 @@ if (empty($tabs)) {
 }
 
 .product-card .product-title > a:hover {
-    color: #ff6b9d;
+    color: #10503D;
 }
 
 .product-card .rating-stars {
@@ -612,7 +612,7 @@ if (empty($tabs)) {
 }
 
 .popular-category-slider.owl-carousel .owl-nav div:hover {
-    background: #ff6b9d !important;
+    background: #10503D !important;
     color: #fff !important;
 }
 
@@ -640,16 +640,16 @@ if (empty($tabs)) {
 
 .lux-tab-item:hover {
     background: #fff;
-    color: #ff6b9d;
-    border-color: #ff6b9d;
+    color: #10503D;
+    border-color: #10503D;
     transform: translateY(-2px);
 }
 
 .lux-tab-item.active {
     background: #ff6b9d;
     color: #fff;
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
-    border-color: #ff6b9d;
+    box-shadow: 0 4px 10px rgba(16, 80, 61, 0.3);
+    border-color: #10503D;
 }
 
 /* Responsive Design */

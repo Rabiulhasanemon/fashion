@@ -31,7 +31,7 @@
   left: 0 !important;
   width: 60px !important;
   height: 3px !important;
-  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+  background: linear-gradient(90deg, #10503D, #A68A6A) !important;
   border-radius: 2px !important;
 }
 @media (max-width: 992px) {
@@ -167,7 +167,7 @@
     left: 0 !important;
     width: 60px !important;
     height: 3px !important;
-    background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
+    background: linear-gradient(90deg, #10503D, #A68A6A) !important;
     border-radius: 2px !important;
 }
 .resource-list__item {

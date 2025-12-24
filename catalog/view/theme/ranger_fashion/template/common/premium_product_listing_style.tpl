@@ -115,7 +115,7 @@
 }
 
 .main-content .product-info .name a:hover {
-    color: #ff6b9d;
+    color: #10503D;
 }
 
 .main-content .product-price-wrap {
@@ -126,7 +126,7 @@
 .main-content .product-price-wrap .price {
     font-size: 22px;
     font-weight: 700;
-    color: #ff6b9d;
+    color: #10503D;
     margin-right: 8px;
     display: inline-block;
 }
@@ -169,9 +169,9 @@
 }
 
 .main-content .product-btn-wrap .btn.wishlist:hover {
-    background: #ff6b9d;
+    background: #10503D;
     color: #fff;
-    border-color: #ff6b9d;
+    border-color: #10503D;
     transform: scale(1.05);
 }
 
@@ -183,7 +183,7 @@
 
 .main-content .product-btn-wrap .btn.buy {
     flex: 1;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8c9f 100%);
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
     color: #fff;
     border: 1px solid transparent;
 }
@@ -283,7 +283,7 @@
 
 /* Accessibility */
 .main-content .product-btn-wrap .btn:focus {
-    outline: 2px solid #ff6b9d;
+    outline: 2px solid #10503D;
     outline-offset: 2px;
 }
 </style>

@@ -50,7 +50,7 @@
                       <span class="ruplexa-blog-play-icon">
                         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <circle cx="32" cy="32" r="30" fill="rgba(255, 255, 255, 0.9)" stroke="rgba(255, 255, 255, 0.5)" stroke-width="2"/>
-                          <path d="M26 20L26 44L42 32L26 20Z" fill="#FF6B9D"/>
+                          <path d="M26 20L26 44L42 32L26 20Z" fill="#10503D"/>
                         </svg>
                       </span>
                     </div>
@@ -122,7 +122,7 @@
 <style>
 /* Ruplexa Premium Blog Styles - New Classes to Avoid Conflicts */
 .ruplexa-blog-hero-section {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+  background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
   padding: 30px 0 20px;
   margin-bottom: 0;
 }
@@ -303,7 +303,7 @@
 }
 
 .ruplexa-blog-card-title-link:hover {
-  color: #FF6B9D;
+  color: #10503D;
   text-decoration: none;
 }
 
@@ -329,7 +329,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #FF6B9D;
+  color: #10503D;
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
@@ -337,7 +337,7 @@
 }
 
 .ruplexa-blog-read-more:hover {
-  color: #FF8E9B;
+  color: #A68A6A;
   gap: 12px;
   text-decoration: none;
 }
@@ -372,8 +372,8 @@
 
 .ruplexa-blog-pagination li.active span,
 .ruplexa-blog-pagination li a:hover {
-  background: #FF6B9D;
-  border-color: #FF6B9D;
+  background: #10503D;
+  border-color: #10503D;
   color: #FFFFFF;
 }
 
