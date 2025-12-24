@@ -1,86 +1,42 @@
 <?php
 /**
- * Install Footer Information Pages for Ruplexa
+ * Simple Footer Pages Installer - Uses OpenCart Config
  * 
- * This script creates all the information pages needed for the footer
- * Run this file once through your browser or command line
- * 
- * Usage: 
- * - Via browser: http://yourdomain.com/install_footer_pages.php
- * - Via command line: php install_footer_pages.php
+ * Place this file in your OpenCart ROOT directory (same folder as config.php)
+ * Then run: http://yourdomain.com/install_footer_pages_simple.php
  */
 
-// ============================================
-// DATABASE CONFIGURATION - UPDATE THESE VALUES
-// ============================================
-// Option 1: Manual Configuration
-define('DB_HOSTNAME', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', ''); // Enter your MySQL password here if required
-define('DB_DATABASE', 'your_database_name'); // Change to your database name
-define('DB_PREFIX', 'sr_'); // Change if your prefix is different
-define('DB_PORT', '3306');
-
-// Option 2: Auto-detect from OpenCart config.php (if script is in root)
-// Uncomment the lines below and comment out Option 1 if you want to use OpenCart's config
-/*
-if (file_exists('config.php')) {
-    require_once('config.php');
-    define('DB_HOSTNAME', DB_HOSTNAME);
-    define('DB_USERNAME', DB_USERNAME);
-    define('DB_PASSWORD', DB_PASSWORD);
-    define('DB_DATABASE', DB_DATABASE);
-    define('DB_PREFIX', DB_PREFIX);
-    define('DB_PORT', defined('DB_PORT') ? DB_PORT : '3306');
+// Load OpenCart configuration
+if (!file_exists('config.php')) {
+    die("<h2 style='color: red;'>Error: config.php not found!</h2>
+        <p>This script must be placed in your OpenCart root directory (same folder as config.php)</p>
+        <p>Current directory: " . __DIR__ . "</p>");
 }
-*/
 
-// Language and Store IDs - Update if needed
-define('LANGUAGE_ID', 1);
-define('STORE_ID', 0);
+require_once('config.php');
 
-// Connect to database
+// Language and Store IDs
+$language_id = 1; // Default English - change if needed
+$store_id = 0; // Default store - change if needed
+
+// Connect to database using OpenCart config
 try {
-    // Check if database name is set
-    if (DB_DATABASE == 'your_database_name') {
-        die("<h2 style='color: red;'>Error: Please update the database configuration!</h2>
-            <p>Open <code>install_footer_pages.php</code> and update:</p>
-            <ul>
-                <li><strong>DB_DATABASE</strong> - Your database name</li>
-                <li><strong>DB_USERNAME</strong> - Your MySQL username</li>
-                <li><strong>DB_PASSWORD</strong> - Your MySQL password (if required)</li>
-                <li><strong>DB_PREFIX</strong> - Your table prefix (default: sr_)</li>
-            </ul>
-            <p><strong>Alternative:</strong> If this file is in your OpenCart root directory, you can uncomment the auto-detect code to use OpenCart's config.php settings.</p>");
-    }
-    
-    echo "<h2>Connecting to database...</h2>";
-    echo "<pre>";
-    echo "Host: " . DB_HOSTNAME . "\n";
-    echo "Database: " . DB_DATABASE . "\n";
-    echo "Username: " . DB_USERNAME . "\n";
-    echo "Prefix: " . DB_PREFIX . "\n";
-    echo "\n";
-    
-    $conn = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
+    $conn = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, defined('DB_PORT') ? DB_PORT : '3306');
     
     if ($conn->connect_error) {
         die("<h2 style='color: red;'>Database Connection Error!</h2>
             <p><strong>Error:</strong> " . $conn->connect_error . "</p>
-            <h3>Common Solutions:</h3>
-            <ol>
-                <li><strong>Wrong Password:</strong> Update DB_PASSWORD in the script</li>
-                <li><strong>Wrong Database Name:</strong> Update DB_DATABASE in the script</li>
-                <li><strong>Wrong Username:</strong> Update DB_USERNAME in the script</li>
-                <li><strong>Database Not Found:</strong> Make sure the database exists</li>
-                <li><strong>MySQL Not Running:</strong> Start your MySQL service</li>
-            </ol>
-            <p><strong>Tip:</strong> Check your OpenCart config.php file for the correct database credentials.</p>");
+            <p>Please check your config.php database settings.</p>");
     }
     
     $conn->set_charset("utf8");
     
-    echo "<h2>Installing Footer Information Pages...</h2>";
+    echo "<!DOCTYPE html><html><head><title>Install Footer Pages</title>";
+    echo "<style>body{font-family:Arial,sans-serif;max-width:800px;margin:50px auto;padding:20px;}";
+    echo "pre{background:#f5f5f5;padding:15px;border-radius:5px;overflow-x:auto;}";
+    echo "h2{color:#333;} .success{color:green;} .error{color:red;}</style></head><body>";
+    
+    echo "<h2>Installing Footer Information Pages for Ruplexa...</h2>";
     echo "<pre>";
     
     $sort_order = 1;
@@ -110,6 +66,10 @@ try {
         array('title' => 'Contact Us', 'description' => '<p>Get in touch with us. We are here to help.</p>', 'meta_title' => 'Contact Us - Ruplexa', 'meta_description' => 'Contact Ruplexa', 'meta_keyword' => 'contact us'),
     );
     
+    $created = 0;
+    $skipped = 0;
+    $errors = 0;
+    
     foreach ($pages as $page) {
         // Escape data
         $title = $conn->real_escape_string($page['title']);
@@ -119,11 +79,12 @@ try {
         $meta_keyword = $conn->real_escape_string($page['meta_keyword']);
         
         // Check if page already exists
-        $check_query = "SELECT information_id FROM " . DB_PREFIX . "information_description WHERE title = '$title' AND language_id = " . LANGUAGE_ID . " LIMIT 1";
+        $check_query = "SELECT information_id FROM " . DB_PREFIX . "information_description WHERE title = '$title' AND language_id = $language_id LIMIT 1";
         $check_result = $conn->query($check_query);
         
         if ($check_result && $check_result->num_rows > 0) {
-            echo "Page '$title' already exists. Skipping...\n";
+            echo "<span class='error'>⚠</span> Page '$title' already exists. Skipping...\n";
+            $skipped++;
             continue;
         }
         
@@ -131,46 +92,60 @@ try {
         $info_query = "INSERT INTO " . DB_PREFIX . "information (sort_order, bottom, status) VALUES ($sort_order, 1, 1)";
         if ($conn->query($info_query)) {
             $information_id = $conn->insert_id;
-            echo "Created information page: $title (ID: $information_id)\n";
+            echo "<span class='success'>✓</span> Created: $title (ID: $information_id)\n";
             
             // Insert description
             $desc_query = "INSERT INTO " . DB_PREFIX . "information_description 
                 (information_id, language_id, title, description, meta_title, meta_description, meta_keyword) 
-                VALUES ($information_id, " . LANGUAGE_ID . ", '$title', '$description', '$meta_title', '$meta_description', '$meta_keyword')";
+                VALUES ($information_id, $language_id, '$title', '$description', '$meta_title', '$meta_description', '$meta_keyword')";
             
-            if ($conn->query($desc_query)) {
-                echo "  - Added description for: $title\n";
-            } else {
-                echo "  - ERROR adding description: " . $conn->error . "\n";
+            if (!$conn->query($desc_query)) {
+                echo "  <span class='error'>✗ ERROR adding description: " . $conn->error . "</span>\n";
+                $errors++;
             }
             
             // Link to store
-            $store_query = "INSERT INTO " . DB_PREFIX . "information_to_store (information_id, store_id) VALUES ($information_id, " . STORE_ID . ")";
-            if ($conn->query($store_query)) {
-                echo "  - Linked to store\n";
-            } else {
-                echo "  - ERROR linking to store: " . $conn->error . "\n";
+            $store_query = "INSERT INTO " . DB_PREFIX . "information_to_store (information_id, store_id) VALUES ($information_id, $store_id)";
+            if (!$conn->query($store_query)) {
+                echo "  <span class='error'>✗ ERROR linking to store: " . $conn->error . "</span>\n";
+                $errors++;
             }
             
+            $created++;
             $sort_order++;
         } else {
-            echo "ERROR creating page '$title': " . $conn->error . "\n";
+            echo "<span class='error'>✗ ERROR creating '$title': " . $conn->error . "</span>\n";
+            $errors++;
         }
     }
     
-    echo "\n\nInstallation completed!\n";
-    echo "Total pages created: " . ($sort_order - 1) . "\n";
-    echo "\nYou can now:\n";
-    echo "1. Go to Admin Panel > Catalog > Information\n";
-    echo "2. Edit each page to customize the content\n";
-    echo "3. The pages will automatically appear in the footer\n";
+    echo "\n" . str_repeat("=", 60) . "\n";
+    echo "<span class='success'>Installation Summary:</span>\n";
+    echo "  Created: $created pages\n";
+    echo "  Skipped: $skipped pages (already exist)\n";
+    if ($errors > 0) {
+        echo "  <span class='error'>Errors: $errors</span>\n";
+    }
+    echo "\n";
+    
+    if ($created > 0) {
+        echo "<span class='success'>✓ Success! Pages have been created.</span>\n\n";
+        echo "Next steps:\n";
+        echo "1. Go to Admin Panel > Catalog > Information\n";
+        echo "2. Edit each page to customize the content\n";
+        echo "3. The pages will automatically appear in the footer\n";
+        echo "4. <strong style='color:red;'>DELETE THIS FILE for security!</strong>\n";
+    } else {
+        echo "No new pages were created. All pages may already exist.\n";
+    }
     
     echo "</pre>";
+    echo "</body></html>";
     
     $conn->close();
     
 } catch (Exception $e) {
-    die("Error: " . $e->getMessage());
+    die("<h2 style='color: red;'>Error: " . $e->getMessage() . "</h2>");
 }
 ?>
 
