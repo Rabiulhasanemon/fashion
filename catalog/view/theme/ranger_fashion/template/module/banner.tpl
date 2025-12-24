@@ -176,5 +176,25 @@
         font-size: 12px;
     }
 }
+
+/* Small Mobile - Remove height constraints */
+@media (max-width: 575px) {
+    .banner-content {
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+    
+    .banner-item {
+        height: auto !important;
+        min-height: auto !important;
+    }
+    
+    .banner-img {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+    }
+}
 </style>
 <?php } ?>
