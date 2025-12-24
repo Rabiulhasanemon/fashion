@@ -601,14 +601,11 @@ if (!$has_categories) {
         align-items: center;
     }
     
-    /* Flash Sale Button on Mobile */
+    /* Flash Sale Button on Mobile - Hidden */
     .header-bottom .h-flash-btn {
-        padding: 6px 8px;
-        font-size: 11px;
-    }
-    
-    .header-bottom .h-flash-btn i {
-        font-size: 16px;
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
     }
 }
 

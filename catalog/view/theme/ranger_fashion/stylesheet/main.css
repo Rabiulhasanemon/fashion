@@ -2070,13 +2070,11 @@ a:focus {
         display: none;
     }
     
+    /* Hide Flash Sale Button on Tablet and Mobile */
     .header-bottom .h-flash-btn {
-        padding: 8px;
-        font-size: 12px;
-    }
-    
-    .header-bottom .h-flash-btn i {
-        font-size: 18px;
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
     }
 }
 
@@ -2085,13 +2083,11 @@ a:focus {
         justify-content: center;
     }
     
+    /* Hide Flash Sale Button on Mobile */
     .header-bottom .h-flash-btn {
-        padding: 6px 8px;
-        font-size: 11px;
-    }
-    
-    .header-bottom .h-flash-btn i {
-        font-size: 16px;
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
     }
 }
 /*=============================================================================================
