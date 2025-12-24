@@ -32,7 +32,8 @@ class ControllerInformationOffer extends Controller {
         $data['offers'] = array();
         $results =  $this->model_catalog_offer->getOffers();
         foreach ($results as $result) {
-            $date_end_timestamp = strtotime($result['date_end']);
+            // Set date_end to end of day (23:59:59) so offer is valid for entire end date
+            $date_end_timestamp = strtotime($result['date_end'] . ' 23:59:59');
             $data['offers'][] = array(
                 'offer_id' => $result['offer_id'],
                 'title' => $result['title'],
