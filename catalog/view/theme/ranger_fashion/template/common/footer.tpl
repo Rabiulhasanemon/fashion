@@ -62,11 +62,18 @@
                             <span class="footer-accordion-icon">+</span>
                         </p>
                         <div class="footer-accordion-content">
-                        <ul class="footer-widget-list">
-                            <?php if (isset($about_ruplexa) && $about_ruplexa) { ?>
+                        <ul class="footer-widget-list ruplexa-footer-list">
+                            <?php if (isset($about_ruplexa) && !empty($about_ruplexa)) { ?>
                             <?php foreach ($about_ruplexa as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
                             <?php } ?>
+                            <?php } else { ?>
+                            <!-- Fallback if pages not loaded yet -->
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Gift cards</a></li>
+                            <li><a href="#">Beauty With Heart</a></li>
                             <?php } ?>
                         </ul>
                         </div>
@@ -79,11 +86,17 @@
                             <span class="footer-accordion-icon">+</span>
                         </p>
                         <div class="footer-accordion-content">
-                        <ul class="footer-widget-list">
-                            <?php if (isset($my_ruplexa) && $my_ruplexa) { ?>
+                        <ul class="footer-widget-list ruplexa-footer-list">
+                            <?php if (isset($my_ruplexa) && !empty($my_ruplexa)) { ?>
                             <?php foreach ($my_ruplexa as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
                             <?php } ?>
+                            <?php } else { ?>
+                            <!-- Fallback if pages not loaded yet -->
+                            <li><a href="<?php echo isset($special) ? $special : '#'; ?>">Specials</a></li>
+                            <li><a href="<?php echo isset($wishlist) ? $wishlist : '#'; ?>">Wish List</a></li>
+                            <li><a href="<?php echo isset($order) ? $order : '#'; ?>">Order History</a></li>
+                            <li><a href="<?php echo isset($account) ? $account : '#'; ?>">My Account</a></li>
                             <?php } ?>
                         </ul>
                         </div>
@@ -96,11 +109,21 @@
                             <span class="footer-accordion-icon">+</span>
                         </p>
                         <div class="footer-accordion-content">
-                        <ul class="footer-widget-list">
-                            <?php if (isset($help) && $help) { ?>
+                        <ul class="footer-widget-list ruplexa-footer-list">
+                            <?php if (isset($help) && !empty($help)) { ?>
                             <?php foreach ($help as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
                             <?php } ?>
+                            <?php } else { ?>
+                            <!-- Fallback if pages not loaded yet -->
+                            <li><a href="#">Customer Service</a></li>
+                            <li><a href="#">Return and exchanges</a></li>
+                            <li><a href="#">Delivery and Pickup Options</a></li>
+                            <li><a href="#">Shipping</a></li>
+                            <li><a href="#">Billing</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms and Condition</a></li>
+                            <li><a href="#">Beauty Service FAQ</a></li>
                             <?php } ?>
                             <?php if (isset($contact) && $contact) { ?>
                             <li><a href="<?php echo $contact; ?>"><?php echo isset($text_contact) ? $text_contact : 'Contact Us'; ?></a></li>
@@ -258,6 +281,28 @@
     }
     
     .footer-accordion-content .footer-widget-list li a:hover {
+        color: #FF6A00;
+        padding-left: 5px;
+    }
+    
+    /* Ruplexa Footer List - Unique Class to Avoid Conflicts */
+    .ruplexa-footer-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .ruplexa-footer-list li {
+        margin: 0;
+        padding: 8px 0;
+    }
+    .ruplexa-footer-list li a {
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .ruplexa-footer-list li a:hover {
         color: #FF6A00;
         padding-left: 5px;
     }
