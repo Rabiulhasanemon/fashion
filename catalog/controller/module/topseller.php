@@ -12,6 +12,8 @@ class ControllerModuleTopSeller extends Controller {
 
 		$data['name'] = $setting['name'];
 		$data['blurb'] = $setting['blurb'];
+		$data['see_all'] = $this->url->link('product/category');
+		$data['shop_all_url'] = $this->url->link('product/category');
 		$data['categories'] = array();
 
 		foreach ($setting['category'] as $category_id) {

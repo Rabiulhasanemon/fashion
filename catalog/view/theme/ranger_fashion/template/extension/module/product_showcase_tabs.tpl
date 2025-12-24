@@ -20,6 +20,11 @@
                 </div>
             </div>
             <div class="psh-header-right">
+                <?php if (isset($see_all) && $see_all) { ?>
+                <div class="psh-see-all-wrapper">
+                    <a href="<?php echo $see_all; ?>" class="ruplexa-module-see-all-btn">All Products</a>
+                </div>
+                <?php } ?>
                 <div class="psh-nav-arrows" id="psh-nav-<?php echo $module_uid; ?>">
                     <button type="button" class="psh-nav-btn psh-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
@@ -146,6 +151,53 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
+    gap: 10px;
+}
+
+.psh-see-all-wrapper {
+    margin-right: 10px;
+}
+
+/* All Products Button - Unified Style */
+.ruplexa-module-see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+}
+
+.ruplexa-module-see-all-btn:hover {
+    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .psh-header-right {
+        flex-wrap: wrap;
+    }
+    
+    .psh-see-all-wrapper {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .ruplexa-module-see-all-btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
 }
 
 .psh-nav-arrows {

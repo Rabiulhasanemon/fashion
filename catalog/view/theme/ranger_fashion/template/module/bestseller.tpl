@@ -2,6 +2,11 @@
   <div class="container">
     <div class="bs-module-header">
       <h2 class="bs-module-title"><?php echo $heading_title; ?></h2>
+      <?php if (isset($shop_all_url) && $shop_all_url) { ?>
+      <div class="bs-module-see-all">
+        <a href="<?php echo $shop_all_url; ?>" class="ruplexa-module-see-all-btn">All Products</a>
+      </div>
+      <?php } ?>
     </div>
     
     <div class="bs-module-content">
@@ -91,6 +96,56 @@
 
 .bs-module-header {
     margin-bottom: 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bs-module-see-all {
+    margin-left: auto;
+}
+
+/* All Products Button - Unified Style */
+.ruplexa-module-see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+}
+
+.ruplexa-module-see-all-btn:hover {
+    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .bs-module-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .bs-module-see-all {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    
+    .ruplexa-module-see-all-btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
 }
 
 .bs-module-title {

@@ -41,6 +41,9 @@ class ControllerExtensionModuleProductShowcaseTabs extends Controller {
 
 		// AJAX URL for loading tab products
 		$data['ajax_url'] = $this->url->link('extension/module/product_showcase_tabs/getTabProducts', '', true);
+		
+		// All Products URL
+		$data['see_all'] = $this->url->link('product/category');
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/extension/module/product_showcase_tabs.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/extension/module/product_showcase_tabs.tpl', $data);

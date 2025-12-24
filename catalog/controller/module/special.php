@@ -4,6 +4,8 @@ class ControllerModuleSpecial extends Controller {
 		$this->load->language('module/special');
 
 		$data['heading_title'] = $this->language->get('heading_title');
+		$data['see_all'] = $this->url->link('product/special');
+		$data['shop_all_url'] = $this->url->link('product/special');
 
 		$data['text_tax'] = $this->language->get('text_tax');
 

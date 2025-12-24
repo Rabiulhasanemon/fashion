@@ -1,6 +1,11 @@
 <div class="topsellers-products">
   <div class="module-heading-wrapper">
     <h2 class="title cosmetics-module-heading">Top Seller</h2>
+    <?php if (isset($see_all) && $see_all) { ?>
+    <div class="topsellers-see-all">
+      <a href="<?php echo $see_all; ?>" class="ruplexa-module-see-all-btn">All Products</a>
+    </div>
+    <?php } ?>
   </div>
 <style>
 .topsellers-products .cosmetics-module-heading {
@@ -31,6 +36,56 @@
   margin-bottom: 24px;
   padding: 0 20px;
   width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topsellers-see-all {
+  margin-left: auto;
+}
+
+/* All Products Button - Unified Style */
+.ruplexa-module-see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+}
+
+.ruplexa-module-see-all-btn:hover {
+    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .module-heading-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .topsellers-see-all {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    
+    .ruplexa-module-see-all-btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
 }
 @media (max-width: 992px) {
   .topsellers-products .cosmetics-module-heading { font-size: 24px; padding: 18px 0 14px 0; }

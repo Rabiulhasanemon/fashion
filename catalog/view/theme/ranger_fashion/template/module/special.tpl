@@ -4,6 +4,11 @@
       <div class="special-products__top-main">
         <div class="special-products__top-text">
           <h2 class="special-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
+          <?php if (isset($see_all) && $see_all) { ?>
+          <div class="special-products__see-all">
+            <a href="<?php echo $see_all; ?>" class="ruplexa-module-see-all-btn">All Products</a>
+          </div>
+          <?php } ?>
 <style>
 /* Consistent Premium Module Headings */
 .cosmetics-module-heading {
@@ -39,6 +44,53 @@
       </div>
     </div>
   </div>
+  
+<style>
+/* All Products Button - Unified Style */
+.ruplexa-module-see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+    white-space: nowrap;
+}
+
+.ruplexa-module-see-all-btn:hover {
+    background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.special-products__see-all {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .special-products__see-all {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+    }
+    
+    .ruplexa-module-see-all-btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+}
+</style>
   
   <div class="special-products__wrapper content">
     <div class="special-products__layout">
