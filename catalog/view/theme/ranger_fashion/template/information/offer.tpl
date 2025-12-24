@@ -114,7 +114,7 @@
 <style>
 /* Ruplexa Premium Offer Page - Cosmetics Theme */
 .ruplexa-offer-hero-section {
-    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    background: none;
     padding: 30px 0 20px;
     margin-bottom: 0;
 }
@@ -126,24 +126,24 @@
 }
 
 .ruplexa-offer-breadcrumb li a {
-    color: rgba(255, 255, 255, 0.9);
+    color: #6C757D;
     font-size: 14px;
     transition: color 0.3s ease;
 }
 
 .ruplexa-offer-breadcrumb li a:hover {
-    color: #ffffff;
+    color: #10503D;
     text-decoration: none;
 }
 
 .ruplexa-offer-breadcrumb li:last-child a {
-    color: #ffffff;
+    color: #2C3E50;
     font-weight: 600;
 }
 
 .ruplexa-offer-breadcrumb li + li:before {
     content: "/";
-    color: rgba(255, 255, 255, 0.7);
+    color: #6C757D;
     padding: 0 10px;
 }
 
