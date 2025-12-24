@@ -112,6 +112,7 @@ class ControllerCommonMenu extends Controller {
 		$data['text_users'] = $this->language->get('text_users');
 		$data['text_voucher'] = $this->language->get('text_voucher');
 		$data['text_voucher_theme'] = $this->language->get('text_voucher_theme');
+		$data['text_vendor'] = $this->language->get('text_vendor');
 		$data['text_weight_class'] = $this->language->get('text_weight_class');
 		$data['text_length_class'] = $this->language->get('text_length_class');
 		$data['text_region'] = $this->language->get('text_region');

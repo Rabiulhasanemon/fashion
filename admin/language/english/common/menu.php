@@ -102,6 +102,7 @@ $_['text_users']                       = 'Users';
 $_['text_user_group']                  = 'User Groups';
 $_['text_voucher']                     = 'Gift Vouchers';
 $_['text_voucher_theme']               = 'Voucher Themes';
+$_['text_vendor']                      = 'Vendors';
 $_['text_weight_class']                = 'Weight Classes';
 $_['text_length_class']                = 'Length Classes';
 $_['text_region']                      = 'Regions';
