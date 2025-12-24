@@ -728,7 +728,34 @@
     transform: scale(1.05);
 }
 
-/* Discount Badge - Top Right - Matching Uploaded Image Style (Red Banner with Lightning Bolt) */
+/* Unified Discount Badge - Red with Yellow Lightning */
+.unified-discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    background: #e74c3c;
+    border-radius: 6px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.discount-badge-icon {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+}
+.discount-badge-text {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+/* Legacy badge - keeping for compatibility */
 .psh-new-badge {
     position: absolute;
     top: 8px;
@@ -1175,11 +1202,11 @@
                 shouldShowBadge = true;
             }
             
-            // Display the badge
+            // Display the badge - using unified design
             if (shouldShowBadge && finalDiscount > 0) {
-                html += '<div class="psh-new-badge psh-new-badge-red">';
-                html += '<i class="fa fa-bolt"></i> ';
-                html += finalDiscount + '% OFF';
+                html += '<div class="unified-discount-badge">';
+                html += '<i class="fa fa-bolt discount-badge-icon"></i>';
+                html += '<span class="discount-badge-text">' + finalDiscount + '% OFF</span>';
                 html += '</div>';
             }
             
