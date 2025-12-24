@@ -84,7 +84,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%);
+    background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%);
 }
 
 .psh-header-left {
@@ -136,8 +136,8 @@
 }
 
 .psh-tab-btn:hover {
-    border-color: #FF6A00;
-    color: #FF6A00;
+    border-color: #A68A6A;
+    color: #A68A6A;
 }
 
 .psh-tab-btn.psh-tab-active {

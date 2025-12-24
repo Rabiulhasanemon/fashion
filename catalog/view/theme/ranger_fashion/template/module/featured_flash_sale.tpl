@@ -86,10 +86,10 @@
 .price-current{color:#111;font-weight:700}
 .flashdeal-countdown{display:flex;gap:10px}
 .cd-item{background:#ffefe3;border:1px solid #ffd8bf;border-radius:8px;padding:8px 10px;text-align:center;min-width:56px}
-.cd-item .num{display:block;color:#ff6a00;font-weight:700}
+.cd-item .num{display:block;color:#a68a6a;font-weight:700}
 .cd-item .lbl{display:block;font-size:12px;color:#6b7280}
 .flashdeal-seeall{text-align:right;margin-top:10px}
-.flashdeal-seeall a{color:#ff6a00;text-decoration:none}
+.flashdeal-seeall a{color:#a68a6a;text-decoration:none}
 @media (max-width:1400px){.flashdeal-container{max-width:80%;padding:0 15px}}
 @media (max-width:1200px){.flashdeal-container{max-width:80%;padding:0 15px}}
 @media (max-width:767px){.flashdeal-container{max-width:100%!important;padding:0 15px}}

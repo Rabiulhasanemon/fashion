@@ -22,7 +22,7 @@
   margin-bottom: 25px !important;
   padding: 15px 20px !important;
   background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
-  border-left: 4px solid #FF6A00 !important;
+  border-left: 4px solid #A68A6A !important;
   border-radius: 0 8px 8px 0 !important;
   position: relative !important;
 }
@@ -41,7 +41,7 @@
   left: 0 !important;
   right: 0 !important;
   height: 1px !important;
-  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
+  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
 }
 
 /* Primary unified classes - Module headings only */
@@ -149,7 +149,7 @@
   margin-bottom: 25px !important;
   padding: 15px 20px !important;
   background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
-  border-left: 4px solid #FF6A00 !important;
+  border-left: 4px solid #A68A6A !important;
   border-radius: 0 8px 8px 0 !important;
   position: relative !important;
 }
@@ -161,7 +161,7 @@
   left: 0 !important;
   right: 0 !important;
   height: 1px !important;
-  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
+  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
 }
 
 .premium-flash-title::after,

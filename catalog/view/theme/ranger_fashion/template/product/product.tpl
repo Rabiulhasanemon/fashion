@@ -454,19 +454,19 @@
         min-width: 0;
     }
     .bundle-product:hover {
-        border-color: #FF6A00;
+        border-color: #A68A6A;
     }
     .bundle-product.selected {
-        border-color: #FF6A00;
+        border-color: #A68A6A;
         background: #f8faff;
     }
     .bundle-product.main-item {
-        border-color: #FF6A00;
+        border-color: #A68A6A;
         background: #f5f5f5;
     }
     .bundle-product.main-item .checkbox-indicator {
-        background: #FF6A00;
-        border-color: #FF6A00;
+        background: #A68A6A;
+        border-color: #A68A6A;
     }
     .bundle-product.main-item .checkbox-indicator::after {
         content: '✓';
@@ -503,8 +503,8 @@
         pointer-events: none;
     }
     .bundle-product.selected .checkbox-indicator {
-        background: #FF6A00;
-        border-color: #FF6A00;
+        background: #A68A6A;
+        border-color: #A68A6A;
     }
     .bundle-product.selected .checkbox-indicator::after {
         content: '✓';
@@ -547,7 +547,7 @@
         text-decoration: none;
     }
     .bundle-product .product-name:hover {
-        color: #FF6A00;
+        color: #A68A6A;
         text-decoration: none;
     }
     .bundle-product .product-price {
@@ -566,7 +566,7 @@
     }
     .bundle-product .product-price .price-current {
         display: block;
-        color: #FF6A00;
+        color: #A68A6A;
         font-weight: 700;
     }
     .bundle-operator {
@@ -576,7 +576,7 @@
         margin: 0 2px;
     }
     .bundle-total {
-        background: #FF6A00;
+        background: #A68A6A;
         color: #fff;
         border-radius: 8px;
         padding: 10px;
@@ -1098,7 +1098,7 @@
     left: 0;
     width: 80px;
     height: 4px;
-    background: linear-gradient(90deg, #FF6A00 0%, #FF8533 100%);
+    background: linear-gradient(90deg, #A68A6A 0%, #c4a882 100%);
     border-radius: 2px;
 }
 
@@ -1106,7 +1106,7 @@
     margin: 32px 0 28px 0;
     padding: 20px 24px;
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-left: 4px solid #FF6A00;
+    border-left: 4px solid #A68A6A;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     position: relative;
@@ -1120,7 +1120,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, #FF6A00 0%, transparent 100%);
+    background: linear-gradient(90deg, #A68A6A 0%, transparent 100%);
 }
 
 .short-desc-text {
@@ -1314,7 +1314,7 @@
 }
 .prx-btn--cart {
     background: #fff2e7;
-    color: #ff6a00;
+    color: #a68a6a;
 }
 .prx-btn--buy {
     background: #000;
@@ -1353,7 +1353,7 @@
     overflow: hidden;
 }
 .prx-contact-card:hover {
-    border-color: #ff6a00;
+    border-color: #a68a6a;
     transform: translateY(-4px) scale(1.05);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
@@ -1370,7 +1370,7 @@
     border-color: rgba(255,106,0,0.3);
 }
 .prx-contact-card--call:hover {
-    border-color: #ff6a00;
+    border-color: #a68a6a;
     box-shadow: 0 8px 20px rgba(255,106,0,0.3);
 }
 .prx-contact-icon {
@@ -1394,7 +1394,7 @@
 }
 .prx-contact-card--call .prx-contact-icon {
     background: rgba(255,106,0,0.15);
-    color: #ff6a00;
+    color: #a68a6a;
 }
 /* Icon Animations */
 .prx-icon-animated {
@@ -1475,13 +1475,13 @@
     display: none;
 }
 .prx-option-pill:hover {
-    border-color: #ff6a00;
-    color: #ff6a00;
+    border-color: #a68a6a;
+    color: #a68a6a;
 }
 .prx-option-pill.is-selected {
-    border-color: #ff6a00;
+    border-color: #a68a6a;
     background: #fff5ed;
-    color: #ff6a00;
+    color: #a68a6a;
 }
 .prx-option-pill.is-selected .prx-option-pill__label {
     font-weight: 600;
@@ -1515,7 +1515,7 @@
 }
 .rpmini24_viewall {
     font-size: 13px;
-    color: #ff6a00;
+    color: #a68a6a;
     text-decoration: none;
     font-weight: 600;
 }
@@ -1560,7 +1560,7 @@
     gap: 6px;
     align-items: baseline;
     font-weight: 600;
-    color: #ff6a00;
+    color: #a68a6a;
 }
 .rpmini24_price-old {
     font-size: 12px;
@@ -1628,7 +1628,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #FF6A00 0%, #FF8533 100%);
+    background: linear-gradient(90deg, #A68A6A 0%, #c4a882 100%);
     border-radius: 2px;
 }
 

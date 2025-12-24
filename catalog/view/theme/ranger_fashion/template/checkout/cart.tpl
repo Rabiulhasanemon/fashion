@@ -538,7 +538,7 @@
 }
 
 .ctp-new-product-name:hover {
-    color: #FF6A00;
+    color: #A68A6A;
 }
 
 .ctp-new-stock-warning {
@@ -595,7 +595,7 @@
 
 .ctp-new-qty-input:focus {
     outline: none;
-    border-color: #FF6A00;
+    border-color: #A68A6A;
     box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
 }
 
@@ -626,7 +626,7 @@
 .ctp-new-price-current {
     font-size: 18px;
     font-weight: 700;
-    color: #FF6A00;
+    color: #A68A6A;
     margin-bottom: 4px;
 }
 
@@ -774,7 +774,7 @@
 .ctp-new-mobile-price-current {
     font-size: 18px;
     font-weight: 700;
-    color: #FF6A00;
+    color: #A68A6A;
     margin-bottom: 4px;
 }
 
@@ -916,7 +916,7 @@
 .ctp-new-summary-total .ctp-new-summary-value {
     font-size: 24px;
     font-weight: 700;
-    color: #FF6A00;
+    color: #A68A6A;
 }
 
 /* Promo Section */
@@ -968,13 +968,13 @@
 }
 
 .ctp-new-btn-checkout {
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
 }
 
 .ctp-new-btn-checkout:hover {
-    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(255, 106, 0, 0.4);
 }

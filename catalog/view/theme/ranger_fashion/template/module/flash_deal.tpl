@@ -147,7 +147,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: #FF6A00;
+    background: #A68A6A;
 }
 
 .fld-title-deal {
@@ -157,7 +157,7 @@
 /* See All Button */
 .fld-see-all-btn {
     padding: 8px 20px;
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
     color: #ffffff;
     text-decoration: none;
     border-radius: 6px;
@@ -172,7 +172,7 @@
 }
 
 .fld-see-all-btn:hover {
-    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
     transform: translateY(-2px);
     color: #ffffff;
@@ -341,7 +341,7 @@
 }
 
 .fld-name-text a:hover {
-    color: #FF6A00;
+    color: #A68A6A;
 }
 
 /* Star Rating */
@@ -379,7 +379,7 @@
 .fld-price-new {
     font-size: 18px;
     font-weight: 700;
-    color: #FF6A00;
+    color: #A68A6A;
 }
 
 /* Countdown Timer */
@@ -401,7 +401,7 @@
 }
 
 .fld-timer-square {
-    background: #FF6A00;
+    background: #A68A6A;
     width: 38px;
     height: 38px;
     display: flex;
@@ -436,7 +436,7 @@
     max-width: 100%;
     padding: 8px 12px;
     border-radius: 6px;
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
     border: none;
     display: flex;
     align-items: center;
@@ -454,7 +454,7 @@
 }
 
 .fld-buttons-box-overlay .fld-btn-cart:hover {
-    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.7);
     transform: translateY(-2px);
 }
@@ -470,7 +470,7 @@
 .fld-btn-cart {
     padding: 8px 16px;
     border-radius: 6px;
-    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
     border: none;
     display: flex;
     align-items: center;
@@ -488,7 +488,7 @@
 }
 
 .fld-btn-cart:hover {
-    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
     transform: translateY(-2px);
 }
