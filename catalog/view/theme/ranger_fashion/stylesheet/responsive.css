@@ -143,9 +143,35 @@
   .premium-flash-section .container,
   .pst-module-section .container,
   .deal-of-day-section .container,
+  .banner-module-section {
+    padding: 10px 0 0 0 !important;
+    margin-bottom: 0 !important;
+  }
+
   .banner-module-section .container {
     max-width: 100% !important;
-    padding: 0 10px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .banner-grid {
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .banner-item {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .banner-item:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .banner-img {
+    border-radius: 0 !important;
   }
 
   .latest-products-section {
