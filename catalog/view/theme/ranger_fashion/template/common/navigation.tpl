@@ -602,10 +602,21 @@ if (!$has_categories) {
     }
     
     /* Flash Sale Button on Mobile - Hidden */
-    .header-bottom .h-flash-btn {
+    .h-flash-btn,
+    .header-bottom .h-flash-btn,
+    .inner-wrap .h-flash-btn,
+    .header-bottom .inner-wrap .h-flash-btn,
+    .container .h-flash-btn {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
     }
 }
 
