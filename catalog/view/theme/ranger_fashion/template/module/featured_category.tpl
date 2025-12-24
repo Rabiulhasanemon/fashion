@@ -10,9 +10,11 @@
             </a>
             <?php } ?>
         </div>
-        <div class="shop-cat-card-grid">
-            <?php foreach ($categories as $index => $category) { ?>
-            <div class="shop-cat-item-wrapper">
+        <div class="shop-cat-card-grid" id="shop-cat-grid-<?php echo isset($module_id) ? $module_id : time(); ?>">
+            <?php foreach ($categories as $index => $category) { 
+                $is_hidden_mobile = ($index >= 4) ? 'ruplexa-cat-hidden-mobile' : '';
+            ?>
+            <div class="shop-cat-item-wrapper <?php echo $is_hidden_mobile; ?>" data-cat-index="<?php echo $index; ?>">
                 <div class="shop-cat-item">
                     <div class="shop-cat-card">
                         <a href="<?php echo $category['href']; ?>" class="shop-cat-card-link">
@@ -30,6 +32,14 @@
             </div>
             <?php } ?>
         </div>
+        <?php if (count($categories) > 4) { ?>
+        <div class="shop-cat-show-more-wrapper" id="shop-cat-show-more-<?php echo isset($module_id) ? $module_id : time(); ?>">
+            <button class="shop-cat-show-more-btn" onclick="ruplexaShowMoreCategories('<?php echo isset($module_id) ? $module_id : time(); ?>')">
+                <span class="show-more-text">Show More</span>
+                <span class="show-more-icon">▼</span>
+            </button>
+        </div>
+        <?php } ?>
     </div>
 </section>
 
@@ -261,6 +271,52 @@
     }
 }
 
+/* Show More Button */
+.shop-cat-show-more-wrapper {
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+.shop-cat-show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
+}
+
+.shop-cat-show-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
+}
+
+.shop-cat-show-more-btn .show-more-icon {
+    transition: transform 0.3s ease;
+    font-size: 12px;
+}
+
+.shop-cat-show-more-btn.expanded .show-more-icon {
+    transform: rotate(180deg);
+}
+
+.shop-cat-show-more-btn.expanded .show-more-text {
+    content: 'Show Less';
+}
+
+/* Hidden categories on mobile */
+.ruplexa-cat-hidden-mobile {
+    display: none;
+}
+
 /* Mobile Optimizations */
 @media (max-width: 767px) {
     .shop-cat-module-section {
@@ -309,6 +365,21 @@
     .shop-cat-name-link {
         font-size: 13px;
     }
+
+    /* Show More Button - Only on Mobile */
+    .shop-cat-show-more-wrapper {
+        display: block;
+    }
+
+    /* Hide categories beyond 4 on mobile initially */
+    .ruplexa-cat-hidden-mobile {
+        display: none;
+    }
+
+    /* Show all when expanded */
+    .shop-cat-card-grid.show-all .ruplexa-cat-hidden-mobile {
+        display: flex;
+    }
 }
 
 @media (max-width: 480px) {
@@ -338,5 +409,25 @@
     }
 }
 </style>
+
+<script>
+function ruplexaShowMoreCategories(moduleId) {
+    const grid = document.getElementById('shop-cat-grid-' + moduleId);
+    const btn = document.querySelector('#shop-cat-show-more-' + moduleId + ' .shop-cat-show-more-btn');
+    const text = btn.querySelector('.show-more-text');
+    
+    if (grid.classList.contains('show-all')) {
+        // Hide categories beyond 4
+        grid.classList.remove('show-all');
+        text.textContent = 'Show More';
+        btn.classList.remove('expanded');
+    } else {
+        // Show all categories
+        grid.classList.add('show-all');
+        text.textContent = 'Show Less';
+        btn.classList.add('expanded');
+    }
+}
+</script>
 
 <?php } ?>

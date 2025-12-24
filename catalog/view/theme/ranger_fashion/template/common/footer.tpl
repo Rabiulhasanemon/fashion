@@ -39,34 +39,42 @@
                         <div class="ruplexa-footer-social">
                             <h4 class="ruplexa-social-title">Follow Us</h4>
                             <ul class="ruplexa-social-icons">
-                                <?php if (isset($facebook_url) && $facebook_url != '#') { ?>
                                 <li>
-                                    <a href="<?php echo $facebook_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-facebook" title="Facebook">
+                                    <a href="<?php echo (isset($facebook_url) && $facebook_url != '#') ? $facebook_url : '#'; ?>" 
+                                       <?php echo (isset($facebook_url) && $facebook_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
+                                       class="ruplexa-social-link ruplexa-social-facebook" 
+                                       title="Facebook"
+                                       <?php echo (isset($facebook_url) && $facebook_url == '#') ? 'onclick="return false;"' : ''; ?>>
                                         <i class="fab fa-facebook-f"></i>
                                     </a>
                                 </li>
-                                <?php } ?>
-                                <?php if (isset($twitter_url) && $twitter_url != '#') { ?>
                                 <li>
-                                    <a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-twitter" title="Twitter">
+                                    <a href="<?php echo (isset($twitter_url) && $twitter_url != '#') ? $twitter_url : '#'; ?>" 
+                                       <?php echo (isset($twitter_url) && $twitter_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
+                                       class="ruplexa-social-link ruplexa-social-twitter" 
+                                       title="Twitter"
+                                       <?php echo (isset($twitter_url) && $twitter_url == '#') ? 'onclick="return false;"' : ''; ?>>
                                         <i class="fab fa-twitter"></i>
                                     </a>
                                 </li>
-                                <?php } ?>
-                                <?php if (isset($instagram_url) && $instagram_url != '#') { ?>
                                 <li>
-                                    <a href="<?php echo $instagram_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-instagram" title="Instagram">
+                                    <a href="<?php echo (isset($instagram_url) && $instagram_url != '#') ? $instagram_url : '#'; ?>" 
+                                       <?php echo (isset($instagram_url) && $instagram_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
+                                       class="ruplexa-social-link ruplexa-social-instagram" 
+                                       title="Instagram"
+                                       <?php echo (isset($instagram_url) && $instagram_url == '#') ? 'onclick="return false;"' : ''; ?>>
                                         <i class="fab fa-instagram"></i>
                                     </a>
                                 </li>
-                                <?php } ?>
-                                <?php if (isset($youtube_url) && $youtube_url != '#') { ?>
                                 <li>
-                                    <a href="<?php echo $youtube_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-youtube" title="YouTube">
+                                    <a href="<?php echo (isset($youtube_url) && $youtube_url != '#') ? $youtube_url : '#'; ?>" 
+                                       <?php echo (isset($youtube_url) && $youtube_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
+                                       class="ruplexa-social-link ruplexa-social-youtube" 
+                                       title="YouTube"
+                                       <?php echo (isset($youtube_url) && $youtube_url == '#') ? 'onclick="return false;"' : ''; ?>>
                                         <i class="fab fa-youtube"></i>
                                     </a>
                                 </li>
-                                <?php } ?>
                             </ul>
                         </div>
                     </div>
@@ -301,7 +309,7 @@
 }
 
 .ruplexa-social-link {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     width: 42px;
@@ -313,6 +321,14 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.ruplexa-social-link[href="#"] {
+    cursor: default;
+    opacity: 0.7;
 }
 
 .ruplexa-social-link::before {
@@ -338,6 +354,8 @@
     position: relative;
     z-index: 1;
     transition: transform 0.3s ease;
+    display: inline-block !important;
+    visibility: visible !important;
 }
 
 .ruplexa-social-link:hover {
