@@ -59,11 +59,7 @@ class ControllerCommonContentTop extends Controller {
 			$module_code = isset($part[0]) ? $part[0] : '';
 			$has_products = in_array($module_code, $product_module_codes);
 
-			if (isset($part[0]) && $this->config->get($part[0] . '_status')) {
-				$data['modules'][] = $this->load->controller('module/' . $part[0]);
-				$data['module_has_products'][] = $has_products;
-			}
-
+			// Extension modules (like HTML Content) have module_id in part[1]
 			if (isset($part[1])) {
 				$setting_info = $this->model_extension_module->getModule($part[1]);
 
@@ -80,6 +76,10 @@ class ControllerCommonContentTop extends Controller {
 						$data['module_has_products'][] = $has_products;
 					}
 				}
+			} elseif (isset($part[0]) && $this->config->get($part[0] . '_status')) {
+				// Built-in modules without module_id (legacy modules)
+				$data['modules'][] = $this->load->controller('module/' . $part[0]);
+				$data['module_has_products'][] = $has_products;
 			}
 		}
 
