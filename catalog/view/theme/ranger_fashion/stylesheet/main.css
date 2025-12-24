@@ -2093,3 +2093,15 @@ a:focus {
 /*=============================================================================================
     End Header Bottom Navigation Style-7
 ===============================================================================================*/
+
+/* Hide Frequently Bought Together Section */
+.bundle-section,
+.container .bundle-section {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
