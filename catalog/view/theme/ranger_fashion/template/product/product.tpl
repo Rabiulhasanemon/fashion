@@ -830,9 +830,9 @@
             <div class="row">
                 <div class="col-lg-8 col-md-12">
                     <ul class="ppd-new-tab-bars mb-3">
-                        <li class="ppd-new-tab ppd-new-tab-active" onclick="openTabNew(event, 'description')">Description</li>
+                        <li class="ppd-new-tab ppd-new-tab-active" onclick="openTabNew(event, 'description')">Benefits & Usage</li>
                         <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
-                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Specification'; ?></li>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Ingredients & Specs'; ?></li>
                         <?php } ?>
                         <li class="ppd-new-tab" onclick="openTabNew(event, 'product-video')">Product Video</li>
                         <li class="ppd-new-tab" onclick="openTabNew(event, 'write-review')"><?php echo $tab_review; ?></li>
