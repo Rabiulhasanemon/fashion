@@ -36,23 +36,39 @@
                             <?php } ?>
                         </ul>
                         <!-- Footer Social -->
-                        <ul class="footer-social">
-                            <?php if (isset($facebook_url) && $facebook_url != '#') { ?>
-                            <li>
-                                <a href="<?php echo $facebook_url; ?>" target="_blank"><i class="w-icon-facebook"></i></a>
-                            </li>
-                            <?php } ?>
-                            <?php if (isset($twitter_url) && $twitter_url != '#') { ?>
-                            <li>
-                                <a href="<?php echo $twitter_url; ?>" target="_blank"><i class="w-icon-twitter"></i></a>
-                            </li>
-                            <?php } ?>
-                            <?php if (isset($instagram_url) && $instagram_url != '#') { ?>
-                            <li>
-                                <a href="<?php echo $instagram_url; ?>" target="_blank"><i class="w-icon-instagram"></i></a>
-                            </li>
-                            <?php } ?>
-                        </ul>
+                        <div class="ruplexa-footer-social">
+                            <h4 class="ruplexa-social-title">Follow Us</h4>
+                            <ul class="ruplexa-social-icons">
+                                <?php if (isset($facebook_url) && $facebook_url != '#') { ?>
+                                <li>
+                                    <a href="<?php echo $facebook_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-facebook" title="Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                </li>
+                                <?php } ?>
+                                <?php if (isset($twitter_url) && $twitter_url != '#') { ?>
+                                <li>
+                                    <a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-twitter" title="Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                </li>
+                                <?php } ?>
+                                <?php if (isset($instagram_url) && $instagram_url != '#') { ?>
+                                <li>
+                                    <a href="<?php echo $instagram_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-instagram" title="Instagram">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                </li>
+                                <?php } ?>
+                                <?php if (isset($youtube_url) && $youtube_url != '#') { ?>
+                                <li>
+                                    <a href="<?php echo $youtube_url; ?>" target="_blank" rel="noopener noreferrer" class="ruplexa-social-link ruplexa-social-youtube" title="YouTube">
+                                        <i class="fab fa-youtube"></i>
+                                    </a>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-2 col-xl-2 col-md-4 col-6">
@@ -187,6 +203,329 @@
 </footer>
 
 <style>
+/* Ruplexa Premium Footer Design */
+.footer.style-3 {
+    background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #ffffff;
+    padding: 60px 0 0;
+    margin-top: 50px;
+    position: relative;
+}
+
+.footer.style-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6B9D 0%, #FF8E9B 50%, #FF6B9D 100%);
+}
+
+.footer-top {
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-widget {
+    margin-bottom: 30px;
+}
+
+.footer-about .footer-logo img {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.f-about-text {
+    color: #b0b0b0;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+}
+
+.footer-contact li {
+    margin-bottom: 12px;
+    color: #b0b0b0;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.footer-contact li i {
+    color: #FF6B9D;
+    font-size: 16px;
+    margin-top: 2px;
+    min-width: 20px;
+}
+
+.footer-contact li a {
+    color: #b0b0b0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-contact li a:hover {
+    color: #FF6B9D;
+}
+
+/* Ruplexa Social Media Icons - Premium Design */
+.ruplexa-footer-social {
+    margin-top: 25px;
+}
+
+.ruplexa-social-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ruplexa-social-icons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ruplexa-social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.ruplexa-social-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.ruplexa-social-link:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.ruplexa-social-link i {
+    font-size: 18px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.ruplexa-social-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.ruplexa-social-link:hover i {
+    transform: scale(1.1);
+}
+
+/* Individual Social Media Colors */
+.ruplexa-social-facebook:hover {
+    background: #1877F2;
+    color: #ffffff;
+}
+
+.ruplexa-social-twitter:hover {
+    background: #1DA1F2;
+    color: #ffffff;
+}
+
+.ruplexa-social-instagram:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: #ffffff;
+}
+
+.ruplexa-social-youtube:hover {
+    background: #FF0000;
+    color: #ffffff;
+}
+
+/* Footer Widget Titles */
+.footer-widget-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.footer-widget-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, #FF6B9D, #FF8E9B);
+}
+
+.footer-widget-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-widget-list li {
+    margin-bottom: 10px;
+}
+
+.footer-widget-list li a {
+    color: #b0b0b0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer-widget-list li a:hover {
+    color: #FF6B9D;
+    padding-left: 8px;
+}
+
+/* Newsletter Section */
+.f-widget-text {
+    color: #b0b0b0;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.footer-newsletter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.footer-newsletter .form-control {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border-radius: 25px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.footer-newsletter .form-control::placeholder {
+    color: #888;
+}
+
+.footer-newsletter .form-control:focus {
+    outline: none;
+    border-color: #FF6B9D;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.footer-newsletter button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.footer-newsletter button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding: 25px 0;
+    background: rgba(0, 0, 0, 0.3);
+    margin-top: 30px;
+}
+
+.footer-bottom-widget {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.f-copyight-text {
+    color: #b0b0b0;
+    font-size: 13px;
+    margin: 0;
+}
+
+.f-copyight-text a {
+    color: #FF6B9D;
+    text-decoration: none;
+}
+
+.f-copyight-text a:hover {
+    text-decoration: underline;
+}
+
+.footer-payment-img img {
+    max-height: 30px;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.footer-payment-img img:hover {
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    .footer.style-3 {
+        padding: 40px 0 0;
+    }
+    
+    .footer-bottom-widget {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ruplexa-social-icons {
+        justify-content: center;
+    }
+}
+
 /* Footer Accordion - Mobile and Tablet Only */
 @media (max-width: 991px) {
     .footer-accordion-item {
