@@ -89,30 +89,53 @@ $(document).ready(function() {
 		}
 	});
 
-	// Menu
-	$('#menu').find('li').has('ul').children('a').on('click', function(e) {
+	// Menu - Fixed to handle all dropdowns properly
+	// Use event delegation to catch all menu clicks
+	$(document).off('click', '#menu li:has(ul) > a').on('click', '#menu li:has(ul) > a', function(e) {
 		var $link = $(this);
 		var $li = $link.parent('li');
-		var isParent = $link.hasClass('parent') || !$link.attr('href') || $link.attr('href') === '#';
+		var $ul = $li.children('ul');
+		var hasHref = $link.attr('href') && $link.attr('href') !== '#' && $link.attr('href') !== '';
+		var isParent = $link.hasClass('parent') || !hasHref;
 		
-		// Prevent default action for parent links (those without href or with class="parent")
+		// Always prevent default for parent links
 		if (isParent) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
 		
+		// Initialize collapse if not already done
+		if (!$ul.data('bs.collapse')) {
+			$ul.collapse({
+				toggle: false
+			});
+		}
+		
+		// Toggle the dropdown
 		if ($('#column-left').hasClass('active')) {
-			// When column is active, toggle all parent links
-			$li.toggleClass('open').children('ul').collapse('toggle');
-			$li.siblings().removeClass('open').children('ul.in').collapse('hide');
+			// Column is active - use collapse toggle
+			$li.toggleClass('open');
+			$ul.collapse('toggle');
+			// Close siblings at same level
+			$li.siblings('li').removeClass('open').children('ul.in').collapse('hide');
 		} else {
-			// When column is not active, allow all nested parent links to toggle
-			// This includes both direct children of #menu and nested items
-			if (isParent || !$li.parent().is('#menu')) {
-				$li.toggleClass('open').children('ul').collapse('toggle');
-				$li.siblings().removeClass('open').children('ul.in').collapse('hide');
+			// Column is not active - handle nested menus
+			// For nested items (not direct children of #menu), use collapse
+			if (!$li.parent().is('#menu')) {
+				$li.toggleClass('open');
+				$ul.collapse('toggle');
+				// Close siblings at same level
+				$li.siblings('li').removeClass('open').children('ul.in').collapse('hide');
+			} else {
+				// For top-level items when column is not active, they use hover (CSS)
+				// But we still want to allow click for nested items
+				if (isParent) {
+					e.preventDefault();
+				}
 			}
 		}
+		
+		return false;
 	});
 	
 	// Override summernotes image manager
