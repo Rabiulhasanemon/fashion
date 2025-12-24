@@ -146,6 +146,11 @@ class ControllerCommonFooter extends Controller {
 		$data['wishlist'] = $this->url->link('account/wishlist', '', 'SSL');
 		$data['special'] = $this->url->link('product/special');
         $data['item_count'] = $this->cart->countProducts();
+        
+        // Compare data
+        $compare_count = (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0);
+        $data['compare'] = $this->url->link('product/compare');
+        $data['compare_count'] = $compare_count;
 
         $data['logged'] = $this->customer->isLogged();
         $data['account'] = $this->url->link('account/account', '', 'SSL');

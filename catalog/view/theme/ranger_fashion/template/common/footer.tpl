@@ -376,6 +376,18 @@ jQuery(document).ready(function($) {
 });
 </script>
 
+<!-- Compare Floating Button -->
+<a href="<?php echo isset($compare) ? $compare : '#'; ?>" 
+   class="ruplexa-compare-float-btn" 
+   title="Compare Products">
+    <div class="ruplexa-compare-icon-wrapper">
+        <i class="fa fa-balance-scale"></i>
+    </div>
+    <?php if (isset($compare_count) && $compare_count > 0) { ?>
+    <span class="ruplexa-compare-badge"><?php echo $compare_count; ?></span>
+    <?php } ?>
+</a>
+
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/8801711664166" 
    target="_blank" 
@@ -389,6 +401,84 @@ jQuery(document).ready(function($) {
 </a>
 
 <style>
+/* Compare Floating Button - New Classes to Avoid Conflicts */
+.ruplexa-compare-float-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.ruplexa-compare-float-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.ruplexa-compare-icon-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ruplexa-compare-float-btn i {
+    font-size: 28px;
+    color: #ffffff;
+    animation: ruplexa-compare-icon-bounce 2s infinite;
+}
+
+.ruplexa-compare-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #FF6B9D;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
+    animation: ruplexa-compare-badge-pulse 2s infinite;
+}
+
+@keyframes ruplexa-compare-icon-bounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-3px) rotate(-5deg);
+    }
+}
+
+@keyframes ruplexa-compare-badge-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
 /* WhatsApp Floating Button - New Classes to Avoid Conflicts */
 .wa-new-float-btn {
     position: fixed;
@@ -473,6 +563,25 @@ jQuery(document).ready(function($) {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .ruplexa-compare-float-btn {
+        width: 56px;
+        height: 56px;
+        bottom: 90px;
+        right: 20px;
+    }
+    
+    .ruplexa-compare-float-btn i {
+        font-size: 24px;
+    }
+    
+    .ruplexa-compare-badge {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+        top: -4px;
+        right: -4px;
+    }
+    
     .wa-new-float-btn {
         width: 56px;
         height: 56px;
@@ -492,6 +601,25 @@ jQuery(document).ready(function($) {
 }
 
 @media (max-width: 480px) {
+    .ruplexa-compare-float-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 80px;
+        right: 15px;
+    }
+    
+    .ruplexa-compare-float-btn i {
+        font-size: 22px;
+    }
+    
+    .ruplexa-compare-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        top: -3px;
+        right: -3px;
+    }
+    
     .wa-new-float-btn {
         width: 50px;
         height: 50px;
