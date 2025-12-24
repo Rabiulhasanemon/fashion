@@ -271,11 +271,22 @@
     }
 }
 
-/* Show More Button */
+/* Show More Button - Hidden on desktop/laptop, shown on mobile */
 .shop-cat-show-more-wrapper {
     text-align: center;
     margin-top: 20px;
     display: none;
+}
+
+/* Ensure all items are visible on desktop/laptop (min-width: 768px) */
+@media (min-width: 768px) {
+    .ruplexa-cat-hidden-mobile {
+        display: flex !important;
+    }
+    
+    .shop-cat-show-more-wrapper {
+        display: none !important;
+    }
 }
 
 .shop-cat-show-more-btn {
@@ -312,9 +323,16 @@
     content: 'Show Less';
 }
 
-/* Hidden categories on mobile */
+/* Hidden categories on mobile - Only hide on mobile, show on desktop/laptop */
 .ruplexa-cat-hidden-mobile {
-    display: none;
+    display: flex; /* Show by default on desktop/laptop */
+}
+
+/* Only hide on mobile */
+@media (max-width: 767px) {
+    .ruplexa-cat-hidden-mobile {
+        display: none;
+    }
 }
 
 /* Mobile Optimizations */
@@ -373,12 +391,12 @@
 
     /* Hide categories beyond 4 on mobile initially */
     .ruplexa-cat-hidden-mobile {
-        display: none;
+        display: none !important;
     }
 
     /* Show all when expanded */
     .shop-cat-card-grid.show-all .ruplexa-cat-hidden-mobile {
-        display: flex;
+        display: flex !important;
     }
 }
 
