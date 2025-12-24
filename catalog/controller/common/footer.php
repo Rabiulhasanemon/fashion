@@ -21,16 +21,52 @@ class ControllerCommonFooter extends Controller {
 		$this->load->model('catalog/information');
 		$this->load->model('catalog/category');
 
-		$data['informations'] = array();
+		// Organize footer information pages into groups
+		$data['about_ruplexa'] = array();
+		$data['my_ruplexa'] = array();
+		$data['help'] = array();
 
 		foreach ($this->model_catalog_information->getInformations() as $result) {
 			if ($result['bottom']) {
-				$data['informations'][] = array(
+				$info_item = array(
 					'title' => $result['title'],
 					'href'  => $this->url->link('information/information', 'information_id=' . $result['information_id'])
 				);
+				
+				// Group by sort_order ranges
+				// About Ruplexa: sort_order 1-5
+				// My Ruplexa: sort_order 6-9
+				// Help: sort_order 10+
+				if ($result['sort_order'] >= 1 && $result['sort_order'] <= 5) {
+					$data['about_ruplexa'][] = $info_item;
+				} elseif ($result['sort_order'] >= 6 && $result['sort_order'] <= 9) {
+					$data['my_ruplexa'][] = $info_item;
+				} else {
+					$data['help'][] = $info_item;
+				}
 			}
 		}
+		
+		// Add account-related links to My Ruplexa section
+		$data['my_ruplexa'][] = array(
+			'title' => $data['text_special'],
+			'href' => $this->url->link('product/special')
+		);
+		$data['my_ruplexa'][] = array(
+			'title' => $data['text_wishlist'],
+			'href' => $this->url->link('account/wishlist', '', 'SSL')
+		);
+		$data['my_ruplexa'][] = array(
+			'title' => $data['text_order'],
+			'href' => $this->url->link('account/order', '', 'SSL')
+		);
+		$data['my_ruplexa'][] = array(
+			'title' => $data['text_account'],
+			'href' => $this->url->link('account/account', '', 'SSL')
+		);
+		
+		// Keep old informations array for backward compatibility
+		$data['informations'] = array_merge($data['about_ruplexa'], $data['my_ruplexa'], $data['help']);
 
 		// Get categories for footer - Show 7 demo cosmetics categories if no categories exist
 		$data['categories'] = array();

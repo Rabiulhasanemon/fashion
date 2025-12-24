@@ -58,14 +58,48 @@
                 <div class="col-lg-2 col-xl-2 col-md-4 col-6">
                     <div class="footer-widget quick-links footer-accordion-item">
                         <p class="footer-widget-title footer-accordion-toggle">
-                            Information
+                            About Ruplexa
                             <span class="footer-accordion-icon">+</span>
                         </p>
                         <div class="footer-accordion-content">
                         <ul class="footer-widget-list">
-                            <?php if (isset($informations) && $informations) { ?>
-                            <?php foreach ($informations as $information) { ?>
-                            <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
+                            <?php if (isset($about_ruplexa) && $about_ruplexa) { ?>
+                            <?php foreach ($about_ruplexa as $info) { ?>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-xl-2 col-md-4 col-6">
+                    <div class="footer-widget quick-links footer-accordion-item">
+                        <p class="footer-widget-title footer-accordion-toggle">
+                            My Ruplexa
+                            <span class="footer-accordion-icon">+</span>
+                        </p>
+                        <div class="footer-accordion-content">
+                        <ul class="footer-widget-list">
+                            <?php if (isset($my_ruplexa) && $my_ruplexa) { ?>
+                            <?php foreach ($my_ruplexa as $info) { ?>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-xl-2 col-md-4 col-6">
+                    <div class="footer-widget quick-links footer-accordion-item">
+                        <p class="footer-widget-title footer-accordion-toggle">
+                            Help
+                            <span class="footer-accordion-icon">+</span>
+                        </p>
+                        <div class="footer-accordion-content">
+                        <ul class="footer-widget-list">
+                            <?php if (isset($help) && $help) { ?>
+                            <?php foreach ($help as $info) { ?>
+                            <li><a href="<?php echo $info['href']; ?>"><?php echo $info['title']; ?></a></li>
                             <?php } ?>
                             <?php } ?>
                             <?php if (isset($contact) && $contact) { ?>
@@ -91,30 +125,6 @@
                             <?php $category_count++; ?>
                             <?php } ?>
                             <?php } ?>
-                            <?php } ?>
-                        </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-xl-2 col-md-2 col-6">
-                    <div class="footer-widget pages footer-accordion-item">
-                        <p class="footer-widget-title footer-accordion-toggle">
-                            Support
-                            <span class="footer-accordion-icon">+</span>
-                        </p>
-                        <div class="footer-accordion-content">
-                        <ul class="footer-widget-list">
-                            <?php if (isset($account) && $account) { ?>
-                            <li><a href="<?php echo $account; ?>"><?php echo isset($text_account) ? $text_account : 'My Account'; ?></a></li>
-                            <?php } ?>
-                            <?php if (isset($order) && $order) { ?>
-                            <li><a href="<?php echo $order; ?>"><?php echo isset($text_order) ? $text_order : 'Order History'; ?></a></li>
-                            <?php } ?>
-                            <?php if (isset($wishlist) && $wishlist) { ?>
-                            <li><a href="<?php echo $wishlist; ?>"><?php echo isset($text_wishlist) ? $text_wishlist : 'Wish List'; ?></a></li>
-                            <?php } ?>
-                            <?php if (isset($special) && $special) { ?>
-                            <li><a href="<?php echo $special; ?>"><?php echo isset($text_special) ? $text_special : 'Specials'; ?></a></li>
                             <?php } ?>
                         </ul>
                         </div>
