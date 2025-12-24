@@ -5,11 +5,10 @@
 ALTER TABLE sr_information MODIFY information_id INT(11) NOT NULL AUTO_INCREMENT;
 
 -- ============================================
--- 2. CLEAR OLD DATA (OPTIONAL - USE WITH CARE)
+-- 2. DISABLE OLD FOOTER PAGES (RUN THIS)
 -- ============================================
--- DELETE FROM sr_information WHERE bottom = 1;
--- DELETE FROM sr_information_description WHERE information_id NOT IN (SELECT information_id FROM sr_information);
--- DELETE FROM sr_information_to_store WHERE information_id NOT IN (SELECT information_id FROM sr_information);
+-- Disable all existing footer pages so they don't show
+UPDATE sr_information SET bottom = 0 WHERE bottom = 1;
 
 -- ============================================
 -- 3. INSERT FOOTER PAGES FOR RUPLEXA
@@ -18,7 +17,10 @@ SET @language_id = 1;
 SET @store_id = 0;
 
 -- ABOUT RUPLEXA SECTION (sort_order 1-5)
-INSERT INTO sr_information (sort_order, bottom, status) VALUES (1, 1, 1);
+-- Use INSERT IGNORE or check if exists first to avoid duplicates
+INSERT INTO sr_information (sort_order, bottom, status) 
+SELECT 1, 1, 1 
+WHERE NOT EXISTS (SELECT 1 FROM sr_information_description WHERE title = 'About Us' AND language_id = @language_id);
 SET @info_id = LAST_INSERT_ID();
 INSERT INTO sr_information_description (information_id, language_id, title, description, meta_title, meta_description, meta_keyword) 
 VALUES (@info_id, @language_id, 'About Us', '<div class=\"ruplexa-info-content\"><h3>About Ruplexa</h3><p>Welcome to Ruplexa, your premier destination for heart-centered beauty. We believe that true beauty comes from the inside out.</p></div>', 'About Us - Ruplexa', 'Learn more about Ruplexa', 'about us, ruplexa');
