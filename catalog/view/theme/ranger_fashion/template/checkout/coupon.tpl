@@ -17,21 +17,48 @@
                     $('#button-coupon').button('reset');
                 },
                 success: function(json) {
-                    $('.alert').remove();
+                    $('.alert, .ctp-new-alert').remove();
 
                     if (json['error']) {
-                        var alertRow = $(".container.alert-container");
-                        if(alertRow.size() == 0) {
-                            alertRow = $('<div class="container alert-container"></div>').insertAfter($('.after-header'));
+                        var alertRow = $(".ctp-new-alert-wrapper");
+                        if(alertRow.length == 0) {
+                            alertRow = $('.ctp-new-container .ctp-new-alert-wrapper');
                         }
-                        alertRow.append('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
-
-                        $("html,body").scrollTo(0, 600)
+                        if(alertRow.length == 0) {
+                            alertRow = $('<div class="ctp-new-alert-wrapper"></div>').prependTo($('.ctp-new-container'));
+                        }
+                        alertRow.append('<div class="ctp-new-alert ctp-new-alert-danger"><i class="fa fa-exclamation-circle"></i> <span>' + json['error'] + '</span><button type="button" class="ctp-new-alert-close" data-dismiss="alert">&times;</button></div>');
+                        $("html, body").animate({ scrollTop: 0 }, 600);
                     }
 
-                    if (json['redirect']) {
+                    if (json['success']) {
+                        var alertRow = $(".ctp-new-alert-wrapper");
+                        if(alertRow.length == 0) {
+                            alertRow = $('.ctp-new-container .ctp-new-alert-wrapper');
+                        }
+                        if(alertRow.length == 0) {
+                            alertRow = $('<div class="ctp-new-alert-wrapper"></div>').prependTo($('.ctp-new-container'));
+                        }
+                        alertRow.append('<div class="ctp-new-alert ctp-new-alert-success"><i class="fa fa-check-circle"></i> <span>' + json['success'] + '</span><button type="button" class="ctp-new-alert-close" data-dismiss="alert">&times;</button></div>');
+                        
+                        // Reload cart totals and page content via AJAX
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500);
+                    }
+
+                    if (json['redirect'] && !json['success']) {
                         location = json['redirect'];
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Coupon error:', error);
+                    $('.alert, .ctp-new-alert').remove();
+                    var alertRow = $(".ctp-new-alert-wrapper");
+                    if(alertRow.length == 0) {
+                        alertRow = $('<div class="ctp-new-alert-wrapper"></div>').prependTo($('.ctp-new-container'));
+                    }
+                    alertRow.append('<div class="ctp-new-alert ctp-new-alert-danger"><i class="fa fa-exclamation-circle"></i> <span>An error occurred. Please try again.</span><button type="button" class="ctp-new-alert-close" data-dismiss="alert">&times;</button></div>');
                 }
             });
         });
