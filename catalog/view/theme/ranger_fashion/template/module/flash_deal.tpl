@@ -6,6 +6,9 @@
             <h2 class="fld-title-text">
                 <span class="fld-title-flash">Flash</span><span class="fld-title-deal"> Deal</span>
             </h2>
+            <?php if (isset($see_all) && $see_all) { ?>
+            <a href="<?php echo $see_all; ?>" class="fld-see-all-btn">See All</a>
+            <?php } ?>
         </div>
         
         <!-- Products Carousel -->
@@ -117,6 +120,9 @@
 .fld-header-box {
     margin-bottom: 15px;
     padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .fld-title-text {
@@ -146,6 +152,35 @@
 
 .fld-title-deal {
     color: #000000;
+}
+
+/* See All Button */
+.fld-see-all-btn {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.fld-see-all-btn:hover {
+    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
+    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
+    transform: translateY(-2px);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.fld-see-all-btn:active {
+    transform: translateY(0);
 }
 
 /* Carousel Container */
@@ -580,6 +615,13 @@
     
     .fld-header-box {
         margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .fld-see-all-btn {
+        padding: 6px 16px;
+        font-size: 12px;
     }
     
     .fld-item-wrapper {
@@ -681,6 +723,13 @@
     
     .fld-header-box {
         margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .fld-see-all-btn {
+        padding: 5px 14px;
+        font-size: 11px;
     }
     
     .fld-item-wrapper {
