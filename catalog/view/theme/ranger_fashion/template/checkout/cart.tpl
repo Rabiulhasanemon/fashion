@@ -832,7 +832,7 @@
 
 .ctp-new-mobile-btn-update {
     padding: 10px 16px;
-    background: #FF6A00;
+    background: #A68A6A;
     color: #ffffff;
     border: none;
     border-radius: 6px;

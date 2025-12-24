@@ -221,9 +221,9 @@
 }
 
 .psh-nav-btn:hover {
-    background: #FF6A00;
+    background: #A68A6A;
     color: #fff;
-    border-color: #FF6A00;
+    border-color: #A68A6A;
 }
 
 .psh-nav-btn:active {
