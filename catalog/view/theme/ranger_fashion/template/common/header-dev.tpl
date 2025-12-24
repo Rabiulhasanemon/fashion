@@ -110,9 +110,35 @@
 
             <!-- Icons -->
             <div class="header-icons-container">
-                <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>" class="header-icon-item offer-deals-btn">
+                <a href="<?php echo isset($offer_url) ? $offer_url : 'index.php?route=information/offer'; ?>" class="header-icon-item offer-deals-btn ruplexa-offer-deals">
                     <span class="icon"><i class="fas fa-tag"></i></span>
                     <span class="icon-text">Offer Deals</span>
+                    <?php if (isset($active_offer) && !empty($active_offer) && isset($active_offer['date_end_timestamp'])) { ?>
+                    <div class="ruplexa-offer-timer">
+                        <div class="ruplexa-timer-label">Ends in:</div>
+                        <div class="ruplexa-timer-display" data-end-time="<?php echo $active_offer['date_end_timestamp']; ?>">
+                            <span class="ruplexa-timer-item">
+                                <span class="ruplexa-timer-value" id="ruplexa-days">00</span>
+                                <span class="ruplexa-timer-label-small">Days</span>
+                            </span>
+                            <span class="ruplexa-timer-separator">:</span>
+                            <span class="ruplexa-timer-item">
+                                <span class="ruplexa-timer-value" id="ruplexa-hours">00</span>
+                                <span class="ruplexa-timer-label-small">Hours</span>
+                            </span>
+                            <span class="ruplexa-timer-separator">:</span>
+                            <span class="ruplexa-timer-item">
+                                <span class="ruplexa-timer-value" id="ruplexa-minutes">00</span>
+                                <span class="ruplexa-timer-label-small">Min</span>
+                            </span>
+                            <span class="ruplexa-timer-separator">:</span>
+                            <span class="ruplexa-timer-item">
+                                <span class="ruplexa-timer-value" id="ruplexa-seconds">00</span>
+                                <span class="ruplexa-timer-label-small">Sec</span>
+                            </span>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </a>
                 <a href="<?php echo isset($order) ? $order : '#'; ?>" class="header-icon-item">
                     <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
@@ -317,27 +343,184 @@ document.addEventListener('DOMContentLoaded', function() {
     justify-content: end;
 }
 
-/* Offer Deals Button Styling - Match Default Header Icon Style */
-.header-icon-item.offer-deals-btn {
-    background: transparent;
-    border: none;
-    padding: 0;
-    box-shadow: none;
+/* Ruplexa Premium Offer Deals with Timer - Cosmetics Theme */
+.ruplexa-offer-deals {
+    position: relative;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+    text-decoration: none;
 }
 
-.header-icon-item.offer-deals-btn:hover {
-    background: transparent;
-    transform: none;
-    box-shadow: none;
+.ruplexa-offer-deals:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+    text-decoration: none;
 }
 
-.header-icon-item.offer-deals-btn .icon {
-    color: #333;
+.ruplexa-offer-deals .icon {
+    color: #ffffff;
+    font-size: 20px;
 }
 
-.header-icon-item.offer-deals-btn .icon-text {
-    color: #333;
+.ruplexa-offer-deals .icon-text {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ruplexa-offer-timer {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.ruplexa-timer-label {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.ruplexa-timer-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.ruplexa-timer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-width: 28px;
+    backdrop-filter: blur(4px);
+}
+
+.ruplexa-timer-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.ruplexa-timer-label-small {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
     font-weight: 500;
+}
+
+.ruplexa-timer-separator {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 2px;
+    animation: ruplexa-timer-blink 1s infinite;
+}
+
+@keyframes ruplexa-timer-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Old Header Offer Deals Timer */
+.ruplexa-offer-deals-old {
+    position: relative;
+}
+
+.ruplexa-offer-timer-old {
+    margin-top: 4px;
+    text-align: center;
+}
+
+.ruplexa-timer-display-old {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #FF6B9D;
+    font-weight: 600;
+}
+
+.ruplexa-timer-value-old {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
+    color: #ffffff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    .ruplexa-offer-deals {
+        min-width: 120px;
+        padding: 10px 14px;
+    }
+    
+    .ruplexa-timer-item {
+        min-width: 24px;
+        padding: 3px 5px;
+    }
+    
+    .ruplexa-timer-value {
+        font-size: 12px;
+    }
+    
+    .ruplexa-timer-label-small {
+        font-size: 7px;
+    }
+}
+
+@media (max-width: 767px) {
+    .ruplexa-offer-deals {
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+    
+    .ruplexa-timer-display {
+        gap: 2px;
+    }
+    
+    .ruplexa-timer-item {
+        min-width: 20px;
+        padding: 2px 4px;
+    }
+    
+    .ruplexa-timer-value {
+        font-size: 11px;
+    }
+    
+    .ruplexa-timer-label-small {
+        font-size: 6px;
+    }
+    
+    .ruplexa-timer-separator {
+        font-size: 10px;
+        margin: 0 1px;
+    }
 }
 
 /* Offer Deals Link Item Styling (Older Header) - Match Default Style */
@@ -411,12 +594,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php echo $navigation ?>
                 </div>
             </div>
-                    <div class="link-item offer-deals-link-item">
-                        <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>">
+                    <div class="link-item offer-deals-link-item ruplexa-offer-deals-old">
+                        <a href="<?php echo isset($offer_url) ? $offer_url : 'index.php?route=information/offer'; ?>">
                             <div class="icon">
                                 <span class="material-icons">local_offer</span>
                             </div>
                             <span class="link-text">Deals</span>
+                            <?php if (isset($active_offer) && !empty($active_offer) && isset($active_offer['date_end_timestamp'])) { ?>
+                            <div class="ruplexa-offer-timer-old">
+                                <div class="ruplexa-timer-display-old" data-end-time="<?php echo $active_offer['date_end_timestamp']; ?>">
+                                    <span class="ruplexa-timer-value-old" id="ruplexa-days-old">00</span>d
+                                    <span class="ruplexa-timer-value-old" id="ruplexa-hours-old">00</span>h
+                                    <span class="ruplexa-timer-value-old" id="ruplexa-minutes-old">00</span>m
+                                </div>
+                            </div>
+                            <?php } ?>
                         </a>
                     </div>
                     <div class="link-item">
@@ -514,6 +706,78 @@ document.addEventListener('DOMContentLoaded', function() {
     
     </div>
 </header>
+
+<script>
+// Ruplexa Premium Offer Timer Counter
+(function() {
+    function initOfferTimer() {
+        const timerDisplays = document.querySelectorAll('.ruplexa-timer-display[data-end-time], .ruplexa-timer-display-old[data-end-time]');
+        
+        timerDisplays.forEach(function(timerDisplay) {
+            const endTime = parseInt(timerDisplay.getAttribute('data-end-time'));
+            if (!endTime) return;
+            
+            function updateTimer() {
+                const now = Math.floor(Date.now() / 1000);
+                const timeLeft = endTime - now;
+                
+                if (timeLeft <= 0) {
+                    // Timer expired
+                    if (timerDisplay.classList.contains('ruplexa-timer-display')) {
+                        timerDisplay.innerHTML = '<span style="color: #fff; font-size: 11px; padding: 4px;">Expired</span>';
+                    } else {
+                        timerDisplay.innerHTML = '<span style="color: #FF6B9D; font-size: 11px;">Expired</span>';
+                    }
+                    return;
+                }
+                
+                const days = Math.floor(timeLeft / 86400);
+                const hours = Math.floor((timeLeft % 86400) / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                
+                // Update new timer format
+                if (timerDisplay.classList.contains('ruplexa-timer-display')) {
+                    const daysEl = document.getElementById('ruplexa-days');
+                    const hoursEl = document.getElementById('ruplexa-hours');
+                    const minutesEl = document.getElementById('ruplexa-minutes');
+                    const secondsEl = document.getElementById('ruplexa-seconds');
+                    
+                    if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+                    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+                    if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+                    if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+                }
+                
+                // Update old timer format
+                if (timerDisplay.classList.contains('ruplexa-timer-display-old')) {
+                    const daysEl = document.getElementById('ruplexa-days-old');
+                    const hoursEl = document.getElementById('ruplexa-hours-old');
+                    const minutesEl = document.getElementById('ruplexa-minutes-old');
+                    
+                    if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+                    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+                    if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+                }
+            }
+            
+            // Update immediately
+            updateTimer();
+            
+            // Update every second
+            setInterval(updateTimer, 1000);
+        });
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOfferTimer);
+    } else {
+        initOfferTimer();
+    }
+})();
+</script>
+
 <div class="mini-cart" id="mini-cart">
     <div class="content">
         <div class="loader"></div>

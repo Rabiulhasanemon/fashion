@@ -86,6 +86,22 @@ class ControllerCommonHeader extends Controller {
         $data['item_count'] = $this->cart->countProducts();
         $data['flash_sale_url'] = $this->url->link('product/special');
         $data['shop_now_url'] = $this->url->link('product/special');
+        $data['offer_url'] = $this->url->link('information/offer');
+        
+        // Get active offer for timer
+        $data['active_offer'] = array();
+        $this->load->model('catalog/offer');
+        $offers = $this->model_catalog_offer->getOffers();
+        if (!empty($offers)) {
+            // Get the first active offer (sorted by sort_order)
+            $active_offer = $offers[0];
+            $data['active_offer'] = array(
+                'offer_id' => $active_offer['offer_id'],
+                'title' => $active_offer['title'],
+                'date_end' => $active_offer['date_end'],
+                'date_end_timestamp' => strtotime($active_offer['date_end'])
+            );
+        }
 
         // Big Offer Button (from module settings)
         $data['big_offer'] = array();
