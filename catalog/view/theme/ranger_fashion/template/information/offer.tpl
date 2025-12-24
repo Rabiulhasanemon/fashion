@@ -26,74 +26,71 @@
         </div>
         
         <?php if (!empty($offers)) { ?>
-        <div class="ruplexa-offers-grid">
+        <div class="ruplexa-offers-grid-compact">
             <div class="row">
                 <?php foreach ($offers as $offer) { ?>
-                <div class="col-lg-6 col-md-12 ruplexa-offer-item-wrapper">
-                    <div class="ruplexa-offer-card" data-offer-id="<?php echo $offer['offer_id']; ?>">
-                        <div class="ruplexa-offer-card-image-wrapper">
-                            <a href="<?php echo $offer['href']; ?>" class="ruplexa-offer-card-link">
-                                <img src="<?php echo $offer['image']; ?>" alt="<?php echo htmlspecialchars($offer['title']); ?>" class="ruplexa-offer-card-image">
-                                <div class="ruplexa-offer-card-overlay">
-                                    <div class="ruplexa-offer-badge">Limited Time</div>
-                                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 ruplexa-offer-item-compact">
+                    <div class="ruplexa-offer-card-compact" data-offer-id="<?php echo $offer['offer_id']; ?>">
+                        <div class="ruplexa-offer-card-image-compact">
+                            <a href="<?php echo $offer['href']; ?>" class="ruplexa-offer-card-link-compact">
+                                <img src="<?php echo $offer['image']; ?>" alt="<?php echo htmlspecialchars($offer['title']); ?>" class="ruplexa-offer-image-compact">
+                                <div class="ruplexa-offer-badge-compact">Limited Time</div>
                             </a>
                         </div>
                         
-                        <div class="ruplexa-offer-card-content">
+                        <div class="ruplexa-offer-card-content-compact">
                             <?php if (!empty($offer['branch'])) { ?>
-                            <div class="ruplexa-offer-branch">
+                            <div class="ruplexa-offer-branch-compact">
                                 <i class="fas fa-store"></i>
                                 <span><?php echo htmlspecialchars($offer['branch']); ?></span>
                             </div>
                             <?php } ?>
                             
-                            <h3 class="ruplexa-offer-card-title">
+                            <h3 class="ruplexa-offer-title-compact">
                                 <a href="<?php echo $offer['href']; ?>"><?php echo htmlspecialchars($offer['title']); ?></a>
                             </h3>
                             
                             <?php if (!empty($offer['short_description'])) { ?>
-                            <p class="ruplexa-offer-card-description"><?php echo htmlspecialchars($offer['short_description']); ?></p>
+                            <p class="ruplexa-offer-desc-compact"><?php echo htmlspecialchars($offer['short_description']); ?></p>
                             <?php } ?>
                             
-                            <div class="ruplexa-offer-card-meta">
-                                <div class="ruplexa-offer-dates">
+                            <div class="ruplexa-offer-meta-compact">
+                                <div class="ruplexa-offer-dates-compact">
                                     <i class="fas fa-calendar-alt"></i>
-                                    <span>Valid: <?php echo $offer['date_start']; ?> - <?php echo $offer['date_end']; ?></span>
+                                    <span><?php echo $offer['date_start']; ?> - <?php echo $offer['date_end']; ?></span>
                                 </div>
                             </div>
                             
                             <?php if (isset($offer['date_end_timestamp']) && $offer['date_end_timestamp']) { ?>
-                            <div class="ruplexa-offer-timer-wrapper">
-                                <div class="ruplexa-offer-timer-label">Offer Ends In:</div>
-                                <div class="ruplexa-offer-timer-display" data-end-time="<?php echo $offer['date_end_timestamp']; ?>">
-                                    <div class="ruplexa-timer-box">
-                                        <span class="ruplexa-timer-number" id="ruplexa-offer-days-<?php echo $offer['offer_id']; ?>">00</span>
-                                        <span class="ruplexa-timer-unit">Days</span>
-                                    </div>
-                                    <span class="ruplexa-timer-colon">:</span>
-                                    <div class="ruplexa-timer-box">
-                                        <span class="ruplexa-timer-number" id="ruplexa-offer-hours-<?php echo $offer['offer_id']; ?>">00</span>
-                                        <span class="ruplexa-timer-unit">Hours</span>
-                                    </div>
-                                    <span class="ruplexa-timer-colon">:</span>
-                                    <div class="ruplexa-timer-box">
-                                        <span class="ruplexa-timer-number" id="ruplexa-offer-minutes-<?php echo $offer['offer_id']; ?>">00</span>
-                                        <span class="ruplexa-timer-unit">Min</span>
-                                    </div>
-                                    <span class="ruplexa-timer-colon">:</span>
-                                    <div class="ruplexa-timer-box">
-                                        <span class="ruplexa-timer-number" id="ruplexa-offer-seconds-<?php echo $offer['offer_id']; ?>">00</span>
-                                        <span class="ruplexa-timer-unit">Sec</span>
-                                    </div>
+                            <div class="ruplexa-offer-timer-compact-wrapper">
+                                <div class="ruplexa-offer-timer-label-compact">Ends In:</div>
+                                <div class="ruplexa-offer-timer-compact" data-end-time="<?php echo $offer['date_end_timestamp']; ?>">
+                                    <span class="ruplexa-timer-box-compact">
+                                        <span class="ruplexa-timer-num-compact" id="ruplexa-offer-days-<?php echo $offer['offer_id']; ?>">00</span>
+                                        <span class="ruplexa-timer-unit-compact">D</span>
+                                    </span>
+                                    <span class="ruplexa-timer-colon-compact">:</span>
+                                    <span class="ruplexa-timer-box-compact">
+                                        <span class="ruplexa-timer-num-compact" id="ruplexa-offer-hours-<?php echo $offer['offer_id']; ?>">00</span>
+                                        <span class="ruplexa-timer-unit-compact">H</span>
+                                    </span>
+                                    <span class="ruplexa-timer-colon-compact">:</span>
+                                    <span class="ruplexa-timer-box-compact">
+                                        <span class="ruplexa-timer-num-compact" id="ruplexa-offer-minutes-<?php echo $offer['offer_id']; ?>">00</span>
+                                        <span class="ruplexa-timer-unit-compact">M</span>
+                                    </span>
+                                    <span class="ruplexa-timer-colon-compact">:</span>
+                                    <span class="ruplexa-timer-box-compact">
+                                        <span class="ruplexa-timer-num-compact" id="ruplexa-offer-seconds-<?php echo $offer['offer_id']; ?>">00</span>
+                                        <span class="ruplexa-timer-unit-compact">S</span>
+                                    </span>
                                 </div>
                             </div>
                             <?php } ?>
                             
-                            <div class="ruplexa-offer-card-footer">
-                                <a href="<?php echo $offer['href']; ?>" class="ruplexa-offer-view-btn">
-                                    View Details
-                                    <i class="fas fa-arrow-right"></i>
+                            <div class="ruplexa-offer-footer-compact">
+                                <a href="<?php echo $offer['href']; ?>" class="ruplexa-offer-btn-compact">
+                                    View Details <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -152,22 +149,22 @@
 
 .ruplexa-offer-main-section {
     background: #F8F9FA;
-    padding: 50px 0;
+    padding: 40px 0;
     min-height: 60vh;
 }
 
 .ruplexa-offer-page-header {
     text-align: center;
-    margin-bottom: 50px;
-    padding-bottom: 30px;
+    margin-bottom: 35px;
+    padding-bottom: 25px;
     border-bottom: 2px solid #E9ECEF;
 }
 
 .ruplexa-offer-page-title {
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 700;
     color: #2C3E50;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
     -webkit-background-clip: text;
@@ -176,228 +173,219 @@
 }
 
 .ruplexa-offer-page-subtitle {
-    font-size: 18px;
+    font-size: 16px;
     color: #6C757D;
     margin: 0;
     font-weight: 300;
 }
 
-.ruplexa-offers-grid {
-    margin-top: 40px;
+/* Compact Premium Offer Cards */
+.ruplexa-offers-grid-compact {
+    margin-top: 30px;
 }
 
-.ruplexa-offer-item-wrapper {
-    margin-bottom: 30px;
+.ruplexa-offer-item-compact {
+    margin-bottom: 25px;
 }
 
-.ruplexa-offer-card {
+.ruplexa-offer-card-compact {
     background: #FFFFFF;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(255, 107, 157, 0.1);
+    overflow: hidden;
 }
 
-.ruplexa-offer-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 28px rgba(255, 107, 157, 0.2);
+.ruplexa-offer-card-compact:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(255, 107, 157, 0.2);
     border-color: rgba(255, 107, 157, 0.3);
 }
 
-.ruplexa-offer-card-image-wrapper {
+.ruplexa-offer-card-image-compact {
     position: relative;
     overflow: hidden;
-    padding-top: 60%;
+    padding-top: 55%;
     background: #F0F0F0;
 }
 
-.ruplexa-offer-card-image {
+.ruplexa-offer-image-compact {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.5s ease;
 }
 
-.ruplexa-offer-card:hover .ruplexa-offer-card-image {
-    transform: scale(1.08);
+.ruplexa-offer-card-compact:hover .ruplexa-offer-image-compact {
+    transform: scale(1.06);
 }
 
-.ruplexa-offer-card-overlay {
+.ruplexa-offer-badge-compact {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    padding: 15px;
-}
-
-.ruplexa-offer-card:hover .ruplexa-offer-card-overlay {
-    opacity: 1;
-}
-
-.ruplexa-offer-badge {
+    top: 12px;
+    right: 12px;
     background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
     color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.4);
+    z-index: 2;
 }
 
-.ruplexa-offer-card-content {
-    padding: 25px;
+.ruplexa-offer-card-content-compact {
+    padding: 18px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.ruplexa-offer-branch {
+.ruplexa-offer-branch-compact {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    gap: 5px;
+    font-size: 11px;
     color: #FF6B9D;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 12px;
-    padding: 4px 12px;
+    margin-bottom: 10px;
+    padding: 3px 10px;
     background: rgba(255, 107, 157, 0.1);
-    border-radius: 12px;
+    border-radius: 10px;
     width: fit-content;
 }
 
-.ruplexa-offer-branch i {
-    font-size: 11px;
+.ruplexa-offer-branch-compact i {
+    font-size: 10px;
 }
 
-.ruplexa-offer-card-title {
-    margin: 0 0 12px 0;
-    font-size: 24px;
+.ruplexa-offer-title-compact {
+    margin: 0 0 10px 0;
+    font-size: 18px;
     font-weight: 700;
     line-height: 1.3;
     color: #2C3E50;
 }
 
-.ruplexa-offer-card-title a {
+.ruplexa-offer-title-compact a {
     color: inherit;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.ruplexa-offer-card-title a:hover {
+.ruplexa-offer-title-compact a:hover {
     color: #FF6B9D;
     text-decoration: none;
 }
 
-.ruplexa-offer-card-description {
+.ruplexa-offer-desc-compact {
     color: #6C757D;
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 15px;
     flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.ruplexa-offer-card-meta {
-    margin-bottom: 20px;
-    padding-top: 15px;
+.ruplexa-offer-meta-compact {
+    margin-bottom: 12px;
+    padding-top: 12px;
     border-top: 1px solid #E9ECEF;
 }
 
-.ruplexa-offer-dates {
+.ruplexa-offer-dates-compact {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 6px;
+    font-size: 12px;
     color: #6C757D;
     font-weight: 500;
 }
 
-.ruplexa-offer-dates i {
+.ruplexa-offer-dates-compact i {
     color: #FF6B9D;
-    font-size: 14px;
+    font-size: 12px;
 }
 
-/* Premium Timer Counter */
-.ruplexa-offer-timer-wrapper {
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 142, 155, 0.1) 100%);
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 20px;
-    border: 2px solid rgba(255, 107, 157, 0.2);
+/* Compact Premium Timer */
+.ruplexa-offer-timer-compact-wrapper {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(255, 142, 155, 0.08) 100%);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 107, 157, 0.15);
 }
 
-.ruplexa-offer-timer-label {
-    font-size: 11px;
+.ruplexa-offer-timer-label-compact {
+    font-size: 10px;
     color: #FF6B9D;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
-.ruplexa-offer-timer-display {
+.ruplexa-offer-timer-compact {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
 }
 
-.ruplexa-timer-box {
+.ruplexa-timer-box-compact {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: #FFFFFF;
-    border-radius: 10px;
-    padding: 10px 12px;
-    min-width: 60px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 6px 8px;
+    min-width: 42px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(255, 107, 157, 0.2);
 }
 
-.ruplexa-timer-number {
-    font-size: 24px;
+.ruplexa-timer-num-compact {
+    font-size: 18px;
     font-weight: 700;
     color: #FF6B9D;
     line-height: 1.2;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 28px;
+    min-height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.ruplexa-timer-unit {
-    font-size: 10px;
+.ruplexa-timer-unit-compact {
+    font-size: 9px;
     color: #6C757D;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 4px;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
     font-weight: 600;
 }
 
-.ruplexa-timer-colon {
+.ruplexa-timer-colon-compact {
     color: #FF6B9D;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
-    margin: 0 4px;
+    margin: 0 2px;
     animation: ruplexa-timer-colon-blink 1s infinite;
     line-height: 1;
 }
@@ -407,46 +395,47 @@
     50% { opacity: 0.3; }
 }
 
-.ruplexa-offer-card-footer {
+.ruplexa-offer-footer-compact {
     margin-top: auto;
-    padding-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid #E9ECEF;
 }
 
-.ruplexa-offer-view-btn {
+.ruplexa-offer-btn-compact {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 28px;
+    gap: 8px;
+    padding: 10px 20px;
     background: linear-gradient(135deg, #FF6B9D 0%, #FF8E9B 100%);
     color: #ffffff;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    border-radius: 25px;
+    border-radius: 20px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
     width: 100%;
     justify-content: center;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.ruplexa-offer-view-btn:hover {
+.ruplexa-offer-btn-compact:hover {
     background: linear-gradient(135deg, #FF8E9B 0%, #FF6B9D 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 5px 16px rgba(255, 107, 157, 0.4);
     color: #ffffff;
     text-decoration: none;
-    gap: 14px;
+    gap: 10px;
 }
 
-.ruplexa-offer-view-btn i {
+.ruplexa-offer-btn-compact i {
     transition: transform 0.3s ease;
+    font-size: 12px;
 }
 
-.ruplexa-offer-view-btn:hover i {
-    transform: translateX(4px);
+.ruplexa-offer-btn-compact:hover i {
+    transform: translateX(3px);
 }
 
 /* Empty State */
@@ -480,24 +469,25 @@
 /* Responsive Design */
 @media (max-width: 991px) {
     .ruplexa-offer-page-title {
-        font-size: 32px;
+        font-size: 28px;
     }
     
     .ruplexa-offer-page-subtitle {
+        font-size: 14px;
+    }
+    
+    .ruplexa-offer-title-compact {
         font-size: 16px;
     }
     
-    .ruplexa-offer-card-title {
-        font-size: 22px;
+    .ruplexa-timer-box-compact {
+        min-width: 38px;
+        padding: 5px 7px;
     }
     
-    .ruplexa-timer-box {
-        min-width: 50px;
-        padding: 8px 10px;
-    }
-    
-    .ruplexa-timer-number {
-        font-size: 20px;
+    .ruplexa-timer-num-compact {
+        font-size: 16px;
+        min-height: 20px;
     }
 }
 
@@ -507,60 +497,60 @@
     }
     
     .ruplexa-offer-main-section {
-        padding: 30px 0;
+        padding: 25px 0;
     }
     
     .ruplexa-offer-page-header {
-        margin-bottom: 30px;
-        padding-bottom: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 18px;
     }
     
     .ruplexa-offer-page-title {
-        font-size: 28px;
+        font-size: 24px;
     }
     
     .ruplexa-offer-page-subtitle {
-        font-size: 15px;
+        font-size: 13px;
     }
     
-    .ruplexa-offer-item-wrapper {
-        margin-bottom: 25px;
+    .ruplexa-offer-item-compact {
+        margin-bottom: 20px;
     }
     
-    .ruplexa-offer-card-content {
-        padding: 20px;
+    .ruplexa-offer-card-content-compact {
+        padding: 15px;
     }
     
-    .ruplexa-offer-card-title {
-        font-size: 20px;
-    }
-    
-    .ruplexa-offer-timer-display {
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    
-    .ruplexa-timer-box {
-        min-width: 45px;
-        padding: 6px 8px;
-    }
-    
-    .ruplexa-timer-number {
-        font-size: 18px;
-        min-height: 24px;
-    }
-    
-    .ruplexa-timer-unit {
-        font-size: 9px;
-    }
-    
-    .ruplexa-timer-colon {
+    .ruplexa-offer-title-compact {
         font-size: 16px;
     }
     
-    .ruplexa-offer-view-btn {
-        padding: 12px 24px;
+    .ruplexa-offer-timer-compact {
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+    
+    .ruplexa-timer-box-compact {
+        min-width: 35px;
+        padding: 5px 6px;
+    }
+    
+    .ruplexa-timer-num-compact {
+        font-size: 15px;
+        min-height: 18px;
+    }
+    
+    .ruplexa-timer-unit-compact {
+        font-size: 8px;
+    }
+    
+    .ruplexa-timer-colon-compact {
         font-size: 14px;
+    }
+    
+    .ruplexa-offer-btn-compact {
+        padding: 9px 18px;
+        font-size: 12px;
     }
 }
 </style>
@@ -569,7 +559,7 @@
 // Ruplexa Premium Offer Timer Counter
 (function() {
     function initOfferTimers() {
-        const timerDisplays = document.querySelectorAll('.ruplexa-offer-timer-display[data-end-time]');
+        const timerDisplays = document.querySelectorAll('.ruplexa-offer-timer-compact[data-end-time]');
         
         timerDisplays.forEach(function(timerDisplay) {
             const endTime = parseInt(timerDisplay.getAttribute('data-end-time'));
@@ -584,7 +574,7 @@
                 
                 if (timeLeft <= 0) {
                     // Timer expired
-                    timerDisplay.innerHTML = '<div style="text-align: center; color: #FF6B9D; font-weight: 700; font-size: 14px; padding: 10px;">Offer Expired</div>';
+                    timerDisplay.innerHTML = '<div style="text-align: center; color: #FF6B9D; font-weight: 700; font-size: 12px; padding: 8px;">Expired</div>';
                     if (offerCard) {
                         offerCard.style.opacity = '0.7';
                     }
