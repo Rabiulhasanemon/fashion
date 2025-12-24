@@ -563,10 +563,19 @@
         
         timerDisplays.forEach(function(timerDisplay) {
             const endTime = parseInt(timerDisplay.getAttribute('data-end-time'));
-            if (!endTime) return;
+            if (!endTime || isNaN(endTime)) {
+                console.warn('Invalid end time for timer:', timerDisplay.getAttribute('data-end-time'));
+                return;
+            }
             
-            const offerCard = timerDisplay.closest('.ruplexa-offer-card');
+            // Get offer card - use correct class name
+            const offerCard = timerDisplay.closest('.ruplexa-offer-card-compact');
             const offerId = offerCard ? offerCard.getAttribute('data-offer-id') : '';
+            
+            if (!offerId) {
+                console.warn('Could not find offer ID for timer');
+                return;
+            }
             
             function updateTimer() {
                 const now = Math.floor(Date.now() / 1000);
