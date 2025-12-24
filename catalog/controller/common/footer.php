@@ -28,9 +28,14 @@ class ControllerCommonFooter extends Controller {
 
 		foreach ($this->model_catalog_information->getInformations() as $result) {
 			if ($result['bottom']) {
+				// Link "Blog" to blog/blog route, others to information pages
+				$href = (strtolower(trim($result['title'])) === 'blog') 
+					? $this->url->link('blog/blog')
+					: $this->url->link('information/information', 'information_id=' . $result['information_id']);
+				
 				$info_item = array(
 					'title' => $result['title'],
-					'href'  => $this->url->link('information/information', 'information_id=' . $result['information_id'])
+					'href'  => $href
 				);
 				
 				// Group by sort_order ranges
