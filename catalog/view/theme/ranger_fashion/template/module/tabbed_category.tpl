@@ -381,9 +381,11 @@ if (empty($tabs)) {
 
 /* Premium Product Card Styles (Consistent with Featured/Latest) */
 .product-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: relative;
     width: 100%;
+    height: 100%;
     border-radius: 12px;
     background-color: #fff;
     overflow: hidden;
@@ -504,6 +506,8 @@ if (empty($tabs)) {
     text-align: center;
     display: flex;
     flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
 .product-card .product-category {
@@ -580,9 +584,29 @@ if (empty($tabs)) {
     text-decoration: line-through;
 }
 
-/* Slider Item */
+/* Slider Item - Equal Height */
 .slider-item {
     padding: 10px 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure all carousel items have equal height */
+.popular-category-slider.owl-carousel .owl-stage {
+    display: flex;
+    align-items: stretch;
+}
+
+.popular-category-slider.owl-carousel .owl-item {
+    display: flex;
+    height: auto;
+}
+
+.popular-category-slider.owl-carousel .owl-item > div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Owl Carousel Navigation */
