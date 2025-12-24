@@ -19,8 +19,12 @@ h1, h2, h3, h4, h5, h6, p {
 .page-header {
 	vertical-align: middle;
 	margin: 15px 0;
-	padding: 0;
+	margin-top: 0;
+	padding: 15px 0;
+	padding-top: 10px;
 	border-bottom: none;
+	position: relative;
+	z-index: 1;
 }
 .page-header h1 {
 	font-family: 'Open Sans', sans-serif;
@@ -66,6 +70,7 @@ span.hidden-xs, span.hidden-sm, span.hidden-md, span.hidden-lg {
 	width: 100%;
 	position: relative;
 	padding-top: 50px;
+	overflow-x: hidden;
 }
 .container-fluid {
 	padding-left: 20px;
@@ -178,10 +183,14 @@ span.hidden-xs, span.hidden-sm, span.hidden-md, span.hidden-lg {
 	z-index: 1;
 	min-height: calc(100vh - 50px);
 	background: #ffffff;
+	margin-top: 0;
+	padding-top: 20px;
 }
 #column-left + #content {
 	margin-left: 50px;
+	margin-top: 0;
 	padding: 20px;
+	padding-top: 20px;
 }
 #column-left + #content + #footer {
 	margin-left: 50px;
@@ -355,7 +364,9 @@ span.hidden-xs, span.hidden-sm, span.hidden-md, span.hidden-lg {
 }
 #column-left.active + #content {
 	margin-left: 235px;
+	margin-top: 0;
 	padding: 20px;
+	padding-top: 20px;
 }
 #column-left.active + #content + #footer {
 	margin-left: 235px;
