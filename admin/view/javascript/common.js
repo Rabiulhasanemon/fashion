@@ -90,13 +90,28 @@ $(document).ready(function() {
 	});
 
 	// Menu
-	$('#menu').find('li').has('ul').children('a').on('click', function() {
+	$('#menu').find('li').has('ul').children('a').on('click', function(e) {
+		var $link = $(this);
+		var $li = $link.parent('li');
+		var isParent = $link.hasClass('parent') || !$link.attr('href') || $link.attr('href') === '#';
+		
+		// Prevent default action for parent links (those without href or with class="parent")
+		if (isParent) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		
 		if ($('#column-left').hasClass('active')) {
-			$(this).parent('li').toggleClass('open').children('ul').collapse('toggle');
-			$(this).parent('li').siblings().removeClass('open').children('ul.in').collapse('hide');
-		} else if (!$(this).parent().parent().is('#menu')) {
-			$(this).parent('li').toggleClass('open').children('ul').collapse('toggle');
-			$(this).parent('li').siblings().removeClass('open').children('ul.in').collapse('hide');
+			// When column is active, toggle all parent links
+			$li.toggleClass('open').children('ul').collapse('toggle');
+			$li.siblings().removeClass('open').children('ul.in').collapse('hide');
+		} else {
+			// When column is not active, allow all nested parent links to toggle
+			// This includes both direct children of #menu and nested items
+			if (isParent || !$li.parent().is('#menu')) {
+				$li.toggleClass('open').children('ul').collapse('toggle');
+				$li.siblings().removeClass('open').children('ul.in').collapse('hide');
+			}
 		}
 	});
 	
