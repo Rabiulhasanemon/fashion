@@ -132,27 +132,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-xl-2 col-md-3 col-6">
-                    <div class="footer-widget accounts footer-accordion-item">
-                        <p class="footer-widget-title footer-accordion-toggle">
-                            Shop By Category
-                            <span class="footer-accordion-icon">+</span>
-                        </p>
-                        <div class="footer-accordion-content">
-                        <ul class="footer-widget-list">
-                            <?php if (isset($categories) && $categories) { ?>
-                            <?php $category_count = 0; ?>
-                            <?php foreach ($categories as $category) { ?>
-                            <?php if ($category_count < 7) { ?>
-                            <li><a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a></li>
-                            <?php $category_count++; ?>
-                            <?php } ?>
-                            <?php } ?>
-                            <?php } ?>
-                        </ul>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-lg-3 col-xl-3 col-md-7 col-12">
                     <div class="footer-widget newsletter footer-accordion-item">
                         <p class="footer-widget-title footer-accordion-toggle" style="color: #666;">
