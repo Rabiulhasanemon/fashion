@@ -1,0 +1,106 @@
+<?php
+class ControllerModuleReviewView extends Controller {
+	public function index($setting) {
+		static $module = 0;
+
+		$this->load->language('module/review_view');
+		$this->load->model('catalog/review');
+		$this->load->model('catalog/product');
+		$this->load->model('tool/image');
+
+		$data['title'] = isset($setting['title']) ? $setting['title'] : '';
+		$data['layout'] = isset($setting['layout']) ? $setting['layout'] : 'grid';
+		$data['show_rating'] = isset($setting['show_rating']) ? $setting['show_rating'] : 1;
+		$data['show_date'] = isset($setting['show_date']) ? $setting['show_date'] : 1;
+		$data['show_product'] = isset($setting['show_product']) ? $setting['show_product'] : 1;
+
+		$data['reviews'] = array();
+
+		if (isset($setting['review_ids']) && is_array($setting['review_ids']) && !empty($setting['review_ids'])) {
+			$limit = isset($setting['limit']) ? (int)$setting['limit'] : 5;
+			$review_custom_data = isset($setting['review_custom_data']) ? $setting['review_custom_data'] : array();
+			
+			foreach ($setting['review_ids'] as $review_id) {
+				$review_info = $this->model_catalog_review->getReview($review_id);
+				
+				// Check if review exists and is approved (status = 1)
+				if ($review_info) {
+					// Check status - if status column doesn't exist, assume approved
+					$review_status = isset($review_info['status']) ? (int)$review_info['status'] : 1;
+					
+					if ($review_status == 1) {
+						// Get custom data for this review
+						$custom_data = isset($review_custom_data[$review_id]) ? $review_custom_data[$review_id] : array();
+						$author_image = '';
+						$designation = isset($custom_data['designation']) ? $custom_data['designation'] : '';
+						
+						if (!empty($custom_data['author_image'])) {
+							// Check if image path exists
+							$image_path = $custom_data['author_image'];
+							if (file_exists(DIR_IMAGE . $image_path)) {
+								$author_image = $this->model_tool_image->resize($image_path, 60, 60);
+							} else {
+								// Try with catalog/ prefix
+								if (strpos($image_path, 'catalog/') !== 0) {
+									$image_path = 'catalog/' . $image_path;
+								}
+								if (file_exists(DIR_IMAGE . $image_path)) {
+									$author_image = $this->model_tool_image->resize($image_path, 60, 60);
+								}
+							}
+						}
+						
+						// Get product info
+						$product_info = $this->model_catalog_product->getProduct($review_info['product_id']);
+						
+						$product_image = '';
+						$product_href = '';
+						
+						if ($product_info) {
+							if ($product_info['image']) {
+								$product_image = $this->model_tool_image->resize($product_info['image'], 100, 100);
+							}
+							$product_href = $this->url->link('product/product', 'product_id=' . $product_info['product_id']);
+						}
+
+						$data['reviews'][] = array(
+							'review_id'   => $review_info['review_id'],
+							'author'      => $review_info['author'],
+							'text'        => strip_tags(html_entity_decode($review_info['text'], ENT_QUOTES, 'UTF-8')),
+							'rating'      => $review_info['rating'],
+							'date_added'  => date($this->language->get('date_format_short'), strtotime($review_info['date_added'])),
+							'product_name' => $review_info['product'] ? $review_info['product'] : 'N/A',
+							'product_image' => $product_image,
+							'product_href' => $product_href,
+							'author_image' => $author_image,
+							'designation' => $designation
+						);
+						
+						if (count($data['reviews']) >= $limit) {
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// Debug: Log if no reviews found (only in development)
+		if (empty($data['reviews'])) {
+			if (isset($this->config) && $this->config->get('config_error_display')) {
+				error_log('Review View Module: No reviews found. Setting: ' . print_r($setting, true));
+				error_log('Review View Module: review_ids = ' . (isset($setting['review_ids']) ? print_r($setting['review_ids'], true) : 'not set'));
+			}
+			// Return empty string if no reviews (don't show module)
+			return '';
+		}
+
+		$data['module'] = $module++;
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/review_view.tpl')) {
+			return $this->load->view($this->config->get('config_template') . '/template/module/review_view.tpl', $data);
+		} else {
+			return $this->load->view('default/template/module/review_view.tpl', $data);
+		}
+	}
+}
+

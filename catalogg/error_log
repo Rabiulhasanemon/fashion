@@ -1,0 +1,40 @@
+[28-Nov-2025 19:22:36 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:22:36 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:08 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:08 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:10 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:10 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:13 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:13 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:14 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:14 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:15 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:15 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:17 UTC] PHP Warning:  require_once(config.php): Failed to open stream: No such file or directory in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:23:17 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'config.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php:6
+Stack trace:
+#0 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php on line 6
+[28-Nov-2025 19:26:38 UTC] PHP Fatal error:  Uncaught Error: Call to a member function get() on null in /home2/masterco/ruplexa1.master.com.bd/catalog/model/catalog/manufacturer.php:47
+Stack trace:
+#0 /home2/masterco/ruplexa1.master.com.bd/catalog/debug_manufacturer_images.php(105): ModelCatalogManufacturer->getManufacturers()
+#1 {main}
+  thrown in /home2/masterco/ruplexa1.master.com.bd/catalog/model/catalog/manufacturer.php on line 47

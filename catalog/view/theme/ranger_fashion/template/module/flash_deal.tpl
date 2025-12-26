@@ -6,9 +6,6 @@
             <h2 class="fld-title-text">
                 <span class="fld-title-flash">Flash</span><span class="fld-title-deal"> Deal</span>
             </h2>
-            <?php if (isset($see_all) && $see_all) { ?>
-            <a href="<?php echo $see_all; ?>" class="fld-see-all-btn">See All</a>
-            <?php } ?>
         </div>
         
         <!-- Products Carousel -->
@@ -120,9 +117,6 @@
 .fld-header-box {
     margin-bottom: 15px;
     padding: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .fld-title-text {
@@ -147,40 +141,11 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: #A68A6A;
+    background: #FF6A00;
 }
 
 .fld-title-deal {
     color: #000000;
-}
-
-/* See All Button */
-.fld-see-all-btn {
-    padding: 8px 20px;
-    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-
-.fld-see-all-btn:hover {
-    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
-    transform: translateY(-2px);
-    color: #ffffff;
-    text-decoration: none;
-}
-
-.fld-see-all-btn:active {
-    transform: translateY(0);
 }
 
 /* Carousel Container */
@@ -341,7 +306,7 @@
 }
 
 .fld-name-text a:hover {
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 /* Star Rating */
@@ -379,7 +344,7 @@
 .fld-price-new {
     font-size: 18px;
     font-weight: 700;
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 /* Countdown Timer */
@@ -401,7 +366,7 @@
 }
 
 .fld-timer-square {
-    background: #A68A6A;
+    background: #FF6A00;
     width: 38px;
     height: 38px;
     display: flex;
@@ -436,7 +401,7 @@
     max-width: 100%;
     padding: 8px 12px;
     border-radius: 6px;
-    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
     border: none;
     display: flex;
     align-items: center;
@@ -454,7 +419,7 @@
 }
 
 .fld-buttons-box-overlay .fld-btn-cart:hover {
-    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
+    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.7);
     transform: translateY(-2px);
 }
@@ -470,7 +435,7 @@
 .fld-btn-cart {
     padding: 8px 16px;
     border-radius: 6px;
-    background: linear-gradient(135deg, #A68A6A 0%, #c4a882 100%);
+    background: linear-gradient(135deg, #FF6A00 0%, #ff8533 100%);
     border: none;
     display: flex;
     align-items: center;
@@ -488,7 +453,7 @@
 }
 
 .fld-btn-cart:hover {
-    background: linear-gradient(135deg, #c4a882 0%, #A68A6A 100%);
+    background: linear-gradient(135deg, #ff8533 0%, #FF6A00 100%);
     box-shadow: 0 4px 12px rgba(255, 106, 0, 0.5);
     transform: translateY(-2px);
 }
@@ -606,14 +571,7 @@
 
 @media (max-width: 768px) {
     .fld-main-container {
-        padding: 20px 0 !important;
-    }
-    
-    .fld-main-container .container {
-        max-width: 100% !important;
-        padding: 0 10px !important;
-        margin: 0 auto !important;
-        box-sizing: border-box !important;
+        padding: 15px 0;
     }
     
     .fld-title-text {
@@ -622,13 +580,6 @@
     
     .fld-header-box {
         margin-bottom: 10px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .fld-see-all-btn {
-        padding: 6px 16px;
-        font-size: 12px;
     }
     
     .fld-item-wrapper {
@@ -730,13 +681,6 @@
     
     .fld-header-box {
         margin-bottom: 8px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .fld-see-all-btn {
-        padding: 5px 14px;
-        font-size: 11px;
     }
     
     .fld-item-wrapper {
@@ -903,50 +847,26 @@ jQuery(document).ready(function($) {
         });
     }
     
-    // Countdown timers - Fixed
+    // Countdown timers
     $('.fld-timer-container').each(function() {
         var $timer = $(this);
-        var endDate = $timer.attr('data-end');
-        if (!endDate) {
-            console.warn('Flash Deal timer: No end date found');
-            return;
-        }
+        var endDate = $timer.data('end');
+        if (!endDate) return;
         
-        // Parse the date string - handle multiple formats
-        var targetDate;
-        if (endDate.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
-            // Format: YYYY-MM-DD HH:MM:SS
-            targetDate = new Date(endDate);
-        } else if (endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            // Format: YYYY-MM-DD - set to end of day
-            targetDate = new Date(endDate + ' 23:59:59');
-        } else {
-            // Try to parse as-is
-            targetDate = new Date(endDate);
-        }
-        
-        if (isNaN(targetDate.getTime())) {
-            console.warn('Flash Deal timer: Invalid date format:', endDate);
-            return;
-        }
+        var targetDate = new Date(endDate);
+        if (isNaN(targetDate.getTime())) return;
         
         var $items = $timer.find('.fld-timer-item');
-        if ($items.length !== 4) {
-            console.warn('Flash Deal timer: Timer items not found');
-            return;
-        }
         
         function updateTimer() {
             var now = new Date().getTime();
             var distance = targetDate.getTime() - now;
             
             if (distance < 0) {
-                // Timer expired
                 $items.eq(0).find('.fld-timer-num').text('00');
                 $items.eq(1).find('.fld-timer-num').text('00');
                 $items.eq(2).find('.fld-timer-num').text('00');
                 $items.eq(3).find('.fld-timer-num').text('00');
-                $timer.closest('.fld-card-box').addClass('fld-expired');
                 return;
             }
             
@@ -961,10 +881,7 @@ jQuery(document).ready(function($) {
             $items.eq(3).find('.fld-timer-num').text(String(seconds).padStart(2, '0'));
         }
         
-        // Update immediately
         updateTimer();
-        
-        // Update every second
         setInterval(updateTimer, 1000);
     });
 });

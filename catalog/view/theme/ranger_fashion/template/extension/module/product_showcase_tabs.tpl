@@ -20,11 +20,6 @@
                 </div>
             </div>
             <div class="psh-header-right">
-                <?php if (isset($see_all) && $see_all) { ?>
-                <div class="psh-see-all-wrapper">
-                    <a href="<?php echo $see_all; ?>" class="ruplexa-module-see-all-btn">All Products</a>
-                </div>
-                <?php } ?>
                 <div class="psh-nav-arrows" id="psh-nav-<?php echo $module_uid; ?>">
                     <button type="button" class="psh-nav-btn psh-nav-prev" aria-label="Previous">
                         <i class="fa fa-chevron-left"></i>
@@ -84,7 +79,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%);
+    background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%);
 }
 
 .psh-header-left {
@@ -136,8 +131,8 @@
 }
 
 .psh-tab-btn:hover {
-    border-color: #A68A6A;
-    color: #A68A6A;
+    border-color: #FF6A00;
+    color: #FF6A00;
 }
 
 .psh-tab-btn.psh-tab-active {
@@ -151,53 +146,6 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.psh-see-all-wrapper {
-    margin-right: 10px;
-}
-
-/* All Products Button - Unified Style */
-.ruplexa-module-see-all-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
-    white-space: nowrap;
-}
-
-.ruplexa-module-see-all-btn:hover {
-    background: linear-gradient(135deg, #A68A6A 0%, #10503D 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
-    color: #ffffff;
-    text-decoration: none;
-}
-
-@media (max-width: 768px) {
-    .psh-header-right {
-        flex-wrap: wrap;
-    }
-    
-    .psh-see-all-wrapper {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 100%;
-    }
-    
-    .ruplexa-module-see-all-btn {
-        font-size: 12px;
-        padding: 8px 16px;
-    }
 }
 
 .psh-nav-arrows {
@@ -221,9 +169,9 @@
 }
 
 .psh-nav-btn:hover {
-    background: #A68A6A;
+    background: #FF6A00;
     color: #fff;
-    border-color: #A68A6A;
+    border-color: #FF6A00;
 }
 
 .psh-nav-btn:active {
@@ -258,7 +206,7 @@
     left: 0;
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #10503D, #A68A6A);
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
     border-radius: 2px;
 }
 
@@ -284,15 +232,15 @@
 
 .pst-tab-btn:hover {
     background: #f8f9fa;
-    border-color: #10503D;
-    color: #10503D;
+    border-color: #ff6b9d;
+    color: #ff6b9d;
 }
 
 .pst-tab-btn.pst-tab-active {
-    background: linear-gradient(90deg, #10503D, #A68A6A);
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
 }
 
 /* Product Card Styles */
@@ -337,7 +285,7 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     padding: 4px 10px;
     border-radius: 12px;
@@ -410,7 +358,7 @@
 }
 
 .pst-btn-action:hover {
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     transform: scale(1.1);
 }
@@ -436,7 +384,7 @@
 }
 
 .pst-product-category a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .pst-product-name {
@@ -458,7 +406,7 @@
 }
 
 .pst-product-name a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .pst-product-rating {
@@ -483,7 +431,7 @@
 .pst-product-price {
     font-size: 20px;
     font-weight: 700;
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .pst-product-price del {
@@ -780,34 +728,7 @@
     transform: scale(1.05);
 }
 
-/* Unified Discount Badge - Red with Yellow Lightning */
-.unified-discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background: #e74c3c;
-    border-radius: 6px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-.discount-badge-icon {
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: bold;
-}
-.discount-badge-text {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-/* Legacy badge - keeping for compatibility */
+/* Discount Badge - Top Right - Matching Uploaded Image Style (Red Banner with Lightning Bolt) */
 .psh-new-badge {
     position: absolute;
     top: 8px;
@@ -1254,11 +1175,11 @@
                 shouldShowBadge = true;
             }
             
-            // Display the badge - using unified design
+            // Display the badge
             if (shouldShowBadge && finalDiscount > 0) {
-                html += '<div class="unified-discount-badge">';
-                html += '<i class="fa fa-bolt discount-badge-icon"></i>';
-                html += '<span class="discount-badge-text">' + finalDiscount + '% OFF</span>';
+                html += '<div class="psh-new-badge psh-new-badge-red">';
+                html += '<i class="fa fa-bolt"></i> ';
+                html += finalDiscount + '% OFF';
                 html += '</div>';
             }
             

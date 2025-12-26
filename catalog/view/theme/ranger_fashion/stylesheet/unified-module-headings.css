@@ -22,7 +22,7 @@
   margin-bottom: 25px !important;
   padding: 15px 20px !important;
   background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
-  border-left: 4px solid #A68A6A !important;
+  border-left: 4px solid #FF6A00 !important;
   border-radius: 0 8px 8px 0 !important;
   position: relative !important;
 }
@@ -41,7 +41,7 @@
   left: 0 !important;
   right: 0 !important;
   height: 1px !important;
-  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
+  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
 }
 
 /* Primary unified classes - Module headings only */
@@ -149,7 +149,7 @@
   margin-bottom: 25px !important;
   padding: 15px 20px !important;
   background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
-  border-left: 4px solid #A68A6A !important;
+  border-left: 4px solid #FF6A00 !important;
   border-radius: 0 8px 8px 0 !important;
   position: relative !important;
 }
@@ -161,7 +161,7 @@
   left: 0 !important;
   right: 0 !important;
   height: 1px !important;
-  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
+  background: linear-gradient(90deg, #FF6A00 0%, rgba(255, 106, 0, 0.1) 100%) !important;
 }
 
 .premium-flash-title::after,
@@ -593,61 +593,5 @@ h3.name,
   
   .module-heading-wrapper {
     padding: 0 10px !important;
-  }
-}
-
-/* Mobile Responsive - Full Width Containers */
-@media (max-width: 767px) {
-  /* Force all module containers to 100% width on mobile with consistent alignment */
-  .special-products-section .container,
-  .latest-products-section .container,
-  .featured-products-section .container,
-  .bs-module-section .container,
-  .premium-flash-section .container,
-  .pst-module-section .container,
-  .deal-of-day-section .container,
-  .banner-module-section .container,
-  .fld-main-container .container,
-  .shop-cat-module-section .container,
-  .tabbed-category-slider-wrapper .container,
-  .popular-category-slider .container {
-    max-width: 100% !important;
-    padding: 0 10px !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Module sections */
-  .special-products-section,
-  .latest-products-section,
-  .featured-products-section,
-  .bs-module-section,
-  .premium-flash-section,
-  .pst-module-section,
-  .deal-of-day-section,
-  .banner-module-section {
-    padding: 20px 0 !important;
-  }
-
-  /* Module header adjustments */
-  .rf-module-header,
-  .module-heading-wrapper,
-  .featured-products__top,
-  .latest-products__top,
-  .special-products__top,
-  .section-head,
-  .bs-module-header,
-  .rv-module-heading {
-    padding: 12px 10px !important;
-    margin-bottom: 15px !important;
-  }
-
-  /* Module titles smaller */
-  .cosmetics-module-heading,
-  .unified-module-heading,
-  .module-heading-title,
-  .rf-module-title {
-    font-size: 18px !important;
-    padding: 15px 0 12px 0 !important;
   }
 }

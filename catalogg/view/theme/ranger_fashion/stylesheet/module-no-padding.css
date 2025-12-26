@@ -1,0 +1,89 @@
+/* Remove All Module Padding and Gaps */
+/* This file removes all padding from frontend modules */
+
+/* Remove padding from all module sections */
+section,
+.section-padding,
+.section-padding-top,
+.section-padding-bottom,
+.module-section,
+.module-wrapper,
+.standard-module-section,
+.banner-fullscreen {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove padding from module containers */
+.module-container,
+.module-wrapper,
+.container[style*="padding"],
+div[style*="padding: 40px"],
+div[style*="padding: 30px"],
+div[style*="padding: 20px"] {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Remove padding from specific module classes */
+.rv-testimonial-section,
+.flashdeal-section,
+.featured-product-area,
+.banner-tab-section,
+.big-offer-module,
+.manufacturer-module-section,
+.customer-banner-area,
+.html-module-area {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove gaps between modules */
+.module-heading-wrapper {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Remove padding from module headings */
+.cosmetics-module-heading,
+.unified-module-heading {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove all inline padding styles */
+[style*="padding: 40px"],
+[style*="padding: 30px"],
+[style*="padding: 20px"],
+[style*="padding-top"],
+[style*="padding-bottom"] {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Keep horizontal padding for content readability */
+.container,
+.module-container {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+/* Mobile: Keep minimal horizontal padding */
+@media (max-width: 767px) {
+  .container,
+  .module-container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+}
+
+
+

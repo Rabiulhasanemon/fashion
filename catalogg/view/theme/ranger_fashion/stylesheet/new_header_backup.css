@@ -1,0 +1,667 @@
+/* 
+-----------------------------
+    Header Design
+-----------------------------
+*/
+@media (min-width: 992px) {
+    /* Top Announcement Bar */
+    .header-top-announcement {
+        background-color: #A68A6A;
+        color: #fff;
+        padding: 10px 0;
+        text-align: center;
+        font-family: 'Jost', sans-serif;
+        font-size: 16px;
+    }
+
+    .header-top-announcement .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header-top-announcement .best-offer-badge {
+        background-color: #fff;
+        color: #10503D;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 12px;
+        margin-right: 15px;
+    }
+
+    .header-top-announcement a.shop-now-link {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .header-top-announcement a.shop-now-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Main Header Area */
+    .main-header-area {
+        background-color: #fff;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .main-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Logo */
+    .header-logo-container {
+        flex: 0 0 auto;
+        min-width: 150px;
+        display: flex;
+        align-items: center;
+    }
+
+    .header-logo-container img {
+        max-height: 50px;
+        width: auto;
+    }
+
+    /* Search Bar */
+    .header-search-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 20px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .header-search-container .header-search {
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .header-search-container #search {
+        position: relative;
+        width: 100%;
+        display: block;
+    }
+
+    .header-search-container #search input[type="text"] {
+        width: 100%;
+        padding: 12px 50px 12px 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: #f8f8f8;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-search-container #search input[type="text"]:focus {
+        border-color: #A68A6A;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(97, 186, 243, 0.5);
+    }
+
+    .header-search-container #search button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #777;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        z-index: 10;
+        border-radius: 4px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        pointer-events: auto;
+        line-height: 1;
+    }
+
+    /* Only make button clickable when hovering directly over it */
+    .header-search-container #search button:hover {
+        background-color: rgba(97, 186, 243, 0.1);
+        color: #A68A6A;
+    }
+    
+    .header-search-container #search button:active {
+        background-color: rgba(97, 186, 243, 0.2);
+    }
+    
+    .header-search-container #search button i,
+    .header-search-container #search button .material-icons {
+        font-size: 20px;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    /* Ensure input is fully interactive */
+    .header-search-container #search input[type="text"] {
+        cursor: text;
+    }
+
+    /* Header Icons */
+    .header-icons-container {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .header-icon-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #333;
+        font-family: 'Jost', sans-serif;
+        transition: color 0.3s ease;
+        min-width: 50px;
+    }
+
+    .header-icon-item:hover {
+        color: #A68A6A;
+    }
+
+    .header-icon-item .icon {
+        font-size: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .header-icon-item .icon i {
+        font-size: 24px;
+    }
+
+    .header-icon-item .icon-text {
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .header-icon-item.cart-icon .cart-count-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #10503d;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        border: 2px solid #fff;
+    }
+    
+    .header-icon-item.cart-icon .icon {
+        position: relative;
+    }
+    
+    .header-icon-item.more-icon .icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 20px; /* Adjust height for hamburger icon */
+    }
+
+    .more-icon .icon span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background-color: #333;
+        border-radius: 2px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .more-icon .icon span:nth-child(2) {
+        margin: 4px 0;
+    }
+
+    .more-icon:hover .icon span {
+        background-color: #A68A6A;
+    }
+    
+    /* Desktop Navigation Bar (below new header) */
+    .desktop-navigation-bar {
+        width: 100%;
+        background: #10503D;
+        border-bottom: 3px solid var(--primaryColor, #A68A6A);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 999;
+    }
+    
+    .desktop-navigation-bar .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .desktop-nav-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .desktop-nav-wrapper .main-nav {
+        width: 100%;
+        padding: 15px 0;
+    }
+    
+    /* Ensure navigation links are white on dark background */
+    .desktop-navigation-bar .main-nav .nav li a {
+        color: white;
+        padding: 8px 16px;
+        display: block;
+    }
+    
+    .desktop-navigation-bar .main-nav .nav li a:hover {
+        color: var(--primaryColor, #A68A6A);
+    }
+}
+
+/* Hide old header on desktop (navigation moved to separate bar) */
+@media (min-width: 992px) {
+    header:not(.new-desktop-header) {
+        display: none;
+    }
+    
+    /* Show desktop navigation bar */
+    .desktop-navigation-bar {
+        display: block;
+    }
+}
+
+/* Ensure mobile search is visible on mobile */
+@media (max-width: 991px) {
+    .new-desktop-header {
+        display: none !important;
+    }
+    
+    .desktop-navigation-bar {
+        display: none !important;
+    }
+    
+    header:not(.new-desktop-header) {
+        display: block;
+    }
+    
+    header:not(.new-desktop-header) .header-t,
+    header:not(.new-desktop-header) .header-top-area {
+        display: block;
+    }
+    
+    /* Ensure mobile navigation has black background */
+    header:not(.new-desktop-header) .header-menu {
+        background: #10503D;
+        width: 100%;
+    }
+    
+    header:not(.new-desktop-header) .header-menu .main-nav {
+        background: #10503D;
+    }
+}
+
+/* Show new header on desktop */
+.new-desktop-header {
+    display: none;
+}
+@media (min-width: 992px) {
+    .new-desktop-header {
+        display: block;
+    }
+}
+
+    Header Design
+-----------------------------
+*/
+@media (min-width: 992px) {
+    /* Top Announcement Bar */
+    .header-top-announcement {
+        background-color: #A68A6A;
+        color: #fff;
+        padding: 10px 0;
+        text-align: center;
+        font-family: 'Jost', sans-serif;
+        font-size: 16px;
+    }
+
+    .header-top-announcement .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header-top-announcement .best-offer-badge {
+        background-color: #fff;
+        color: #10503D;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 12px;
+        margin-right: 15px;
+    }
+
+    .header-top-announcement a.shop-now-link {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .header-top-announcement a.shop-now-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Main Header Area */
+    .main-header-area {
+        background-color: #fff;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .main-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Logo */
+    .header-logo-container {
+        flex: 0 0 auto;
+        min-width: 150px;
+        display: flex;
+        align-items: center;
+    }
+
+    .header-logo-container img {
+        max-height: 50px;
+        width: auto;
+    }
+
+    /* Search Bar */
+    .header-search-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 20px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .header-search-container .header-search {
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .header-search-container #search {
+        position: relative;
+        width: 100%;
+        display: block;
+    }
+
+    .header-search-container #search input[type="text"] {
+        width: 100%;
+        padding: 12px 50px 12px 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: #f8f8f8;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-search-container #search input[type="text"]:focus {
+        border-color: #A68A6A;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(97, 186, 243, 0.5);
+    }
+
+    .header-search-container #search button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #777;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        z-index: 10;
+        border-radius: 4px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        pointer-events: auto;
+        line-height: 1;
+    }
+
+    /* Only make button clickable when hovering directly over it */
+    .header-search-container #search button:hover {
+        background-color: rgba(97, 186, 243, 0.1);
+        color: #A68A6A;
+    }
+    
+    .header-search-container #search button:active {
+        background-color: rgba(97, 186, 243, 0.2);
+    }
+    
+    .header-search-container #search button i,
+    .header-search-container #search button .material-icons {
+        font-size: 20px;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    /* Ensure input is fully interactive */
+    .header-search-container #search input[type="text"] {
+        cursor: text;
+    }
+
+    /* Header Icons */
+    .header-icons-container {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .header-icon-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #333;
+        font-family: 'Jost', sans-serif;
+        transition: color 0.3s ease;
+        min-width: 50px;
+    }
+
+    .header-icon-item:hover {
+        color: #A68A6A;
+    }
+
+    .header-icon-item .icon {
+        font-size: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .header-icon-item .icon i {
+        font-size: 24px;
+    }
+
+    .header-icon-item .icon-text {
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .header-icon-item.cart-icon .cart-count-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #10503d;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        border: 2px solid #fff;
+    }
+    
+    .header-icon-item.cart-icon .icon {
+        position: relative;
+    }
+    
+    .header-icon-item.more-icon .icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 20px; /* Adjust height for hamburger icon */
+    }
+
+    .more-icon .icon span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background-color: #333;
+        border-radius: 2px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .more-icon .icon span:nth-child(2) {
+        margin: 4px 0;
+    }
+
+    .more-icon:hover .icon span {
+        background-color: #A68A6A;
+    }
+    
+    /* Desktop Navigation Bar (below new header) */
+    .desktop-navigation-bar {
+        width: 100%;
+        background: #10503D;
+        border-bottom: 3px solid var(--primaryColor, #A68A6A);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 999;
+    }
+    
+    .desktop-navigation-bar .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .desktop-nav-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .desktop-nav-wrapper .main-nav {
+        width: 100%;
+        padding: 15px 0;
+    }
+    
+    /* Ensure navigation links are white on dark background */
+    .desktop-navigation-bar .main-nav .nav li a {
+        color: white;
+        padding: 8px 16px;
+        display: block;
+    }
+    
+    .desktop-navigation-bar .main-nav .nav li a:hover {
+        color: var(--primaryColor, #A68A6A);
+    }
+}
+
+/* Hide old header on desktop (navigation moved to separate bar) */
+@media (min-width: 992px) {
+    header:not(.new-desktop-header) {
+        display: none;
+    }
+    
+    /* Show desktop navigation bar */
+    .desktop-navigation-bar {
+        display: block;
+    }
+}
+
+/* Ensure mobile search is visible on mobile */
+@media (max-width: 991px) {
+    .new-desktop-header {
+        display: none !important;
+    }
+    
+    .desktop-navigation-bar {
+        display: none !important;
+    }
+    
+    header:not(.new-desktop-header) {
+        display: block;
+    }
+    
+    header:not(.new-desktop-header) .header-t,
+    header:not(.new-desktop-header) .header-top-area {
+        display: block;
+    }
+    
+    /* Ensure mobile navigation has black background */
+    header:not(.new-desktop-header) .header-menu {
+        background: #10503D;
+        width: 100%;
+    }
+    
+    header:not(.new-desktop-header) .header-menu .main-nav {
+        background: #10503D;
+    }
+}
+
+/* Show new header on desktop */
+.new-desktop-header {
+    display: none;
+}
+@media (min-width: 992px) {
+    .new-desktop-header {
+        display: block;
+    }
+}

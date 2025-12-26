@@ -1,0 +1,451 @@
+<?php 
+
+class ControllerAccountLogin extends Controller
+{
+    private $error = array();
+
+    public function index() {
+        $this->load->model('account/customer');
+
+        // Login override for admin users
+        if (!empty($this->request->get['token'])) {
+            $this->event->trigger('pre.customer.login');
+
+            $this->customer->logout();
+            $this->cart->clear();
+
+            unset($this->session->data['wishlist']);
+            unset($this->session->data['payment_address']);
+            unset($this->session->data['payment_method']);
+            unset($this->session->data['payment_methods']);
+            unset($this->session->data['shipping_address']);
+            unset($this->session->data['shipping_method']);
+            unset($this->session->data['shipping_methods']);
+            unset($this->session->data['comment']);
+            unset($this->session->data['order_id']);
+            unset($this->session->data['coupon']);
+            unset($this->session->data['reward']);
+            unset($this->session->data['voucher']);
+            unset($this->session->data['vouchers']);
+
+            $customer_info = $this->model_account_customer->getCustomerByToken($this->request->get['token']);
+
+            if ($customer_info && $this->customer->login($customer_info['email'], '', true)) {
+                // Default Addresses
+                $this->load->model('account/address');
+
+                if ($this->config->get('config_tax_customer') == 'payment') {
+                    $this->session->data['payment_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+                }
+
+                if ($this->config->get('config_tax_customer') == 'shipping') {
+                    $this->session->data['shipping_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+                }
+
+                $this->event->trigger('post.customer.login');
+
+                $this->response->redirect($this->url->link('account/account', '', 'SSL'));
+            }
+        }
+
+        if ($this->customer->isLogged()) {
+            $this->response->redirect($this->url->link('account/account', '', 'SSL'));
+        }
+
+
+        $this->load->language('account/login');
+
+        $this->document->setTitle($this->language->get('heading_title'));
+
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+            try {
+                unset($this->session->data['guest']);
+
+                // Default Shipping Address - Only if customer is logged in
+                if ($this->customer->isLogged()) {
+                    $this->load->model('account/address');
+
+                    if ($this->config->get('config_tax_customer') == 'payment') {
+                        $address_id = $this->customer->getAddressId();
+                        if ($address_id && $address_id > 0) {
+                            $address = $this->model_account_address->getAddress($address_id);
+                            if ($address) {
+                                $this->session->data['payment_address'] = $address;
+                            }
+                        }
+                    }
+
+                    if ($this->config->get('config_tax_customer') == 'shipping') {
+                        $address_id = $this->customer->getAddressId();
+                        if ($address_id && $address_id > 0) {
+                            $address = $this->model_account_address->getAddress($address_id);
+                            if ($address) {
+                                $this->session->data['shipping_address'] = $address;
+                            }
+                        }
+                    }
+
+                    // Add to activity log
+                    $this->load->model('account/activity');
+
+                    $customer_id = $this->customer->getId();
+                    if ($customer_id && $customer_id > 0) {
+                        $first_name = $this->customer->getFirstName();
+                        $last_name = $this->customer->getLastName();
+                        
+                        if ($first_name || $last_name) {
+                            $activity_data = array(
+                                'customer_id' => $customer_id,
+                                'name'        => trim($first_name . ' ' . $last_name)
+                            );
+
+                            if (method_exists($this->model_account_activity, 'addActivity')) {
+                                $this->model_account_activity->addActivity('login', $activity_data);
+                            }
+                        }
+                    }
+                }
+
+                // Redirect after successful login
+                if (isset($this->request->post['redirect']) && !empty($this->request->post['redirect'])) {
+                    $redirect_url = is_array($this->request->post['redirect']) ? '' : str_replace('&amp;', '&', $this->request->post['redirect']);
+                    if ($redirect_url) {
+                        $config_url = $this->config->get('config_url');
+                        $config_ssl = $this->config->get('config_ssl');
+                        
+                        $config_url_str = is_array($config_url) ? '' : (string)$config_url;
+                        $config_ssl_str = is_array($config_ssl) ? '' : (string)$config_ssl;
+                        
+                        if (($config_url_str && strpos($redirect_url, $config_url_str) !== false) || 
+                            ($config_ssl_str && strpos($redirect_url, $config_ssl_str) !== false)) {
+                            unset($this->session->data['redirect']);
+                            $this->response->redirect($redirect_url);
+                            return;
+                        }
+                    }
+                }
+                
+                // Default redirect - ensure URL is valid
+                try {
+                    $account_url = $this->url->link('account/account', '', 'SSL');
+                    if ($account_url) {
+                        $this->response->redirect($account_url);
+                        return;
+                    }
+                } catch (Exception $redirect_error) {
+                    error_log('Login Redirect Error: ' . $redirect_error->getMessage());
+                    // Fallback: redirect to home
+                    $this->response->redirect($this->url->link('common/home'));
+                    return;
+                }
+                
+            } catch (Exception $e) {
+                // Log error for debugging
+                error_log('Login Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
+                $this->error['warning'] = $this->language->get('error_login');
+                if (!$this->error['warning']) {
+                    $this->error['warning'] = 'Login failed. Please try again.';
+                }
+                // Don't redirect on error - let the form display the error
+            } catch (Error $e) {
+                // Catch PHP 7+ fatal errors
+                error_log('Login Fatal Error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine() . ' | Trace: ' . $e->getTraceAsString());
+                $this->error['warning'] = $this->language->get('error_login');
+                if (!$this->error['warning']) {
+                    $this->error['warning'] = 'Login failed. Please try again.';
+                }
+                // Don't redirect on error - let the form display the error
+            }
+        }
+
+        $data['breadcrumbs'] = array();
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/home')
+        );
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_account'),
+            'href' => $this->url->link('account/account', '', 'SSL')
+        );
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_login'),
+            'href' => $this->url->link('account/login', '', 'SSL')
+        );
+
+        $data['heading_title'] = $this->language->get('heading_title');
+
+        $data['text_new_customer'] = $this->language->get('text_new_customer');
+        $data['text_register'] = $this->language->get('text_register');
+        $data['text_register_account'] = $this->language->get('text_register_account');
+        $data['text_returning_customer'] = $this->language->get('text_returning_customer');
+        $data['text_i_am_returning_customer'] = $this->language->get('text_i_am_returning_customer');
+        $data['text_forgotten'] = $this->language->get('text_forgotten');
+
+        $data['entry_username'] = $this->language->get('entry_username');
+        $data['entry_password'] = $this->language->get('entry_password');
+
+        $data['button_continue'] = $this->language->get('button_continue');
+        $data['button_login'] = $this->language->get('button_login');
+
+        if (isset($this->error['warning'])) {
+            $data['error_warning'] = $this->error['warning'];
+        } else {
+            $data['error_warning'] = '';
+        }
+
+        $data['action'] = $this->url->link('account/login', '', 'SSL');
+        $data['register'] = $this->url->link('account/register/init', '', 'SSL');
+        $data['forgotten'] = $this->url->link('account/forgotten', '', 'SSL');
+
+
+        if(SOCIAL_LOGIN) {
+              $data['fb_login_url'] = $this->getFBLoginUrl();
+              $data['google_login_url'] = $this->getGoogleLoginUrl();
+        } else {
+              $data['fb_login_url'] = null;
+              $data['google_login_url'] = null;
+        }
+
+        if (isset($this->request->post['redirect']) && !is_array($this->request->post['redirect'])) {
+            $redirect_post = $this->request->post['redirect'];
+            $config_url = $this->config->get('config_url');
+            $config_ssl = $this->config->get('config_ssl');
+            
+            $config_url_str = is_array($config_url) ? '' : (string)$config_url;
+            $config_ssl_str = is_array($config_ssl) ? '' : (string)$config_ssl;
+            
+            if (($config_url_str && strpos($redirect_post, $config_url_str) !== false) || 
+                ($config_ssl_str && strpos($redirect_post, $config_ssl_str) !== false)) {
+                $data['redirect'] = $redirect_post;
+            } else {
+                $data['redirect'] = '';
+            }
+        } elseif (isset($this->session->data['redirect'])) {
+            $data['redirect'] = $this->session->data['redirect'];
+        } else {
+            $data['redirect'] = '';
+        }
+
+        if (isset($this->session->data['success'])) {
+            $data['success'] = $this->session->data['success'];
+            unset($this->session->data['success']);
+        } else {
+            $data['success'] = '';
+        }
+
+        if (isset($this->request->post['username'])) {
+            $data['username'] = $this->request->post['username'];
+        } else {
+            $data['username'] = '';
+        }
+
+        if (isset($this->request->post['password'])) {
+            $data['password'] = $this->request->post['password'];
+        } else {
+            $data['password'] = '';
+        }
+
+        $data['column_left'] = $this->load->controller('common/column_left');
+        $data['column_right'] = $this->load->controller('common/column_right');
+        $data['content_top'] = $this->load->controller('common/content_top');
+        $data['content_bottom'] = $this->load->controller('common/content_bottom');
+        $data['footer'] = $this->load->controller('common/footer');
+        $data['header'] = $this->load->controller('common/header');
+
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/login.tpl')) {
+            $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/account/login.tpl', $data));
+        } else {
+            $this->response->setOutput($this->load->view('default/template/account/login.tpl', $data));
+        }
+    }
+
+    protected function validate() {
+        if (!isset($this->request->post['username']) || !isset($this->request->post['password'])) {
+            $this->error['warning'] = $this->language->get('error_login');
+            return false;
+        }
+
+        $this->event->trigger('pre.customer.login');
+
+        // Check how many login attempts have been made.
+        $login_info = $this->model_account_customer->getLoginAttempts($this->request->post['username']);
+
+        if ($login_info && ($login_info['total'] >= $this->config->get('config_login_attempts')) && strtotime('-1 hour') < strtotime($login_info['date_modified'])) {
+            $this->error['warning'] = $this->language->get('error_attempts');
+        }
+
+        // Check if customer has been approved.
+        if(preg_match('/^[^\@]+@.*.[a-z]{2,15}$/i', $this->request->post['username'])) {
+            $customer_info = $this->model_account_customer->getCustomerByEmail($this->request->post['username']);
+        } else {
+            $customer_info = $this->model_account_customer->getCustomerByTelephone($this->request->post['username']);
+        }
+
+        if ($customer_info && !$customer_info['approved']) {
+            $this->error['warning'] = $this->language->get('error_approved');
+        }
+
+        if (!$this->error) {
+            if (!$this->customer->login($this->request->post['username'], $this->request->post['password'])) {
+                $this->error['warning'] = $this->language->get('error_login');
+
+                // Add login attempt - wrap in try-catch to prevent fatal errors
+                try {
+                    if (isset($this->request->post['username']) && !empty($this->request->post['username'])) {
+                        $this->model_account_customer->addLoginAttempt($this->request->post['username']);
+                    }
+                } catch (Exception $e) {
+                    error_log('Login Attempt Logging Error: ' . $e->getMessage());
+                    // Don't break login process if logging fails
+                }
+            } else {
+                // Clear login attempts on successful login
+                try {
+                    if (isset($this->request->post['username']) && !empty($this->request->post['username'])) {
+                        $this->model_account_customer->deleteLoginAttempts($this->request->post['username']);
+                    }
+                } catch (Exception $e) {
+                    error_log('Delete Login Attempts Error: ' . $e->getMessage());
+                    // Don't break login process if cleanup fails
+                }
+
+                $this->event->trigger('post.customer.login');
+            }
+        }
+
+        return !$this->error;
+    }
+
+
+    private function getFBLoginUrl() {
+        try {
+            $fb = new Facebook\Facebook([
+                'app_id' => FB_APP_ID,
+                'app_secret' => FB_APP_SECRET,
+                'default_graph_version' => 'v3.2',
+            ]);
+
+            $helper = $fb->getRedirectLoginHelper();
+
+            $permissions = ['email']; // Optional permissions
+            $callbackUrl = htmlspecialchars($this->url->link("account/login/fb_callback", '', 'SSL'));
+            return $helper->getLoginUrl($callbackUrl, $permissions);
+        } catch(Exception $ex) {
+            return null;
+        }
+    }   
+
+    public function fb_callback() {
+        $fb = new Facebook\Facebook([
+            'app_id' => FB_APP_ID, // Replace {app-id} with your app id
+            'app_secret' => FB_APP_SECRET,
+            'default_graph_version' => 'v3.2',
+        ]);
+
+        $helper = $fb->getRedirectLoginHelper();
+
+        try {
+            $accessToken = $helper->getAccessToken();
+            $fb->setDefaultAccessToken($accessToken->getValue());
+            $response = $fb->get('/me?locale=en_US&fields=name,email');
+            $user_profile = $response->getGraphUser();
+
+            $email = $user_profile->getField('email');
+            $name = $user_profile->getField('name');
+        } catch(Exception $e) {
+           $name = null;
+           $email = null;
+        }
+        if (!$email) {
+            $this->response->redirect($this->url->link('account/login', '', 'SSL'));
+        }
+        $this->load->model("account/customer");
+        $customer_info = $this->model_account_customer->getCustomerByEmail($email);
+        if(!$customer_info) {
+              $this->model_account_customer->addCustomerByEmail($email, $name);
+        }
+        $this->customer->login($email, null, true);
+
+        if (isset($this->session->data['redirect'])) {
+            $redirect = $this->session->data['redirect'];
+            unset($this->session->data['redirect']);
+        } else {
+            $redirect = $this->url->link('account/account', '', 'SSL');
+        }
+        $this->response->redirect($redirect);
+    }
+
+    private function getGoogleLoginUrl() {
+        try {
+            // init configuration
+            $clientID = GOOGLE_CLIENT_ID;
+            $clientSecret = GOOGLE_CLIENT_SECRET;
+            $callbackUrl = htmlspecialchars($this->url->link("account/login/google_callback", '', 'SSL'));
+
+            // create Client Request to access Google API
+            $client = new Google\Client();
+            $client->setClientId($clientID);
+            $client->setClientSecret($clientSecret);
+            $client->setRedirectUri($callbackUrl);
+            $client->addScope("email");
+            $client->addScope("profile");
+
+            return $client->createAuthUrl();
+
+        } catch(Exception $ex) {
+            return null;
+        }
+
+    }
+
+    public function google_callback(){                
+        
+        // create Client Request to access Google API
+        // init configuration
+        $clientID = '595783581942-7guui6o500aom6knksgq8isbsr6lbrc2.apps.googleusercontent.com';
+        $clientSecret = 'KB8U_enr6Ag16LrDOT5LO9ku';
+        $callbackUrl = htmlspecialchars($this->url->link("account/login/google_callback", '', 'SSL'));            
+        
+        // create Client Request to access Google API
+        $client = new Google\Client();
+        $client->setClientId($clientID);
+        $client->setClientSecret($clientSecret);
+        $client->setRedirectUri($callbackUrl);
+        $client->addScope("email");
+        $client->addScope("profile");
+        
+
+        try {
+            
+            $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+            $client->setAccessToken($token['access_token']);
+            $google_oauth = new Google_Service_Oauth2($client);
+            $google_account_info = $google_oauth->userinfo->get();
+            $email =  $google_account_info->email;
+            $name =  $google_account_info->name;
+        } catch(Exception $e) {
+           $name = null;
+           $email = null;
+        }
+        if (!$email) {
+             $this->response->redirect($this->url->link('account/login', '', 'SSL'));
+        }
+        $this->load->model("account/customer");
+        $customer_info = $this->model_account_customer->getCustomerByEmail($email);
+        if(!$customer_info) {
+           $this->model_account_customer->addCustomerByEmail($email, $name);
+        }
+        $this->customer->login($email, null, true);
+
+        if (isset($this->session->data['redirect'])) {
+            $redirect = $this->session->data['redirect'];
+            unset($this->session->data['redirect']);
+        } else {
+            $redirect = $this->url->link('account/account', '', 'SSL');
+        }
+         $this->response->redirect($redirect);
+    }
+}

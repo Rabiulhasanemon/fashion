@@ -186,6 +186,9 @@ class ModelCheckoutOrder extends Model {
 				error_log('WARNING: No totals in order data!');
 			}
 
+			// Create per-vendor order slices and balances
+			$this->splitVendorOrders($order_id, isset($data['products']) ? $data['products'] : array(), isset($data['order_status_id']) ? $data['order_status_id'] : 0);
+
 			$this->event->trigger('post.order.add', $order_id);
 			
 			error_log('=== addOrder() completed successfully. Order ID: ' . $order_id . ' ===');
@@ -195,6 +198,75 @@ class ModelCheckoutOrder extends Model {
 			error_log('EXCEPTION in addOrder(): ' . $e->getMessage());
 			error_log('Stack trace: ' . $e->getTraceAsString());
 			return false;
+		}
+	}
+
+	protected function splitVendorOrders($order_id, $products, $order_status_id) {
+		if (empty($products) || !is_array($products)) {
+			return;
+		}
+
+		$this->load->model('catalog/product');
+		$this->load->model('vendor/vendor');
+
+		$vendor_cache = array();
+
+		foreach ($products as $product) {
+			$product_id = isset($product['product_id']) ? (int)$product['product_id'] : 0;
+			if (!$product_id) {
+				continue;
+			}
+
+			$product_info = $this->model_catalog_product->getProduct($product_id);
+			if (!$product_info || empty($product_info['vendor_id'])) {
+				continue; // skip non-vendor products
+			}
+
+			$vendor_id = (int)$product_info['vendor_id'];
+			if (!isset($vendor_cache[$vendor_id])) {
+				$vendor_cache[$vendor_id] = $this->model_vendor_vendor->getVendor($vendor_id);
+			}
+
+			$vendor = $vendor_cache[$vendor_id];
+			if (!$vendor || $vendor['status'] !== 'approved') {
+				continue; // only record for approved vendors
+			}
+
+			$quantity = isset($product['quantity']) ? (int)$product['quantity'] : 1;
+			$line_price = isset($product['price']) ? (float)$product['price'] : 0.0;
+			$line_total = isset($product['total']) ? (float)$product['total'] : ($line_price * $quantity);
+
+			$commission_amount = 0.0;
+			if ($vendor['commission_type'] === 'percentage') {
+				$commission_amount = ($line_total * (float)$vendor['commission_rate']) / 100;
+			} else {
+				$commission_amount = (float)$vendor['commission_rate'];
+			}
+			if ($commission_amount < 0) {
+				$commission_amount = 0.0;
+			}
+
+			$vendor_earning = max($line_total - $commission_amount, 0.0);
+
+			$this->db->query("INSERT INTO " . DB_PREFIX . "vendor_order SET
+				order_id = '" . (int)$order_id . "',
+				vendor_id = '" . (int)$vendor_id . "',
+				product_id = '" . (int)$product_id . "',
+				order_product_id = '" . (int)(isset($product['order_product_id']) ? $product['order_product_id'] : 0) . "',
+				quantity = '" . (int)$quantity . "',
+				price = '" . $line_price . "',
+				total = '" . $line_total . "',
+				commission_amount = '" . $commission_amount . "',
+				vendor_earning = '" . $vendor_earning . "',
+				order_status_id = '" . (int)$order_status_id . "',
+				date_added = NOW(),
+				date_modified = NOW()");
+
+			$this->db->query("UPDATE " . DB_PREFIX . "vendor SET
+				pending_balance = pending_balance + '" . $vendor_earning . "',
+				total_sales = total_sales + '" . (int)$quantity . "',
+				date_modified = NOW()
+				WHERE vendor_id = '" . (int)$vendor_id . "'");
 		}
 	}
 

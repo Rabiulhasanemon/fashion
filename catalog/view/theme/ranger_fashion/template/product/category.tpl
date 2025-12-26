@@ -61,15 +61,12 @@
                 <div class="scp-product-card">
                     <?php if ($product['special']) { ?>
                     <?php
-                      $price = floatval(str_replace(['৳', ',', ' '], '', $product['price']));
-                      $special = floatval(str_replace(['৳', ',', ' '], '', $product['special']));
+                      $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                      $special = floatval(str_replace(['৳', ','], '', $product['special']));
                       $discountAmount = $price - $special;
-                      $discountPercent = ($price > 0) ? round(($discountAmount / $price) * 100) : 0;
+                      $mark = ($discountAmount / $price) * 100;
                     ?>
-                    <div class="unified-discount-badge">
-                      <i class="fa fa-bolt discount-badge-icon"></i>
-                      <span class="discount-badge-text"><?php echo $discountPercent; ?>% OFF</span>
-                    </div>
+                    <div class="scp-discount-badge"><?php echo round($mark); ?>% OFF</div>
                     <?php } ?>
                     
                     <a href="<?php echo $product['href']; ?>" class="scp-product-image-link">
@@ -388,37 +385,7 @@
     border-color: #d0d0d0;
 }
 
-/* Unified Discount Badge - Red with Yellow Lightning */
-.unified-discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background: #e74c3c;
-    border-radius: 6px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-.discount-badge-icon {
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: bold;
-}
-.discount-badge-text {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-.scp-product-card {
-    position: relative;
-}
-/* Discount Badge - Legacy (kept for compatibility) */
+/* Discount Badge */
 .scp-discount-badge {
     position: absolute;
     top: 12px;

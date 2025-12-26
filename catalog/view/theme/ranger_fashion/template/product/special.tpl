@@ -194,7 +194,7 @@
 }
 
 .luxe-special-breadcrumb a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 /* Layout */
@@ -219,7 +219,7 @@
     color: #1a1a1a;
     margin: 0;
     padding-bottom: 15px;
-    border-bottom: 3px solid #10503D;
+    border-bottom: 3px solid #ff6b9d;
     display: inline-block;
 }
 
@@ -269,7 +269,7 @@
 }
 
 .luxe-special-select:hover {
-    border-color: #10503D;
+    border-color: #ff6b9d;
 }
 
 .luxe-special-compare a {
@@ -280,7 +280,7 @@
 }
 
 .luxe-special-compare a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 /* Products Grid */
@@ -377,7 +377,7 @@
 }
 
 .luxe-special-action-btn:hover {
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     transform: scale(1.1);
 }
@@ -405,7 +405,7 @@
 }
 
 .luxe-special-product-title a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .luxe-special-rating {
@@ -429,7 +429,7 @@
 .luxe-price-sale {
     font-size: 22px;
     font-weight: 700;
-    color: #10503D;
+    color: #ff6b9d;
     margin-right: 8px;
 }
 
@@ -442,7 +442,7 @@
 .luxe-special-add-cart {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8c9f 100%);
     border: none;
     border-radius: 8px;
     color: #fff;
@@ -503,7 +503,7 @@
 .luxe-special-continue-btn {
     display: inline-block;
     padding: 12px 30px;
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     text-decoration: none;
     border-radius: 8px;

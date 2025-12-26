@@ -16,3 +16,5 @@ $_['text_search']        = 'Search';
 $_['text_all']           = 'Show All';
 $_['text_compare']      = 'Compare (%s)';
 $_['text_items']     = '%s item(s)';
+$_['text_vendor_dashboard'] = 'Vendor Dashboard';
+$_['text_become_vendor']    = 'Become a Vendor';

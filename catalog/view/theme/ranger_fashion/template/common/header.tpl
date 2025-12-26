@@ -181,6 +181,17 @@
                             <!-- Dropdown Menu -->
                             <div class="aqc-more-dropdown">
                                 <div class="aqc-dropdown-content">
+                                    <div class="aqc-vendor-links">
+                                        <?php if ($logged && !empty($vendor)) { ?>
+                                            <a href="<?php echo $vendor_dashboard; ?>" class="aqc-dropdown-link">
+                                                <i class="fas fa-store"></i> <?php echo $text_vendor_dashboard; ?>
+                                            </a>
+                                        <?php } else { ?>
+                                            <a href="<?php echo $vendor_register; ?>" class="aqc-dropdown-link">
+                                                <i class="fas fa-store"></i> <?php echo $text_become_vendor; ?>
+                                            </a>
+                                        <?php } ?>
+                                    </div>
                                     <?php echo $navigation ?>
                                 </div>
                             </div>

@@ -6,8 +6,7 @@ class ControllerModuleFeatured extends Controller {
         $data['heading_title'] = $this->language->get('heading_title');
         $data['name'] = $setting['name'];
         $data['blurb'] = $setting['blurb'];
-        $data['see_all'] = isset($setting['url']) && $setting['url'] ? $setting['url'] : $this->url->link('product/category');
-        $data['shop_all_url'] = isset($setting['url']) && $setting['url'] ? $setting['url'] : $this->url->link('product/category');
+        $data['see_all'] = isset($setting['url']) ? $setting['url'] : null;
         $data['class'] = $setting['class'];
 
         $data['text_tax'] = $this->language->get('text_tax');

@@ -135,82 +135,6 @@
 
 /* Mobile Devices (max-width: 767px) */
 @media only screen and (max-width: 767.98px) {
-  /* Hide header-bottom-wrapper on mobile */
-  .header-bottom-wrapper {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-  }
-  
-  /* Hide Flash Sale Button on Mobile */
-  .h-flash-btn,
-  .header-bottom .h-flash-btn,
-  .inner-wrap .h-flash-btn {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  
-  /* Force all module containers to full width on mobile with consistent alignment */
-  .special-products-section .container,
-  .latest-products-section .container,
-  .featured-products-section .container,
-  .bs-module-section .container,
-  .premium-flash-section .container,
-  .pst-module-section .container,
-  .deal-of-day-section .container,
-  .fld-main-container .container,
-  .shop-cat-module-section .container,
-  .tabbed-category-slider-wrapper .container,
-  .popular-category-slider .container {
-    max-width: 100% !important;
-    padding: 0 10px !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-  }
-
-  .banner-module-section {
-    padding: 10px 0 0 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  .banner-module-section .container {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  .banner-grid {
-    gap: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .banner-item {
-    border-radius: 0 !important;
-    margin: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  .banner-item:last-child {
-    margin-bottom: 0 !important;
-  }
-
-  .banner-img {
-    border-radius: 0 !important;
-  }
-
   .latest-products-section {
     padding: 25px 0;
   }
@@ -307,85 +231,6 @@
   .latest-price--on-sale .latest-price-item--regular {
     font-size: calc(var(--font-price-card-scale) * 0.9rem);
   }
-
-  /* Compact product cards for mobile */
-  .product-item,
-  .latest-card-wrapper,
-  .special-product-item,
-  .featured-product-item,
-  .bs-product-card,
-  .pst-product-card,
-  .premium-flash-product-card {
-    min-height: auto !important;
-    height: auto !important;
-  }
-
-  /* Product grid adjustments for mobile */
-  .featured-product-wrapper,
-  .special-product-wrapper,
-  .bs-product-grid,
-  .pst-product-grid,
-  .premium-flash-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-  }
-
-  /* Product images smaller on mobile */
-  .product-item .product-image,
-  .latest-card__image,
-  .special-product-item .product-image,
-  .featured-product-item .product-image {
-    max-height: 150px !important;
-    object-fit: cover !important;
-  }
-
-  /* Product info padding reduction */
-  .product-item .product-info,
-  .latest-card__information,
-  .special-product-item .product-info,
-  .featured-product-item .product-info {
-    padding: 8px !important;
-  }
-
-  /* Product name font size reduction */
-  .product-item .product-info .name,
-  .latest-card__title,
-  .special-product-item .name,
-  .featured-product-item .name {
-    font-size: 13px !important;
-    line-height: 1.3 !important;
-    -webkit-line-clamp: 2 !important;
-  }
-
-  /* Price font size reduction */
-  .product-item .price,
-  .latest-price-item,
-  .special-product-item .price,
-  .featured-product-item .price {
-    font-size: 14px !important;
-  }
-
-  /* Module sections padding reduction */
-  .special-products-section,
-  .latest-products-section,
-  .featured-products-section,
-  .bs-module-section,
-  .premium-flash-section,
-  .pst-module-section,
-  .deal-of-day-section {
-    padding: 20px 0 !important;
-  }
-
-  /* Module headings smaller */
-  .special-products__title,
-  .latest-products__title,
-  .featured-products__title,
-  .bs-module-title,
-  .pst-module-title,
-  .premium-flash-title {
-    font-size: 18px !important;
-    margin-bottom: 15px !important;
-  }
 }
 
 /* Small Mobile Devices (max-width: 576px) */
@@ -475,33 +320,6 @@
 }
 
 @media only screen and (max-width: 991.98px) {
-  /* Hide header-bottom-wrapper on tablet and mobile */
-  .header-bottom-wrapper {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-  }
-  
-  /* Hide Flash Sale Button on Tablet and Mobile */
-  .h-flash-btn,
-  .header-bottom .h-flash-btn,
-  .inner-wrap .h-flash-btn {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  
   #nav-toggler {
     width: 22px;
     height: 15px;
@@ -790,17 +608,9 @@
     width: 100%;
   }
 
-  /* Hide header-bottom-wrapper on mobile */
   .header-bottom-wrapper {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
+    padding: 0;
+    border: 0;
   }
 
   .header-links .link-item > a {
@@ -840,19 +650,6 @@
 @media only screen and (min-width: 992px) {
 }
 @media only screen and (max-width: 767.98px) {
-  /* Hide header-bottom-wrapper on mobile */
-  .header-bottom-wrapper {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-  }
-  
   :root {
     --fontSize: 14px;
     --sectionPadding: 50px 0;

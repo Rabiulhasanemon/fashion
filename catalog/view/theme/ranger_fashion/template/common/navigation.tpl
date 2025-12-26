@@ -217,7 +217,7 @@ if (!$has_categories) {
 
 .desktop-menu > .menu-item:hover > .menu-link,
 .desktop-menu > .menu-item.active > .menu-link {
-    color: #A68A6A !important;
+    color: #FF6A00 !important;
 }
 
 .desktop-menu > .menu-item:hover > .menu-link i {
@@ -316,7 +316,7 @@ if (!$has_categories) {
     line-height: 1.2;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #A68A6A !important;
+    color: #FF6A00 !important;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -329,7 +329,7 @@ if (!$has_categories) {
 
 .header-bottom .h-flash-btn i {
     font-size: 1.6rem;
-    color: #A68A6A;
+    color: #FF6A00;
 }
 
 /* Sticky Header */
@@ -362,7 +362,7 @@ if (!$has_categories) {
 }
 
 .header-bottom.sticky-content.fixed .desktop-menu > .menu-item:hover > .menu-link {
-    color: #A68A6A !important;
+    color: #FF6A00 !important;
 }
 
 /* ============================================
@@ -525,7 +525,7 @@ if (!$has_categories) {
     }
     
     .new-mobile-list .mobile-menu-link:hover {
-        color: #A68A6A;
+        color: #FF6A00;
         background-color: #f5f5f5;
     }
     
@@ -567,7 +567,7 @@ if (!$has_categories) {
     }
     
     .new-mobile-list .mobile-submenu li a:hover {
-        color: #A68A6A;
+        color: #FF6A00;
         background-color: #e8e8e8;
     }
     
@@ -601,22 +601,14 @@ if (!$has_categories) {
         align-items: center;
     }
     
-    /* Flash Sale Button on Mobile - Hidden */
-    .h-flash-btn,
-    .header-bottom .h-flash-btn,
-    .inner-wrap .h-flash-btn,
-    .header-bottom .inner-wrap .h-flash-btn,
-    .container .h-flash-btn {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        position: absolute !important;
-        left: -9999px !important;
+    /* Flash Sale Button on Mobile */
+    .header-bottom .h-flash-btn {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+    
+    .header-bottom .h-flash-btn i {
+        font-size: 16px;
     }
 }
 

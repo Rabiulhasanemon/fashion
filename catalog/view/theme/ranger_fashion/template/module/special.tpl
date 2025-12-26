@@ -4,11 +4,6 @@
       <div class="special-products__top-main">
         <div class="special-products__top-text">
           <h2 class="special-products__title section-title h3 unified-module-heading cosmetics-module-heading"><?php echo $heading_title; ?></h2>
-          <?php if (isset($see_all) && $see_all) { ?>
-          <div class="special-products__see-all">
-            <a href="<?php echo $see_all; ?>" class="ruplexa-module-see-all-btn">All Products</a>
-          </div>
-          <?php } ?>
 <style>
 /* Consistent Premium Module Headings */
 .cosmetics-module-heading {
@@ -29,7 +24,7 @@
   left: 0 !important;
   width: 60px !important;
   height: 3px !important;
-  background: linear-gradient(90deg, #10503D, #A68A6A) !important;
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f) !important;
   border-radius: 2px !important;
 }
 @media (max-width: 992px) {
@@ -45,53 +40,6 @@
     </div>
   </div>
   
-<style>
-/* All Products Button - Unified Style */
-.ruplexa-module-see-all-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
-    white-space: nowrap;
-}
-
-.ruplexa-module-see-all-btn:hover {
-    background: linear-gradient(135deg, #A68A6A 0%, #10503D 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
-    color: #ffffff;
-    text-decoration: none;
-}
-
-.special-products__see-all {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-@media (max-width: 768px) {
-    .special-products__see-all {
-        position: static;
-        transform: none;
-        margin-top: 10px;
-    }
-    
-    .ruplexa-module-see-all-btn {
-        font-size: 12px;
-        padding: 8px 16px;
-    }
-}
-</style>
-  
   <div class="special-products__wrapper content">
     <div class="special-products__layout">
       <?php $special_module_id = 'special-' . uniqid(); ?>
@@ -106,18 +54,6 @@
           <div class="special-card-wrapper color-background-1" data-product="<?php echo $product['product_id']; ?>">
             <div class="special-card-wrapper__inner">
               <div class="special-card__image-wrapper">
-                <?php if ($product['special']) { ?>
-                <?php
-                  $price = floatval(str_replace(['৳', ',', ' '], '', $product['price']));
-                  $special = floatval(str_replace(['৳', ',', ' '], '', $product['special']));
-                  $discountAmount = $price - $special;
-                  $discountPercent = ($price > 0) ? round(($discountAmount / $price) * 100) : 0;
-                ?>
-                <div class="unified-discount-badge">
-                  <i class="fa fa-bolt discount-badge-icon"></i>
-                  <span class="discount-badge-text"><?php echo $discountPercent; ?>% OFF</span>
-                </div>
-                <?php } ?>
                 <div class="special-card__image">
                   <a href="<?php echo $product['href']; ?>">
                     <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" loading="lazy" class="special-product-img">
@@ -268,7 +204,7 @@
 }
 
 .action-btn:hover {
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     transform: scale(1.1);
 }
@@ -295,7 +231,7 @@
 }
 
 .special-card__title a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .special-price {
@@ -306,7 +242,7 @@
 }
 
 .price-new {
-    color: #10503D;
+    color: #ff6b9d;
     margin-right: 5px;
 }
 
@@ -321,36 +257,6 @@
     color: #ffc107;
     font-size: 12px;
     margin-bottom: 5px;
-}
-
-/* Unified Discount Badge - Red with Yellow Lightning */
-.unified-discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background: #e74c3c;
-    border-radius: 6px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-.discount-badge-icon {
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.discount-badge-text {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive */

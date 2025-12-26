@@ -120,7 +120,7 @@
             <div class="banner-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%); z-index: 2;"></div>
             
             <!-- Content -->
-            <div class="banner-content" style="position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="banner-content" style="position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: space-between; min-height: 260px;">
               <!-- Top Section - Tag (Banner Name) -->
               <?php if ($banner_tag) { ?>
               <div class="banner-tag" style="margin-bottom: 10px;">
@@ -209,7 +209,7 @@
   }
   
   .banner-content {
-    min-height: auto !important;
+    min-height: 240px !important;
   }
   
   .banner-headline {
@@ -229,7 +229,7 @@
   }
   
   .banner-content {
-    min-height: auto !important;
+    min-height: 230px !important;
   }
   
   .banner-headline {
@@ -254,7 +254,7 @@
   }
   
   .banner-content {
-    min-height: auto !important;
+    min-height: 210px !important;
   }
   
   .banner-headline {

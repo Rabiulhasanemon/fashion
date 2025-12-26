@@ -5,9 +5,6 @@ class ControllerModuleFlashDeal extends Controller {
 
 		$data['heading_title'] = isset($setting['title']) ? $setting['title'] : $this->language->get('heading_title');
 		
-		// Add See All URL - link to special products page for flash deals
-		$data['see_all'] = $this->url->link('product/special');
-		
 		$this->load->model('catalog/product');
 		$this->load->model('tool/image');
 		$this->load->model('extension/module/flash_deal');

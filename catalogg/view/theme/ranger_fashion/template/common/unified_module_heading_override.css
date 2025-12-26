@@ -1,0 +1,58 @@
+/* Unified Module Heading Override Styles */
+/* This ensures all module headings have consistent styling */
+
+/* Override existing module title styles */
+.popular-products__title.unified-module-heading,
+.section-title.unified-module-heading,
+h2.unified-module-heading,
+h3.unified-module-heading {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 24px 0 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+/* Ensure wrapper is centered */
+.module-heading-wrapper {
+  text-align: center !important;
+  margin-bottom: 20px !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+/* Responsive overrides */
+@media (max-width: 992px) {
+  .popular-products__title.unified-module-heading,
+  .section-title.unified-module-heading,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 22px !important;
+    padding: 20px 0 !important;
+  }
+}
+
+@media (max-width: 749px) {
+  .popular-products__title.unified-module-heading,
+  .section-title.unified-module-heading,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 20px !important;
+    padding: 18px 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .popular-products__title.unified-module-heading,
+  .section-title.unified-module-heading,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 18px !important;
+    padding: 15px 0 !important;
+  }
+}
+

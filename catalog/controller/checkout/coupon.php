@@ -58,8 +58,7 @@ class ControllerCheckoutCoupon extends Controller {
 			$this->session->data['success'] = $this->language->get('text_success');
 
             $json['success'] = $this->language->get('text_success');
-			// Don't redirect, let JavaScript handle the page update
-			// $json['redirect'] = $this->url->link('checkout/cart');
+			$json['redirect'] = $this->url->link('checkout/cart');
 		} else {
 			$json['error'] = $this->language->get('error_coupon');
 		}

@@ -50,7 +50,10 @@ class ControllerCommonContentBottom extends Controller {
 		foreach ($modules as $module) {
 			$part = explode('.', $module['code']);
 
-			// Extension modules (like HTML Content) have module_id in part[1]
+			if (isset($part[0]) && $this->config->get($part[0] . '_status')) {
+				$data['modules'][] = $this->load->controller('module/' . $part[0]);
+			}
+
 			if (isset($part[1])) {
 				$setting_info = $this->model_extension_module->getModule($part[1]);
 
@@ -65,9 +68,6 @@ class ControllerCommonContentBottom extends Controller {
 						$data['modules'][] = $this->load->controller('module/' . $part[0], $setting_info);
 					}
 				}
-			} elseif (isset($part[0]) && $this->config->get($part[0] . '_status')) {
-				// Built-in modules without module_id (legacy modules)
-				$data['modules'][] = $this->load->controller('module/' . $part[0]);
 			}
 		}
 

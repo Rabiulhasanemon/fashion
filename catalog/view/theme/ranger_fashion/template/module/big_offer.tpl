@@ -37,7 +37,7 @@
   left: 0;
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #10503D, #A68A6A);
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
   border-radius: 2px;
 }
 .big-offer-module .offer-header {
@@ -97,7 +97,7 @@
   left: 0;
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #10503D, #A68A6A);
+  background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
   border-radius: 2px;
 }
 </style>

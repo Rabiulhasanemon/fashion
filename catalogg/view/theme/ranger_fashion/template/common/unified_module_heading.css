@@ -1,0 +1,56 @@
+/* Unified Module Heading Style - Apply to all frontend modules */
+
+.unified-module-heading,
+.module-heading-title,
+h2.unified-module-heading,
+h3.unified-module-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+  text-align: center;
+  margin: 0;
+  padding: 24px 0;
+  text-transform: none;
+  letter-spacing: 0;
+  position: relative;
+}
+
+/* Module heading wrapper */
+.module-heading-wrapper {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .unified-module-heading,
+  .module-heading-title,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 22px;
+    padding: 20px 0;
+  }
+}
+
+@media (max-width: 749px) {
+  .unified-module-heading,
+  .module-heading-title,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 20px;
+    padding: 18px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .unified-module-heading,
+  .module-heading-title,
+  h2.unified-module-heading,
+  h3.unified-module-heading {
+    font-size: 18px;
+    padding: 15px 0;
+  }
+}
+

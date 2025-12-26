@@ -1,0 +1,653 @@
+/* NEW PREMIUM MODULE HEADING STYLES - All Module Headings Only */
+/* This ensures ALL module headings have the same premium style, size, and color */
+/* EXCLUDES product names to maintain their own styling */
+
+/* ============================================
+   PREMIUM MODULE HEADING STYLE - UNIFIED DESIGN
+   Orange Left Border Style (Same as Flash Deal)
+   ============================================ */
+
+/* Premium Module Header Wrapper - Apply to all modules */
+.rf-module-header,
+.module-heading-wrapper,
+.featured-products__top,
+.latest-products__top,
+.special-products__top,
+.section-head,
+.bs-module-header,
+.rv-module-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 25px !important;
+  padding: 15px 20px !important;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-left: 4px solid #A68A6A !important;
+  border-radius: 0 8px 8px 0 !important;
+  position: relative !important;
+}
+
+.rf-module-header::after,
+.module-heading-wrapper::after,
+.featured-products__top::after,
+.latest-products__top::after,
+.special-products__top::after,
+.section-head::after,
+.bs-module-header::after,
+.rv-module-heading::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
+}
+
+/* Primary unified classes - Module headings only */
+.cosmetics-module-heading,
+.unified-module-heading,
+.module-heading-title,
+.rf-module-title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #333333 !important;
+  line-height: 1.4 !important;
+  text-align: left !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  position: relative !important;
+  display: block !important;
+}
+
+/* Remove underline accent - Using left border style now */
+.cosmetics-module-heading::after,
+.unified-module-heading::after,
+.module-heading-title::after,
+.rf-module-title::after {
+  display: none !important;
+}
+
+/* Bestseller module title */
+.bs-module-title {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.bs-module-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Product Showcase Tabs module title */
+.pst-module-title {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.pst-module-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Flash Deal module title */
+.premium-flash-title,
+.flash-deal-title,
+.flashdeal-title,
+.rf-module-title,
+.fd-modern-title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #333333 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  letter-spacing: 0.5px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase !important;
+}
+
+/* RF Module Header Style - Premium Style for All Modules */
+.rf-module-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 25px !important;
+  padding: 15px 20px !important;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
+  border-left: 4px solid #A68A6A !important;
+  border-radius: 0 8px 8px 0 !important;
+  position: relative !important;
+}
+
+.rf-module-header::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, #A68A6A 0%, rgba(166, 138, 106, 0.1) 100%) !important;
+}
+
+.premium-flash-title::after,
+.flash-deal-title::after,
+.flashdeal-title::after,
+.rf-module-title::after,
+.fd-modern-title::after {
+  display: none !important;
+}
+
+/* Review View module title */
+.rv-title,
+.rv-module-heading h2 {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.rv-title::after,
+.rv-module-heading h2::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Popular, Latest, Featured, Special products titles */
+.popular-products__title,
+.latest-products__title,
+.featured-products__title,
+.special-products__title {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.popular-products__title::after,
+.latest-products__title::after,
+.featured-products__title::after,
+.special-products__title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Section title headings - DISABLED - Now using red tab style from module-block-title.css */
+/* These styles are removed to allow the red tab style to apply properly */
+/*
+.section-title h2:not(.product-name):not(.name),
+.section-title h3:not(.product-name):not(.name),
+.section-title .h3:not(.product-name):not(.name),
+.section-head h2:not(.product-name):not(.name),
+.section-head h3:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.section-title h2:not(.product-name):not(.name)::after,
+.section-title h3:not(.product-name):not(.name)::after,
+.section-title .h3:not(.product-name):not(.name)::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+*/
+
+/* Generic heading_title class - Module headings only */
+.heading_title:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.heading_title:not(.product-name):not(.name)::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Tabbed category module title */
+.tcp2-module-title,
+.offer-title {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.tcp2-module-title::after,
+.offer-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* Panel heading (for store, google hangouts, etc.) - Module headings only */
+.panel-heading:not(.product-name):not(.name) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  padding: 24px 0 20px 0 !important;
+  position: relative !important;
+  letter-spacing: -0.03em !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.panel-heading:not(.product-name):not(.name)::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff6b9d 0%, #ff8c9f 50%, #ff6b9d 100%) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3) !important;
+}
+
+/* ============================================
+   EXCLUDE PRODUCT NAMES - Do NOT style these
+   ============================================ */
+/* Ensure product names are NOT affected by module heading styles */
+.name,
+.product-name,
+.cp-product-name,
+.bs-product-name,
+.pst-product-name,
+.premium-flash-product-name,
+h1.name,
+h2.name,
+h3.name,
+.product-title,
+.item-name {
+  /* Reset any module heading styles that might affect product names */
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+}
+
+.name::after,
+.product-name::after,
+.cp-product-name::after,
+.bs-product-name::after,
+.pst-product-name::after,
+.premium-flash-product-name::after,
+.product-title::after,
+.item-name::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Module heading wrapper */
+.module-heading-wrapper {
+  text-align: left !important;
+  margin-bottom: 30px !important;
+  padding: 0 20px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure all module sections use container class */
+.special-products-section,
+.latest-products-section,
+.featured-products-section,
+.bs-module-section,
+.premium-flash-section,
+.pst-module-section,
+.deal-of-day-section,
+.banner-module-section {
+  width: 100% !important;
+}
+
+.special-products-section .container,
+.latest-products-section .container,
+.featured-products-section .container,
+.bs-module-section .container,
+.premium-flash-section .container,
+.pst-module-section .container,
+.deal-of-day-section .container,
+.banner-module-section .container {
+  max-width: 80% !important;
+  margin: 0 auto !important;
+  padding: 0 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure module headings are within container on desktop */
+@media (min-width: 768px) {
+  .module-heading-wrapper {
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 992px) {
+  .cosmetics-module-heading,
+  .unified-module-heading,
+  .module-heading-title,
+  .bs-module-title,
+  .pst-module-title,
+  .premium-flash-title,
+  .flash-deal-title,
+  .flashdeal-title,
+  .rv-title,
+  .rv-module-heading h2,
+  .popular-products__title,
+  .latest-products__title,
+  .featured-products__title,
+  .special-products__title,
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name),
+  .tcp2-module-title,
+  .offer-title,
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 28px !important;
+    padding: 22px 0 18px 0 !important;
+  }
+  
+  .cosmetics-module-heading::after,
+  .unified-module-heading::after,
+  .bs-module-title::after,
+  .pst-module-title::after,
+  .premium-flash-title::after,
+  .flash-deal-title::after,
+  .flashdeal-title::after,
+  .rv-title::after,
+  .rv-module-heading h2::after,
+  .popular-products__title::after,
+  .latest-products__title::after,
+  .featured-products__title::after,
+  .special-products__title::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name)::after,
+  .tcp2-module-title::after,
+  .offer-title::after,
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 70px !important;
+    height: 3.5px !important;
+    bottom: 10px !important;
+  }
+}
+
+@media (max-width: 749px) {
+  .cosmetics-module-heading,
+  .unified-module-heading,
+  .module-heading-title,
+  .bs-module-title,
+  .pst-module-title,
+  .premium-flash-title,
+  .flash-deal-title,
+  .flashdeal-title,
+  .rv-title,
+  .rv-module-heading h2,
+  .popular-products__title,
+  .latest-products__title,
+  .featured-products__title,
+  .special-products__title,
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name),
+  .tcp2-module-title,
+  .offer-title,
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 26px !important;
+    padding: 20px 0 16px 0 !important;
+  }
+  
+  .cosmetics-module-heading::after,
+  .unified-module-heading::after,
+  .bs-module-title::after,
+  .pst-module-title::after,
+  .premium-flash-title::after,
+  .flash-deal-title::after,
+  .flashdeal-title::after,
+  .rv-title::after,
+  .rv-module-heading h2::after,
+  .popular-products__title::after,
+  .latest-products__title::after,
+  .featured-products__title::after,
+  .special-products__title::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name)::after,
+  .tcp2-module-title::after,
+  .offer-title::after,
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 65px !important;
+    height: 3px !important;
+    bottom: 8px !important;
+  }
+  
+  .module-heading-wrapper {
+    padding: 0 15px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .cosmetics-module-heading,
+  .unified-module-heading,
+  .module-heading-title,
+  .bs-module-title,
+  .pst-module-title,
+  .premium-flash-title,
+  .flash-deal-title,
+  .flashdeal-title,
+  .rv-title,
+  .rv-module-heading h2,
+  .popular-products__title,
+  .latest-products__title,
+  .featured-products__title,
+  .special-products__title,
+  /* .section-title h2:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name), - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name),
+  .tcp2-module-title,
+  .offer-title,
+  .panel-heading:not(.product-name):not(.name) {
+    font-size: 24px !important;
+    padding: 18px 0 14px 0 !important;
+  }
+  
+  .cosmetics-module-heading::after,
+  .unified-module-heading::after,
+  .bs-module-title::after,
+  .pst-module-title::after,
+  .premium-flash-title::after,
+  .flash-deal-title::after,
+  .flashdeal-title::after,
+  .rv-title::after,
+  .rv-module-heading h2::after,
+  .popular-products__title::after,
+  .latest-products__title::after,
+  .featured-products__title::after,
+  .special-products__title::after,
+  /* .section-title h2:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  /* .section-title .h3:not(.product-name):not(.name)::after, - DISABLED for red tab style */
+  .heading_title:not(.product-name):not(.name)::after,
+  .tcp2-module-title::after,
+  .offer-title::after,
+  .panel-heading:not(.product-name):not(.name)::after {
+    width: 60px !important;
+    height: 2.5px !important;
+    bottom: 6px !important;
+  }
+  
+  .module-heading-wrapper {
+    padding: 0 10px !important;
+  }
+}
+
+/* Mobile Responsive - Full Width Containers */
+@media (max-width: 767px) {
+  /* Force all module containers to 100% width on mobile with consistent alignment */
+  .special-products-section .container,
+  .latest-products-section .container,
+  .featured-products-section .container,
+  .bs-module-section .container,
+  .premium-flash-section .container,
+  .pst-module-section .container,
+  .deal-of-day-section .container,
+  .banner-module-section .container,
+  .fld-main-container .container,
+  .shop-cat-module-section .container,
+  .tabbed-category-slider-wrapper .container,
+  .popular-category-slider .container {
+    max-width: 100% !important;
+    padding: 0 10px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Module sections */
+  .special-products-section,
+  .latest-products-section,
+  .featured-products-section,
+  .bs-module-section,
+  .premium-flash-section,
+  .pst-module-section,
+  .deal-of-day-section,
+  .banner-module-section {
+    padding: 20px 0 !important;
+  }
+
+  /* Module header adjustments */
+  .rf-module-header,
+  .module-heading-wrapper,
+  .featured-products__top,
+  .latest-products__top,
+  .special-products__top,
+  .section-head,
+  .bs-module-header,
+  .rv-module-heading {
+    padding: 12px 10px !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Module titles smaller */
+  .cosmetics-module-heading,
+  .unified-module-heading,
+  .module-heading-title,
+  .rf-module-title {
+    font-size: 18px !important;
+    padding: 15px 0 12px 0 !important;
+  }
+}

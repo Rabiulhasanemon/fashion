@@ -2,11 +2,6 @@
   <div class="container">
     <div class="bs-module-header">
       <h2 class="bs-module-title"><?php echo $heading_title; ?></h2>
-      <?php if (isset($shop_all_url) && $shop_all_url) { ?>
-      <div class="bs-module-see-all">
-        <a href="<?php echo $shop_all_url; ?>" class="ruplexa-module-see-all-btn">All Products</a>
-      </div>
-      <?php } ?>
     </div>
     
     <div class="bs-module-content">
@@ -15,18 +10,6 @@
         <li class="bs-product-item">
           <div class="bs-product-card">
             <div class="bs-product-image-box">
-              <?php if ($product['special']) { ?>
-              <?php
-                $price = floatval(str_replace(['৳', ',', ' '], '', $product['price']));
-                $special = floatval(str_replace(['৳', ',', ' '], '', $product['special']));
-                $discountAmount = $price - $special;
-                $discountPercent = ($price > 0) ? round(($discountAmount / $price) * 100) : 0;
-              ?>
-              <div class="unified-discount-badge">
-                <i class="fa fa-bolt discount-badge-icon"></i>
-                <span class="discount-badge-text"><?php echo $discountPercent; ?>% OFF</span>
-              </div>
-              <?php } ?>
               <a href="<?php echo $product['href']; ?>" class="bs-product-link">
                 <img src="<?php echo $product['thumb']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="bs-product-image" loading="lazy">
               </a>
@@ -96,56 +79,6 @@
 
 .bs-module-header {
     margin-bottom: 30px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.bs-module-see-all {
-    margin-left: auto;
-}
-
-/* All Products Button - Unified Style */
-.ruplexa-module-see-all-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(16, 80, 61, 0.3);
-    white-space: nowrap;
-}
-
-.ruplexa-module-see-all-btn:hover {
-    background: linear-gradient(135deg, #A68A6A 0%, #10503D 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 80, 61, 0.4);
-    color: #ffffff;
-    text-decoration: none;
-}
-
-@media (max-width: 768px) {
-    .bs-module-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .bs-module-see-all {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-    
-    .ruplexa-module-see-all-btn {
-        font-size: 12px;
-        padding: 8px 16px;
-    }
 }
 
 .bs-module-title {
@@ -166,7 +99,7 @@
     left: 0;
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #10503D, #A68A6A);
+    background: linear-gradient(90deg, #ff6b9d, #ff8c9f);
     border-radius: 2px;
 }
 
@@ -264,7 +197,7 @@
 }
 
 .bs-btn-icon:hover {
-    background: #10503D;
+    background: #ff6b9d;
     color: #fff;
     transform: scale(1.1);
 }
@@ -296,7 +229,7 @@
 }
 
 .bs-product-name a:hover {
-    color: #10503D;
+    color: #ff6b9d;
 }
 
 .bs-product-rating {
@@ -321,7 +254,7 @@
 .bs-price-sale {
     font-size: 20px;
     font-weight: 700;
-    color: #10503D;
+    color: #ff6b9d;
     margin-right: 8px;
 }
 
@@ -336,36 +269,6 @@
     font-size: 20px;
     font-weight: 700;
     color: #1a1a1a;
-}
-
-/* Unified Discount Badge - Red with Yellow Lightning */
-.unified-discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background: #e74c3c;
-    border-radius: 6px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-.discount-badge-icon {
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.discount-badge-text {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive */

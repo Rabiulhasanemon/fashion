@@ -86,22 +86,20 @@ class ControllerCommonHeader extends Controller {
         $data['item_count'] = $this->cart->countProducts();
         $data['flash_sale_url'] = $this->url->link('product/special');
         $data['shop_now_url'] = $this->url->link('product/special');
-        $data['offer_url'] = $this->url->link('information/offer');
-        
-        // Get active offer for timer
-        $data['active_offer'] = array();
-        $this->load->model('catalog/offer');
-        $offers = $this->model_catalog_offer->getOffers();
-        if (!empty($offers)) {
-            // Get the first active offer (sorted by sort_order)
-            $active_offer = $offers[0];
-            $data['active_offer'] = array(
-                'offer_id' => $active_offer['offer_id'],
-                'title' => $active_offer['title'],
-                'date_end' => $active_offer['date_end'],
-                'date_end_timestamp' => strtotime($active_offer['date_end'])
-            );
+
+        // Vendor links
+        $data['vendor_register'] = $this->url->link('vendor/register', '', 'SSL');
+        $data['vendor_dashboard'] = $this->url->link('vendor/dashboard', '', 'SSL');
+        $data['vendor'] = array();
+        if ($this->customer->isLogged()) {
+            $this->load->model('vendor/vendor');
+            $vendor = $this->model_vendor_vendor->getVendorByCustomerId($this->customer->getId());
+            if ($vendor) {
+                $data['vendor'] = $vendor;
+            }
         }
+        $data['text_vendor_dashboard'] = $this->language->get('text_vendor_dashboard');
+        $data['text_become_vendor'] = $this->language->get('text_become_vendor');
 
         // Big Offer Button (from module settings)
         $data['big_offer'] = array();

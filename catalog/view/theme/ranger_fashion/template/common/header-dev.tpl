@@ -110,7 +110,7 @@
 
             <!-- Icons -->
             <div class="header-icons-container">
-                <a href="<?php echo isset($offer_url) ? $offer_url : 'index.php?route=information/offer'; ?>" class="header-icon-item">
+                <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>" class="header-icon-item offer-deals-btn">
                     <span class="icon"><i class="fas fa-tag"></i></span>
                     <span class="icon-text">Offer Deals</span>
                 </a>
@@ -133,6 +133,17 @@
                     <span class="icon"><i class="fas fa-heart"></i></span>
                     <span class="icon-text">Wishlist</span>
                 </a>
+                <?php if (isset($vendor) && !empty($vendor) && $vendor['status'] == 'approved') { ?>
+                <a href="<?php echo isset($vendor_dashboard) ? $vendor_dashboard : '#'; ?>" class="header-icon-item">
+                    <span class="icon"><i class="fas fa-store"></i></span>
+                    <span class="icon-text">Vendor</span>
+                </a>
+                <?php } elseif (isset($vendor_register)) { ?>
+                <a href="<?php echo $vendor_register; ?>" class="header-icon-item">
+                    <span class="icon"><i class="fas fa-store"></i></span>
+                    <span class="icon-text">Vendor</span>
+                </a>
+                <?php } ?>
                 <a href="javascript:void(0)" class="header-icon-item cart-icon cart-toggler mc-toggler">
                     <span class="icon">
                         <i class="fas fa-shopping-cart"></i>
@@ -317,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
     justify-content: end;
 }
 
-/* Offer Deals Button - Match Default Header Icon Style */
+/* Offer Deals Button Styling - Match Default Header Icon Style */
 .header-icon-item.offer-deals-btn {
     background: transparent;
     border: none;
@@ -412,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
                     <div class="link-item offer-deals-link-item">
-                        <a href="<?php echo isset($offer_url) ? $offer_url : 'index.php?route=information/offer'; ?>">
+                        <a href="<?php echo isset($flash_sale_url) ? $flash_sale_url : 'index.php?route=product/special'; ?>">
                             <div class="icon">
                                 <span class="material-icons">local_offer</span>
                             </div>
@@ -435,6 +446,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?php } ?>
 
                     </div>
+                    <?php if (isset($vendor) && !empty($vendor) && isset($vendor['status']) && $vendor['status'] == 'approved') { ?>
+                    <div class="link-item">
+                        <a href="<?php echo isset($vendor_dashboard) ? $vendor_dashboard : '#'; ?>" title="Vendor Dashboard">
+                            <div class="icon">
+                                <span class="material-icons">store</span>
+                            </div>
+                            <span class="link-text">Vendor</span>
+                        </a>
+                    </div>
+                    <?php } elseif (isset($vendor_register) && $vendor_register) { ?>
+                    <div class="link-item">
+                        <a href="<?php echo $vendor_register; ?>" title="Become a Vendor">
+                            <div class="icon">
+                                <span class="material-icons">store</span>
+                            </div>
+                            <span class="link-text">Vendor</span>
+                        </a>
+                    </div>
+                    <?php } ?>
                     <div class="link-item cart cart-toggler mc-toggler">
                         <a href="javascript:void(0)">
                             <div class="icon">
@@ -514,8 +544,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     </div>
 </header>
-
-
 <div class="mini-cart" id="mini-cart">
     <div class="content">
         <div class="loader"></div>

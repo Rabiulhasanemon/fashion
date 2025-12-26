@@ -65,6 +65,19 @@ class ControllerAccountAccount extends Controller {
 			$data['reward'] = '';
 		}
 
+		// Check if user is a vendor
+		$this->load->model('vendor/vendor');
+		$vendor = $this->model_vendor_vendor->getVendorByCustomerId($this->customer->getId());
+		if ($vendor) {
+			$data['vendor_dashboard'] = $this->url->link('vendor/dashboard', '', 'SSL');
+			$data['is_vendor'] = true;
+			$data['vendor_status'] = $vendor['status'];
+		} else {
+			$data['vendor_dashboard'] = '';
+			$data['is_vendor'] = false;
+			$data['vendor_register'] = $this->url->link('vendor/register', '', 'SSL');
+		}
+
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['column_right'] = $this->load->controller('common/column_right');
 		$data['content_top'] = $this->load->controller('common/content_top');

@@ -12,22 +12,13 @@ class ModelCatalogManufacturer extends Model {
         $manufacturer = $query->row;
         
         // Get description if available for current language
-        $query_desc = $this->db->query("SELECT name, description, meta_title, meta_description, meta_keyword FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
-        if ($query_desc->num_rows) {
+        $query_desc = $this->db->query("SELECT description, meta_title, meta_description, meta_keyword FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+        if ($query_desc && $query_desc->num_rows) {
             // Merge description fields into manufacturer array (override base table fields if description exists)
             foreach ($query_desc->row as $key => $value) {
                 if ($value !== null && $value !== '') {
                     $manufacturer[$key] = $value;
                 }
-            }
-        }
-        
-        // Ensure name field exists - use from description if available, otherwise from base table
-        if (empty($manufacturer['name']) && isset($manufacturer['manufacturer_id'])) {
-            // Try to get name from any language if current language doesn't have it
-            $query_name = $this->db->query("SELECT name FROM " . DB_PREFIX . "manufacturer_description WHERE manufacturer_id = '" . (int)$manufacturer_id . "' LIMIT 1");
-            if ($query_name->num_rows && !empty($query_name->row['name'])) {
-                $manufacturer['name'] = $query_name->row['name'];
             }
         }
         

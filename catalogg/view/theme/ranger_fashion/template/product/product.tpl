@@ -1,0 +1,3009 @@
+<?php echo $header; ?>
+<section class="after-header">
+    <div class="container">
+        <ul class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+            <?php foreach ($breadcrumbs as $i => $breadcrumb) { if($i < 1) { ?>
+            <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+            <?php } else { ?>
+            <li  itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemtype="http://schema.org/Thing" itemprop="item" href="<?php echo $breadcrumb['href']; ?>"><span itemprop="name"><?php echo $breadcrumb['text']; ?></span></a><meta itemprop="position" content="<?php echo $i; ?>" /></li>
+            <?php }} ?>
+        </ul>
+    </div>
+</section>
+<section id="content-top">
+    <div class="container"><?php echo $content_top; ?></div>
+</section>
+<?php if ($success) { ?>
+<div class="container alert-container">
+    <div class="alert alert-success"><?php echo $success; ?><button type="button" class="close" data-dismiss="alert">&times;</button></div>
+</div>
+<?php } ?>
+<div class="product-details" itemscope itemtype="http://schema.org/Product">
+    <meta itemprop="productID" content="<?php echo $product_id; ?>">
+    <meta itemprop="sku" content="<?php echo $product_id; ?>">
+    <section class="basic">
+        <div class="container"  id="product">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="lux-product-media" id="product-media-gallery">
+                        <div class="lux-media-grid">
+                            <?php 
+                            // DEBUG: Check what we have
+                            $debug_output = '';
+                            if (isset($_GET['debug_images'])) {
+                                $debug_output .= "<!-- DEBUG INFO:\n";
+                                $debug_output .= "thumb: " . (isset($thumb) ? $thumb : 'NOT SET') . "\n";
+                                $debug_output .= "popup: " . (isset($popup) ? $popup : 'NOT SET') . "\n";
+                                $debug_output .= "images count: " . (isset($images) && is_array($images) ? count($images) : 'NOT ARRAY') . "\n";
+                                if (isset($images) && is_array($images)) {
+                                    foreach ($images as $idx => $img) {
+                                        $debug_output .= "  images[" . $idx . "]: " . print_r($img, true) . "\n";
+                                    }
+                                }
+                                $debug_output .= "featured_image: " . (isset($featured_image) ? $featured_image : 'NOT SET') . "\n";
+                                $debug_output .= "-->\n";
+                            }
+                            echo $debug_output;
+                            
+                            // Get all images for thumbnails
+                            $all_thumbnails = array();
+                            
+                            // Add main thumbnail first if exists
+                            if (!empty($thumb)) {
+                                $all_thumbnails[] = array(
+                                    'thumb' => $thumb,
+                                    'popup' => !empty($popup) ? $popup : $thumb,
+                                    'original' => $thumb
+                                );
+                            }
+                            
+                            // Add additional images
+                            if (!empty($images) && is_array($images)) {
+                                foreach ($images as $img) {
+                                    $thumb_src = '';
+                                    if (!empty($img['thumb'])) {
+                                        $thumb_src = $img['thumb'];
+                                    } elseif (!empty($img['original'])) {
+                                        $thumb_src = $img['original'];
+                                    }
+                                    
+                                    if (!empty($thumb_src)) {
+                                        $popup_src = !empty($img['popup']) ? $img['popup'] : $thumb_src;
+                                        $all_thumbnails[] = array(
+                                            'thumb' => $thumb_src,
+                                            'popup' => $popup_src,
+                                            'original' => !empty($img['original']) ? $img['original'] : $thumb_src
+                                        );
+                                    }
+                                }
+                            }
+                            
+                            // Set main image - use thumb if available, otherwise first additional, otherwise placeholder
+                            $main_img_src = '';
+                            $main_img_popup = '';
+                            
+                            if (!empty($thumb)) {
+                                $main_img_src = $thumb;
+                                $main_img_popup = !empty($popup) ? $popup : $thumb;
+                            } elseif (!empty($images) && is_array($images) && !empty($images[0]['thumb'])) {
+                                $main_img_src = $images[0]['thumb'];
+                                $main_img_popup = !empty($images[0]['popup']) ? $images[0]['popup'] : $images[0]['thumb'];
+                            } else {
+                                // Placeholder fallback - use default placeholder or empty
+                                $main_img_src = isset($placeholder) ? $placeholder : '';
+                                $main_img_popup = isset($placeholder) ? $placeholder : '';
+                            }
+                            ?>
+                            <div class="lux-media-grid__thumbs">
+                                <?php if (count($all_thumbnails) > 0) { ?>
+                                    <div class="lux-thumb-track">
+                                        <?php foreach ($all_thumbnails as $index => $thumb_data) { 
+                                            $thumb_src = isset($thumb_data['thumb']) && $thumb_data['thumb'] ? $thumb_data['thumb'] : (isset($thumb_data['original']) ? $thumb_data['original'] : '');
+                                            $popup_src = isset($thumb_data['popup']) && $thumb_data['popup'] ? $thumb_data['popup'] : $thumb_src;
+                                            if (!$thumb_src) { continue; }
+                                        ?>
+                                        <button class="lux-thumb <?php echo ($index === 0) ? 'is-active' : ''; ?>"
+                                                type="button"
+                                                data-image="<?php echo htmlspecialchars($thumb_src); ?>"
+                                                data-popup="<?php echo htmlspecialchars($popup_src); ?>"
+                                                aria-label="Preview <?php echo htmlspecialchars($heading_title); ?>">
+                                            <span class="lux-thumb__inner">
+                                                <img src="<?php echo htmlspecialchars($thumb_src); ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" onerror="this.src='image/placeholder.png';">
+                                            </span>
+                                        </button>
+                                        <meta itemprop="image" content="<?php echo htmlspecialchars($thumb_src); ?>"/>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+
+                            <div class="lux-media-grid__viewer">
+                                <div class="lux-stage" data-media-stage>
+                                    <a class="lux-stage__link"
+                                       href="<?php echo htmlspecialchars($main_img_popup); ?>"
+                                       title="<?php echo htmlspecialchars($heading_title); ?>"
+                                       data-fancybox="product-gallery"
+                                       id="main-image-link">
+                                        <img class="lux-stage__image"
+                                             id="main-product-image"
+                                             src="<?php echo htmlspecialchars($main_img_src); ?>"
+                                             alt="<?php echo htmlspecialchars($heading_title); ?>"
+                                             onerror="this.src='image/placeholder.png';">
+                                        <span class="lux-stage__zoom">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M10.5 3A7.5 7.5 0 0 1 18 10.5c0 1.73-.6 3.32-1.6 4.57l4.76 4.76-1.41 1.41-4.76-4.76A7.47 7.47 0 0 1 10.5 18 7.5 7.5 0 1 1 10.5 3zm0 2A5.5 5.5 0 1 0 10.5 16 5.5 5.5 0 0 0 10.5 5z" fill="currentColor"/>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    <meta itemprop="image" content="<?php echo htmlspecialchars($main_img_src); ?>"/>
+                                </div>
+                                <?php if (!empty($images) && is_array($images)) { ?>
+                                    <div class="lux-stage__hidden">
+                                        <?php foreach ($images as $img) { ?>
+                                            <?php if (!empty($img['popup'])) { ?>
+                                            <a href="<?php echo htmlspecialchars($img['popup']); ?>" data-fancybox="product-gallery"></a>
+                                            <?php } ?>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="ppd-new-product-info">
+                        <!-- Product Title -->
+                        <h1 itemprop="name" class="ppd-new-title"><?php echo $heading_title; ?></h1>
+                        
+                        <!-- Product Metadata -->
+                        <div class="ppd-new-metadata">
+                            <?php if (isset($manufacturer) && $manufacturer) { ?>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Brand:</span>
+                                <span class="ppd-new-meta-value"><a href="<?php echo isset($manufacturers) ? $manufacturers : '#'; ?>" class="ppd-new-meta-link"><?php echo $manufacturer; ?></a></span>
+                            </div>
+                            <?php } ?>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Status:</span>
+                                <span class="ppd-new-meta-value"><?php echo $stock; ?></span>
+                            </div>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">Rating:</span>
+                                <span class="ppd-new-meta-value"><?php echo $rating; ?>/5.0 Review (<?php echo isset($no_of_review) ? $no_of_review : 0; ?>)</span>
+                            </div>
+                            <?php if ($sku) { ?>
+                            <div class="ppd-new-meta-item">
+                                <span class="ppd-new-meta-label">SKU:</span>
+                                <span class="ppd-new-meta-value"><?php echo $sku; ?></span>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        
+                        <!-- Pricing Section with Discount Badge - Matching Image Style -->
+                        <div class="ppd-new-pricing-section">
+                            <div class="ppd-new-price-container">
+                                <?php 
+                                $discountPercent = 0;
+                                $discountAmount = 0;
+                                $discountAmountFormatted = '';
+                                if (!$disablePurchase && $special) {
+                                    // Extract numeric values from formatted prices
+                                    $p = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $price));
+                                    $s = floatval(str_replace(['৳', ',', ' ', 'TK', 'tk'], '', $special));
+                                    $discountAmount = $p - $s;
+                                    if ($p > 0) {
+                                        $discountPercent = round(($discountAmount / $p) * 100);
+                                    }
+                                    // Format discount amount to match price format (2 decimal places)
+                                    $discountAmountFormatted = '৳' . number_format($discountAmount, 2, '.', '');
+                                }
+                                ?>
+                                <?php if ($disablePurchase || !$special) { ?>
+                                <span class="ppd-new-price-current"><?php echo $price; ?></span>
+                                <?php } else { ?>
+                                <div class="ppd-price-row">
+                                    <span class="ppd-new-price-current"><?php echo $special; ?></span>
+                                    <span class="ppd-new-price-old"><?php echo $price; ?></span>
+                                    <div class="ppd-price-separator"></div>
+                                    <span class="ppd-new-save-text">Save <span class="ppd-save-amount"><?php echo $discountAmountFormatted; ?></span></span>
+                                    <?php if ($discountPercent > 0) { ?>
+                                    <div class="ppd-new-discount-badge">
+                                        <?php echo $discountPercent; ?>% OFF
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Description -->
+                        <?php 
+                        $display_short_description = '';
+                        if (isset($short_description) && $short_description) {
+                            if (is_array($short_description)) {
+                                $display_short_description = implode(' ', array_filter($short_description));
+                            } else {
+                                $display_short_description = trim($short_description);
+                            }
+                        }
+                        if ($display_short_description) { 
+                        ?>
+                        <div class="ppd-new-description">
+                            <?php echo html_entity_decode($display_short_description, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                        <?php } ?>
+
+                        <?php if ($options) { ?>
+                        <div class="p-opt-wrap prx-option-wrap">
+                            <?php foreach ($options as $option) { ?>
+                            <div class="prx-option-field <?php echo $option['type']; ?>">
+                                <div class="prx-option-head">
+                                    <div class="prx-option-name"><?php echo $option['name']; ?></div>
+                                    <div class="prx-option-selection" id="input-option<?php echo $option['product_option_id']; ?>"><b></b></div>
+                                </div>
+                                <div class="prx-option-values">
+                                    <?php foreach ($option['product_option_value'] as $option_value) { ?>
+                                    <label class="prx-option-pill">
+                                        <input class="prx-option-input" type="radio" value="<?php echo $option_value['option_value_id']; ?>"  name="option[<?php echo $option['product_option_id']; ?>]" title="<?php echo $option_value['name']; ?>">
+                                        <span class="prx-option-pill__label"><?php echo $option_value['name']; ?></span>
+                                    </label>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        <?php } ?>
+
+                        <!-- Quantity Selector -->
+                        <div class="ppd-new-quantity-section" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                            <link itemprop="availability" href="http://schema.org/<?php echo $stock_meta; ?>"/>
+                            <link itemprop="itemCondition" href="http://schema.org/NewCondition"/>
+                            <meta itemprop="priceCurrency" content="BDT" />
+                            <meta itemprop="price" content="<?php echo $raw_price; ?>" />
+                            
+                            <div class="ppd-new-qty-control" data-min-qty="<?php echo (int)$minimum; ?>">
+                                <button type="button" class="ppd-new-qty-btn ppd-new-qty-minus">-</button>
+                                <input type="text" name="quantity" id="input-quantity" class="ppd-new-qty-input" value="<?php echo $minimum; ?>" size="2">
+                                <button type="button" class="ppd-new-qty-btn ppd-new-qty-plus">+</button>
+                                <input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="ppd-new-action-buttons">
+                            <button id="button-cart" class="ppd-new-btn ppd-new-btn-bag" <?php echo $disablePurchase ? "disabled" : ""; ?>>
+                                Add to Bag
+                            </button>
+                            <button id="buy-now" class="ppd-new-btn ppd-new-btn-buy" <?php echo $disablePurchase ? "disabled" : ""; ?>>
+                                Buy Now
+                            </button>
+                            <button type="button" class="ppd-new-btn ppd-new-btn-wishlist" onclick="wishlist.add('<?php echo $product_id; ?>');">
+                                <i class="fa fa-heart"></i>
+                            </button>
+                            <button type="button" class="ppd-new-btn ppd-new-btn-compare" onclick="compare.add('<?php echo $product_id; ?>');">
+                                <i class="fa fa-exchange"></i>
+                            </button>
+                        </div>
+
+                        <!-- Assistance Section -->
+                        <div class="ppd-new-assistance-section">
+                            <p class="ppd-new-assistance-text">Having trouble ordering? Order via WhatsApp.</p>
+                            <h4 class="ppd-new-assistance-heading">Need Assistance?</h4>
+                            <div class="ppd-new-assistance-buttons">
+                                <?php if (!empty($whatsapp_link)) { ?>
+                                <a href="<?php echo $whatsapp_link; ?>" target="_blank" rel="noopener" class="ppd-new-assistance-btn ppd-new-assistance-whatsapp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                                <?php } ?>
+                                <?php if (!empty($primary_contact_tel)) { ?>
+                                <a href="<?php echo $primary_contact_tel; ?>" class="ppd-new-assistance-btn ppd-new-assistance-call">
+                                    <i class="fa fa-phone"></i> Call Us
+                                </a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        
+                        <!-- Share Section -->
+                        <div class="ppd-new-share-section">
+                            <span class="ppd-new-share-label">Share:</span>
+                            <div class="ppd-new-share-icons">
+                                <span class="ppd-new-share-icon" data-type="facebook">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8.00016 1.35999C4.3335 1.35999 1.3335 4.35332 1.3335 8.03999C1.3335 11.3733 3.7735 14.14 6.96016 14.64V9.97332H5.26683V8.03999H6.96016V6.56665C6.96016 4.89332 7.9535 3.97332 9.48016 3.97332C10.2068 3.97332 10.9668 4.09999 10.9668 4.09999V5.74665H10.1268C9.30016 5.74665 9.04016 6.25999 9.04016 6.78665V8.03999H10.8935L10.5935 9.97332H9.04016V14.64C10.6111 14.3919 12.0416 13.5903 13.0734 12.38C14.1053 11.1697 14.6704 9.63041 14.6668 8.03999C14.6668 4.35332 11.6668 1.35999 8.00016 1.35999Z" fill="#5E5E5E"/>
+                                    </svg>
+                                </span>
+                                <span class="ppd-new-share-icon" data-type="whatsapp">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8.00066 1.33331C11.6827 1.33331 14.6673 4.31798 14.6673 7.99998C14.6673 11.682 11.6827 14.6666 8.00066 14.6666C6.8225 14.6687 5.66505 14.3569 4.64733 13.7633L1.33666 14.6666L2.23799 11.3546C1.64397 10.3366 1.33193 9.17866 1.33399 7.99998C1.33399 4.31798 4.31866 1.33331 8.00066 1.33331ZM5.72866 4.86665L5.59533 4.87198C5.50912 4.87792 5.42489 4.90056 5.34733 4.93865C5.27504 4.97965 5.20904 5.03084 5.15133 5.09065C5.07133 5.16598 5.02599 5.23131 4.97733 5.29465C4.73074 5.61525 4.59798 6.00886 4.59999 6.41331C4.60133 6.73998 4.68666 7.05798 4.81999 7.35531C5.09266 7.95665 5.54133 8.59331 6.13333 9.18331C6.27599 9.32531 6.416 9.46798 6.56666 9.60065C7.30228 10.2482 8.17885 10.7153 9.12666 10.9646L9.50533 11.0226C9.62866 11.0293 9.752 11.02 9.876 11.014C10.0701 11.0037 10.2597 10.9512 10.4313 10.86C10.5186 10.8149 10.6038 10.7659 10.6867 10.7133C10.6867 10.7133 10.7149 10.6942 10.77 10.6533C10.86 10.5866 10.9153 10.5393 10.99 10.4613C11.046 10.4035 11.0927 10.3364 11.13 10.26C11.182 10.1513 11.234 9.94398 11.2553 9.77131C11.2713 9.63931 11.2667 9.56731 11.2647 9.52265C11.262 9.45131 11.2027 9.37731 11.138 9.34598L10.75 9.17198C10.75 9.17198 10.17 8.91931 9.81533 8.75798C9.7782 8.74182 9.73844 8.73256 9.698 8.73065C9.65238 8.72587 9.60627 8.73096 9.56279 8.74557C9.51931 8.76018 9.47948 8.78396 9.446 8.81531C9.44266 8.81398 9.39799 8.85198 8.91599 9.43598C8.88833 9.47315 8.85022 9.50125 8.80653 9.51668C8.76284 9.53212 8.71554 9.53419 8.67066 9.52265C8.62721 9.51107 8.58466 9.49636 8.54333 9.47865C8.46066 9.44398 8.43199 9.43065 8.37533 9.40665C7.99258 9.23992 7.63829 9.0143 7.32533 8.73798C7.24133 8.66465 7.16333 8.58465 7.08333 8.50731C6.82107 8.25612 6.5925 7.97197 6.40333 7.66198L6.36399 7.59865C6.33617 7.55584 6.31335 7.50999 6.29599 7.46198C6.27066 7.36398 6.33666 7.28531 6.33666 7.28531C6.33666 7.28531 6.49866 7.10798 6.57399 7.01198C6.64733 6.91865 6.70933 6.82798 6.74933 6.76331C6.82799 6.63665 6.85266 6.50665 6.81133 6.40598C6.62466 5.94998 6.43177 5.49642 6.23266 5.04531C6.19333 4.95598 6.07666 4.89198 5.97066 4.87931C5.93466 4.87487 5.89866 4.87131 5.86266 4.86865C5.77315 4.86351 5.68339 4.8644 5.59399 4.87131L5.72866 4.86665Z" fill="#5E5E5E"/>
+                                    </svg>
+                                </span>
+                                <span class="ppd-new-share-icon ppd-new-copy-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M12.6667 1.33331C13.0203 1.33331 13.3594 1.47379 13.6095 1.72384C13.8595 1.97389 14 2.31302 14 2.66665V10.6666C14 11.0203 13.8595 11.3594 13.6095 11.6095C13.3594 11.8595 13.0203 12 12.6667 12H11.3333V13.3333C11.3333 13.6869 11.1929 14.0261 10.9428 14.2761C10.6928 14.5262 10.3536 14.6666 10 14.6666H3.33333C2.97971 14.6666 2.64057 14.5262 2.39052 14.2761C2.14048 14.0261 2 13.6869 2 13.3333V5.33331C2 4.97969 2.14048 4.64055 2.39052 4.3905C2.64057 4.14046 2.97971 3.99998 3.33333 3.99998H4.66667V2.66665C4.66667 2.31302 4.80714 1.97389 5.05719 1.72384C5.30724 1.47379 5.64638 1.33331 6 1.33331H12.6667ZM6.66667 9.99998H5.33333C5.16341 10.0002 4.99998 10.0652 4.87642 10.1819C4.75286 10.2985 4.67851 10.4579 4.66855 10.6276C4.65859 10.7972 4.71378 10.9642 4.82284 11.0945C4.9319 11.2248 5.0866 11.3086 5.25533 11.3286L5.33333 11.3333H6.66667C6.83659 11.3331 7.00002 11.2681 7.12358 11.1514C7.24714 11.0348 7.32149 10.8753 7.33145 10.7057C7.34141 10.5361 7.28622 10.3691 7.17716 10.2388C7.0681 10.1085 6.9134 10.0247 6.74467 10.0046L6.66667 9.99998ZM12.6667 2.66665H6V3.99998H10C10.3536 3.99998 10.6928 4.14046 10.9428 4.3905C11.1929 4.64055 11.3333 4.97969 11.3333 5.33331V10.6666H12.6667V2.66665ZM8 7.33331H5.33333C5.15652 7.33331 4.98695 7.40355 4.86193 7.52858C4.7369 7.6536 4.66667 7.82317 4.66667 7.99998C4.66667 8.17679 4.7369 8.34636 4.86193 8.47138C4.98695 8.59641 5.15652 8.66665 5.33333 8.66665H8C8.17681 8.66665 8.34638 8.59641 8.4714 8.47138C8.59643 8.34636 8.66667 8.17679 8.66667 7.99998C8.66667 7.82317 8.59643 7.6536 8.4714 7.52858C8.34638 7.40355 8.17681 7.33331 8 7.33331Z" fill="#5E5E5E"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Frequently Bought Together Section - Bundle Style -->
+    <?php 
+    if (isset($frequently_bought_together) && is_array($frequently_bought_together) && count($frequently_bought_together) > 0) { 
+        // Get main product price value
+        $main_product_price = isset($main_product_price_value) ? (float)$main_product_price_value : 0;
+        if ($main_product_price <= 0) {
+            // Fallback calculation
+            if (isset($special) && $special) {
+                $price_clean = preg_replace('/[^\d.]/', '', $special);
+                $main_product_price = (float)$price_clean;
+            } elseif (isset($price) && $price) {
+                $price_clean = preg_replace('/[^\d.]/', '', $price);
+                $main_product_price = (float)$price_clean;
+            }
+        }
+    ?>
+    <div class="container">
+        <div class="bundle-section">
+            <span class="bundle-title">Frequently bought together</span>
+            <div class="bundle-container">
+            <!-- Main Product (Current Product) -->
+            <div class="bundle-product main-item" data-price="<?php echo $main_product_price; ?>" data-product-id="<?php echo $product_id; ?>">
+                <input type="checkbox" class="product-checkbox" checked disabled>
+                <div class="checkbox-indicator"></div>
+                <div class="bundle-product-wrapper">
+                    <img src="<?php echo $thumb; ?>" alt="<?php echo htmlspecialchars($heading_title); ?>" class="product-image" onerror="this.src='image/placeholder.png';">
+                    <div class="bundle-product-info">
+                        <a href="<?php echo isset($action) ? $action : '#'; ?>" class="product-name"><?php echo htmlspecialchars($heading_title); ?></a>
+                        <div class="product-price">
+                            <?php if ($special) { ?>
+                            <span class="price-old"><?php echo $price; ?></span>
+                            <span class="price-current"><?php echo $special; ?></span>
+                            <?php } else { ?>
+                            <span class="price-current"><?php echo $price; ?></span>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <?php foreach ($frequently_bought_together as $index => $fbt_product) { 
+                // Calculate price
+                $fbt_price_value = isset($fbt_product['price_value']) ? (float)$fbt_product['price_value'] : 0;
+                if ($fbt_price_value <= 0) {
+                    if ($fbt_product['special']) {
+                        $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['special']);
+                        $fbt_price_value = (float)$price_clean;
+                    } else {
+                        $price_clean = preg_replace('/[^\d.]/', '', $fbt_product['price']);
+                        $fbt_price_value = (float)$price_clean;
+                    }
+                }
+            ?>
+            <div class="bundle-operator">+</div>
+            <div class="bundle-product selected" data-price="<?php echo $fbt_price_value; ?>" data-product-id="<?php echo $fbt_product['product_id']; ?>">
+                <input type="checkbox" class="product-checkbox bundle-checkbox-dynamic" checked>
+                <div class="checkbox-indicator"></div>
+                <div class="bundle-product-wrapper">
+                    <img src="<?php echo $fbt_product['thumb']; ?>" alt="<?php echo htmlspecialchars($fbt_product['name']); ?>" class="product-image" onerror="this.src='image/placeholder.png';">
+                    <div class="bundle-product-info">
+                        <a href="<?php echo $fbt_product['href']; ?>" class="product-name"><?php echo htmlspecialchars($fbt_product['name']); ?></a>
+                        <div class="product-price">
+                            <?php if ($fbt_product['special']) { ?>
+                            <span class="price-old"><?php echo $fbt_product['price']; ?></span>
+                            <span class="price-current"><?php echo $fbt_product['special']; ?></span>
+                            <?php } else { ?>
+                            <span class="price-current"><?php echo $fbt_product['price']; ?></span>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+            
+            <div class="bundle-operator">=</div>
+            <div class="bundle-total">
+                <div class="bundle-total-price">
+                    ৳<span id="bundle-total-amount">0.00</span>
+                </div>
+                <div class="total-savings">
+                    Save ৳<span id="bundle-savings-amount">0</span>
+                </div>
+                <button class="add-bundle-btn" id="addBundleToCart">
+                    Add <span id="bundle-item-count">1</span> item<span id="bundle-item-plural">s</span> to cart
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <style>
+    .bundle-section {
+        margin: 20px 0;
+        padding: 16px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.11);
+    }
+    .bundle-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #222831;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .bundle-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .bundle-product {
+        flex: 1;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 6px;
+        transition: all 0.2s ease;
+        position: relative;
+        user-select: none;
+        min-width: 0;
+    }
+    .bundle-product:hover {
+        border-color: #A68A6A;
+    }
+    .bundle-product.selected {
+        border-color: #A68A6A;
+        background: #f8faff;
+    }
+    .bundle-product.main-item {
+        border-color: #A68A6A;
+        background: #f5f5f5;
+    }
+    .bundle-product.main-item .checkbox-indicator {
+        background: #A68A6A;
+        border-color: #A68A6A;
+    }
+    .bundle-product.main-item .checkbox-indicator::after {
+        content: '✓';
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .product-checkbox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+        margin: 0;
+    }
+    .checkbox-indicator {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #d1d5db;
+        border-radius: 3px;
+        background: white;
+        transition: all 0.2s ease;
+        z-index: 5;
+        pointer-events: none;
+    }
+    .bundle-product.selected .checkbox-indicator {
+        background: #A68A6A;
+        border-color: #A68A6A;
+    }
+    .bundle-product.selected .checkbox-indicator::after {
+        content: '✓';
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .bundle-product-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .bundle-product .product-image {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        display: block;
+        min-width: 70px;
+        border-radius: 8px;
+    }
+    .bundle-product-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .bundle-product .product-name {
+        font-size: 12px;
+        color: #374151;
+        margin-bottom: 4px;
+        line-height: 120%;
+        height: 32px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        white-space: initial;
+        text-decoration: none;
+    }
+    .bundle-product .product-name:hover {
+        color: #A68A6A;
+        text-decoration: none;
+    }
+    .bundle-product .product-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: #222831;
+        line-height: 120%;
+        letter-spacing: 0;
+    }
+    .bundle-product .product-price .price-old {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        text-decoration: line-through;
+        margin-bottom: 2px;
+    }
+    .bundle-product .product-price .price-current {
+        display: block;
+        color: #A68A6A;
+        font-weight: 700;
+    }
+    .bundle-operator {
+        font-size: 18px;
+        color: #9ca3af;
+        flex-shrink: 0;
+        margin: 0 2px;
+    }
+    .bundle-total {
+        background: #A68A6A;
+        color: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        flex-shrink: 0;
+        min-width: 200px;
+    }
+    .bundle-total .bundle-total-price {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 0px;
+        line-height: 120%;
+    }
+    .bundle-total .total-savings {
+        font-size: 12px;
+        color: #fff;
+        opacity: 0.9;
+        margin-top: 2px;
+    }
+    .add-bundle-btn {
+        background: #fff;
+        color: #222831;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 2px;
+    }
+    .add-bundle-btn:hover {
+        background: #041f1e;
+        color: #fff;
+    }
+    .bundle-product.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .add-bundle-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    @media (max-width: 768px) {
+        .bundle-section {
+            padding: 12px;
+        }
+        .bundle-title {
+            font-size: 14px;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+        .bundle-operator {
+            display: none;
+        }
+        .bundle-container {
+            grid-template-columns: repeat(2, 1fr);
+            display: grid;
+            gap: 6px;
+        }
+        .bundle-product-wrapper {
+            flex-wrap: wrap;
+            text-align: center;
+            justify-content: center;
+        }
+        .bundle-total {
+            height: 100%;
+            padding-top: 30px;
+            grid-column: 1 / -1;
+        }
+        .bundle-product .product-image {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+        }
+        .bundle-product .product-name {
+            font-size: 12px;
+            margin-bottom: 6px;
+            height: auto;
+        }
+        .bundle-product .product-price {
+            font-size: 12px;
+        }
+        .bundle-total .bundle-total-price {
+            font-size: 14px;
+        }
+        .add-bundle-btn {
+            font-size: 10px;
+        }
+    }
+    </style>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        var bundleSection = document.querySelector('.bundle-section');
+        if (!bundleSection) return;
+        
+        var bundleCheckboxes = bundleSection.querySelectorAll('.bundle-checkbox-dynamic');
+        var bundleProducts = bundleSection.querySelectorAll('.bundle-product');
+        var bundleTotalAmount = document.getElementById('bundle-total-amount');
+        var bundleSavingsAmount = document.getElementById('bundle-savings-amount');
+        var bundleItemCount = document.getElementById('bundle-item-count');
+        var bundleItemPlural = document.getElementById('bundle-item-plural');
+        var addBundleBtn = document.getElementById('addBundleToCart');
+        
+        function updateBundleTotal() {
+            var total = 0;
+            var selectedCount = 0;
+            var selectedProductIds = [];
+            
+            bundleProducts.forEach(function(product) {
+                var checkbox = product.querySelector('.product-checkbox');
+                if (checkbox && checkbox.checked && !checkbox.disabled) {
+                    var price = parseFloat(product.dataset.price) || 0;
+                    total += price;
+                    selectedCount++;
+                    var productId = parseInt(product.dataset.productId);
+                    if (productId) {
+                        selectedProductIds.push(productId);
+                    }
+                }
+            });
+            
+            if (bundleTotalAmount) {
+                bundleTotalAmount.textContent = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            
+            if (bundleItemCount) {
+                bundleItemCount.textContent = selectedCount;
+            }
+            
+            if (bundleItemPlural) {
+                bundleItemPlural.textContent = selectedCount > 1 ? 's' : '';
+            }
+            
+            if (addBundleBtn) {
+                if (selectedCount > 1) {
+                    addBundleBtn.disabled = false;
+                } else {
+                    addBundleBtn.disabled = true;
+                }
+                addBundleBtn.dataset.productIds = JSON.stringify(selectedProductIds);
+            }
+            
+            // Update selected class
+            bundleProducts.forEach(function(product) {
+                var checkbox = product.querySelector('.product-checkbox');
+                if (checkbox && checkbox.checked && !checkbox.disabled) {
+                    product.classList.add('selected');
+                } else if (!product.classList.contains('main-item')) {
+                    product.classList.remove('selected');
+                }
+            });
+        }
+        
+        bundleCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function(e) {
+                e.stopPropagation();
+                updateBundleTotal();
+            });
+            
+            // Also handle click on the product card to toggle checkbox
+            var productCard = checkbox.closest('.bundle-product');
+            if (productCard && !productCard.classList.contains('main-item')) {
+                productCard.addEventListener('click', function(e) {
+                    // Don't toggle if clicking on the checkbox itself or the link
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'A' || e.target.closest('a')) {
+                        return;
+                    }
+                    checkbox.checked = !checkbox.checked;
+                    updateBundleTotal();
+                });
+            }
+        });
+        
+        if (addBundleBtn) {
+            addBundleBtn.addEventListener('click', function() {
+                if (this.disabled) return;
+                
+                var productIds = [];
+                try {
+                    productIds = JSON.parse(this.dataset.productIds || '[]');
+                } catch(e) {
+                    bundleProducts.forEach(function(product) {
+                        var checkbox = product.querySelector('.product-checkbox');
+                        if (checkbox && checkbox.checked && !checkbox.disabled) {
+                            var productId = parseInt(product.dataset.productId);
+                            if (productId) {
+                                productIds.push(productId);
+                            }
+                        }
+                    });
+                }
+                
+                if (productIds.length === 0) {
+                    alert('Please select at least one product.');
+                    return;
+                }
+                
+                this.disabled = true;
+                var originalText = this.textContent;
+                this.textContent = 'Adding...';
+                
+                var addCount = 0;
+                var totalProducts = productIds.length;
+                
+                productIds.forEach(function(productId, index) {
+                    setTimeout(function() {
+                        if (typeof cart !== 'undefined' && typeof cart.add === 'function') {
+                            cart.add(productId, 1);
+                            addCount++;
+                            
+                            if (addCount === totalProducts) {
+                                if (addBundleBtn) {
+                                    addBundleBtn.textContent = originalText;
+                                    addBundleBtn.disabled = false;
+                                }
+                                
+                                if (typeof alert !== 'undefined') {
+                                    alert('Successfully added ' + totalProducts + ' item' + (totalProducts > 1 ? 's' : '') + ' to cart!');
+                                }
+                                
+                                if (typeof $ !== 'undefined' && $.get) {
+                                    $.get('index.php?route=common/cart/info', function(data) {
+                                        $('#cart-total').html(data);
+                                    });
+                                }
+                            }
+                        } else {
+                            if (addBundleBtn) {
+                                addBundleBtn.textContent = originalText;
+                                addBundleBtn.disabled = false;
+                            }
+                            alert('Unable to add products to cart. Please try again.');
+                        }
+                    }, index * 150);
+                });
+            });
+        }
+        
+        updateBundleTotal();
+    })();
+    </script>
+    <?php } ?>
+    
+    <section class="product-info-details">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-12">
+                    <ul class="ppd-new-tab-bars mb-3">
+                        <li class="ppd-new-tab ppd-new-tab-active" onclick="openTabNew(event, 'description')">Benefits & Usage</li>
+                        <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-attributes')"><?php echo isset($tab_attribute) ? $tab_attribute : 'Ingredients & Specs'; ?></li>
+                        <?php } ?>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'product-video')">Product Video</li>
+                        <li class="ppd-new-tab" onclick="openTabNew(event, 'write-review')"><?php echo $tab_review; ?></li>
+                    </ul>
+
+                    <div class="single-tab-details product-description" id="description" style="display: block;">
+                        <div itemprop="description" class="seo-description"><?php echo $description ?></div>
+                    </div>
+
+                    <?php if (isset($attribute_groups) && !empty($attribute_groups)) { ?>
+                    <div class="single-tab-details product-attributes" id="product-attributes" style="display: none;">
+                        <div class="modern-attributes-wrapper">
+                            <?php foreach ($attribute_groups as $attribute_group) { ?>
+                            <div class="attribute-group-card">
+                                <div class="attribute-group-header">
+                                    <h3 class="attribute-group-title">
+                                        <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                        <?php echo htmlspecialchars($attribute_group['name']); ?>
+                                    </h3>
+                                </div>
+                                <div class="attribute-group-body">
+                                    <div class="attribute-list">
+                                        <?php foreach ($attribute_group['attribute'] as $attribute) { ?>
+                                        <div class="attribute-item">
+                                            <div class="attribute-name">
+                                                <span class="attribute-label"><?php echo htmlspecialchars($attribute['name']); ?></span>
+                                            </div>
+                                            <div class="attribute-value">
+                                                <span class="attribute-text"><?php echo htmlspecialchars($attribute['text']); ?></span>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php } ?>
+
+                    <div class="single-tab-details product-video" id="product-video" style="display: none;">
+                        <?php if (isset($video_url) && !empty($video_url)) { ?>
+                        <div class="product-video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="<?php echo htmlspecialchars($video_url); ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <?php } else { ?>
+                        <div class="product-video-placeholder" style="background: #000; width: 100%; min-height: 400px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px;">
+                            <div style="text-align: center;">
+                                <i class="fa fa-youtube-play" style="font-size: 64px; margin-bottom: 20px; color: #ff0000;"></i>
+                                <p>No video available for this product</p>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+
+                    <div class="single-tab-details ask-question" id="ask-question" style="display: none;">
+                        <div class="section-head">
+                            <div class="title-n-action">
+                                <p class="section-blurb"><?php echo $text_question_help; ?></p>
+                            </div>
+                        </div>
+                        <div id="question"><?php echo isset($question) ? $question : ''; ?></div>
+                    </div>
+                    <div class="single-tab-details review" id="write-review" style="display: none;">
+                        <?php if ($no_of_review) { ?>
+                        <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+                            <meta itemprop="ratingValue" content="<?php echo $rating ; ?>"/>
+                            <meta itemprop="reviewCount" content="<?php echo $no_of_review ; ?>"/>
+                        </div>
+                        <?php } ?>
+                        <div class="section-head">
+                            <div class="title-n-action">
+                                <p class="section-blurb"><?php echo $text_review_help; ?></p>
+                                <?php if ($no_of_review) { ?>
+                                <div class="average-rating">
+                                    <span class="count"><b><?php echo $rating; ?></b><span> out of 5</span></span>
+                                    <span class="rating">
+                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                        <?php if ($rating < $i) { ?>
+                                        <i class="fa-regular fa-star"></i>
+                                        <?php } else { ?>
+                                        <i class="fa-solid fa-star"></i>
+                                        <?php } ?>
+                                        <?php } ?>
+                                    </span>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div id="review" class="mb-3"><?php echo isset($review) ? $review : ''; ?></div>
+                        <form method="post" enctype="multipart/form-data" id="form-review" action="index.php?route=product/product/write&product_id=<?php echo $product_id; ?>">
+
+                            <h4 class="write-reivew-title mb-3"><?php echo $text_write_review; ?></h4>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
+                                    <input name="name" placeholder="<?php echo $entry_name; ?>*" type="text" class="form-input">
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
+                                    <input name="email" placeholder="<?php echo $entry_email; ?>" type="text" class="form-input">
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
+                                    <textarea name="text" rows="5" placeholder="<?php echo $entry_review; ?>*" class="form-input"></textarea>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-6 form-group">
+                                    <label class="control-label"><?php echo $entry_rating; ?>:</label>
+                                    &nbsp;<?php echo $entry_bad; ?> &nbsp; <input type="radio" name="rating" value="1" /> &nbsp; <input type="radio" name="rating" value="2" /> &nbsp; <input type="radio" name="rating" value="3" /> &nbsp; <input type="radio" name="rating" value="4" /> &nbsp; <input type="radio" name="rating" value="5" /> <?php echo $entry_good; ?>
+                                    <br><br>
+                                    <button type="button" id="button-review" data-loading-text="<?php echo $text_loading; ?>" class="btn submit-btn"><?php echo $button_continue; ?></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="content-bottom">
+                        <?php echo $content_bottom; ?>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <?php if (isset($products) && is_array($products) && count($products) > 0) { ?>
+                    <div class="rpmini24_widget">
+                        <div class="rpmini24_head">
+                            <div>
+                                <p class="rpmini24_kicker">You may also like</p>
+                                <h4 class="rpmini24_title">Related Products</h4>
+                            </div>
+                            <?php if (!empty($view_all_products_link)) { ?>
+                            <a class="rpmini24_viewall" href="<?php echo $view_all_products_link; ?>">View All</a>
+                            <?php } ?>
+                        </div>
+                        <div class="rpmini24_list">
+                            <?php foreach ($products as $product) { ?>
+                            <a href="<?php echo $product['href']; ?>" class="rpmini24_card">
+                                <div class="rpmini24_media">
+                                    <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" onerror="this.src='image/placeholder.png';" />
+                                </div>
+                                <div class="rpmini24_info">
+                                    <h5><?php echo $product['name']; ?></h5>
+                                    <div class="rpmini24_price">
+                                        <?php if ($product['special']) { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['special']; ?></span>
+                                        <span class="rpmini24_price-old"><?php echo $product['price']; ?></span>
+                                        <?php } else { ?>
+                                        <span class="rpmini24_price-new"><?php echo $product['price']; ?></span>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </a>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Compatible Products Section -->
+    <?php 
+    if (isset($compatible_products) && is_array($compatible_products) && count($compatible_products) > 0) { ?>
+    <section class="newproduct-section popular-category-sec compatible-products-showcase" style="padding: 50px 0; background-color: #f3f5f6;">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="h3">Compatible Products</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="popular-category-slider owl-carousel compatible-products-slider">
+                        <?php foreach ($compatible_products as $product) { ?>
+                        <div class="slider-item">
+                            <div class="product-card">
+                                <div class="product-thumb">
+                                    <?php if ($product['special']) { ?>
+                                    <?php
+                                    $price = floatval(str_replace(['৳', ','], '', $product['price']));
+                                    $special = floatval(str_replace(['৳', ','], '', $product['special']));
+                                    $discount = 0;
+                                    if ($price > 0) {
+                                        $discountAmount = $price - $special;
+                                        $discount = round(($discountAmount / $price) * 100, 0);
+                                    }
+                                    if ($discount > 0) {
+                                    ?>
+                                    <div class="product-badge product-badge2 bg-info">-<?php echo $discount; ?>%</div>
+                                    <?php } ?>
+                                    <?php } ?>
+                                    
+                                    <?php if ($product['featured_image']) { ?>
+                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['featured_image']; ?>" />
+                                    <?php } else { ?>
+                                    <img class="lazy" alt="<?php echo $product['name']; ?>" src="<?php echo $product['thumb']; ?>" />
+                                    <?php } ?>
+                                    
+                                    <div class="product-button-group">
+                                        <a class="product-button wishlist_store" onclick="wishlist.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Wishlist"><i class="icon-heart"></i></a>
+                                        <a class="product-button product_compare" onclick="compare.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="Compare"><i class="icon-repeat"></i></a>
+                                        <?php if (!$product['disablePurchase']) { ?>
+                                        <a class="product-button add_to_single_cart" onclick="cart.add('<?php echo $product['product_id']; ?>');" href="javascript:;" title="To Cart"><i class="icon-shopping-cart"></i></a>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <div class="product-card-body">
+                                    <h3 class="product-title"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h3>
+                                    
+                                    <?php if (isset($product['rating']) && $product['rating'] > 0) { ?>
+                                    <div class="rating-stars">
+                                        <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                        <i class="fas fa-star<?php echo $i <= $product['rating'] ? ' filled' : ''; ?>"></i>
+                                        <?php } ?>
+                                    </div>
+                                    <?php } ?>
+                                    
+                                    <h4 class="product-price">
+                                        <?php if ($product['special']) { ?>
+                                        <del><?php echo $product['price']; ?></del> <?php echo $product['special']; ?>
+                                        <?php } else { ?>
+                                        <?php echo $product['price']; ?>
+                                        <?php } ?>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
+</div>
+<section class="content-bottom">
+    <div class="container">
+        <?php echo $content_bottom; ?>
+    </div>
+</section>
+<?php echo $footer; ?>
+
+<style>
+/* =================================================
+   PREMIUM PRODUCT NAME & SHORT DESCRIPTION
+   ================================================= */
+.product-name-premium {
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #1a1a1a;
+    margin: 0 0 24px 0;
+    padding: 0;
+    letter-spacing: -0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    text-transform: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: relative;
+    display: block;
+}
+
+.product-name-premium::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #A68A6A 0%, #c4a882 100%);
+    border-radius: 2px;
+}
+
+.product-short-description-premium {
+    margin: 32px 0 28px 0;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 4px solid #A68A6A;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-short-description-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #A68A6A 0%, transparent 100%);
+}
+
+.short-desc-text {
+    display: block;
+    color: #4a4a4a;
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .product-name-premium {
+        font-size: 38px;
+        margin-bottom: 22px;
+        font-weight: 400;
+    }
+    
+    .product-short-description-premium {
+        margin: 28px 0 24px 0;
+        padding: 18px 22px;
+    }
+    
+    .short-desc-text {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+}
+
+@media (max-width: 991px) {
+    .product-name-premium {
+        font-size: 34px;
+        margin-bottom: 20px;
+        letter-spacing: -0.3px;
+        font-weight: 400;
+    }
+    
+    .product-name-premium::after {
+        width: 70px;
+        height: 3px;
+        bottom: -10px;
+    }
+    
+    .product-short-description-premium {
+        margin: 24px 0 20px 0;
+        padding: 16px 20px;
+        border-left-width: 3px;
+    }
+    
+    .short-desc-text {
+        font-size: 15px;
+        line-height: 1.65;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-name-premium {
+        font-size: 28px;
+        margin-bottom: 18px;
+        letter-spacing: -0.2px;
+        font-weight: 400;
+    }
+    
+    .product-name-premium::after {
+        width: 60px;
+        height: 3px;
+        bottom: -8px;
+    }
+    
+    .product-short-description-premium {
+        margin: 20px 0 18px 0;
+        padding: 14px 18px;
+        border-radius: 10px;
+    }
+    
+    .short-desc-text {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-name-premium {
+        font-size: 24px;
+        margin-bottom: 16px;
+        line-height: 1.3;
+        font-weight: 400;
+    }
+    
+    .product-name-premium::after {
+        width: 50px;
+        height: 2px;
+        bottom: -6px;
+    }
+    
+    .product-short-description-premium {
+        margin: 18px 0 16px 0;
+        padding: 12px 16px;
+        border-left-width: 3px;
+    }
+    
+    .short-desc-text {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+}
+
+.prx-cart-option {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 18px;
+    background: #fff;
+}
+.prx-price-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.prx-reward-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff7e6;
+    color: #b37400;
+    font-size: 12px;
+    font-weight: 600;
+}
+.prx-reward-pill i {
+    color: #ff9800;
+}
+.prx-action-grid {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.prx-qty-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9f9f9;
+    border-radius: 999px;
+    padding: 6px 16px;
+    border: 1px solid #ededed;
+}
+.prx-qty-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #858585;
+}
+.prx-qty-btn.is-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+.prx-qty-control .qty input {
+    width: 50px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+}
+.prx-cta-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+.prx-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.prx-btn--cart {
+    background: #fff2e7;
+    color: #a68a6a;
+}
+.prx-btn--buy {
+    background: #000;
+    color: #fff;
+}
+.prx-btn--compare {
+    background: #f4f4f4;
+    color: #333;
+}
+.prx-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.prx-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+.prx-contact-grid {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: flex-start;
+}
+.prx-contact-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    width: 80px;
+    height: 80px;
+    position: relative;
+    overflow: hidden;
+}
+.prx-contact-card:hover {
+    border-color: #a68a6a;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.prx-contact-card--whatsapp {
+    background: #f0fff5;
+    border-color: rgba(37,211,102,0.3);
+}
+.prx-contact-card--whatsapp:hover {
+    border-color: #25d366;
+    box-shadow: 0 8px 20px rgba(37,211,102,0.3);
+}
+.prx-contact-card--call {
+    background: #fff8f0;
+    border-color: rgba(255,106,0,0.3);
+}
+.prx-contact-card--call:hover {
+    border-color: #a68a6a;
+    box-shadow: 0 8px 20px rgba(255,106,0,0.3);
+}
+.prx-contact-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    position: relative;
+    z-index: 1;
+}
+.prx-contact-icon i {
+    display: block;
+    line-height: 1;
+}
+.prx-contact-card--whatsapp .prx-contact-icon {
+    background: rgba(37,211,102,0.15);
+    color: #25d366;
+}
+.prx-contact-card--call .prx-contact-icon {
+    background: rgba(255,106,0,0.15);
+    color: #a68a6a;
+}
+/* Icon Animations */
+.prx-icon-animated {
+    animation: iconPulse 2s ease-in-out infinite;
+}
+.prx-contact-card:hover .prx-icon-animated {
+    animation: iconBounce 0.6s ease-in-out;
+}
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+@keyframes iconBounce {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+    }
+    25% {
+        transform: scale(1.15) translateY(-5px);
+    }
+    50% {
+        transform: scale(1.1) translateY(-2px);
+    }
+    75% {
+        transform: scale(1.15) translateY(-5px);
+    }
+}
+.prx-contact-label {
+    display: none;
+}
+.prx-contact-value {
+    display: none;
+}
+.prx-option-wrap {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.prx-option-field {
+    border: 1px solid #f1f1f1;
+    border-radius: 12px;
+    padding: 16px;
+}
+.prx-option-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.prx-option-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+.prx-option-selection {
+    font-size: 13px;
+    color: #888;
+}
+.prx-option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.prx-option-pill {
+    border: 1px solid #e1e1e1;
+    border-radius: 999px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+.prx-option-pill input {
+    display: none;
+}
+.prx-option-pill:hover {
+    border-color: #a68a6a;
+    color: #a68a6a;
+}
+.prx-option-pill.is-selected {
+    border-color: #a68a6a;
+    background: #fff5ed;
+    color: #a68a6a;
+}
+.prx-option-pill.is-selected .prx-option-pill__label {
+    font-weight: 600;
+}
+.prx-option-pill__label {
+    display: inline-block;
+}
+.rpmini24_widget {
+    border: 1px solid #f0f0f0;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+    background: #fff;
+}
+.rpmini24_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+}
+.rpmini24_kicker {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #999;
+    margin: 0 0 4px;
+}
+.rpmini24_title {
+    margin: 0;
+    font-size: 20px;
+}
+.rpmini24_viewall {
+    font-size: 13px;
+    color: #a68a6a;
+    text-decoration: none;
+    font-weight: 600;
+}
+.rpmini24_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.rpmini24_card {
+    display: flex;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+.rpmini24_card:hover {
+    border-color: #ffe1cf;
+    background: #fff8f3;
+}
+.rpmini24_media {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.rpmini24_media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.rpmini24_info h5 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.3;
+}
+.rpmini24_price {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    font-weight: 600;
+    color: #a68a6a;
+}
+.rpmini24_price-old {
+    font-size: 12px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+/* Compatible products */
+.compatible-products-showcase {
+    padding: 50px 0;
+    background: #f9f9fb;
+}
+.compatible-products-showcase .product-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.compatible-products-showcase .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 32px rgba(16,24,40,0.08);
+}
+.compatible-products-showcase .product-thumb img {
+    height: 190px;
+    object-fit: cover;
+}
+.compatible-products-showcase .product-button-group .product-button {
+    background: #111 !important;
+}
+.compatible-products-showcase .product-card-body {
+    padding: 16px;
+}
+.compatible-products-showcase .product-price del {
+    color: #9e9e9e;
+    font-size: 13px;
+}
+
+/* Related Products Section */
+.related-products-showcase {
+    padding: 50px 0;
+    background: #f8f9fa;
+}
+
+.related-products-showcase .section-title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.related-products-showcase .section-title .h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+}
+
+.related-products-showcase .section-title .h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #A68A6A 0%, #c4a882 100%);
+    border-radius: 2px;
+}
+
+.related-products-showcase .product-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-products-showcase .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.related-products-showcase .product-thumb {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.related-products-showcase .product-thumb img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.3s ease;
+}
+
+.related-products-showcase .product-card:hover .product-thumb img {
+    transform: scale(1.05);
+}
+
+.related-products-showcase .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+
+.related-products-showcase .product-button-group {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.related-products-showcase .product-card:hover .product-button-group {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.related-products-showcase .product-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.related-products-showcase .product-button:hover {
+    background: #FF6A00;
+    color: #fff;
+    border-color: #FF6A00;
+    transform: scale(1.1);
+}
+
+.related-products-showcase .product-card-body {
+    padding: 18px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-products-showcase .product-title {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    min-height: 42px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.related-products-showcase .product-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.related-products-showcase .product-title a:hover {
+    color: #FF6A00;
+}
+
+.related-products-showcase .rating-stars {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 2px;
+}
+
+.related-products-showcase .rating-stars i {
+    font-size: 12px;
+    color: #e0e0e0;
+}
+
+.related-products-showcase .rating-stars i.filled {
+    color: #ffc107;
+}
+
+.related-products-showcase .product-price {
+    margin: auto 0 0 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FF6A00;
+}
+
+.related-products-showcase .product-price del {
+    color: #9e9e9e;
+    font-size: 14px;
+    font-weight: 400;
+    margin-right: 8px;
+}
+
+/* Owl Carousel Navigation for Related Products */
+.related-products-slider.owl-carousel .owl-nav {
+    position: absolute;
+    top: -60px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.related-products-slider.owl-carousel .owl-nav button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.related-products-slider.owl-carousel .owl-nav button:hover {
+    background: #FF6A00;
+    color: #fff;
+    border-color: #FF6A00;
+    transform: scale(1.1);
+}
+
+.related-products-slider.owl-carousel .owl-nav button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Design for Related Products */
+@media (max-width: 768px) {
+    .related-products-showcase {
+        padding: 40px 0;
+    }
+    
+    .related-products-showcase .section-title .h3 {
+        font-size: 24px;
+    }
+    
+    .related-products-showcase .product-thumb img {
+        height: 180px;
+    }
+    
+    .related-products-slider.owl-carousel .owl-nav {
+        top: -50px;
+    }
+    
+    .related-products-slider.owl-carousel .owl-nav button {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .related-products-showcase {
+        padding: 30px 0;
+    }
+    
+    .related-products-showcase .section-title .h3 {
+        font-size: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .related-products-showcase .section-title .h3::after {
+        width: 50px;
+        height: 2px;
+    }
+    
+    .related-products-showcase .product-thumb img {
+        height: 160px;
+    }
+    
+    .related-products-showcase .product-card-body {
+        padding: 14px;
+    }
+    
+    .related-products-showcase .product-title {
+        font-size: 14px;
+        min-height: 38px;
+    }
+    
+    .related-products-showcase .product-price {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .prx-cart-option {
+        padding: 18px;
+    }
+    .prx-cta-buttons {
+        grid-template-columns: 1fr;
+    }
+    .prx-contact-grid {
+        gap: 10px;
+    }
+    .prx-contact-card {
+        width: 70px;
+        height: 70px;
+    }
+    .prx-contact-icon {
+        font-size: 32px;
+    }
+}
+
+/* Product Tabs Navigation - New Style Matching Image (Red Active, White Inactive) */
+.ppd-new-tab-bars {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    gap: 0;
+    border: none;
+}
+
+.ppd-new-tab {
+    padding: 12px 28px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    text-transform: none;
+    letter-spacing: 0.2px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    margin-right: 8px;
+}
+
+.ppd-new-tab:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+.ppd-new-tab.ppd-new-tab-active {
+    color: #ffffff;
+    font-weight: 700;
+    background: #dc3545;
+    border-color: #dc3545;
+}
+
+.ppd-new-tab.ppd-new-tab-active:hover {
+    background: #c82333;
+    border-color: #c82333;
+}
+
+/* Tab Content */
+.single-tab-details {
+    padding: 30px 0;
+    min-height: 200px;
+}
+
+.single-tab-details.product-description {
+    line-height: 1.8;
+    color: #333;
+}
+
+.single-tab-details.product-description p {
+    margin-bottom: 16px;
+}
+
+/* Modern Attributes Styles */
+.modern-attributes-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.attribute-group-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.attribute-group-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: #A68A6A;
+}
+
+.attribute-group-header {
+    background: linear-gradient(135deg, #A68A6A 0%, #8B7355 100%);
+    padding: 18px 24px;
+    border-bottom: 2px solid #7A6348;
+}
+
+.attribute-group-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: none;
+    letter-spacing: 0.3px;
+}
+
+.attribute-group-title i {
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.attribute-group-body {
+    padding: 0;
+}
+
+.attribute-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.attribute-item {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 20px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+    align-items: center;
+    background: #ffffff;
+}
+
+.attribute-item:last-child {
+    border-bottom: none;
+}
+
+.attribute-item:hover {
+    background-color: #f8f9fa;
+}
+
+.attribute-item:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.attribute-item:nth-child(even):hover {
+    background-color: #f0f2f5;
+}
+
+.attribute-name {
+    display: flex;
+    align-items: center;
+}
+
+.attribute-label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #10503D;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 16px;
+}
+
+.attribute-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    background: #10503D;
+    border-radius: 50%;
+}
+
+.attribute-value {
+    display: flex;
+    align-items: center;
+}
+
+.attribute-text {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.6;
+    word-break: break-word;
+    font-weight: 400;
+}
+
+/* Responsive Design for New Tabs */
+@media (max-width: 768px) {
+    .ppd-new-tab-bars {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+    
+    .ppd-new-tab {
+        padding: 10px 20px;
+        font-size: 14px;
+        flex: 1;
+        min-width: auto;
+        text-align: center;
+        margin-right: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .single-tab-details {
+        padding: 20px 0;
+    }
+}
+
+/* Responsive Design for Old Tabs (backward compatibility) */
+@media (max-width: 768px) {
+    .nav-tab-bars {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+    
+    .nav-tab {
+        padding: 12px 16px;
+        font-size: 14px;
+        flex: 1;
+        min-width: auto;
+        text-align: center;
+    }
+}
+
+/* Responsive Design for Attributes */
+@media (max-width: 768px) {
+    .attribute-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 14px 18px;
+    }
+    
+    .attribute-group-header {
+        padding: 14px 18px;
+    }
+    
+    .attribute-group-title {
+        font-size: 16px;
+    }
+    
+    .attribute-label {
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+    
+    .attribute-text {
+        font-size: 13px;
+    }
+}
+
+/* =================================================
+   NEW PRODUCT PAGE DESIGN - ppd-new- Classes
+   Matches Uploaded Image Style
+   ================================================= */
+
+.ppd-new-product-info {
+    padding: 0;
+}
+
+/* Product Title */
+.ppd-new-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* Metadata Section */
+.ppd-new-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ppd-new-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.ppd-new-meta-label {
+    font-weight: 600;
+    color: #333;
+    min-width: 80px;
+}
+
+.ppd-new-meta-value {
+    color: #666;
+}
+
+.ppd-new-meta-link {
+    color: #10503D;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.ppd-new-meta-link:hover {
+    color: #0d3f2f;
+    text-decoration: underline;
+}
+
+/* Pricing Section */
+.ppd-new-pricing-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-price-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+/* Price Row - Horizontal Layout Matching Image Exactly */
+.ppd-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+/* Current Price - Large Pink (Vibrant Pink) */
+.ppd-new-price-current {
+    font-size: 38px;
+    font-weight: 700;
+    color: #e91e63;
+    line-height: 1.1;
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+}
+
+/* Original Price - Small Light Gray with Strikethrough */
+.ppd-new-price-old {
+    font-size: 18px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
+    opacity: 0.8;
+}
+
+/* Separator - Thin Vertical Gray Line */
+.ppd-price-separator {
+    width: 1px;
+    height: 32px;
+    background: #ddd;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+/* Save Text - Medium Green */
+.ppd-new-save-text {
+    font-size: 16px;
+    color: #4caf50;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.ppd-save-amount {
+    font-weight: 700;
+    color: #4caf50;
+    margin-left: 2px;
+}
+
+/* Discount Badge - Purple Rounded Tag with Glow Effect (Matching Image Exactly) */
+.ppd-new-discount-badge {
+    background: #9c27b0;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-left: auto;
+    flex-shrink: 0;
+    position: relative;
+    /* Soft blurred edge with multiple glow layers around entire badge */
+    box-shadow: 
+        0 0 20px rgba(156, 39, 176, 0.5),
+        0 0 40px rgba(156, 39, 176, 0.3),
+        0 0 60px rgba(156, 39, 176, 0.15),
+        0 2px 8px rgba(156, 39, 176, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    /* Light-colored glow/outline around white text - creates light halo effect */
+    text-shadow: 
+        0 0 8px rgba(255, 255, 255, 0.7),
+        0 0 12px rgba(255, 255, 255, 0.5),
+        0 0 16px rgba(255, 255, 255, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Product Description */
+.ppd-new-description {
+    margin-bottom: 24px;
+    padding: 16px 0;
+    color: #555;
+    font-size: 14px;
+    line-height: 1.6;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* Quantity Section */
+.ppd-new-quantity-section {
+    margin-bottom: 20px;
+}
+
+.ppd-new-qty-control {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ppd-new-qty-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.ppd-new-qty-btn:hover {
+    background: #e0e0e0;
+}
+
+.ppd-new-qty-input {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Action Buttons */
+.ppd-new-action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ppd-new-btn-bag {
+    background: #8b4513;
+    color: #ffffff;
+    flex: 1;
+    min-width: 150px;
+}
+
+.ppd-new-btn-bag:hover {
+    background: #6b3410;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.ppd-new-btn-buy {
+    background: #2196F3;
+    color: #ffffff;
+    flex: 1;
+    min-width: 150px;
+}
+
+.ppd-new-btn-buy:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.ppd-new-btn-wishlist,
+.ppd-new-btn-compare {
+    background: #ffffff;
+    color: #333;
+    border: 1px solid #ddd;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.ppd-new-btn-wishlist:hover,
+.ppd-new-btn-compare:hover {
+    background: #f5f5f5;
+    border-color: #bbb;
+    transform: translateY(-2px);
+}
+
+.ppd-new-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Assistance Section */
+.ppd-new-assistance-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.ppd-new-assistance-text {
+    margin: 0 0 12px 0;
+    color: #4caf50;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ppd-new-assistance-heading {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ppd-new-assistance-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ppd-new-assistance-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.ppd-new-assistance-whatsapp {
+    background: #25d366;
+    color: #ffffff;
+}
+
+.ppd-new-assistance-whatsapp:hover {
+    background: #20ba5a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    color: #ffffff;
+}
+
+.ppd-new-assistance-call {
+    background: #2196F3;
+    color: #ffffff;
+}
+
+.ppd-new-assistance-call:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    color: #ffffff;
+}
+
+/* Share Section */
+.ppd-new-share-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ppd-new-share-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ppd-new-share-icons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.ppd-new-share-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.ppd-new-share-icon:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.ppd-new-copy-link {
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ppd-new-title {
+        font-size: 24px;
+    }
+    
+    .ppd-price-row {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .ppd-new-price-current {
+        font-size: 32px;
+    }
+    
+    .ppd-new-price-old {
+        font-size: 16px;
+    }
+    
+    .ppd-price-separator {
+        height: 28px;
+    }
+    
+    .ppd-new-save-text {
+        font-size: 14px;
+    }
+    
+    .ppd-new-discount-badge {
+        font-size: 14px;
+        padding: 10px 18px;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        box-shadow: 
+            0 0 15px rgba(156, 39, 176, 0.4),
+            0 0 30px rgba(156, 39, 176, 0.25),
+            0 0 45px rgba(156, 39, 176, 0.12),
+            0 2px 6px rgba(156, 39, 176, 0.3),
+            inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        text-shadow: 
+            0 0 6px rgba(255, 255, 255, 0.6),
+            0 0 10px rgba(255, 255, 255, 0.4),
+            0 0 14px rgba(255, 255, 255, 0.25),
+            0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    
+    .ppd-new-discount-badge {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    
+    .ppd-new-pricing-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .ppd-new-action-buttons {
+        flex-direction: column;
+    }
+    
+    .ppd-new-btn-bag,
+    .ppd-new-btn-buy {
+        width: 100%;
+    }
+    
+    .ppd-new-btn-wishlist,
+    .ppd-new-btn-compare {
+        width: 100%;
+        height: 44px;
+    }
+    
+    .ppd-new-assistance-buttons {
+        flex-direction: column;
+    }
+    
+    .ppd-new-assistance-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .ppd-new-title {
+        font-size: 20px;
+    }
+    
+    .ppd-new-price-current {
+        font-size: 20px;
+    }
+    
+    .ppd-new-meta-item {
+        font-size: 13px;
+    }
+    
+    .ppd-new-meta-label {
+        min-width: 70px;
+    }
+}
+
+/* =================================================
+   PRODUCT IMAGE ZOOM EFFECT ON HOVER
+   ================================================= */
+
+.lux-media-grid__viewer {
+    position: relative;
+    overflow: hidden;
+}
+
+.lux-stage {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.lux-stage__link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+}
+
+.lux-stage__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* Zoom effect on hover */
+.lux-stage__link:hover .lux-stage__image {
+    transform: scale(1.5);
+    cursor: zoom-out;
+}
+
+/* Smooth zoom out when mouse leaves */
+.lux-stage__link:not(:hover) .lux-stage__image {
+    transform: scale(1);
+}
+
+/* Zoom icon styling */
+.lux-stage__zoom {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lux-stage__zoom svg {
+    width: 18px;
+    height: 18px;
+    color: #333;
+}
+
+.lux-stage__link:hover .lux-stage__zoom {
+    opacity: 1;
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .lux-stage__link:hover .lux-stage__image {
+        transform: scale(1.2);
+    }
+    
+    .lux-stage__zoom {
+        width: 36px;
+        height: 36px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .lux-stage__zoom svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lux-stage__link:hover .lux-stage__image {
+        transform: scale(1.1);
+    }
+    
+    .lux-stage__zoom {
+        width: 32px;
+        height: 32px;
+        bottom: 8px;
+        right: 8px;
+    }
+    
+    .lux-stage__zoom svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+</style>
+
+<script>
+var product_id = <?php echo $product_id; ?>;
+fbq && fbq('track', 'ViewContent', {
+    content_ids: ['<?php echo $product_id; ?>'],
+    content_type: 'product',
+    value: <?php echo $raw_price; ?>,
+    currency: 'BDT'
+});
+</script>
+
+<script>
+    // New tab function for new style tabs
+    function openTabNew(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("single-tab-details");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("ppd-new-tab");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("ppd-new-tab-active");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("ppd-new-tab-active");
+    }
+
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("single-tab-details");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("nav-tab");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // Set default active tab (Description) - for new tabs
+    var defaultTabNew = document.querySelector('.ppd-new-tab.ppd-new-tab-active');
+    if (defaultTabNew) {
+        var tabNameNew = defaultTabNew.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (document.getElementById(tabNameNew)) {
+            document.getElementById(tabNameNew).style.display = "block";
+        }
+    }
+
+    // Set default active tab (Description) - for old tabs (backward compatibility)
+    var defaultTab = document.querySelector('.nav-tab.active');
+    if (defaultTab) {
+        var tabName = defaultTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (document.getElementById(tabName)) {
+            document.getElementById(tabName).style.display = "block";
+        }
+    }
+
+
+    // Copy Link Handler - Support both old and new classes
+    const copyLinkElement = document.querySelector('.copy-link') || document.querySelector('.ppd-new-copy-link');
+
+    if (copyLinkElement) {
+        copyLinkElement.addEventListener('click', () => {
+            const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                    const copyMessage = document.createElement('div');
+                    copyMessage.classList.add('copy-message');
+                    copyMessage.textContent = 'Copied!';
+                    copyMessage.style.cssText = 'position: absolute; background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-top: 4px;';
+                    copyLinkElement.style.position = 'relative';
+                    copyLinkElement.appendChild(copyMessage);
+
+                    setTimeout(() => {
+                        if (copyLinkElement.contains(copyMessage)) {
+                            copyLinkElement.removeChild(copyMessage);
+                        }
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+        });
+    }
+
+    // Product Image Thumbnail Click Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const thumbnailItems = document.querySelectorAll('.lux-thumb');
+        const mainImage = document.getElementById('main-product-image');
+        const mainImageLink = document.getElementById('main-image-link');
+        
+        thumbnailItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all thumbnails
+                thumbnailItems.forEach(function(thumb) {
+                    thumb.classList.remove('is-active');
+                });
+                
+                // Add active class to clicked thumbnail
+                this.classList.add('is-active');
+                
+                // Update main image
+                const newImageSrc = this.getAttribute('data-image');
+                const newPopupSrc = this.getAttribute('data-popup');
+                
+                if (mainImage && newImageSrc) {
+                    mainImage.src = newImageSrc;
+                }
+                
+                if (mainImageLink && newPopupSrc) {
+                    mainImageLink.href = newPopupSrc;
+                }
+            });
+        });
+
+        const optionInputs = document.querySelectorAll('.prx-option-pill input');
+        optionInputs.forEach(function(input) {
+            const parentLabel = input.parentElement;
+            if (input.checked) {
+                parentLabel.classList.add('is-selected');
+            }
+
+            input.addEventListener('change', function() {
+                const valuesWrapper = parentLabel.closest('.prx-option-values');
+                if (valuesWrapper) {
+                    valuesWrapper.querySelectorAll('.prx-option-pill').forEach(function(pill) {
+                        pill.classList.remove('is-selected');
+                    });
+                }
+                parentLabel.classList.add('is-selected');
+            });
+        });
+
+        // Quantity Control - Support both old and new classes
+        const qtyWrapper = document.querySelector('.prx-qty-control') || document.querySelector('.ppd-new-qty-control');
+        const qtyInput = document.getElementById('input-quantity');
+
+        if (qtyWrapper && qtyInput) {
+            const minusBtn = qtyWrapper.querySelector('.prx-qty-btn--minus') || qtyWrapper.querySelector('.ppd-new-qty-minus');
+            const plusBtn = qtyWrapper.querySelector('.prx-qty-btn--plus') || qtyWrapper.querySelector('.ppd-new-qty-plus');
+            const minQty = parseInt(qtyWrapper.dataset.minQty, 10) || 1;
+
+            const sanitizeValue = (val) => {
+                const parsed = parseInt(val, 10);
+                if (isNaN(parsed) || parsed < minQty) {
+                    return minQty;
+                }
+                return parsed;
+            };
+
+            const syncButtonState = () => {
+                const current = sanitizeValue(qtyInput.value);
+                qtyInput.value = current;
+                if (minusBtn) {
+                    minusBtn.classList.toggle('is-disabled', current <= minQty);
+                }
+            };
+
+            const updateQty = (delta) => {
+                const current = sanitizeValue(qtyInput.value);
+                const next = Math.max(minQty, current + delta);
+                qtyInput.value = next;
+                qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
+                syncButtonState();
+            };
+
+            if (minusBtn) {
+                minusBtn.addEventListener('click', function () {
+                    updateQty(-1);
+                });
+            }
+
+            if (plusBtn) {
+                plusBtn.addEventListener('click', function () {
+                    updateQty(1);
+                });
+            }
+
+            qtyInput.addEventListener('input', function () {
+                const safeValue = sanitizeValue(qtyInput.value);
+                qtyInput.value = safeValue;
+                syncButtonState();
+            });
+
+            syncButtonState();
+        }
+
+        // Initialize Owl Carousel for Related Products
+        if (typeof jQuery !== 'undefined' && jQuery.fn.owlCarousel) {
+            // Initialize Owl Carousel for Related Products
+            var $relatedSlider = jQuery('.related-products-slider');
+            if ($relatedSlider.length && $relatedSlider.find('.slider-item').length > 0) {
+                if ($relatedSlider.data('owl.carousel')) {
+                    $relatedSlider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+                }
+                $relatedSlider.addClass('owl-carousel').owlCarousel({
+                    loop: false,
+                    margin: 10,
+                    nav: true,
+                    dots: false,
+                    autoplay: true,
+                    autoplayTimeout: 4000,
+                    autoplayHoverPause: true,
+                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+                    responsive: {
+                        0: {
+                            items: 2,
+                            margin: 6,
+                            slideBy: 2
+                        },
+                        576: {
+                            items: 3,
+                            margin: 8,
+                            slideBy: 2
+                        },
+                        768: {
+                            items: 4,
+                            margin: 10,
+                            slideBy: 2
+                        },
+                        992: {
+                            items: 4,
+                            margin: 10
+                        },
+                        1200: {
+                            items: 5,
+                            margin: 15
+                        }
+                    }
+                });
+            }
+            
+            // Initialize Owl Carousel for Compatible Products
+            var $compatibleSlider = jQuery('.compatible-products-slider');
+            if ($compatibleSlider.length && $compatibleSlider.find('.slider-item').length > 0) {
+                if ($compatibleSlider.data('owl.carousel')) {
+                    $compatibleSlider.trigger('destroy.owl.carousel').removeClass('owl-carousel owl-loaded');
+                }
+                $compatibleSlider.addClass('owl-carousel').owlCarousel({
+                    loop: false,
+                    margin: 10,
+                    nav: false,
+                    dots: false,
+                    autoplay: false,
+                    autoplayTimeout: 3000,
+                    autoplayHoverPause: true,
+                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+                    responsive: {
+                        0: {
+                            items: 2,
+                            margin: 6,
+                            slideBy: 2
+                        },
+                        576: {
+                            items: 3,
+                            margin: 8,
+                            slideBy: 2
+                        },
+                        768: {
+                            items: 4,
+                            margin: 10,
+                            slideBy: 2
+                        },
+                        992: {
+                            items: 5,
+                            margin: 10
+                        },
+                        1200: {
+                            items: 6,
+                            margin: 10
+                        }
+                    }
+                });
+            }
+
+        }
+    });
+
+</script>

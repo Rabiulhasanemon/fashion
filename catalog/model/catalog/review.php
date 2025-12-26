@@ -1,5 +1,4 @@
 <?php
-use ReflectionClass;
 
 class ModelCatalogReview extends Model {
 	public function addReview($product_id, $data) {

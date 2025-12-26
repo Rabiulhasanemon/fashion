@@ -56,7 +56,7 @@
 
 .banner-item {
     position: relative;
-    border-radius: 0;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -121,79 +121,15 @@
     transform: translateY(0);
 }
 
-/* Desktop/Laptop - No border radius */
-@media (min-width: 769px) {
-    .banner-item {
-        border-radius: 0 !important;
-    }
-}
-
-/* Mobile - Fix gaps and spacing */
 @media (max-width: 768px) {
-    .banner-module-section {
-        padding: 10px 0 0 0 !important;
-        margin-bottom: 0 !important;
-    }
-    
-    .banner-module-section .container {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
     .banner-grid {
         grid-template-columns: 1fr;
-        gap: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .banner-item {
-        border-radius: 0 !important;
-        margin: 0 !important;
-        margin-bottom: 0 !important;
-        box-shadow: none !important;
-    }
-    
-    .banner-item:last-child {
-        margin-bottom: 0 !important;
-    }
-    
-    .banner-link, .banner-content {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .banner-img {
-        width: 100% !important;
-        display: block !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
+        gap: 15px;
     }
     
     .banner-btn {
         padding: 10px 20px;
         font-size: 12px;
-    }
-}
-
-/* Small Mobile - Remove height constraints */
-@media (max-width: 575px) {
-    .banner-content {
-        min-height: auto !important;
-        height: auto !important;
-        max-height: none !important;
-    }
-    
-    .banner-item {
-        height: auto !important;
-        min-height: auto !important;
-    }
-    
-    .banner-img {
-        height: auto !important;
-        min-height: auto !important;
-        max-height: none !important;
     }
 }
 </style>

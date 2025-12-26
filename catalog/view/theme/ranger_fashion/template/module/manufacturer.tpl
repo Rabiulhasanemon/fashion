@@ -319,7 +319,7 @@ jQuery(document).ready(function($) {
 .brc-see-all-btn {
     display: inline-block;
     padding: 8px 20px;
-    background: #A68A6A;
+    background: #FF6A00;
     color: #ffffff;
     text-decoration: none;
     border-radius: 6px;

@@ -342,26 +342,13 @@
                     $('.alert').remove();
 
                     if (json['error']) {
-                        showMessage(json['error'], "error");
+                        showMessage(json['error'], "error")
                     }
 
                     if (json['success']) {
                         showMessage(json['success'], "success");
-                        // Reload checkout totals and payment methods
-                        if (typeof reload === 'function') {
-                            reload();
-                        } else {
-                            // Fallback: reload page if reload function doesn't exist
-                            setTimeout(function() {
-                                location.reload();
-                            }, 500);
-                        }
+                        reload()
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Coupon error:', error);
-                    $('#button-coupon').button('reset');
-                    showMessage('An error occurred while applying the coupon. Please try again.', "error");
                 }
             });
         });

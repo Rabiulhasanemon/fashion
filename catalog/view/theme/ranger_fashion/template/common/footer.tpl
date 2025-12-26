@@ -36,121 +36,90 @@
                             <?php } ?>
                         </ul>
                         <!-- Footer Social -->
-                        <div class="ruplexa-footer-social">
-                            <h4 class="ruplexa-social-title">Follow Us</h4>
-                            <ul class="ruplexa-social-icons">
-                                <li>
-                                    <a href="<?php echo (isset($facebook_url) && $facebook_url != '#') ? $facebook_url : '#'; ?>" 
-                                       <?php echo (isset($facebook_url) && $facebook_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
-                                       class="ruplexa-social-link ruplexa-social-facebook" 
-                                       title="Facebook"
-                                       <?php echo (isset($facebook_url) && $facebook_url == '#') ? 'onclick="return false;"' : ''; ?>>
-                                        <i class="fab fa-facebook-f"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="<?php echo (isset($twitter_url) && $twitter_url != '#') ? $twitter_url : '#'; ?>" 
-                                       <?php echo (isset($twitter_url) && $twitter_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
-                                       class="ruplexa-social-link ruplexa-social-twitter" 
-                                       title="Twitter"
-                                       <?php echo (isset($twitter_url) && $twitter_url == '#') ? 'onclick="return false;"' : ''; ?>>
-                                        <i class="fab fa-twitter"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="<?php echo (isset($instagram_url) && $instagram_url != '#') ? $instagram_url : '#'; ?>" 
-                                       <?php echo (isset($instagram_url) && $instagram_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
-                                       class="ruplexa-social-link ruplexa-social-instagram" 
-                                       title="Instagram"
-                                       <?php echo (isset($instagram_url) && $instagram_url == '#') ? 'onclick="return false;"' : ''; ?>>
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="<?php echo (isset($youtube_url) && $youtube_url != '#') ? $youtube_url : '#'; ?>" 
-                                       <?php echo (isset($youtube_url) && $youtube_url != '#') ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> 
-                                       class="ruplexa-social-link ruplexa-social-youtube" 
-                                       title="YouTube"
-                                       <?php echo (isset($youtube_url) && $youtube_url == '#') ? 'onclick="return false;"' : ''; ?>>
-                                        <i class="fab fa-youtube"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-xl-2 col-md-4 col-6">
-                    <div class="footer-widget quick-links footer-accordion-item">
-                        <p class="footer-widget-title footer-accordion-toggle">
-                            About Ruplexa
-                            <span class="footer-accordion-icon">+</span>
-                        </p>
-                        <div class="footer-accordion-content">
-                        <ul class="footer-widget-list ruplexa-footer-list">
-                            <?php if (isset($about_ruplexa) && !empty($about_ruplexa)) { ?>
-                            <?php foreach ($about_ruplexa as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
+                        <ul class="footer-social">
+                            <?php if (isset($facebook_url) && $facebook_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $facebook_url; ?>" target="_blank"><i class="w-icon-facebook"></i></a>
+                            </li>
                             <?php } ?>
-                            <?php } else { ?>
-                            <!-- Fallback if pages not loaded yet -->
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Gift cards</a></li>
-                            <li><a href="#">Beauty With Heart</a></li>
+                            <?php if (isset($twitter_url) && $twitter_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $twitter_url; ?>" target="_blank"><i class="w-icon-twitter"></i></a>
+                            </li>
+                            <?php } ?>
+                            <?php if (isset($instagram_url) && $instagram_url != '#') { ?>
+                            <li>
+                                <a href="<?php echo $instagram_url; ?>" target="_blank"><i class="w-icon-instagram"></i></a>
+                            </li>
                             <?php } ?>
                         </ul>
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-2 col-xl-2 col-md-4 col-6">
                     <div class="footer-widget quick-links footer-accordion-item">
                         <p class="footer-widget-title footer-accordion-toggle">
-                            My Ruplexa
+                            Information
                             <span class="footer-accordion-icon">+</span>
                         </p>
                         <div class="footer-accordion-content">
-                        <ul class="footer-widget-list ruplexa-footer-list">
-                            <?php if (isset($my_ruplexa) && !empty($my_ruplexa)) { ?>
-                            <?php foreach ($my_ruplexa as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
+                        <ul class="footer-widget-list">
+                            <?php if (isset($informations) && $informations) { ?>
+                            <?php foreach ($informations as $information) { ?>
+                            <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
                             <?php } ?>
-                            <?php } else { ?>
-                            <!-- Fallback if pages not loaded yet -->
-                            <li><a href="<?php echo isset($special) ? $special : '#'; ?>">Specials</a></li>
-                            <li><a href="<?php echo isset($wishlist) ? $wishlist : '#'; ?>">Wish List</a></li>
-                            <li><a href="<?php echo isset($order) ? $order : '#'; ?>">Order History</a></li>
-                            <li><a href="<?php echo isset($account) ? $account : '#'; ?>">My Account</a></li>
-                            <?php } ?>
-                        </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-xl-2 col-md-4 col-6">
-                    <div class="footer-widget quick-links footer-accordion-item">
-                        <p class="footer-widget-title footer-accordion-toggle">
-                            Help
-                            <span class="footer-accordion-icon">+</span>
-                        </p>
-                        <div class="footer-accordion-content">
-                        <ul class="footer-widget-list ruplexa-footer-list">
-                            <?php if (isset($help) && !empty($help)) { ?>
-                            <?php foreach ($help as $info) { ?>
-                            <li><a href="<?php echo $info['href']; ?>"><?php echo htmlspecialchars($info['title']); ?></a></li>
-                            <?php } ?>
-                            <?php } else { ?>
-                            <!-- Fallback if pages not loaded yet -->
-                            <li><a href="#">Customer Service</a></li>
-                            <li><a href="#">Return and exchanges</a></li>
-                            <li><a href="#">Delivery and Pickup Options</a></li>
-                            <li><a href="#">Shipping</a></li>
-                            <li><a href="#">Billing</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms and Condition</a></li>
-                            <li><a href="#">Beauty Service FAQ</a></li>
                             <?php } ?>
                             <?php if (isset($contact) && $contact) { ?>
                             <li><a href="<?php echo $contact; ?>"><?php echo isset($text_contact) ? $text_contact : 'Contact Us'; ?></a></li>
+                            <?php } ?>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-xl-2 col-md-3 col-6">
+                    <div class="footer-widget accounts footer-accordion-item">
+                        <p class="footer-widget-title footer-accordion-toggle">
+                            Shop By Category
+                            <span class="footer-accordion-icon">+</span>
+                        </p>
+                        <div class="footer-accordion-content">
+                        <ul class="footer-widget-list">
+                            <?php if (isset($categories) && $categories) { ?>
+                            <?php $category_count = 0; ?>
+                            <?php foreach ($categories as $category) { ?>
+                            <?php if ($category_count < 7) { ?>
+                            <li><a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a></li>
+                            <?php $category_count++; ?>
+                            <?php } ?>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-xl-2 col-md-2 col-6">
+                    <div class="footer-widget pages footer-accordion-item">
+                        <p class="footer-widget-title footer-accordion-toggle">
+                            Support
+                            <span class="footer-accordion-icon">+</span>
+                        </p>
+                        <div class="footer-accordion-content">
+                        <ul class="footer-widget-list">
+                            <?php if (isset($account) && $account) { ?>
+                            <li><a href="<?php echo $account; ?>"><?php echo isset($text_account) ? $text_account : 'My Account'; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($order) && $order) { ?>
+                            <li><a href="<?php echo $order; ?>"><?php echo isset($text_order) ? $text_order : 'Order History'; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($wishlist) && $wishlist) { ?>
+                            <li><a href="<?php echo $wishlist; ?>"><?php echo isset($text_wishlist) ? $text_wishlist : 'Wish List'; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($special) && $special) { ?>
+                            <li><a href="<?php echo $special; ?>"><?php echo isset($text_special) ? $text_special : 'Specials'; ?></a></li>
+                            <?php } ?>
+                            <?php if (isset($is_vendor) && $is_vendor && isset($vendor_status) && $vendor_status == 'approved') { ?>
+                            <li><a href="<?php echo isset($vendor_dashboard) ? $vendor_dashboard : '#'; ?>">Vendor Dashboard</a></li>
+                            <?php } elseif (isset($vendor_register)) { ?>
+                            <li><a href="<?php echo $vendor_register; ?>">Become a Vendor</a></li>
                             <?php } ?>
                         </ul>
                         </div>
@@ -211,339 +180,6 @@
 </footer>
 
 <style>
-/* Ruplexa Premium Footer Design */
-.footer.style-3 {
-    background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
-    color: #ffffff;
-    padding: 60px 0 0;
-    margin-top: 50px;
-    position: relative;
-}
-
-.footer.style-3::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #10503D 0%, #A68A6A 50%, #10503D 100%);
-}
-
-.footer-top {
-    padding-bottom: 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer-widget {
-    margin-bottom: 30px;
-}
-
-.footer-about .footer-logo img {
-    max-width: 180px;
-    height: auto;
-    margin-bottom: 20px;
-    filter: brightness(0) invert(1);
-}
-
-.f-about-text {
-    color: #b0b0b0;
-    font-size: 14px;
-    line-height: 1.8;
-    margin-bottom: 25px;
-}
-
-.footer-contact {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 25px 0;
-}
-
-.footer-contact li {
-    margin-bottom: 12px;
-    color: #b0b0b0;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.footer-contact li i {
-    color: #A68A6A;
-    font-size: 16px;
-    margin-top: 2px;
-    min-width: 20px;
-}
-
-.footer-contact li a {
-    color: #b0b0b0;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-contact li a:hover {
-    color: #A68A6A;
-}
-
-/* Ruplexa Social Media Icons - Premium Design */
-.ruplexa-footer-social {
-    margin-top: 25px;
-}
-
-.ruplexa-social-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.ruplexa-social-icons {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.ruplexa-social-link {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.ruplexa-social-link[href="#"] {
-    cursor: default;
-    opacity: 0.7;
-}
-
-.ruplexa-social-link::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-}
-
-.ruplexa-social-link:hover::before {
-    width: 100%;
-    height: 100%;
-}
-
-.ruplexa-social-link i {
-    font-size: 18px;
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-    display: inline-block !important;
-    visibility: visible !important;
-}
-
-.ruplexa-social-link:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.ruplexa-social-link:hover i {
-    transform: scale(1.1);
-}
-
-/* Individual Social Media Colors */
-.ruplexa-social-facebook:hover {
-    background: #1877F2;
-    color: #ffffff;
-}
-
-.ruplexa-social-twitter:hover {
-    background: #1DA1F2;
-    color: #ffffff;
-}
-
-.ruplexa-social-instagram:hover {
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-    color: #ffffff;
-}
-
-.ruplexa-social-youtube:hover {
-    background: #FF0000;
-    color: #ffffff;
-}
-
-/* Footer Widget Titles */
-.footer-widget-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position: relative;
-    padding-bottom: 12px;
-}
-
-.footer-widget-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 2px;
-    background: linear-gradient(90deg, #10503D, #A68A6A);
-}
-
-.footer-widget-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-widget-list li {
-    margin-bottom: 10px;
-}
-
-.footer-widget-list li a {
-    color: #b0b0b0;
-    text-decoration: none;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    display: inline-block;
-}
-
-.footer-widget-list li a:hover {
-    color: #A68A6A;
-    padding-left: 8px;
-}
-
-/* Newsletter Section */
-.f-widget-text {
-    color: #b0b0b0;
-    font-size: 13px;
-    margin-bottom: 15px;
-}
-
-.footer-newsletter {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-}
-
-.footer-newsletter .form-control {
-    flex: 1;
-    padding: 12px 18px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
-    border-radius: 25px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.footer-newsletter .form-control::placeholder {
-    color: #888;
-}
-
-.footer-newsletter .form-control:focus {
-    outline: none;
-    border-color: #A68A6A;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.footer-newsletter button {
-    width: 50px;
-    height: 50px;
-    border: none;
-    background: linear-gradient(135deg, #10503D 0%, #A68A6A 100%);
-    border-radius: 50%;
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.footer-newsletter button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(16, 80, 61, 0.4);
-}
-
-/* Footer Bottom */
-.footer-bottom {
-    padding: 25px 0;
-    background: rgba(0, 0, 0, 0.3);
-    margin-top: 30px;
-}
-
-.footer-bottom-widget {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.f-copyight-text {
-    color: #b0b0b0;
-    font-size: 13px;
-    margin: 0;
-}
-
-.f-copyight-text a {
-    color: #A68A6A;
-    text-decoration: none;
-}
-
-.f-copyight-text a:hover {
-    text-decoration: underline;
-}
-
-.footer-payment-img img {
-    max-height: 30px;
-    filter: brightness(0) invert(1);
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.footer-payment-img img:hover {
-    opacity: 1;
-}
-
-/* Responsive Design */
-@media (max-width: 991px) {
-    .footer.style-3 {
-        padding: 40px 0 0;
-    }
-    
-    .footer-bottom-widget {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .ruplexa-social-icons {
-        justify-content: center;
-    }
-}
-
 /* Footer Accordion - Mobile and Tablet Only */
 @media (max-width: 991px) {
     .footer-accordion-item {
@@ -565,7 +201,7 @@
     }
     
     .footer-accordion-toggle:hover {
-        color: #A68A6A;
+        color: #FF6A00;
     }
     
     .footer-accordion-icon {
@@ -581,7 +217,7 @@
     }
     
     .footer-accordion-item.active .footer-accordion-icon {
-        color: #A68A6A;
+        color: #FF6A00;
         font-weight: 400;
     }
     
@@ -617,29 +253,7 @@
     }
     
     .footer-accordion-content .footer-widget-list li a:hover {
-        color: #A68A6A;
-        padding-left: 5px;
-    }
-    
-    /* Ruplexa Footer List - Unique Class to Avoid Conflicts */
-    .ruplexa-footer-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    .ruplexa-footer-list li {
-        margin: 0;
-        padding: 8px 0;
-    }
-    .ruplexa-footer-list li a {
-        color: #666;
-        text-decoration: none;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        display: inline-block;
-    }
-    .ruplexa-footer-list li a:hover {
-        color: #A68A6A;
+        color: #FF6A00;
         padding-left: 5px;
     }
     
@@ -733,18 +347,6 @@ jQuery(document).ready(function($) {
 });
 </script>
 
-<!-- Compare Floating Button -->
-<a href="<?php echo isset($compare) ? $compare : '#'; ?>" 
-   class="ruplexa-compare-float-btn" 
-   title="Compare Products">
-    <div class="ruplexa-compare-icon-wrapper">
-        <i class="fa fa-balance-scale"></i>
-    </div>
-    <?php if (isset($compare_count) && $compare_count > 0) { ?>
-    <span class="ruplexa-compare-badge"><?php echo $compare_count; ?></span>
-    <?php } ?>
-</a>
-
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/8801711664166" 
    target="_blank" 
@@ -758,84 +360,6 @@ jQuery(document).ready(function($) {
 </a>
 
 <style>
-/* Compare Floating Button - New Classes to Avoid Conflicts */
-.ruplexa-compare-float-btn {
-    position: fixed;
-    bottom: 100px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9998;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    overflow: visible;
-}
-
-.ruplexa-compare-float-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
-
-.ruplexa-compare-icon-wrapper {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ruplexa-compare-float-btn i {
-    font-size: 28px;
-    color: #ffffff;
-    animation: ruplexa-compare-icon-bounce 2s infinite;
-}
-
-.ruplexa-compare-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #FF6B9D;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
-    animation: ruplexa-compare-badge-pulse 2s infinite;
-}
-
-@keyframes ruplexa-compare-icon-bounce {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-3px) rotate(-5deg);
-    }
-}
-
-@keyframes ruplexa-compare-badge-pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.15);
-    }
-}
-
 /* WhatsApp Floating Button - New Classes to Avoid Conflicts */
 .wa-new-float-btn {
     position: fixed;
@@ -920,25 +444,6 @@ jQuery(document).ready(function($) {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .ruplexa-compare-float-btn {
-        width: 56px;
-        height: 56px;
-        bottom: 90px;
-        right: 20px;
-    }
-    
-    .ruplexa-compare-float-btn i {
-        font-size: 24px;
-    }
-    
-    .ruplexa-compare-badge {
-        width: 22px;
-        height: 22px;
-        font-size: 11px;
-        top: -4px;
-        right: -4px;
-    }
-    
     .wa-new-float-btn {
         width: 56px;
         height: 56px;
@@ -958,25 +463,6 @@ jQuery(document).ready(function($) {
 }
 
 @media (max-width: 480px) {
-    .ruplexa-compare-float-btn {
-        width: 50px;
-        height: 50px;
-        bottom: 80px;
-        right: 15px;
-    }
-    
-    .ruplexa-compare-float-btn i {
-        font-size: 22px;
-    }
-    
-    .ruplexa-compare-badge {
-        width: 20px;
-        height: 20px;
-        font-size: 10px;
-        top: -3px;
-        right: -3px;
-    }
-    
     .wa-new-float-btn {
         width: 50px;
         height: 50px;

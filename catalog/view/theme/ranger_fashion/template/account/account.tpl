@@ -111,6 +111,38 @@
         </div>
         */ ?>
         
+        <?php if (isset($is_vendor) && $is_vendor) { ?>
+        <!-- Vendor Section -->
+        <div class="account-modern-section">
+            <h2 class="account-modern-heading">Vendor Dashboard</h2>
+            <div class="account-modern-grid account-modern-grid-row">
+                <a href="<?php echo $vendor_dashboard; ?>" class="account-modern-card">
+                    <div class="account-modern-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="account-modern-text">Vendor Dashboard</div>
+                    <?php if (isset($vendor_status) && $vendor_status == 'pending') { ?>
+                    <small style="color: orange;">Pending Approval</small>
+                    <?php } elseif (isset($vendor_status) && $vendor_status == 'approved') { ?>
+                    <small style="color: green;">Active</small>
+                    <?php } ?>
+                </a>
+            </div>
+        </div>
+        <?php } elseif (isset($vendor_register)) { ?>
+        <div class="account-modern-section">
+            <h2 class="account-modern-heading">Become a Vendor</h2>
+            <div class="account-modern-grid account-modern-grid-row">
+                <a href="<?php echo $vendor_register; ?>" class="account-modern-card">
+                    <div class="account-modern-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="account-modern-text">Register as Vendor</div>
+                </a>
+            </div>
+        </div>
+        <?php } ?>
+        
         <?php echo $content_bottom; ?>
     </div>
 </div>

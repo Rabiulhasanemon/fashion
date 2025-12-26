@@ -319,65 +319,6 @@ var voucher = {
 	}
 };
 
-// Animated Notification Function
-function showAnimatedNotification(message, type, icon) {
-    // Remove any existing notifications
-    $('.ruplexa-animated-notification').remove();
-    
-    // Set icon and colors based on type
-    var notificationIcon = icon || 'fa-check-circle';
-    var bgGradient = '';
-    var iconBg = '';
-    
-    if (type === 'wishlist') {
-        bgGradient = 'linear-gradient(135deg, #10503D 0%, #A68A6A 100%)';
-        iconBg = 'rgba(255, 255, 255, 0.2)';
-        notificationIcon = 'fa-heart';
-    } else if (type === 'compare') {
-        bgGradient = 'linear-gradient(135deg, #10503D 0%, #A68A6A 100%)';
-        iconBg = 'rgba(255, 255, 255, 0.2)';
-        notificationIcon = 'fa-exchange';
-    } else {
-        bgGradient = 'linear-gradient(135deg, #10503D 0%, #A68A6A 100%)';
-        iconBg = 'rgba(255, 255, 255, 0.2)';
-    }
-    
-    // Create animated notification
-    var notification = $('<div class="ruplexa-animated-notification">' +
-        '<div class="ruplexa-notification-content">' +
-        '<div class="ruplexa-notification-icon">' +
-        '<i class="fa ' + notificationIcon + '"></i>' +
-        '</div>' +
-        '<div class="ruplexa-notification-text">' +
-        '<p>' + message + '</p>' +
-        '</div>' +
-        '<button class="ruplexa-notification-close" onclick="$(this).closest(\'.ruplexa-animated-notification\').remove()">' +
-        '<i class="fa fa-times"></i>' +
-        '</button>' +
-        '</div>' +
-        '</div>');
-    
-    // Set background gradient
-    notification.find('.ruplexa-notification-content').css('background', bgGradient);
-    notification.find('.ruplexa-notification-icon').css('background', iconBg);
-    
-    // Add to body
-    $('body').append(notification);
-    
-    // Show with slide-in animation
-    setTimeout(function() {
-        notification.addClass('ruplexa-notification-show');
-    }, 100);
-    
-    // Auto hide after 4 seconds
-    setTimeout(function() {
-        notification.removeClass('ruplexa-notification-show');
-        setTimeout(function() {
-            notification.remove();
-        }, 400);
-    }, 4000);
-}
-
 var wishlist = {
 	'add': function(product_id) {
 		$.ajax({
@@ -386,21 +327,22 @@ var wishlist = {
 			data: 'product_id=' + product_id,
 			dataType: 'json',
 			success: function(json) {
+                var alertRow = $(".container.alert-container");
+                if(alertRow.size() == 0) {
+                    alertRow = $('<div class="container alert-container"></div>');
+                    $('.after-header').after(alertRow)
+                }
 				if (json['success']) {
-					// Show animated notification
-					showAnimatedNotification(json['success'], 'wishlist', 'fa-heart');
+                    alertRow.append('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				}
 
 				if (json['info']) {
-					// Show animated notification
-					showAnimatedNotification(json['info'], 'wishlist', 'fa-heart');
+                    alertRow.append('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['info'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				}
 
-				// Update wishlist count
-				if (json['total']) {
-					$('#wishlist-total span').html(json['total']);
-					$('#wishlist-total').attr('title', json['total']);
-				}
+				$('#wishlist-total span').html(json['total']);
+				$('#wishlist-total').attr('title', json['total']);
+                $("html, body").scrollTo(0, 600);
 
                 fbq && fbq('track', 'AddToWishlist');
             }
@@ -419,19 +361,18 @@ var compare = {
 			data: 'product_id=' + product_id,
 			dataType: 'json',
 			success: function(json) {
+				$('.alert').remove();
+
 				if (json['success']) {
-					// Show animated notification
-					showAnimatedNotification(json['success'], 'compare', 'fa-exchange');
-					
-					// Update compare count
-					if (json['total']) {
-						$('#compare-total').html(json['total']);
+					var alertRow = $(".container.alert-container");
+					if(alertRow.size() == 0) {
+						alertRow = $('<div class="container alert-container"></div>');
+                        $('.after-header').after(alertRow)
 					}
-					if (json['count']) {
-						$('#compare .value').text(json['count']);
-						// Update compare badge in footer
-						$('.ruplexa-compare-badge').text(json['count']);
-					}
+					alertRow.append('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+					$('#compare-total').html(json['total']);
+                    $('#compare .value').text(json['count']);
+                    $("html, body").scrollTo(0, 600)
 				}
 			}
 		});

@@ -1,0 +1,59 @@
+/* Reward Points Display for All Product Modules */
+/* Consistent styling for reward points across all modules */
+
+.module-reward-points {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff7e6;
+    color: #b37400;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.module-reward-points i {
+    color: #ff9800;
+    font-size: 13px;
+}
+
+/* Module-specific positioning */
+.bs-product-price-box .module-reward-points,
+.special-price .module-reward-points,
+.latest-price .module-reward-points,
+.featured-price .module-reward-points {
+    display: block;
+    margin-top: 8px;
+}
+
+.premium-flash-pricing .module-reward-points {
+    display: block;
+    margin-top: 10px;
+}
+
+.pst-product-price-box .module-reward-points {
+    display: block;
+    margin-top: 8px;
+}
+
+.product-price + .module-reward-points {
+    display: block;
+    margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .module-reward-points {
+        font-size: 11px;
+        padding: 5px 10px;
+        gap: 5px;
+    }
+    
+    .module-reward-points i {
+        font-size: 12px;
+    }
+}
+
