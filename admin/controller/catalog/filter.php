@@ -20,13 +20,40 @@ class ControllerCatalogFilter extends Controller {
 		$this->load->model('catalog/filter');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$result = $this->model_catalog_filter->addFilter($this->request->post);
+			// Log POST data for debugging
+			$log_file = DIR_LOGS . 'filter_debug.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] Starting filter add\n", FILE_APPEND);
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] POST keys: " . implode(', ', array_keys($this->request->post)) . "\n", FILE_APPEND);
+			
+			// Normalize filter array structure if needed
+			if (isset($this->request->post['filter']) && is_array($this->request->post['filter'])) {
+				$normalized_filters = array();
+				foreach ($this->request->post['filter'] as $key => $filter) {
+					if (is_array($filter)) {
+						$normalized_filters[] = $filter;
+					}
+				}
+				$this->request->post['filter'] = $normalized_filters;
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] Normalized " . count($normalized_filters) . " filter(s)\n", FILE_APPEND);
+			}
+			
+			try {
+				$result = $this->model_catalog_filter->addFilter($this->request->post);
 
-			if ($result === false) {
-				$this->error['warning'] = 'Error: Failed to add filter. Please check error logs.';
-				error_log("Filter Add Failed - POST Data: " . print_r($this->request->post, true));
-			} else {
-				$this->session->data['success'] = $this->language->get('text_success');
+				if ($result === false) {
+					$this->error['warning'] = 'Error: Failed to add filter. Please check error logs.';
+					error_log("Filter Add Failed - POST Data: " . print_r($this->request->post, true));
+					file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] Filter add returned false\n", FILE_APPEND);
+				} else {
+					$this->session->data['success'] = $this->language->get('text_success');
+					file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] Filter add successful, filter_group_id: $result\n", FILE_APPEND);
+				}
+			} catch (Exception $e) {
+				$error_msg = "Filter Add Exception: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine();
+				error_log($error_msg);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] " . $error_msg . "\n", FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [CONTROLLER] Stack trace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
+				$this->error['warning'] = 'Error: An exception occurred while adding filter. Please check error logs.';
 			}
 
 			$url = '';

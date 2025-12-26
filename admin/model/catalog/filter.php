@@ -75,32 +75,103 @@ class ModelCatalogFilter extends Model {
 
 		if (isset($data['filter']) && is_array($data['filter'])) {
 			try {
-				foreach ($data['filter'] as $filter) {
-					if (empty($filter['sort_order']) || $filter['sort_order'] === '') {
-						$filter['sort_order'] = 0;
-					}
-
-					$this->db->query("INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'");
-
-					$filter_id = $this->db->getLastId();
-
-					if (!$filter_id) {
-						error_log("Filter Add Error: Failed to get filter_id");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Processing " . count($data['filter']) . " filter(s)\n", FILE_APPEND);
+				
+				// Normalize filter array - handle both indexed and associative arrays
+				$normalized_filters = array();
+				foreach ($data['filter'] as $key => $filter) {
+					if (!is_array($filter)) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: Filter at key $key is not an array, skipping\n", FILE_APPEND);
 						continue;
 					}
-
-					if (isset($filter['filter_description']) && is_array($filter['filter_description'])) {
-						foreach ($filter['filter_description'] as $language_id => $filter_description) {
-							if (empty($filter_description['name'])) {
-								continue;
-							}
-							$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_description['name']) . "'");
+					$normalized_filters[] = $filter;
+				}
+				
+				foreach ($normalized_filters as $filter_index => $filter) {
+					try {
+						// Validate filter structure
+						if (!is_array($filter)) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: Filter #$filter_index is not an array, skipping\n", FILE_APPEND);
+							continue;
 						}
+						
+						// Set default sort_order if not provided
+						if (empty($filter['sort_order']) || $filter['sort_order'] === '') {
+							$filter['sort_order'] = 0;
+						}
+
+						// Insert filter record
+						$insert_sql = "INSERT INTO " . DB_PREFIX . "filter SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = '" . (int)$filter['sort_order'] . "'";
+						file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Inserting filter #$filter_index: " . $insert_sql . "\n", FILE_APPEND);
+						
+						$this->db->query($insert_sql);
+
+						$filter_id = $this->db->getLastId();
+
+						if (!$filter_id || $filter_id <= 0) {
+							$error_msg = "Filter Add Error: Failed to get filter_id for filter #$filter_index";
+							error_log($error_msg);
+							file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
+							continue;
+						}
+
+						file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Got filter_id: $filter_id for filter #$filter_index\n", FILE_APPEND);
+
+						// Process filter descriptions
+						if (isset($filter['filter_description']) && is_array($filter['filter_description'])) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Processing filter descriptions for filter_id $filter_id (" . count($filter['filter_description']) . " languages)\n", FILE_APPEND);
+							
+							foreach ($filter['filter_description'] as $language_id => $filter_description) {
+								// Validate language_id
+								$language_id = (int)$language_id;
+								if ($language_id <= 0) {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: Invalid language_id ($language_id) for filter_id $filter_id, skipping\n", FILE_APPEND);
+									continue;
+								}
+								
+								// Validate filter_description structure
+								if (!is_array($filter_description)) {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: filter_description for language_id $language_id is not an array, skipping\n", FILE_APPEND);
+									continue;
+								}
+								
+								// Check if name is provided and not empty
+								if (empty($filter_description['name']) || trim($filter_description['name']) === '') {
+									file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: Empty name for filter_id $filter_id, language_id $language_id, skipping\n", FILE_APPEND);
+									continue;
+								}
+								
+								// Insert filter description
+								$name = trim($filter_description['name']);
+								$desc_sql = "INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . (int)$filter_id . "', language_id = '" . $language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($name) . "'";
+								file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Inserting description for filter_id $filter_id, language_id $language_id: " . substr($name, 0, 50) . "\n", FILE_APPEND);
+								
+								$this->db->query($desc_sql);
+								file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Successfully inserted description for filter_id $filter_id, language_id $language_id\n", FILE_APPEND);
+							}
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Warning: No filter_description found for filter #$filter_index (filter_id: $filter_id)\n", FILE_APPEND);
+						}
+					} catch (Exception $filter_exception) {
+						$error_msg = "Filter Add Error (Filter Item #$filter_index): " . $filter_exception->getMessage() . " | File: " . $filter_exception->getFile() . " | Line: " . $filter_exception->getLine();
+						error_log($error_msg);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
+						file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Stack trace: " . $filter_exception->getTraceAsString() . "\n", FILE_APPEND);
+						// Continue with next filter instead of stopping
+						continue;
 					}
 				}
+				
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Successfully processed all filters\n", FILE_APPEND);
 			} catch (Exception $e) {
-				error_log("Filter Add Error (Filter Items): " . $e->getMessage());
+				$error_msg = "Filter Add Error (Filter Items): " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine();
+				error_log($error_msg);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] " . $error_msg . "\n", FILE_APPEND);
+				file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] Stack trace: " . $e->getTraceAsString() . "\n", FILE_APPEND);
+				// Don't return false here - allow the filter group to be saved even if some filters fail
 			}
+		} else {
+			file_put_contents($log_file, date('Y-m-d H:i:s') . " - [FILTER ADD] No filters to process (filter not set or not an array)\n", FILE_APPEND);
 		}
 
         if (isset($data['group_filter_profile']) && is_array($data['group_filter_profile'])) {
