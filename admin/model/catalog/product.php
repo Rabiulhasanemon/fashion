@@ -1452,13 +1452,21 @@ class ModelCatalogProduct extends Model {
 		}
 
 		// Insert keyword if provided - delete existing first, then insert
-		if (isset($data['keyword']) && $data['keyword']) {
+		// CRITICAL: Only save keyword if product_id is valid (> 0)
+		if ($product_id > 0 && isset($data['keyword']) && $data['keyword']) {
 			$keyword = trim($data['keyword']);
 			if ($keyword && $keyword !== '') {
-				// CRITICAL: Clean up url_alias_id = 0 records and fix AUTO_INCREMENT
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Attempting to save keyword: ' . $keyword . ' for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+				
+				// CRITICAL: Clean up ALL problematic url_alias records BEFORE inserting
 				try {
 					// Delete any url_alias_id = 0 records
 					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Cleaned up url_alias_id = 0 records' . PHP_EOL, FILE_APPEND);
+					
+					// Delete any url_alias records with product_id=0 (orphaned records)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Cleaned up url_alias records with product_id=0' . PHP_EOL, FILE_APPEND);
 					
 					// Fix AUTO_INCREMENT for url_alias table
 					$max_url_alias = $this->db->query("SELECT MAX(url_alias_id) as max_id FROM " . DB_PREFIX . "url_alias WHERE url_alias_id > 0");
@@ -1470,75 +1478,103 @@ class ModelCatalogProduct extends Model {
 					
 					// Set AUTO_INCREMENT
 					$this->db->query("ALTER TABLE " . DB_PREFIX . "url_alias AUTO_INCREMENT = " . $next_url_alias_id);
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Fixed url_alias AUTO_INCREMENT to ' . $next_url_alias_id . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Fixed url_alias AUTO_INCREMENT to ' . $next_url_alias_id . PHP_EOL, FILE_APPEND);
 				} catch (Exception $e) {
-					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - Warning fixing url_alias AUTO_INCREMENT: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Warning fixing url_alias AUTO_INCREMENT: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
 				}
 				
 				// Delete any existing url_alias for this product first
 				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Deleted existing url_alias for product_id=' . $product_id . PHP_EOL, FILE_APPEND);
+				
 				// Check if keyword already exists for a different product
 				$check_keyword = $this->db->query("SELECT url_alias_id, query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
 				if ($check_keyword && $check_keyword->num_rows) {
 					$existing_query = isset($check_keyword->row['query']) ? $check_keyword->row['query'] : '';
 					if ($existing_query != 'product_id=' . (int)$product_id) {
 						// Keyword exists for different product, make it unique
+						$original_keyword = $keyword;
 						$keyword = $keyword . '-' . $product_id;
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Keyword "' . $original_keyword . '" already exists, using unique: ' . $keyword . PHP_EOL, FILE_APPEND);
 					}
 				}
-				// Delete any existing record with this keyword
+				
+				// Delete any existing record with this keyword (to prevent duplicates)
 				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "'");
-				// Now insert - check if it already exists first
-				$check_existing = $this->db->query("SELECT url_alias_id FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "' AND keyword = '" . $this->db->escape($keyword) . "' LIMIT 1");
-				if (!$check_existing || !$check_existing->num_rows) {
-					$result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
-					if (!$result) {
-						// Get error details
-						$db_error = '';
-						$db_errno = 0;
-						try {
-							$reflection = new ReflectionClass($this->db);
-							$db_property = $reflection->getProperty('db');
-							$db_property->setAccessible(true);
-							$db_driver = $db_property->getValue($this->db);
-							if (is_object($db_driver) && property_exists($db_driver, 'link')) {
-								$link_reflection = new ReflectionProperty($db_driver, 'link');
-								$link_reflection->setAccessible(true);
-								$link = $link_reflection->getValue($db_driver);
-								if (is_object($link)) {
-									if (method_exists($link, 'error')) {
-										$db_error = $link->error;
-									}
-									if (method_exists($link, 'errno')) {
-										$db_errno = $link->errno;
-									}
+				
+				// Now insert - use REPLACE INTO to handle duplicates gracefully
+				try {
+					$result = $this->db->query("REPLACE INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+					if ($result) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Successfully saved keyword: ' . $keyword . ' for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] WARNING: REPLACE INTO returned false for keyword: ' . $keyword . PHP_EOL, FILE_APPEND);
+					}
+				} catch (Exception $e) {
+					// If REPLACE fails, try INSERT with better error handling
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] REPLACE INTO failed, trying INSERT: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+					
+					// Get error details
+					$db_error = '';
+					$db_errno = 0;
+					try {
+						$reflection = new ReflectionClass($this->db);
+						$db_property = $reflection->getProperty('db');
+						$db_property->setAccessible(true);
+						$db_driver = $db_property->getValue($this->db);
+						if (is_object($db_driver) && property_exists($db_driver, 'link')) {
+							$link_reflection = new ReflectionProperty($db_driver, 'link');
+							$link_reflection->setAccessible(true);
+							$link = $link_reflection->getValue($db_driver);
+							if (is_object($link)) {
+								if (method_exists($link, 'error')) {
+									$db_error = $link->error;
+								}
+								if (method_exists($link, 'errno')) {
+									$db_errno = $link->errno;
 								}
 							}
-						} catch (Exception $e) {
-							// Ignore
 						}
-						
-						// If duplicate entry error, clean up and retry
-						if ($db_errno == 1062) {
-							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - url_alias duplicate entry error, cleaning up and retrying...' . PHP_EOL, FILE_APPEND);
-							// Clean up url_alias_id = 0 again
-							$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
-							// Fix AUTO_INCREMENT again
-							$max_retry = $this->db->query("SELECT MAX(url_alias_id) as max_id FROM " . DB_PREFIX . "url_alias WHERE url_alias_id > 0");
-							$next_retry = 1;
-							if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
-								$next_retry = (int)$max_retry->row['max_id'] + 1;
-							}
-							$this->db->query("ALTER TABLE " . DB_PREFIX . "url_alias AUTO_INCREMENT = " . $next_retry);
-							// Retry insert
-							$result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
-							if (!$result) {
-								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - url_alias insert failed even after retry: ' . $db_error . PHP_EOL, FILE_APPEND);
-							}
-						}
+					} catch (Exception $reflection_error) {
+						// Ignore
 					}
-					// If insert failed due to duplicate key, it's okay - record already exists
+					
+					// If duplicate entry error, clean up more aggressively and retry
+					if ($db_errno == 1062) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Duplicate entry error (1062), cleaning up and retrying...' . PHP_EOL, FILE_APPEND);
+						
+						// More aggressive cleanup
+						$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
+						$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+						$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . (int)$product_id . "'");
+						
+						// Fix AUTO_INCREMENT again
+						$max_retry = $this->db->query("SELECT MAX(url_alias_id) as max_id FROM " . DB_PREFIX . "url_alias WHERE url_alias_id > 0");
+						$next_retry = 1;
+						if ($max_retry && $max_retry->num_rows && isset($max_retry->row['max_id']) && $max_retry->row['max_id'] !== null) {
+							$next_retry = (int)$max_retry->row['max_id'] + 1;
+						}
+						$this->db->query("ALTER TABLE " . DB_PREFIX . "url_alias AUTO_INCREMENT = " . $next_retry);
+						
+						// Retry insert
+						$result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+						if ($result) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Successfully saved keyword after retry: ' . $keyword . PHP_EOL, FILE_APPEND);
+						} else {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] ERROR: Insert failed even after retry. Error: ' . $db_error . ' (Code: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
+						}
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] ERROR: Failed to save keyword. Error: ' . $db_error . ' (Code: ' . $db_errno . ')' . PHP_EOL, FILE_APPEND);
+					}
 				}
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] Keyword is empty, skipping save' . PHP_EOL, FILE_APPEND);
+			}
+		} else {
+			if ($product_id <= 0) {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] WARNING: Cannot save keyword - invalid product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+			} else {
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [KEYWORD] No keyword provided in data' . PHP_EOL, FILE_APPEND);
 			}
 		}
 
@@ -2306,20 +2342,69 @@ class ModelCatalogProduct extends Model {
 			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT] No product images to insert (empty array or not set)' . PHP_EOL, FILE_APPEND);
 		}
 
-		// Update keyword
-		try {
-			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . $product_id . "'");
-			if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
-				$keyword = trim($data['keyword']);
-				// Check if keyword already exists for a different product
-				$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . $product_id . "' LIMIT 1");
-				if (!$existing->num_rows) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . $product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+		// Update keyword - improved with better cleanup and error handling
+		// CRITICAL: Only update keyword if product_id is valid (> 0)
+		if ($product_id > 0) {
+			try {
+				$log_file = DIR_LOGS . 'product_insert_debug.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] Updating keyword for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+				
+				// CRITICAL: Clean up ALL problematic url_alias records BEFORE updating
+				// Delete any url_alias_id = 0 records
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE url_alias_id = 0");
+				
+				// Delete any url_alias records with product_id=0 (orphaned records)
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=0'");
+				
+				// Delete any existing url_alias for this product first
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
+				
+				if (isset($data['keyword']) && !empty(trim($data['keyword']))) {
+					$keyword = trim($data['keyword']);
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] Keyword provided: ' . $keyword . PHP_EOL, FILE_APPEND);
+					
+					// Check if keyword already exists for a different product
+					$existing = $this->db->query("SELECT query FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "' AND query != 'product_id=" . (int)$product_id . "' LIMIT 1");
+					if ($existing && $existing->num_rows) {
+						// Keyword exists for different product, make it unique
+						$original_keyword = $keyword;
+						$keyword = $keyword . '-' . $product_id;
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] Keyword "' . $original_keyword . '" exists for another product, using unique: ' . $keyword . PHP_EOL, FILE_APPEND);
+					}
+					
+					// Delete any existing record with this keyword (to prevent duplicates)
+					$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE keyword = '" . $this->db->escape($keyword) . "'");
+					
+					// Use REPLACE INTO to handle duplicates gracefully
+					$result = $this->db->query("REPLACE INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+					if ($result) {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] Successfully saved keyword: ' . $keyword . ' for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
+					} else {
+						file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] WARNING: REPLACE INTO returned false for keyword: ' . $keyword . PHP_EOL, FILE_APPEND);
+						
+						// If REPLACE fails, try INSERT with error handling
+						try {
+							$insert_result = $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+							if ($insert_result) {
+								file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] Successfully saved keyword using INSERT: ' . $keyword . PHP_EOL, FILE_APPEND);
+							}
+						} catch (Exception $insert_error) {
+							file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] ERROR: INSERT also failed: ' . $insert_error->getMessage() . PHP_EOL, FILE_APPEND);
+							error_log("Warning: Could not update keyword for product_id " . $product_id . ": " . $insert_error->getMessage());
+						}
+					}
+				} else {
+					file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] No keyword provided, removed existing keyword for product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 				}
+			} catch (Exception $e) {
+				// Log but don't fail - keyword update is not critical
+				$log_file = DIR_LOGS . 'product_insert_debug.log';
+				file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] EXCEPTION: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+				error_log("Warning: Could not update keyword for product_id " . $product_id . ": " . $e->getMessage());
 			}
-		} catch (Exception $e) {
-			// Log but don't fail - keyword update is not critical
-			error_log("Warning: Could not update keyword for product_id " . $product_id . ": " . $e->getMessage());
+		} else {
+			$log_file = DIR_LOGS . 'product_insert_debug.log';
+			file_put_contents($log_file, date('Y-m-d H:i:s') . ' - [EDIT-KEYWORD] WARNING: Cannot update keyword - invalid product_id: ' . $product_id . PHP_EOL, FILE_APPEND);
 		}
 
 		// Update product related
