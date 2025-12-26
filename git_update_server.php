@@ -126,3 +126,4 @@ if ($pull_status === 0) {
 
 echo "\nGit update process completed!\n";
 
+
